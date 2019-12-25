@@ -746,8 +746,6 @@ def _ts_pro_fetch(pro_con, stock_list, fast_fetch,  query, query_fields, fetch_p
                 df_tmp = pd.DataFrame([name] * df_tmp.__len__(), columns=['name']).join(df_tmp)
                 df_tmp = df_tmp.drop_duplicates().reset_index().drop('index', axis=1)
 
-
-
                 #df_tmp contains multiple end_date
                 end_date_lst = list(df_tmp[field].unique())
 
@@ -3768,7 +3766,7 @@ def _fetch_pro_basic():
     output_csv = dir+"/pro_basic.csv"
 
     if finlib.Finlib().is_cached(output_csv, 1):
-        logging.info("not fetch basic as the file updated in 1 day")
+        logging.info("not fetch basic as the file updated in 1 day. "+output_csv)
         return()
 
     df = pro.query('stock_basic', exchange='', list_status='L', fields='ts_code,symbol,name,area,industry,list_date')
