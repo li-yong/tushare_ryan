@@ -975,12 +975,15 @@ def fetch_basic_daily(fast_fetch=False):
 
         trade_date = yyyy+mm+dd
 
+       #trade_date="20191224" #ryan debug
+
         output_csv = dir_d+"/basic_"+trade_date+".csv"
 
         if  os.path.exists(output_csv) and os.stat(output_csv).st_size >= 10 and (not force_run_global):
             logging.info("file exist and have content, not fetch again "+output_csv)
             continue
 
+        logging.info("fetch daily_basic on date "+str(trade_date))
         df = pro.daily_basic(ts_code='', trade_date=trade_date, fields=fields)
         time.sleep(1)
 
@@ -4038,6 +4041,33 @@ def main():
                       dest="fetch_all_f", default=False,
                       help="fetch all the quarterly fundatation history data")
 
+    parser.add_option( "--fetch_pro_basic", action="store_true",
+                      dest="fetch_pro_basic_f", default=False,
+                      help="")
+
+    parser.add_option( "--fetch_stk_holdertrade", action="store_true",
+                      dest="fetch_stk_holdertrade_f", default=False,
+                      help="")
+    parser.add_option( "--fetch", action="store_true",
+                      dest="fetch_f", default=False,
+                      help="fetch pro income,balance,cashflow,mainbz,dividend,indicator,audit,forecast,express,disclosure ")
+    parser.add_option( "--fetch_basic_quarterly", action="store_true",
+                      dest="fetch_basic_quarterly_f", default=False,
+                      help="")
+    parser.add_option( "--fetch_basic_daily", action="store_true",
+                      dest="fetch_basic_daily_f", default=False,
+                      help="")
+    parser.add_option( "--fetch_pro_concept", action="store_true",
+                      dest="fetch_pro_concept_f", default=False,
+                      help="")
+    parser.add_option( "--fetch_pro_repurchase", action="store_true",
+                      dest="fetch_pro_repurchase_f", default=False,
+                      help="")
+    parser.add_option( "--fetch_cctv_news", action="store_true",
+                      dest="fetch_cctv_news_f", default=False,
+                      help="")
+
+
     parser.add_option("-e", "--extract_latest", action="store_true",
                       dest="extract_latest_f", default=False,
                       help="extract latest quarter data")
@@ -4168,6 +4198,31 @@ def main():
 
 
     set_global(debug=debug_f,big_memory=big_memory_f,force_run=force_run_f)
+
+    if options.fetch_pro_basic_f:
+        _fetch_pro_basic()
+
+    if options.fetch_stk_holdertrade_f:
+        _fetch_stk_holdertrade(fast_fetch=fast_fetch_f)
+
+    if options.fetch_f:
+        fetch(fast_fetch=fast_fetch_f)
+
+    if options.fetch_basic_quarterly_f:
+        fetch_basic_quarterly()
+
+    if options.fetch_basic_daily_f:
+        fetch_basic_daily(fast_fetch=fast_fetch_f)
+
+    if options.fetch_pro_concept_f:
+        _fetch_pro_concept()
+
+    if options.fetch_pro_repurchase_f:
+        _fetch_pro_repurchase()
+
+    if options.fetch_cctv_news_f:
+        _fetch_cctv_news()
+
 
 
     if fetch_all_f:
