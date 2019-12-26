@@ -24,8 +24,8 @@ fi
 cd ~/tushare_ryan; git commit -a -m'1'; git push;
 
 
-ssh haha_65 "cd ~/tushare_ryan; git pull"
-ssh haha_66 "cd ~/tushare_ryan; git pull"
+ssh haha_65 "cd ~/tushare_ryan; git pull; git fetch upstream"
+ssh haha_66 "cd ~/tushare_ryan; git pull; git fetch upstream"
 
 
 ######################################
