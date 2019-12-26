@@ -102,6 +102,8 @@ done
 rsync -az /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/individual/20181231/ haha_66:/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/individual/20181231/
 rsync -az /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/individual/20190331/ haha_66:/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/individual/20190331/
 rsync -az /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/individual/20190630/ haha_66:/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/individual/20190630/
+rsync -az /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/individual/20190930/ haha_66:/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/individual/20190930/
+rsync -az /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/individual/20191231/ haha_66:/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/individual/20191231/
 
 
 
