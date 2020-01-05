@@ -959,7 +959,7 @@ class Finlib:
 
 
         #dump = "/home/ryan/DATA/pickle/trading_day_2019.pickle"
-        csv_f = "/home/ryan/DATA/pickle/trading_day_2019.csv"
+        csv_f = "/home/ryan/DATA/pickle/trading_day_2020.csv"
 
         if not os.path.isfile(csv_f):
             #logging.info("downloading trading day data")
@@ -974,14 +974,15 @@ class Finlib:
 
 
 
-        tdy_idx=a[a['calendarDate'] == todayS].index.values[0]
+        #tdy_idx=a[a['calendarDate'] == todayS].index.values[0]
+        tdy_idx=a[a['cal_date'] == todayS].index.values[0]
 
-        if a.at[tdy_idx, "isOpen"] == 0:
+        if a.at[tdy_idx, "is_open"] == 0:
             logging.info("Today " + todayS + " is not a trading day, checking previous days")
-            tdy_idx = a[a['calendarDate'] == todayS].index.values[0]
+            tdy_idx = a[a['cal_date'] == todayS].index.values[0]
             for i in range(tdy_idx, 0, -1):
-                if a.at[i, "isOpen"] == 1:
-                    exam_date = a.at[i, "calendarDate"]
+                if a.at[i, "is_open"] == 1:
+                    exam_date = a.at[i, "cal_date"]
                     logging.info("Day " + exam_date + " is a trading day.")
                     break
 
@@ -992,7 +993,7 @@ class Finlib:
     def is_a_trading_day_ag(self, dateS):
 
         #dump = "/home/ryan/DATA/pickle/trading_day_2019.pickle"
-        csv_f = "/home/ryan/DATA/pickle/trading_day_2019.csv"
+        csv_f = "/home/ryan/DATA/pickle/trading_day_2020.csv"
 
         if not os.path.isfile(csv_f):
             #logging.info("downloading trading day data")
@@ -1007,9 +1008,10 @@ class Finlib:
 
 
 
-        tdy_idx=a[a['calendarDate'] == dateS].index.values[0]
+        #tdy_idx=a[a['calendarDate'] == dateS].index.values[0]
+        tdy_idx=a[a['cal_date'] == dateS].index.values[0]
 
-        if a.at[tdy_idx, "isOpen"] == 0:
+        if a.at[tdy_idx, "is_Open"] == 0:
             logging.info("Date " + dateS + " is not a trading day")
             rst = False
 
