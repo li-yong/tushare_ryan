@@ -1008,7 +1008,7 @@ class Finlib:
 
         tdy_idx=a[a['cal_date'] == int(dateS)].index.values[0]
 
-        if a.at[tdy_idx, "is_Open"] == 0:
+        if a.at[tdy_idx, "is_open"] == 0:
             logging.info("Date " + dateS + " is not a trading day")
             rst = False
 
