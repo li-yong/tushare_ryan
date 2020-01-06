@@ -23,11 +23,13 @@ import logging
 logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m_%d %H:%M:%S',level=logging.DEBUG)
 
 
-def update_holc(todayS, base_dir, pickle_only, add_miss):
-    dump= "/home/ryan/DATA/pickle/daily_update_source/"+todayS+"ts_ud.pickle"
+def update_holc(todayS_l, base_dir, pickle_only, add_miss):
+    dump= "/home/ryan/DATA/pickle/daily_update_source/"+todayS_l+"ts_ud.pickle"
+    todayS_l = datetime.strptime(todayS_l, '%Y-%m-%d').strftime('%Y-%m-%d') #ensure input todayS_l is in format yyyy-mm-dd
+    todayS_s = datetime.strptime(todayS_l, '%Y-%m-%d').strftime('%Y%m%d')
 
-    if not finlib.Finlib().is_a_trading_day_ag(dateS=todayS):
-        logging.error("date is not a trading day "+todayS)
+    if not finlib.Finlib().is_a_trading_day_ag(dateS=todayS_s):
+        logging.error("date is not a trading day "+todayS_s)
         return
 
     today_all = pd.DataFrame()
@@ -38,7 +40,7 @@ def update_holc(todayS, base_dir, pickle_only, add_miss):
 
     if not os.path.isfile(dump):
         if add_miss:
-            today_all = ts.get_day_all(todayS)
+            today_all = ts.get_day_all(todayS_s)
         else:
             today_all = ts.get_today_all()
             today_all.to_pickle(dump)
@@ -123,7 +125,7 @@ def update_holc(todayS, base_dir, pickle_only, add_miss):
        #     code_S = "SZ" + code
        #     #print 1
 
-        csv_append_s=code_S+","+todayS+","+str(o)+","+str(h)+","+str(l)+","+str(c)+"," \
+        csv_append_s=code_S+","+todayS_l+","+str(o)+","+str(h)+","+str(l)+","+str(c)+"," \
                      +str(volume)+","+str(amount)+","+str(turnoverratio) +"\n"
                      #+ "," + str(turnoverratio)+ "," + "1\n"
 
@@ -144,14 +146,12 @@ def update_holc(todayS, base_dir, pickle_only, add_miss):
 
             last_date = last_row['date'].values[0]
             last_date = datetime.strptime(last_date, '%Y-%m-%d').strftime('%Y%m%d')
-            #next_date = datetime.strptime(last_date, '%Y-%m-%d') + timedelta(1)
             next_date = datetime.strptime(last_date, '%Y%m%d') + timedelta(1)
-            #a_week_before_date = datetime.strptime(todayS, '%Y-%m-%d') - timedelta(7)
-            a_week_before_date = datetime.strptime(todayS, '%Y%m%d') - timedelta(7)
+            a_week_before_date = datetime.strptime(todayS_s, '%Y%m%d') - timedelta(7)
 
             # if next_date > datetime.datetime.today():
             #if next_date.strftime('%Y-%m-%d') > todayS:
-            if next_date.strftime('%Y%m%d') > todayS:
+            if next_date.strftime('%Y%m%d') > todayS_s:
                 logging.info("file already updated, not fetching again. " + csv_f + ". updated to " + last_date)
                 continue
 
@@ -226,18 +226,17 @@ def main():
     # debug, use when missing one day
     # add_miss=False
     # add_miss=True
-
+    #  for i in {8..0}; do X=`date -d "-$i day" '+%Y-%m-%d'`; python t_daily_update_csv_from_tushare_.py -a -e $X;  done
     if add_miss:
-        # todayS='2018-01-09'
-        todayS = exam_date
+         todayS_l = exam_date
     else:
-        # todayS = datetime.today().strftime('%Y-%m-%d')
-        todayS = exam_date
+        # todayS_l = datetime.today().strftime('%Y-%m-%d')
+        todayS_l = exam_date
 
-    logging.info(("Update Data of " + todayS))
+    logging.info(("Update Data of " + todayS_l))
 
 
-    update_holc(todayS, base_dir, pickle_only, add_miss)
+    update_holc(todayS_l, base_dir, pickle_only, add_miss)
 
     logging.info("Script Completed.")
     os._exit(0)
