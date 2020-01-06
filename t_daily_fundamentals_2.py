@@ -942,16 +942,16 @@ def fetch_basic_daily(fast_fetch=False):
     pro = ts.pro_api()
 
     ##### get daily basic
-    calendar_f = "/home/ryan/DATA/pickle/trading_day_2019.csv"
+    calendar_f = "/home/ryan/DATA/pickle/trading_day_2020.csv"
     if not os.path.isfile(calendar_f):
         logging.error("no such file " + calendar_f)
         exit()
 
     trade_days = pandas.read_csv(calendar_f)
-    todayS = datetime.datetime.today().strftime('%Y-%m-%d')
+    todayS = datetime.datetime.today().strftime('%Y%m%d')
 
-    trading_days = trade_days[(trade_days.calendarDate <= todayS) & (trade_days.isOpen == 1)]
-    trading_days = trading_days.sort_values('calendarDate', ascending=False, inplace=False)
+    trading_days = trade_days[(trade_days.cal_date <= int(todayS)) & (trade_days.is_open == 1)]
+    trading_days = trading_days.sort_values('cal_date', ascending=False, inplace=False)
 
     if fast_fetch: #run on daily, fetch the most recent 5 day only.
         trading_days = trading_days[:5]
@@ -965,8 +965,8 @@ def fetch_basic_daily(fast_fetch=False):
     if not os.path.isdir(dir_d):
         os.mkdir(dir_d)
 
-    for i in trading_days['calendarDate']:
-        reg = re.match("(\d{4})-(\d{2})-(\d{2})", i)
+    for i in trading_days['cal_date']:
+        reg = re.match(r"(\d{4})(\d{2})(\d{2})", str(i))
         yyyy= reg.group(1)
         mm= reg.group(2)
         dd= reg.group(3)

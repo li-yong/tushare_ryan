@@ -940,10 +940,12 @@ class Finlib:
             if hour < 15:
                 yesterday = datetime.today() - timedelta(1)
                 todayS = yesterday.strftime('%Y-%m-%d')
+                todayS = yesterday.strftime('%Y%m%d')
                 exam_date = todayS
                 date = todayS
             else: #(15.01 -- 23.59)
                 todayS = datetime.today().strftime('%Y-%m-%d')
+                todayS = datetime.today().strftime('%Y%m%d')
                 exam_date = todayS
                 date = todayS
 
@@ -954,6 +956,7 @@ class Finlib:
             mm=tmp.group(2)
             dd=tmp.group(3)
             date=yyyy+"-"+mm+"-"+dd
+            date=yyyy+mm+dd
 
         exam_date = todayS = date
 
@@ -972,21 +975,18 @@ class Finlib:
             a = pandas.read_csv(csv_f)
 
 
-
-
-        #tdy_idx=a[a['calendarDate'] == todayS].index.values[0]
-        tdy_idx=a[a['cal_date'] == todayS].index.values[0]
+        tdy_idx=a[a['cal_date'] == int(todayS)].index.values[0]
 
         if a.at[tdy_idx, "is_open"] == 0:
             logging.info("Today " + todayS + " is not a trading day, checking previous days")
-            tdy_idx = a[a['cal_date'] == todayS].index.values[0]
+            tdy_idx = a[a['cal_date'] == int(todayS)].index.values[0]
             for i in range(tdy_idx, 0, -1):
                 if a.at[i, "is_open"] == 1:
-                    exam_date = a.at[i, "cal_date"]
+                    exam_date = str(a.at[i, "cal_date"])
                     logging.info("Day " + exam_date + " is a trading day.")
                     break
 
-        return exam_date
+        return str(exam_date)
 
 
 
@@ -1006,10 +1006,7 @@ class Finlib:
             a = pandas.read_csv(csv_f)
 
 
-
-
-        #tdy_idx=a[a['calendarDate'] == dateS].index.values[0]
-        tdy_idx=a[a['cal_date'] == dateS].index.values[0]
+        tdy_idx=a[a['cal_date'] == int(dateS)].index.values[0]
 
         if a.at[tdy_idx, "is_Open"] == 0:
             logging.info("Date " + dateS + " is not a trading day")
