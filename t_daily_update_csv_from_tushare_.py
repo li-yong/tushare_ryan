@@ -143,11 +143,14 @@ def update_holc(todayS, base_dir, pickle_only, add_miss):
             last_row = df_tmp[-1:]
 
             last_date = last_row['date'].values[0]
-            next_date = datetime.strptime(last_date, '%Y-%m-%d') + timedelta(1)
-            a_week_before_date = datetime.strptime(todayS, '%Y-%m-%d') - timedelta(7)
+            #next_date = datetime.strptime(last_date, '%Y-%m-%d') + timedelta(1)
+            next_date = datetime.strptime(last_date, '%Y%m%d') + timedelta(1)
+            #a_week_before_date = datetime.strptime(todayS, '%Y-%m-%d') - timedelta(7)
+            a_week_before_date = datetime.strptime(todayS, '%Y%m%d') - timedelta(7)
 
             # if next_date > datetime.datetime.today():
-            if next_date.strftime('%Y-%m-%d') > todayS:
+            #if next_date.strftime('%Y-%m-%d') > todayS:
+            if next_date.strftime('%Y%m%d') > todayS:
                 logging.info("file already updated, not fetching again. " + csv_f + ". updated to " + last_date)
                 continue
 
