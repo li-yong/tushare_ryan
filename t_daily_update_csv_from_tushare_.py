@@ -202,6 +202,7 @@ def main():
 
     if exam_date is None:
         exam_date = finlib.Finlib().get_last_trading_day()
+        exam_date = datetime.strptime(exam_date, '%Y%m%d').strftime('%Y-%m-%d')
         logging.info("exam_date reset to: " + exam_date)
         dump = "/home/ryan/DATA/pickle/daily_update_source/" + exam_date + "ts_ud.pickle"
     elif ((not add_miss) and (not os.path.isfile(dump))):
