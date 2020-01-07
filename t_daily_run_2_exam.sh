@@ -18,7 +18,7 @@ fi
 
 sleep 2
 
-cd /home/ryan/repo/trading/tushare_ryan
+cd /home/ryan/tushare_ryan
 
 #@todo: focus on date after 2005? when the gu quan fengzhi starts
 #@todo:  each fields name and meaning, adding to the code py script.
