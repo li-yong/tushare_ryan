@@ -180,7 +180,7 @@ python t_fenghong.py  --fetch_no_adj_data  --force_fetch_data
 
 #### Now update the HK stock ####
 echo "updating HK stock daily "
-python ~/tushare_ryan/t_fetch_us_hk_bar.py --fetch_hk;
+python /home/ryan/tushare_ryan/t_fetch_us_hk_bar.py --fetch_hk;
 echo "HK daily update completed."
 
 echo "done, script completed"

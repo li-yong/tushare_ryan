@@ -644,7 +644,9 @@ def analyze_one(debug=False):
         elif int( re.match("\d{4}", str(report_date)).group(0)) < 2014: #pass year less than 2000
             continue
 
-        last_trading_date = finlib.Finlib().get_last_trading_day(report_date)
+        report_dateSs = datetime.datetime.strptime(report_date, '%Y-%m-%d').strftime('%Y%m%d')
+        last_trading_dateSs = finlib.Finlib().get_last_trading_day(report_dateSs)
+        last_trading_date = datetime.datetime.strptime(last_trading_dateSs, '%Y%m%d').strftime('%Y-%m-%d')
 
         #if not last_trading_date == report_date:
         #    pass

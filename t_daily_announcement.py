@@ -51,7 +51,8 @@ dir_base = '/home/ryan/DATA/announcement'
 if exam_date is None:
     #print("exam_date: " + exam_date)
     for look_ahead in range(7):
-        exam_date = datetime.strptime(finlib.Finlib().get_last_trading_day(), '%Y-%m-%d') - timedelta(look_ahead)  # suppose run the AG on next day morning.
+        todaySl=datetime.strptime(finlib.Finlib().get_last_trading_day(), '%Y%m%d').strftime('%Y-%m-%d')
+        exam_date = datetime.strptime(todaySl, '%Y-%m-%d') - timedelta(look_ahead)  # suppose run the AG on next day morning.
         exam_date = exam_date.strftime('%Y-%m-%d')
         print("searching latest reg or sse file in local, checking " + exam_date)
 

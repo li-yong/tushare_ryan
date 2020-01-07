@@ -11,7 +11,7 @@
 
 ####
 echo "updating Forbes "
-R -f ~/tushare_ryan/get_forbes.r
+R -f /home/ryan/tushare_ryan/get_forbes.r
 
 ### Backup will be taken at the scp to haha_66
 
