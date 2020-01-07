@@ -970,7 +970,8 @@ class Finlib:
             #a = pandas.read_pickle(dump)
             a = pandas.read_csv(csv_f)
 
-
+        #print(a.head(1))
+        #print(todayS)
         tdy_idx=a[a['cal_date'] == int(todayS)].index.values[0]
 
         if a.at[tdy_idx, "is_open"] == 0:

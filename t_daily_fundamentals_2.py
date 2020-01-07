@@ -923,7 +923,8 @@ def fetch_basic_quarterly():
             continue
 
         d = finlib.Finlib().get_last_trading_day(date=i)
-        reg = re.match("(\d{4})-(\d{2})-(\d{2})", d)
+
+        reg = re.match("(\d{4})(\d{2})(\d{2})", d)
         yyyy= reg.group(1)
         mm= reg.group(2)
         dd= reg.group(3)
