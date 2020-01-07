@@ -33,8 +33,12 @@ quarter = the_latest_report_date['quarter'] #int 3
 
 
 
-todayS = datetime.datetime.today().strftime('%Y-%m-%d')
-todayS = finlib.Finlib().get_last_trading_day(todayS)
+#todayS = datetime.datetime.today().strftime('%Y-%m-%d')
+#todaySs = datetime.datetime.today().strftime('%Y%m%d')
+todaySs = finlib.Finlib().get_last_trading_day()
+todaySl = datetime.datetime.strptime(todaySs, '%Y%m%d').strftime('%Y-%m-%d')
+todayS = todaySl
+
 start= '2015-01-01'
 end = todayS
 

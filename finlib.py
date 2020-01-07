@@ -939,12 +939,10 @@ class Finlib:
             #A market trading time, (0.00 to 15:00) new data not generated. so give yesterday's.
             if hour < 15:
                 yesterday = datetime.today() - timedelta(1)
-                todayS = yesterday.strftime('%Y-%m-%d')
                 todayS = yesterday.strftime('%Y%m%d')
                 exam_date = todayS
                 date = todayS
             else: #(15.01 -- 23.59)
-                todayS = datetime.today().strftime('%Y-%m-%d')
                 todayS = datetime.today().strftime('%Y%m%d')
                 exam_date = todayS
                 date = todayS
@@ -955,13 +953,11 @@ class Finlib:
             yyyy= tmp.group(1)
             mm=tmp.group(2)
             dd=tmp.group(3)
-            date=yyyy+"-"+mm+"-"+dd
             date=yyyy+mm+dd
 
         exam_date = todayS = date
 
 
-        #dump = "/home/ryan/DATA/pickle/trading_day_2019.pickle"
         csv_f = "/home/ryan/DATA/pickle/trading_day_2020.csv"
 
         if not os.path.isfile(csv_f):
@@ -992,7 +988,6 @@ class Finlib:
 
     def is_a_trading_day_ag(self, dateS):
 
-        #dump = "/home/ryan/DATA/pickle/trading_day_2019.pickle"
         csv_f = "/home/ryan/DATA/pickle/trading_day_2020.csv"
 
         if not os.path.isfile(csv_f):

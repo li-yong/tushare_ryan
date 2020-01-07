@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #this script runs on haha_data_source
 
-cd ~/repo/trading/tushare_ryan
+cd /home/ryan/tushare_ryan
 
 #更新当天股票数据
 ######################################
@@ -9,7 +9,7 @@ cd ~/repo/trading/tushare_ryan
 # /home/ryan/DATA/DAY_Global/AG/*csv
 #
 ######################################
-python ~/repo/trading/tushare_ryan/t_daily_update_csv_from_tushare_.py;
+python /home/ryan/tushare_ryan/t_daily_update_csv_from_tushare_.py;
 
 
 ######################################
@@ -17,7 +17,7 @@ python ~/repo/trading/tushare_ryan/t_daily_update_csv_from_tushare_.py;
 #
 ######################################
 
-python /home/ryan/repo/trading/tushare_ryan/t_get_index.py
+python /home/ryan/tushare_ryan/t_get_index.py
 
 
 
@@ -73,12 +73,12 @@ python t_top_10_holders.py --fetch
 ##update announcement.
 #
 ######################################
-cd /home/ryan/repo/trading/lib/China_stock_announcement_ryan/python_scraw
-echo "updating today SSE announcement"
-python cninfo_main.py sse ;   #/home/ryan/DATA/announcement/sse/list/2017/2017-12-26.csv
+#cd /home/ryan/repo/trading/lib/China_stock_announcement_ryan/python_scraw
+#echo "updating today SSE announcement"
+#python cninfo_main.py sse ;   #/home/ryan/DATA/announcement/sse/list/2017/2017-12-26.csv
 
-echo "updating today regulator announcement"
-python cninfo_main.py regulator;  #/home/ryan/DATA/announcement/reg/list/2017/2017-12-26.csv
+#echo "updating today regulator announcement"
+#python cninfo_main.py regulator;  #/home/ryan/DATA/announcement/reg/list/2017/2017-12-26.csv
 
 ######################################
 #
@@ -97,7 +97,7 @@ python cninfo_main.py regulator;  #/home/ryan/DATA/announcement/reg/list/2017/20
 #                      ZZ500.csv #中证500成份股
 #
 ######################################
-cd ~/repo/trading/tushare_ryan
+cd /home/ryan/tushare_ryan
 echo "updating quarter fund data of 2018 Q1 to Q4, update /home/ryan/DATA/pickle/*.pickle"
 python t_daily_fundamentals.py  --fetch_data_all;
 
