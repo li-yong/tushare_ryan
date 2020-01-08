@@ -373,21 +373,22 @@ if False:
 
 if exam_date is None:
     exam_date = finlib.Finlib().get_last_trading_day()
-    exam_date_d = datetime.strptime(exam_date, '%Y-%m-%d')
+    exam_date_d = datetime.strptime(exam_date, '%Y%m%d')
 
     if exam_date_d.weekday() == 0: #MONDAY
-        last_friday = datetime.strptime(exam_date, '%Y-%m-%d') - timedelta(3)
+        last_friday = datetime.strptime(exam_date, '%Y%m%d') - timedelta(3)
         exam_date_d = last_friday
 
 
 
     if stock_global in ['US','CN','MG']: #us hk data is one day dalay of GMT +8
         exam_date = exam_date_d - timedelta(2)
-        exam_date = exam_date.strftime('%Y-%m-%d')
+        exam_date = exam_date.strftime('%Y%m%d')
     else:
         exam_date = exam_date_d - timedelta(1)  #suppose run the AG on next day morning.
-        exam_date = exam_date.strftime('%Y-%m-%d')
+        exam_date = exam_date.strftime('%Y%m%d')
 
+    exam_date = datetime.strptime(exam_date, '%Y%m%d').strftime('%Y-%m-%d')
     logging.info("exam_date: "+exam_date)
 
 
