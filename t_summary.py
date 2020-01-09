@@ -171,7 +171,8 @@ def refine_df(input_df,has_db_record=False, force_pass=False, force_pass_open_re
                               )
                 data_sql = {}
                 data_sql['buy_cnt'] = int(exist_buy_cnt + 1)
-                data_sql['buy_reason'] = exist_buy_reason +"; "+c_date+":" + c_op_rsn
+                bs = exist_buy_reason +"; "+c_date+":" + c_op_rsn
+                data_sql['buy_reason'] = bs[0:3199] #var char 3200, length limit
                 data_sql['id'] = int(open_stocks['id'].values[0])
 
                 cursor.execute(update_sql, data_sql)
