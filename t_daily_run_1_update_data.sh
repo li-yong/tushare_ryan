@@ -3,6 +3,8 @@
 
 cd /home/ryan/tushare_ryan
 
+git pull
+
 #更新当天股票数据
 ######################################
 #Output:

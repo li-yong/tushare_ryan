@@ -22,7 +22,7 @@ import mysql.connector
 import math
 from optparse import OptionParser
 from scipy import stats
-
+import sys
 
 
 import logging
@@ -336,7 +336,7 @@ if __name__ == '__main__':
         cursor.close()
         cnx.close()
 
-    source_dir = "/home/ryan/DATA/tmp/pv"
+    source_dir = "/home/ryan/DATA/tmp/pv/AG/"
 
     if debug:
         source_dir = "/home/ryan/DATA/tmp/pv.dev"
@@ -347,7 +347,7 @@ if __name__ == '__main__':
 
     #each code generate a csv
     for file in files:
-        array.append({'inputF':source_dir+"/"+file,
+        array.append({'inputF':source_dir+""+file,
                       })
 
     if single_process or debug:  #debug always use single_process
