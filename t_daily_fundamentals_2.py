@@ -1062,7 +1062,7 @@ def merge_individual_bash_basic(fast_fetch=False):
     if fast_fetch:
 
         last_trade_date = finlib.Finlib().get_last_trading_day()
-        reg = re.match("(\d{4})-(\d{2})-(\d{2})", last_trade_date)
+        reg = re.match("(\d{4})(\d{2})(\d{2})", last_trade_date)
         yyyy = reg.group(1)
         mm = reg.group(2)
         dd = reg.group(3)
@@ -1332,7 +1332,7 @@ def merge_local_bash_basic(output_csv, fast=False):
 
     if fast: #run daily, merge daily to the basic.csv
         last_trade_date = finlib.Finlib().get_last_trading_day()
-        reg = re.match("(\d{4})-(\d{2})-(\d{2})", last_trade_date)
+        reg = re.match("(\d{4})(\d{2})(\d{2})", last_trade_date)
         yyyy = reg.group(1)
         mm = reg.group(2)
         dd = reg.group(3)
