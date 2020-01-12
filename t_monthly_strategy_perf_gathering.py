@@ -167,14 +167,14 @@ def updatePtnPerf(i,c,op,df,ptn,code):
         #print a.__len__()
 
         if a.__len__() <= 0:
-            dict[ptn + "_" + code][tm + "_nobs"] = ''
-            dict[ptn + "_" + code][tm + "_min"] = ''
-            dict[ptn + "_" + code][tm + "_max"] = ''
-            dict[ptn + "_" + code][tm + "_mean"] = ''
-            dict[ptn + "_" + code][tm + "_variance"] = ''
-            dict[ptn + "_" + code][tm + "_skewness"] = ''
-            dict[ptn + "_" + code][tm + "_kurtosis"] = ''
-            dict[ptn + "_" + code][tm + "_median"] = ''
+            dict[ptn + "_" + code][tm + "_nobs"] = 0
+            dict[ptn + "_" + code][tm + "_min"] = 0
+            dict[ptn + "_" + code][tm + "_max"] = 0
+            dict[ptn + "_" + code][tm + "_mean"] = 0
+            dict[ptn + "_" + code][tm + "_variance"] = 0
+            dict[ptn + "_" + code][tm + "_skewness"] = 0
+            dict[ptn + "_" + code][tm + "_kurtosis"] = 0
+            dict[ptn + "_" + code][tm + "_median"] = 0
         else:
             b=stats.describe(a)
             dict[ptn + "_" + code][tm+"_nobs"] = round(b.nobs, 8)  #2_nobs -> 2nob.  var name --> db column name

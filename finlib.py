@@ -2409,6 +2409,7 @@ class Finlib:
             #    tbl="pattern_perf"
 
             select_ptn_perf = ("SELECT * FROM `" + db_tbl + "` WHERE pattern=\'" + ptn_dict + "\'")
+            logging.info("select_ptn_perf "+select_ptn_perf)
             cursor.execute(select_ptn_perf)  #mysql.connector.errors.InterfaceError: 2013: Lost connection to MySQL server during query
             record = cursor.fetchall()
 
@@ -2418,7 +2419,7 @@ class Finlib:
 
 
                 add_s_p_perf = ("INSERT INTO " + db_tbl + \
-                                " (ID, stockID, pattern, date_s, date_e, trading_days, buy_signal_cnt, sell_signal_cnt, \
+                                " (stockID, pattern, date_s, date_e, trading_days, buy_signal_cnt, sell_signal_cnt, \
                                 1mea,1med,1min,1max,1var,1skw,1kur,1uc,1dc, \
                                 2mea,2med,2min,2max,2var,2skw,2kur,2uc,2dc, \
                                 3mea,3med,3min,3max,3var,3skw,3kur,3uc,3dc, \
@@ -2432,7 +2433,7 @@ class Finlib:
                                 120mea,120med,120min,120max,120var,120skw,120kur,120uc,120dc, \
                                 240mea,240med,240min,240max,240var,240skw,240kur,240uc,240dc \
                                 ) "
-                                "VALUES (%s,%s,%s,%s,%s,%s,%s,%s, \
+                                "VALUES (%s,%s,%s,%s,%s,%s,%s, \
                                          %s,%s,%s,%s,%s,%s,%s,%s,%s, \
                                          %s,%s,%s,%s,%s,%s,%s,%s,%s, \
                                          %s,%s,%s,%s,%s,%s,%s,%s,%s, \
@@ -2466,10 +2467,11 @@ class Finlib:
                         # tm_data_sql += str(a) + ","
 
                 # tm_data_sql = tm_data_sql[:-1] #remove tail comma
-                data_s_p_perf = ('', code_dict, ptn_dict, df['date'][0:1].values[0], df['date'][-1:].values[0], \
+                data_s_p_perf = ( code_dict, ptn_dict, df['date'][0:1].values[0], df['date'][-1:].values[0], \
                                  day_cnt, dict[ptn_code]["buy_signal_cnt"], dict[ptn_code]["sell_signal_cnt"], \
                                  ) + tuple(tm_data_sql)
-                # logging.info(data_s_p_perf)
+                logging.info("add_s_p_perf "+add_s_p_perf)
+                logging.info(data_s_p_perf)
                 cursor.execute(add_s_p_perf, data_s_p_perf)
                 cnx.commit()
                 logging.info("created new record, " + db_tbl + ", " + ptn_dict)
@@ -2492,6 +2494,14 @@ class Finlib:
                  h_120mea, h_120med, h_120min, h_120max, h_120var, h_120skw, h_120kur, h_120uc, h_120dc, \
                  h_240mea, h_240med, h_240min, h_240max, h_240var, h_240skw, h_240kur, h_240uc, h_240dc \
                  ) = record[0]
+
+                if h_buy_signal_cnt is None:
+                    h_buy_signal_cnt = 0
+
+                if h_sell_signal_cnt is None:
+                    h_sell_signal_cnt = 0
+
+
 
                 logging.info("update(merge) record, " + db_tbl + ", " + h_pattern)
 
@@ -2555,10 +2565,10 @@ class Finlib:
                     his_uc = eval('h_' + tm + st_dict['_upcnt'])
                     this_uc = eval('dict[ptn_code][\'' + tm + '_upcnt' + '\']')
 
-                    if str(his_uc) == 'nan' or str(his_uc) == '':
+                    if str(his_uc) == 'nan' or str(his_uc) == '' or (his_uc is None):
                         his_uc = 0
 
-                    if str(this_uc) == 'nan' or str(this_uc) == '':
+                    if str(this_uc) == 'nan' or str(this_uc) == '' or (this_uc is None):
                         this_uc = 0
 
                     data_ptn_perf[tm + st_dict['_upcnt']] = his_uc + this_uc
@@ -2567,10 +2577,10 @@ class Finlib:
                     his_dc = eval('h_' + tm + st_dict['_dncnt'])
                     this_dc = eval('dict[ptn_code][\'' + tm + '_dncnt' + '\']')
 
-                    if str(his_dc) == 'nan' or str(his_dc) == '':
+                    if str(his_dc) == 'nan' or str(his_dc) == '' or (his_dc is None):
                         his_dc = 0
 
-                    if str(this_dc) == 'nan' or str(this_dc) == '':
+                    if str(this_dc) == 'nan' or str(this_dc) == '' or (this_dc is None):
                         this_dc = 0
 
                     data_ptn_perf[tm + st_dict['_dncnt']] = his_dc + this_dc
@@ -2599,7 +2609,7 @@ class Finlib:
                         # if a == 'nan':
                         #    a='0'
                         # tm_data_sql += str(a) + ","
-
+                logging.info(update_ptn_perf)
                 cursor.execute(update_ptn_perf, data_ptn_perf)
                 cnx.commit()
 
