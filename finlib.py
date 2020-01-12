@@ -2470,8 +2470,8 @@ class Finlib:
                 data_s_p_perf = ( code_dict, ptn_dict, df['date'][0:1].values[0], df['date'][-1:].values[0], \
                                  day_cnt, dict[ptn_code]["buy_signal_cnt"], dict[ptn_code]["sell_signal_cnt"], \
                                  ) + tuple(tm_data_sql)
-                logging.info("add_s_p_perf "+add_s_p_perf)
-                logging.info(data_s_p_perf)
+                #logging.info("add_s_p_perf "+add_s_p_perf)
+                #logging.info(data_s_p_perf)
                 cursor.execute(add_s_p_perf, data_s_p_perf)
                 cnx.commit()
                 logging.info("created new record, " + db_tbl + ", " + ptn_dict)
