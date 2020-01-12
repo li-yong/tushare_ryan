@@ -16,7 +16,7 @@ for i in {1..5}; do  #SH000001 is less than 5000
   #local, forex, 1000 lines
   printf "run ptn_hit_price_volume, " |tee -a del.log;
   echo `date`|tee -a del.log;
-  python t_daily_pattern_Hit_Price_Volume.py -l  -m 1000  -0  >>del.log  2>&1;
+  python t_daily_pattern_Hit_Price_Volume.py -l  -m 1000  -0  --stock_global AG >>del.log  2>&1;
   pkill -9 python
 
   printf "run perf_gathering, " |tee -a del.log;

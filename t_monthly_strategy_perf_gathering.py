@@ -364,9 +364,13 @@ if __name__ == '__main__':
         #multicore implmentation:
         #array of dict
         cpu_count=multiprocessing.cpu_count()
+        print("saw cpu_count "+str(cpu_count))
         toal_run = int(files.__len__() / (cpu_count - 2)) + 2
-        #pool=Pool(cpu_count-4) #leave one core free
-        pool=Pool(processes = cpu_count -2 ) #leave one core free
+
+        if cpu_count == 1:
+            pool=Pool(processes = cpu_count ) #leave one core free
+        else:
+            pool=Pool(processes = cpu_count -1 ) #leave one core free
 
         pool.map(backtest, array)
         pool.close()

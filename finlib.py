@@ -1137,14 +1137,14 @@ class Finlib:
             df = pd.DataFrame([''] * df.__len__(), columns=['op_strength']).join(df)  #
             code = str(df.iloc[1, df.columns.get_loc('code')])
 
-            date = df.ix[:, df.columns.get_loc('date')]
-            o = df.ix[:, df.columns.get_loc('o')]
-            h = df.ix[:, df.columns.get_loc('h')]
-            l = df.ix[:, df.columns.get_loc('l')]
-            c = df.ix[:, df.columns.get_loc('c')]
-            vol = df.ix[:, df.columns.get_loc('vol')]  # volume
-            # amnt=df.ix[:,df.columns.get_loc('amnt')]  #amount
-            # tnv=df.ix[:,df.columns.get_loc('tnv')]  #turnoverratio
+            date = df.iloc[:, df.columns.get_loc('date')]
+            o = df.iloc[:, df.columns.get_loc('o')]
+            h = df.iloc[:, df.columns.get_loc('h')]
+            l = df.iloc[:, df.columns.get_loc('l')]
+            c = df.iloc[:, df.columns.get_loc('c')]
+            vol = df.iloc[:, df.columns.get_loc('vol')]  # volume
+            # amnt=df.iloc[:,df.columns.get_loc('amnt')]  #amount
+            # tnv=df.iloc[:,df.columns.get_loc('tnv')]  #turnoverratio
 
 
             if df[-1:]['c'].values[0] == 0 or df[-1:]['o'].values[0] == 0 or df[-1:]['vol'].values[0] == 0:
@@ -1296,8 +1296,8 @@ class Finlib:
                     if start_day < 0:
                         start_day = 0
 
-                    df.iloc[i, df.columns.get_loc('perc_std_15D_c')] =  round(stats.percentileofscore(df.ix[start_day :i,'std_15D_c'], df.iloc[i]['std_15D_c']) / 100,1)
-                    df.iloc[i, df.columns.get_loc('perc_std_15D_vol')] = round( stats.percentileofscore(df.ix[start_day :i,'std_15D_vol'], df.iloc[i]['std_15D_vol']) / 100,1)
+                    df.iloc[i, df.columns.get_loc('perc_std_15D_c')] =  round(stats.percentileofscore(df.iloc[start_day :i,'std_15D_c'], df.iloc[i]['std_15D_c']) / 100,1)
+                    df.iloc[i, df.columns.get_loc('perc_std_15D_vol')] = round( stats.percentileofscore(df.iloc[start_day :i,'std_15D_vol'], df.iloc[i]['std_15D_vol']) / 100,1)
 
 
 
@@ -1965,8 +1965,8 @@ class Finlib:
                                                           exam_date = exam_date, debug = debug, live_trading=live_trading )
 
                 if debug:
-                    print (code +" loop 5 target " + target + " took ") + str(datetime.now() - last_record_time_loop_5)+ \
-                      ", loop 5 took " + str(datetime.now() - last_record_time)
+                    print ((code +" loop 5 target " + str(last_record_time) + " took ") + str(datetime.now() - last_record_time_loop_5)+ \
+                      ", loop 5 took " + str(datetime.now() - last_record_time))
 
                 #reset target
                 target=''
@@ -2041,7 +2041,7 @@ class Finlib:
             if start_day < 0:
                 start_day = 0
 
-            ds_n_days = df.ix[start_day:i]  #
+            ds_n_days = df.iloc[start_day:i]  #
 
             open = np.array(ds_n_days['o'], dtype=float)
             high = np.array(ds_n_days['h'], dtype=float)

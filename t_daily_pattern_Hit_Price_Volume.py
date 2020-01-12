@@ -452,7 +452,7 @@ def calc_init(array):
         lock.release()
 
 
-    if not re.match(".*DAY_Global/AG/.*", inputF):
+    if not re.match(".*DAY_Global.*/AG/.*", inputF):
         df = pd.read_csv(inputF, converters={'code': str})
         df.rename(columns={"datetime": "date"}, inplace=True)
         df.rename(columns={"high": "h"}, inplace=True)
@@ -495,18 +495,23 @@ def calc_init(array):
             logging.info("explicitly check all the records "+str(df.__len__()) +" in file " + inputF)
     elif df_original.__len__() >= max_exam_day:
         logging.info("check latest "+str(max_exam_day)+" records in file " + inputF)
-        df = df_original.ix[df.__len__() - max_exam_day:]
-        df_not_processed = df_original.ix[:df_original.__len__() - max_exam_day - 1]
+        #df = df_original.ix[df.__len__() - max_exam_day:]
+        df = df_original.iloc[df.__len__() - max_exam_day:]
+        #df_not_processed = df_original.ix[:df_original.__len__() - max_exam_day - 1]
+        df_not_processed = df_original.iloc[:df_original.__len__() - max_exam_day - 1]
     else:
         logging.info("day available less than specified max_exam_day, implicitly check all the records " + str(df.__len__()) + " in file " + inputF)
-        df = df_original.ix[df.__len__() - max_exam_day:]
-        df_not_processed = df_original.ix[:df_original.__len__() - max_exam_day - 1]
+        #df = df_original.ix[df.__len__() - max_exam_day:]
+        df = df_original.iloc[df.__len__() - max_exam_day:]
+        #df_not_processed = df_original.ix[:df_original.__len__() - max_exam_day - 1]
+        df_not_processed = df_original.iloc[:df_original.__len__() - max_exam_day - 1]
 
     df_52_week = df_original
     df_52_week = df_52_week.reset_index().drop('index', axis=1)
 
     if df_52_week.__len__() >= 250: #near 251 working days in a year
-        df_52_week = df_original.ix[df_original.__len__() - 250:]
+        #df_52_week = df_original.ix[df_original.__len__() - 250:]
+        df_52_week = df_original.iloc[df_original.__len__() - 250:]
 
 
     df.reset_index(inplace=True)
@@ -647,7 +652,7 @@ if debug:
     if forex:
         root_dir = '/home/ryan/DATA/DAY_Forex_dev'
     else:
-        root_dir = '/home/ryan/DATA/DAY_Global/dev' #or -d -x dev
+        root_dir = '/home/ryan/DATA/DAY_Global_dev/'+stock_global #or -d -x dev
 
 logging.info("root_dir "+root_dir)
 
@@ -670,6 +675,12 @@ if not merge_only:
 
     if os.path.isdir("/home/ryan/DATA/tmp/pv/"+stock_global):
         os.rename("/home/ryan/DATA/tmp/pv/"+stock_global, "/home/ryan/DATA/tmp/pv/"+stock_global+".del")
+
+    if not os.path.isdir("/home/ryan/DATA/tmp/pv_today/"):
+        os.mkdir("/home/ryan/DATA/tmp/pv_today/")
+
+    if not os.path.isdir("/home/ryan/DATA/tmp/pv/"):
+        os.mkdir("/home/ryan/DATA/tmp/pv/")
 
     os.mkdir("/home/ryan/DATA/tmp/pv_today/"+stock_global)
     os.mkdir("/home/ryan/DATA/tmp/pv/"+stock_global)
@@ -703,6 +714,9 @@ if not merge_only:
         logging.info("single process loop completed.")
     else:
         process_cnt = cpu_count - 1
+        if process_cnt == 0:
+            process_cnt = 1;
+
         toal_run = int(files.__len__() / (process_cnt)) + 1
 
         # each code generate a csv
