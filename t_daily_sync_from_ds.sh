@@ -6,8 +6,8 @@
 # haha_brain ---> haha_data_source
 #
 ######################################
-rsync -az   /home/ryan/tushare_ryan/  haha_data_source:/home/ryan/tushare_ryan/
-
+#rsync -az   /home/ryan/tushare_ryan/  haha_data_source:/home/ryan/tushare_ryan/
+ssh haha_data_source "cd ~/tushare_ryan;  git pull"
 rsync -az /home/ryan/DATA/result/*.csv haha_data_source:/home/ryan/DATA/result/
 rsync -az /home/ryan/DATA/result/*.txt haha_data_source:/home/ryan/DATA/result/
 rsync -az /home/ryan/DATA/result/today haha_data_source:/home/ryan/DATA/result/
