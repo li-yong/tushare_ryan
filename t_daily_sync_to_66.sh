@@ -54,6 +54,7 @@ fi
 
 if [ $full_or_daily == "DAILY" ]; then
     rsync -az /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals/2019/ haha_66:/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals/2019/
+    rsync -az /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals/2020/ haha_66:/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals/2020/
 fi
 
 
@@ -78,19 +79,18 @@ rsync -az /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/daily_m
 
 #rsync -az /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/individual/ haha_66:/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/individual/
 
-for i in `ls /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/individual/ | grep 201 | grep -E 201[7-9]`;
+for i in `ls /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/individual/ | grep 201 | grep -E 201[8-9]`;
 do
     echo "sync file to normal directory /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/individual/". $i
     rsync -az /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/individual/$i/ haha_66:/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/individual/$i/
 done
 
 
-#for i in `ls /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/individual/ | grep 201 | grep -Ev 201[7-9]`;
-#do
-#    echo "sync file to normal directory /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/individual/". $i
-#    rsync -az /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/individual/$i/ haha_66:/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/individual/$i/
-#done
-
+for i in `ls /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/individual/ | grep 202 | grep -E 202[0-3]`;
+do
+    echo "sync file to normal directory /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/individual/". $i
+    rsync -az /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/individual/$i/ haha_66:/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/individual/$i/
+done
 
 
 #for i in `ls /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/individual/ | grep -v 201`;
@@ -99,11 +99,11 @@ done
 #    rsync -az /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/individual/$i/ haha_66:/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/individual/$i/
 #done
 
-rsync -az /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/individual/20181231/ haha_66:/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/individual/20181231/
-rsync -az /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/individual/20190331/ haha_66:/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/individual/20190331/
-rsync -az /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/individual/20190630/ haha_66:/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/individual/20190630/
-rsync -az /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/individual/20190930/ haha_66:/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/individual/20190930/
 rsync -az /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/individual/20191231/ haha_66:/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/individual/20191231/
+rsync -az /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/individual/20200331/ haha_66:/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/individual/20200331/
+rsync -az /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/individual/20200630/ haha_66:/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/individual/20200630/
+rsync -az /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/individual/20200930/ haha_66:/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/individual/20200930/
+rsync -az /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/individual/20201231/ haha_66:/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/individual/20201231/
 
 
 

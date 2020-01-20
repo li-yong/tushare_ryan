@@ -71,10 +71,10 @@ rsync -az haha_data_source:/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals
 
 
 
-rsync -az haha_data_source:/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/individual/20181231/ /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/individual/20181231/
-rsync -az haha_data_source:/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/individual/20190331/ /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/individual/20190331/
-rsync -az haha_data_source:/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/individual/20190630/ /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/individual/20190630/
-rsync -az haha_data_source:/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/individual/20190930/ /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/individual/20190930/
+#rsync -az haha_data_source:/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/individual/20181232/ /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/individual/20181231/
+#rsync -az haha_data_source:/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/individual/20190331/ /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/individual/20190331/
+#rsync -az haha_data_source:/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/individual/20190630/ /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/individual/20190630/
+#rsync -az haha_data_source:/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/individual/20190930/ /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/individual/20190930/
 rsync -az haha_data_source:/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/individual/20191231/ /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/individual/20191231/
 
 
