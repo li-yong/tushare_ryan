@@ -36,12 +36,14 @@ cd /home/ryan/tushare_ryan
 #output: /home/ryan/DATA/result/today/announcement.csv
 ##########################
 if [ $full_or_daily == "FULL" ]; then
-     rm -f /home/ryan/DATA/result/today/announcement.csv
-     python t_daily_announcement.py
+     echo "NOT RUN"
+     #rm -f /home/ryan/DATA/result/today/announcement.csv
+     #python t_daily_announcement.py
 fi
 
 if [ $full_or_daily == "DAILY" ]; then
-    python t_daily_announcement.py
+    echo "NOT RUN"
+    #python t_daily_announcement.py
 fi
 
 
@@ -112,7 +114,7 @@ python t_daily_hsgt.py --analyze
 #########################
 
 if [ $full_or_daily == "FULL" ]; then
-    #rm -f /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/basic.csv;
+    #rm -f /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/basic.csv; # WARNNING, will spend hours to generate.
     python t_daily_fundamentals_2.py --merge_local_basic --force_run  # <<< ??? hour. update weekly.
 fi
 
@@ -127,7 +129,7 @@ fi
 #########################
 
 if [ $full_or_daily == "FULL" ]; then
-    #rm -f /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/*.csv; # dangerous, will spend hours to generate.
+    #rm -f /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/*.csv; # WARNNING, will spend hours to generate.
     python t_daily_fundamentals_2.py --merge_local --force_run  # <<< 2.5 hour. update everyday, since its output is other matrics input.;
 fi
 

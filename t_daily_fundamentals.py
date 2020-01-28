@@ -307,13 +307,9 @@ def fetch_pickle():
 
         #dump = "/home/ryan/DATA/pickle/trading_day_2019.pickle"
         #csvf = "/home/ryan/DATA/pickle/trading_day_2019.csv"
-        csvf = "/home/ryan/DATA/pickle/trading_day_2020.csv"
-        #df_trade_cal = ts.trade_cal()
-        df_trade_cal = ts.pro_api().trade_cal(exchange='SSE', start_date='19980101', end_date='20201231')
-        #df_trade_cal.to_pickle(dump)
-        #logging.info(__file__+": "+"trading day data saved to "+dump)
-        df_trade_cal.to_csv(csvf,  encoding='UTF-8', index=False)
-        logging.info(__file__ + ": " + "trade_cal saved to " + csvf+" , len "+str(df_trade_cal.__len__()))
+
+        finlib.Finlib().get_ag_trading_day()
+
     except:
         logging.info("exception in t_daily_fundamentals.py  fetch_pickle()")
     finally:

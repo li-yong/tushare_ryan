@@ -961,17 +961,16 @@ class Finlib:
         csv_f = "/home/ryan/DATA/pickle/trading_day_2020.csv"
 
         if not os.path.isfile(csv_f):
-            #logging.info("downloading trading day data")
-            a = ts.trade_cal()
-            #a.to_pickle(dump)
-            a.to_csv(csv_f, encoding='UTF-8', index=False)
+            a = self.get_ag_trading_day()
         else:
-            #logging.info("loading trading day data")
-            #a = pandas.read_pickle(dump)
             a = pandas.read_csv(csv_f)
 
         #print(a.head(1))
-        #print(todayS)
+       # print(todayS)
+
+        if(todayS == 20171228):
+            pass
+
         tdy_idx=a[a['cal_date'] == int(todayS)].index.values[0]
 
         if a.at[tdy_idx, "is_open"] == 0:
@@ -1035,7 +1034,12 @@ class Finlib:
 
 
 
-
+    def get_ag_trading_day(self):
+        csvf = "/home/ryan/DATA/pickle/trading_day_2020.csv"
+        df_trade_cal = ts.pro_api().trade_cal(exchange='SSE', start_date='19980101', end_date='20201231')
+        df_trade_cal.to_csv(csvf,  encoding='UTF-8', index=False)
+        logging.info(__file__ + ": " + "trade_cal saved to " + csvf+" , len "+str(df_trade_cal.__len__()))
+        return df_trade_cal
 
 
 

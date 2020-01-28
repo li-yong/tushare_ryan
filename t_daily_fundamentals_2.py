@@ -389,7 +389,7 @@ def get_jaqs_field(ts_code, date=None, big_memory=False): #date: YYYYMMDD, code:
         df = df.tail(1)
     else:
         date_Y_M_D = finlib.Finlib().get_last_trading_day(date)
-        date = datetime.datetime.strptime(date_Y_M_D, '%Y-%m-%d').strftime('%Y%m%d')
+        date = datetime.datetime.strptime(date_Y_M_D, '%Y%m%d').strftime('%Y%m%d')
         df = df[df['trade_date'] == date]
 
         if df.__len__() == 0:
