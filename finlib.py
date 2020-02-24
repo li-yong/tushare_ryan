@@ -971,6 +971,9 @@ class Finlib:
         if(todayS == 20171228):
             pass
 
+        if len(a) == 0:
+            print("no record!!! csv_f "+csv_f)
+
         tdy_idx=a[a['cal_date'] == int(todayS)].index.values[0]
 
         if a.at[tdy_idx, "is_open"] == 0:
