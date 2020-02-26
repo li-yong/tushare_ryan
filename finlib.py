@@ -965,12 +965,6 @@ class Finlib:
         else:
             a = pandas.read_csv(csv_f)
 
-        #print(a.head(1))
-       # print(todayS)
-
-        if(todayS == 20171228):
-            pass
-
         b = a[a['cal_date'] == int(todayS)]
 
         if len(b) == 0:
