@@ -9,9 +9,9 @@
 
 # HK move to get along with AG, check AG script.
 
-####
-echo "updating Forbes "
-R -f /home/ryan/tushare_ryan/get_forbes.r
+#### stopping working since 2019
+#echo "updating Forbes "
+#R -f /home/ryan/tushare_ryan/get_forbes.r
 
 ### Backup will be taken at the scp to haha_66
 
