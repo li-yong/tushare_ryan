@@ -1,5 +1,22 @@
 # coding: utf-8
 
+
+import tushare as ts
+myToken = '4cc9a1cd78bf41e759dddf92c919cdede5664fa3f1204de572d8221b'
+ts.set_token(myToken)
+pro = ts.pro_api()
+df = pro.index_daily(ts_code='000001.SH')
+
+df.to_csv("/home/ryan/DATA/DAY_Global/AG/SH000001.csv",index=False)
+
+print(" Index SH000001 saved to /home/ryan/DATA/DAY_Global/AG/SH000001.csv")
+print("Done!")
+os._exit(0)
+
+
+
+
+#================= Below Obsolated ==============
 #This script to save index data to file,
 
 
@@ -22,13 +39,6 @@ import numpy as np
 import pandas
 import re
 
-
-myToken = '4cc9a1cd78bf41e759dddf92c919cdede5664fa3f1204de572d8221b'
-ts.set_token(myToken)
-pro = ts.pro_api()
-df = pro.index_daily(ts_code='399300.SZ')
-
-pass
 
 
 dmp2001="/home/ryan/DATA/pickle/INDEX/SH00001.20010101-20021231.pickle"
@@ -135,7 +145,14 @@ else:
 #    df2018=pandas.read_pickle(dmp2018)
 
 # always read current year. It is 2018 at this time.
-df2020 = ts.get_h_data('000001', index=True, start='2020-01-01')
+
+#            open   high  close    low     volume      amount
+#date
+#2015-03-16  13.27  13.45  13.39  13.00   81212976  1073862784
+
+#df2020 = ts.get_h_data('000001', index=True, start='2020-01-01')
+df2020 = ts.get_h_data('000001', start='2020-01-01')
+
 
 print("fetched 2020 sh000001 data, line "+str(df2020.__len__()))
 
