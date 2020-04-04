@@ -1,6 +1,6 @@
 # coding: utf-8
 
-
+import os
 import tushare as ts
 myToken = '4cc9a1cd78bf41e759dddf92c919cdede5664fa3f1204de572d8221b'
 ts.set_token(myToken)
