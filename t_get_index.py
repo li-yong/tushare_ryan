@@ -6,7 +6,7 @@ myToken = '4cc9a1cd78bf41e759dddf92c919cdede5664fa3f1204de572d8221b'
 ts.set_token(myToken)
 pro = ts.pro_api()
 df = pro.index_daily(ts_code='000001.SH')
-
+df = df.reindex(index=df.index[::-1])
 df.to_csv("/home/ryan/DATA/DAY_Global/AG/SH000001.csv",index=False)
 
 print(" Index SH000001 saved to /home/ryan/DATA/DAY_Global/AG/SH000001.csv")
