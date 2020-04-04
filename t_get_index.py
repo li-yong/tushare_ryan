@@ -22,6 +22,15 @@ import numpy as np
 import pandas
 import re
 
+
+myToken = '4cc9a1cd78bf41e759dddf92c919cdede5664fa3f1204de572d8221b'
+ts.set_token(myToken)
+pro = ts.pro_api()
+df = pro.index_daily(ts_code='399300.SZ')
+
+pass
+
+
 dmp2001="/home/ryan/DATA/pickle/INDEX/SH00001.20010101-20021231.pickle"
 dmp2003="/home/ryan/DATA/pickle/INDEX/SH00001.20030101-20041231.pickle"
 dmp2005="/home/ryan/DATA/pickle/INDEX/SH00001.20050101-20061231.pickle"
@@ -33,6 +42,8 @@ dmp2015="/home/ryan/DATA/pickle/INDEX/SH00001.20150101-20161231.pickle"
 dmp2017="/home/ryan/DATA/pickle/INDEX/SH00001.20170101-20171231.pickle"
 dmp2018="/home/ryan/DATA/pickle/INDEX/SH00001.20180101-20181231.pickle"
 dmp2019="/home/ryan/DATA/pickle/INDEX/SH00001.20190101-20191231.pickle"
+dmp2020="/home/ryan/DATA/pickle/INDEX/SH00001.20200101-20201231.pickle"
+dmp2021="/home/ryan/DATA/pickle/INDEX/SH00001.20210101-20211231.pickle"
 
 
 #year 2001, 2 years
@@ -108,9 +119,25 @@ if not os.path.isfile(dmp2018):
 else:
     df2018=pandas.read_pickle(dmp2018)
 
-# always read current year. It is 2018 at this time.
-df2019 = ts.get_h_data('000001', index=True, start='2019-01-01')
 
+#year 2019, 1 years
+if not os.path.isfile(dmp2019):
+    df2019 = ts.get_h_data('000001', index=True, start='2019-01-01', end='2019-12-31')
+    df2019.to_pickle(dmp2019)
+else:
+    df2019=pandas.read_pickle(dmp2019)
+
+#year 2020, 1 years
+#if not os.path.isfile(dmp2018):
+#    df2018 = ts.get_h_data('000001', index=True, start='2018-01-01', end='2018-12-31')
+#    df2018.to_pickle(dmp2018)
+#else:
+#    df2018=pandas.read_pickle(dmp2018)
+
+# always read current year. It is 2018 at this time.
+df2020 = ts.get_h_data('000001', index=True, start='2020-01-01')
+
+print("fetched 2020 sh000001 data, line "+str(df2020.__len__()))
 
 
     #get_k_data doesn't require:
@@ -122,7 +149,8 @@ df2019 = ts.get_h_data('000001', index=True, start='2019-01-01')
 
 
 
-df = df2019.append(df2018)
+df = df2020.append(df2019)
+df = df.append(df2018)
 df = df.append(df2017)
 df = df.append(df2015)
 df = df.append(df2013)

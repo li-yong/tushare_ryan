@@ -4226,14 +4226,14 @@ def main():
 
     if fetch_all_f:
         _fetch_pro_basic()
-        _fetch_stk_holdertrade(fast_fetch=fast_fetch_f)
+        #_fetch_stk_holdertrade(fast_fetch=fast_fetch_f) #don't have 2000 api credits
         fetch(fast_fetch=fast_fetch_f)
-        fetch_basic_quarterly()
-        fetch_basic_daily(fast_fetch=fast_fetch_f)
+        fetch_basic_quarterly() 
+        fetch_basic_daily(fast_fetch=fast_fetch_f) #300 credits
 
-        _fetch_pro_concept()
-        _fetch_pro_repurchase()
-        _fetch_cctv_news()
+        _fetch_pro_concept() #300 credits
+        _fetch_pro_repurchase() #600 credits
+        _fetch_cctv_news() #120 credits
 
 
     elif merge_individual_f:
