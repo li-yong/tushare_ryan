@@ -30,10 +30,9 @@ logging.getLogger('matplotlib.font_manager').disabled = True
 # ---- Read , test
 
 
-def check_fibo(df,code_name_map):
+def check_fibo(df,code, name):
     df = df[df['date']>= pd.Timestamp(datetime.date.fromisoformat('2018-01-01'))]
-    code = df.iloc[0]['code']
-    name = code_name_map[code_name_map['code']==code].iloc[0]['name']
+
 
 
 
@@ -97,25 +96,45 @@ def main():
                       help="verify if current price hit Fibo serie")
 
 
+    #parser.add_option("--index_csv",  type="str",
+    #                  dest="index_csv_f", default=None,
+    #                  help="index_csv, used to calc the index csv")
+
     parser.add_option( "-d", "--debug", action="store_true",
                       dest="debug_f", default=False,
                       help="debug ")
 
+    parser.add_option( "-i", "--index", action="store_true",
+                      dest="index_f", default=False,
+                      help="verify the index SH000001 etc ")
+
+
+
     (options, args) = parser.parse_args()
     verify_fibo_f = options.verify_fibo_f
     debug_f = options.debug_f
+    index_f = options.index_f
 
-    stock_list = finlib.Finlib().get_A_stock_instrment() #603999
-    stock_list = finlib.Finlib().add_market_to_code(stock_list, dot_f=False, tspro_format=False) #603999.SH
-    df = finlib.Finlib().remove_garbage(stock_list, code_filed_name='code', code_format='C2D6')
+    if index_f:
+        d = {
+            'code':['SH000001'],
+            #'code_inside':['000001.SH'],
+            'name':['上证综指'],
+        }
+        stock_list = pd.DataFrame(data=d)
+        stock_list = finlib.Finlib().add_market_to_code(stock_list, dot_f=False, tspro_format=False)  # 603999.SH
+    else:
+        stock_list = finlib.Finlib().get_A_stock_instrment() #603999
+        stock_list = finlib.Finlib().add_market_to_code(stock_list, dot_f=False, tspro_format=False) #603999.SH
+        stock_list = finlib.Finlib().remove_garbage(stock_list, code_filed_name='code', code_format='C2D6')
 
     #debug_f = True
-    verify_fibo_f = True
+    #verify_fibo_f = True
 
     if debug_f:
-        df = df[df['code']=="SH600519"]
+        stock_list = stock_list[stock_list['code']=="SH600519"]
 
-    for index, row in df.iterrows():
+    for index, row in stock_list.iterrows():
         name, code = row['name'], row['code']
 
         csv_f = "/home/ryan/DATA/DAY_Global/AG/"+code+".csv"
@@ -125,17 +144,27 @@ def main():
             continue
 
         if verify_fibo_f:
-
-            df = pd.read_csv(csv_f, skiprows=1, header=None, names=['code', 'date', 'open', 'high', 'low', 'close',
+            if index_f:
+                df = pd.read_csv(csv_f, skiprows=1, header=None,
+                                 names=['code', 'date', 'close', 'open', 'high', 'low',
+                                        'pre_close', 'change', 'pct_chg', 'vol', 'amount'],
+                                 converters={'code': str})
+                df['date'] = df['date'].apply(lambda _d: datetime.datetime.strptime(str(_d), '%Y%m%d'))
+                check_fibo(df, code, name)
+            else:
+                df = pd.read_csv(csv_f, skiprows=1, header=None, names=['code', 'date', 'open', 'high', 'low', 'close',
                                                                     'vol', 'amount', 'ratio'],
                              converters={'code': str})
 
-            # date int to datetime
-            df['date'] = df['date'].apply(lambda _d: datetime.datetime.strptime(str(_d), '%Y-%m-%d'))
+                # date int to datetime
+                df['date'] = df['date'].apply(lambda _d: datetime.datetime.strptime(str(_d), '%Y-%m-%d'))
 
 
-            code_name_map = stock_list
-            check_fibo(df, code_name_map)
+                code_name_map = stock_list
+                code = df.iloc[0]['code']
+                name = code_name_map[code_name_map['code'] == code].iloc[0]['name']
+
+                check_fibo(df, code, name)
 
 
     exit(0)
