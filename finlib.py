@@ -3154,8 +3154,33 @@ class Finlib:
 
         return(df_result)
 
+    def price_hit_cnt(self,df, price, cri_hit=0.01):
+
+        h_cnt = df.loc[(df['high'] <= (1+cri_hit) * price) & (df['high'] >= (1-cri_hit) * price) ].__len__()
+
+        l_cnt = df.loc[(df['low'] <= (1+cri_hit) * price) & ( df['low'] >= (1-cri_hit) * price) ].__len__()
+
+        o_cnt = df.loc[(df['open'] <= (1+cri_hit) * price) & ( df['open'] >= (1-cri_hit) * price) ].__len__()
+
+        c_cnt = df.loc[(df['close'] <= (1+cri_hit) * price) & ( df['close'] >= (1-cri_hit) * price) ].__len__()
+
+
+        rtn = {
+            'sum_cnt':h_cnt+l_cnt+o_cnt+c_cnt,
+            'price_benchmark':price,
+            'cri_hit':cri_hit,
+            'h_cnt':h_cnt,
+            'l_cnt':l_cnt,
+            'o_cnt':o_cnt,
+            'c_cnt':c_cnt,
+        }
+        return(rtn)
+
+
     #verify if current price hit any value of fibo series
-    def fibonocci(self, df, cri_percent=5):
+
+    #cri_hit: how many time price pxx hitted. e.g p23=10, then find 10*.099 < Cnt([open|close|high|low]) < 10*.1.01
+    def fibonocci(self, df, cri_percent=5, cri_hit=0.01):
 
         y_axis = np.array(df['close'])
         x_axis = np.array(df['date'])
@@ -3174,6 +3199,15 @@ class Finlib:
         p61 = min + 61.8 * delta
         p100 = max
 
+        p00_cnt = self.price_hit_cnt(df,p00,cri_hit)
+        p23_cnt = self.price_hit_cnt(df,p23,cri_hit)
+        p38_cnt = self.price_hit_cnt(df,p38,cri_hit)
+        p50_cnt = self.price_hit_cnt(df,p50,cri_hit)
+        p61_cnt = self.price_hit_cnt(df,p61,cri_hit)
+        p100_cnt = self.price_hit_cnt(df,p100,cri_hit)
+
+
+
         cur_price = y_axis[-1]
         cur_percent = (cur_price - min) / delta
 
@@ -3189,40 +3223,48 @@ class Finlib:
         d00 = cur_percent - 0
 
         closest = "NA"
+        current_hit_cnt  = 0
 
         if d100 > 0 and d100 < cri_percent:
             closest = "100"
+            current_hit_cnt = p100_cnt
             print("distance passed max " + str(d100))
 
 
         elif d61> 0 and d61< cri_percent:
             closest = "61"
+            current_hit_cnt = p61_cnt
             print("distance passed 61.8% less than " + str(d61))
 
         elif d50 > 0 and d50 < cri_percent:
             closest = "50"
+            current_hit_cnt = p50_cnt
             print("distance passed 50% less than " + str(d50))
 
         elif d38 > 0 and d38 < cri_percent:
             closest = "38"
+            current_hit_cnt = p38_cnt
             print("distance passed 38.2% less than " + str(d38))
 
         elif d23 > 0 and d23 < cri_percent:
             closest = "23"
+            current_hit_cnt = p23_cnt
             print("distance pased 23.6% less than " + str(d23))
 
         elif d00 > 0 and d00 < cri_percent:
             closest = "00"
+            current_hit_cnt = p00_cnt
             print("distance passed min less than " + str(d00))
         else:
             hit = False
 
 
         rtn = {
-            "hit" : hit,
-            "closest":closest,
+            "hit" : hit,    #True of False
+            "closest":closest, #closest taget Fibocinno number
+            "current_hit_cnt":current_hit_cnt, #how many times this price was hit by OHLC.
             "pri_cur": cur_price,
-            "per_cur": cur_percent,
+            "per_cur": cur_percent, #current percent in Fibo, if hit, 0 < per_cur -closet  < cri_percent
             "p_max" :max,
             "p_min" :min,
             "date_max" :np.max(x_axis),
@@ -3233,6 +3275,13 @@ class Finlib:
             "p38": p38,
             "p23": p23,
             "p00": p00,
+
+            "p100_cnt":p100_cnt,
+            "p61_cnt":p61_cnt,
+            "p50_cnt":p50_cnt,
+            "p38_cnt":p38_cnt,
+            "p23_cnt":p23_cnt,
+            "p00_cnt":p00_cnt,
 
             "d100": d100, #distance to 100%
             "d61": d61,

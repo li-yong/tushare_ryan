@@ -32,13 +32,16 @@ def check_fibo(df,code_name_map):
     y_axis = np.array(df['close'])
     x_axis = np.array(df['date'])
 
-    print("code "+code+", name "+ name+", hit "+str(r['hit'])
+    print("code "+code+", name "+ name
+          +", hit "+str(r['hit'])
           + ", price " +str(r['pri_cur'])
-          + ", percent " +str(r['per_cur']))
+          + ", percent " +str(r['per_cur'])
+          + ", history hit "+str(r['current_hit_cnt'])
+          )
 
     if r['hit']:
         #plt.rcParams['font.sans-serif'] = ['Source Han Sans TW', 'sans-serif']
-        plt.rcParams["font.family"] = "Noto Sans Mono CJK HK"
+        plt.rcParams["font.family"] = ["Noto Sans Mono CJK HK"]
 
         fig, ax = plt.subplots()
         ax.plot(x_axis, y_axis)
