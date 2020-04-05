@@ -4233,7 +4233,7 @@ def main():
 
         _fetch_pro_concept() #300 credits
         _fetch_pro_repurchase() #600 credits
-        _fetch_cctv_news() #120 credits
+        #_fetch_cctv_news() #120 credits.  5 times/minute
 
 
     elif merge_individual_f:
