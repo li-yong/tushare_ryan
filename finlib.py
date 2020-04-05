@@ -3164,6 +3164,8 @@ class Finlib:
 
         c_cnt = df.loc[(df['close'] <= (1+cri_hit) * price) & ( df['close'] >= (1-cri_hit) * price) ].__len__()
 
+        #debug. The low,open,high will not show on the plot
+        #print(df.loc[(df['close'] <= (1+cri_hit) * price) & ( df['close'] >= (1-cri_hit) * price) ])
 
         rtn = {
             'sum_cnt':h_cnt+l_cnt+o_cnt+c_cnt,
@@ -3269,12 +3271,12 @@ class Finlib:
             "p_min" :min,
             "date_max" :np.max(x_axis),
             "date_min" :np.min(x_axis),
-            "p100": p100, #price of 100%
-            "p61": p61,
-            "p50": p50,
-            "p38": p38,
-            "p23": p23,
-            "p00": p00,
+            "p100": round(p100,1), #price of 100%
+            "p61": round(p61,1),
+            "p50": round(p50,1),
+            "p38": round(p38,1),
+            "p23": round(p23,1),
+            "p00": round(p00,1),
 
             "p100_cnt":p100_cnt,
             "p61_cnt":p61_cnt,

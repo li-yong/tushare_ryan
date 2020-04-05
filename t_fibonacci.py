@@ -9,6 +9,19 @@ import numpy as np
 import finlib
 from optparse import OptionParser
 
+####  regeneated font cache
+#import matplotlib.font_manager
+#matplotlib.font_manager._rebuild()
+
+#### list the font matplot can use. #
+# <Font 'AaTEST (Non-Commercial Use)' (AaDouBanErTi-2.ttf) normal normal 400 normal>,
+# <Font 'Noto Serif CJK JP' (NotoSerifCJK-Black.ttc) normal normal black normal>,
+# matplotlib.font_manager.fontManager.ttflist
+
+#use the font
+plt.rcParams['font.family'] = ['AaTEST (Non-Commercial Use)']
+#plt.rcParams['font.sans-serif'] = ['Source Han Sans TW', 'sans-serif']
+
 from pandas.plotting import register_matplotlib_converters
 register_matplotlib_converters()
 
@@ -22,15 +35,20 @@ def check_fibo(df,code_name_map):
     code = df.iloc[0]['code']
     name = code_name_map[code_name_map['code']==code].iloc[0]['name']
 
+
+
     if df.__len__()<400:
         print("code "+code+", name "+ name+". no enough record. len "+str(df.__len__()))
         return
 
-    r = finlib.Finlib().fibonocci(df,cri_percent=5)
+    r = finlib.Finlib().fibonocci(df,cri_percent=5, cri_hit = 0.01)
 
 
     y_axis = np.array(df['close'])
     x_axis = np.array(df['date'])
+
+    the_day = pd.to_datetime(x_axis[-1]).strftime("%Y-%m-%d")
+
 
     print("code "+code+", name "+ name
           +", hit "+str(r['hit'])
@@ -40,19 +58,29 @@ def check_fibo(df,code_name_map):
           )
 
     if r['hit']:
-        #plt.rcParams['font.sans-serif'] = ['Source Han Sans TW', 'sans-serif']
-        plt.rcParams["font.family"] = ["Noto Sans Mono CJK HK"]
-
         fig, ax = plt.subplots()
         ax.plot(x_axis, y_axis)
-        plt.axhline(y=r['p00'])
+        plt.axhline(y=r['p00'], label=r['p00'])
         plt.axhline(y=r['p23'])
         plt.axhline(y=r['p38'])
         plt.axhline(y=r['p50'])
         plt.axhline(y=r['p61'])
         plt.axhline(y=r['p100'])
 
-        plt.title(code+" "+name)
+        plt.ylabel("Price")
+
+        style = dict(size=15, color='black')
+        ax.text(x_axis[-1], r['p00'], "0% "+str(r['p00'])+" hit "+str(r['p00_cnt']['sum_cnt']), **style)
+        ax.text(x_axis[-1], r['p23'], "23.6% "+str(r['p23'])+" hit "+str(r['p23_cnt']['sum_cnt']), **style)
+        ax.text(x_axis[-1], r['p38'], "38.2% "+str(r['p38'])+" hit "+str(r['p38_cnt']['sum_cnt']), **style)
+        ax.text(x_axis[-1], r['p50'], "50% "+str(r['p50'])+" hit "+str(r['p50_cnt']['sum_cnt']), **style)
+        ax.text(x_axis[-1], r['p61'], "61.8% "+str(r['p61'])+" hit "+str(r['p61_cnt']['sum_cnt']), **style)
+        ax.text(x_axis[-1], r['p100'], "100% "+str(r['p100'])+" hit "+str(r['p100_cnt']['sum_cnt']), **style)
+
+
+        plt.title(the_day+"_"+code + " " + name + " "+str(y_axis[-1]))
+
+        fig.savefig("/home/ryan/DATA/result/fib_plot/" + code +"_"+name+"_"+the_day+".png", bbox_inches='tight')
         #plt.show()
 
 
