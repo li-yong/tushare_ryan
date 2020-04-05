@@ -79,8 +79,11 @@ def check_fibo(df,code, name):
 
         plt.title(the_day+"_"+code + " " + name + " "+str(y_axis[-1]))
 
-        fig.savefig("/home/ryan/DATA/result/fib_plot/" + code +"_"+name+"_"+the_day+".png", bbox_inches='tight')
+        fn = "/home/ryan/DATA/result/fib_plot/" + code +"_"+name+"_"+the_day+".png"
+        fig.savefig(fn, bbox_inches='tight')
+        print("figure saved to "+fn)
         #plt.show()
+
 
 
 def main():
@@ -117,11 +120,11 @@ def main():
 
     if index_f:
         d = {
-            'code':['SH000001','SH000300','SH000300','SH000300','SH000300'],
-            'name':['上证综指','深证成指','上证50','中证500','中小板指','创业板指'],
+            'code':['000001.SH','000300.SH','000905.SH'],
+            'name':['上证综指','沪深300','中证500'],
         }
         stock_list = pd.DataFrame(data=d)
-        stock_list = finlib.Finlib().add_market_to_code(stock_list, dot_f=False, tspro_format=False)  # 603999.SH
+        #stock_list = finlib.Finlib().add_market_to_code(stock_list, dot_f=False, tspro_format=False)  # 603999.SH
     else:
         stock_list = finlib.Finlib().get_A_stock_instrment() #603999
         stock_list = finlib.Finlib().add_market_to_code(stock_list, dot_f=False, tspro_format=False) #603999.SH
@@ -133,10 +136,14 @@ def main():
     if debug_f:
         stock_list = stock_list[stock_list['code']=="SH600519"]
 
+    csv_dir = "/home/ryan/DATA/DAY_Global/AG"
+    if index_f:
+        csv_dir += "/INDEX"
+
     for index, row in stock_list.iterrows():
         name, code = row['name'], row['code']
 
-        csv_f = "/home/ryan/DATA/DAY_Global/AG/"+code+".csv"
+        csv_f = csv_dir+"/"+code+".csv"
 
         if not os.path.exists(csv_f):
             print("csv_f not exist, "+csv_f)
