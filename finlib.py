@@ -13,7 +13,11 @@ import os.path
 import pandas as pd
 import time
 import numpy as np
+
 #import matplotlib.pyplot as plt
+#from pandas.plotting import register_matplotlib_converters
+#register_matplotlib_converters()
+
 import pandas
 import mysql.connector
 from sqlalchemy import create_engine
@@ -3037,9 +3041,6 @@ class Finlib:
         return(df)
 
     def zzz_kdj(self, csv_f, market='AG'):
-
-
-
         #https://raw.githubusercontent.com/Abhay64/KDJ-Indicator/master/KDJ_Indicator.py
 
         df=pd.DataFrame()
@@ -3151,3 +3152,93 @@ class Finlib:
 
 
         return(df_result)
+
+    #verify if current price hit any value of fibo series
+    def fibonocci(self, df, cri_percent=5):
+
+        y_axis = np.array(df['close'])
+        x_axis = np.array(df['date'])
+
+        min = np.min(y_axis)
+        max = np.max(y_axis)
+        delta = (max - min) / 100
+
+
+
+        # Fibonacci 23.6, 38.2, 50, 61.8, 100
+        p00 = min
+        p23 = min + 23.6 * delta
+        p38 = min + 38.2 * delta
+        p50 = min + 50 * delta
+        p61 = min + 61.8 * delta
+        p100 = max
+
+        cur_price = y_axis[-1]
+        cur_percent = (cur_price - min) / delta
+
+
+
+        hit = True  # hit the buy condition or intersting condition
+
+        d100 = cur_percent - 100
+        d61 = cur_percent - 61.8
+        d50 = cur_percent - 50
+        d38 = cur_percent - 38.2
+        d23 = cur_percent - 23.6
+        d00 = cur_percent - 0
+
+        closest = "NA"
+
+        if d100 > 0 and d100 < cri_percent:
+            closest = "100"
+            print("distance passed max " + str(d100))
+
+
+        elif d61> 0 and d61< cri_percent:
+            closest = "61"
+            print("distance passed 61.8% less than " + str(d61))
+
+        elif d50 > 0 and d50 < cri_percent:
+            closest = "50"
+            print("distance passed 50% less than " + str(d50))
+
+        elif d38 > 0 and d38 < cri_percent:
+            closest = "38"
+            print("distance passed 38.2% less than " + str(d38))
+
+        elif d23 > 0 and d23 < cri_percent:
+            closest = "23"
+            print("distance pased 23.6% less than " + str(d23))
+
+        elif d00 > 0 and d00 < cri_percent:
+            closest = "00"
+            print("distance passed min less than " + str(d00))
+        else:
+            hit = False
+
+
+        rtn = {
+            "hit" : hit,
+            "closest":closest,
+            "pri_cur": cur_price,
+            "per_cur": cur_percent,
+            "p_max" :max,
+            "p_min" :min,
+            "date_max" :np.max(x_axis),
+            "date_min" :np.min(x_axis),
+            "p100": p100, #price of 100%
+            "p61": p61,
+            "p50": p50,
+            "p38": p38,
+            "p23": p23,
+            "p00": p00,
+
+            "d100": d100, #distance to 100%
+            "d61": d61,
+            "d50": d50,
+            "d38": d38,
+            "d23": d23,
+            "d00": d00,
+        }
+
+        return(rtn)
