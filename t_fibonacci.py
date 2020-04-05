@@ -117,9 +117,8 @@ def main():
 
     if index_f:
         d = {
-            'code':['SH000001'],
-            #'code_inside':['000001.SH'],
-            'name':['上证综指'],
+            'code':['SH000001','SH000300','SH000300','SH000300','SH000300'],
+            'name':['上证综指','深证成指','上证50','中证500','中小板指','创业板指'],
         }
         stock_list = pd.DataFrame(data=d)
         stock_list = finlib.Finlib().add_market_to_code(stock_list, dot_f=False, tspro_format=False)  # 603999.SH

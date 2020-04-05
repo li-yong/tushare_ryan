@@ -83,20 +83,17 @@ def check_weekly_buysell_strategy(df):
 
 # ---- Write
 
-def fetch_index(myToken, csv_file):
+def fetch_index(myToken, ts_code, csv_file):
     ts.set_token(myToken)
     pro = ts.pro_api()
-    df = pro.index_daily(ts_code='000001.SH')
+    df = pro.index_daily(ts_code=ts_code)
     df = df.reindex(index=df.index[::-1])
 
     if (df.__len__() > 0):
         df.to_csv(csv_file, index=False)
-        print(" Index SH000001 saved to " + csv_file + " ,len " + str(df.__len__()))
+        print("Index saved to " + csv_file + " ,len " + str(df.__len__()))
     else:
         print("df lengh is 0, did not save to "+csv_file)
-
-    print("Done!")
-    exit(0)
 
 
 def main():
@@ -119,11 +116,37 @@ def main():
     verify_weekly_buy_sel_strategy_f = options.verify_weekly_buy_sel_strategy_f
 
     myToken = '4cc9a1cd78bf41e759dddf92c919cdede5664fa3f1204de572d8221b'
-    csv_file = '/home/ryan/DATA/DAY_Global/AG/SH000001.csv'
+    csv_dir = '/home/ryan/DATA/DAY_Global/AG/INDEX/'
 
+    if os.path.isdir(csv_dir):
+        os.mkdir(csv_dir)
 
     if options.fetch_index_f:
-        fetch_index(myToken, csv_file)
+        ts_code = '000001.SH' #上证指数
+        fetch_index(myToken, ts_code=ts_code, csv_file=csv_dir+"/"+ts_code+".csv")
+
+        ts_code = '000300.SH' #沪深300
+        fetch_index(myToken, ts_code=ts_code, csv_file=csv_dir+"/"+ts_code+".csv")
+
+        ts_code = '000905.SH' #中证500
+        fetch_index(myToken, ts_code=ts_code, csv_file=csv_dir+"/"+ts_code+".csv")
+
+        ts_code = '399001.SH' #深圳成指
+        fetch_index(myToken, ts_code=ts_code, csv_file=csv_dir+"/"+ts_code+".csv")
+
+        ts_code = '399005.SH' #中小板指
+        fetch_index(myToken, ts_code=ts_code, csv_file=csv_dir+"/"+ts_code+".csv")
+
+        ts_code = '399006.SH' #创业板指
+        fetch_index(myToken, ts_code=ts_code, csv_file=csv_dir+"/"+ts_code+".csv")
+
+        ts_code = '399016.SH' #深圳创新
+        fetch_index(myToken, ts_code=ts_code, csv_file=csv_dir+"/"+ts_code+".csv")
+
+        ts_code = '399300.SH' #沪深300
+        fetch_index(myToken, ts_code=ts_code, csv_file=csv_dir+"/"+ts_code+".csv")
+
+
 
     if options.verify_weekly_buy_sel_strategy_f:
 
