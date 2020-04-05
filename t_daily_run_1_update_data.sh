@@ -19,7 +19,7 @@ python /home/ryan/tushare_ryan/t_daily_update_csv_from_tushare_.py;
 #
 ######################################
 
-python /home/ryan/tushare_ryan/t_get_index.py
+python /home/ryan/tushare_ryan/t_get_index.py --fetch_index 
 
 
 
