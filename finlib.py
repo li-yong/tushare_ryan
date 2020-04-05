@@ -769,7 +769,8 @@ class Finlib:
         elif re.match('^[0|3]', code):
             code_S =  code+".SZ"
         elif re.match('^[9]', code):  # B Gu
-            logging.info(("ignore B GU " + code))
+            #logging.info(("ignore B GU " + code))
+            pass
         elif re.match('SH', code):  #
             code_S = code
         elif re.match('SZ', code):  #
