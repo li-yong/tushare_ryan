@@ -30,11 +30,8 @@ logging.getLogger('matplotlib.font_manager').disabled = True
 # ---- Read , test
 
 
-def check_fibo(df,code, name):
-    df = df[df['date']>= pd.Timestamp(datetime.date.fromisoformat('2018-01-01'))]
-
-
-
+def check_fibo(df,code, name, begin_date='2018-01-01',show_fig_f=False):
+    df = df[df['date']>= pd.Timestamp(datetime.date.fromisoformat(begin_date))]
 
     if df.__len__()<400:
         print("code "+code+", name "+ name+". no enough record. len "+str(df.__len__()))
@@ -62,9 +59,11 @@ def check_fibo(df,code, name):
               )
 
 
-        suggestion =  " long at " + str( r['long_enter_price'])\
+        suggestion = code + " " + name+" long at " + str( r['long_enter_price'])\
                       + ", tp " + str(r['long_take_profit_price'])\
                       + ", sl " + str(r['long_stop_lost_price'])
+
+        print("suggestion: "+suggestion)
 
 
         fig, ax = plt.subplots()
@@ -96,7 +95,9 @@ def check_fibo(df,code, name):
         fn = "/home/ryan/DATA/result/fib_plot/" + code +"_"+name+"_"+the_day+".png"
         fig.savefig(fn, bbox_inches='tight')
         print("figure saved to "+fn+"\n")
-        plt.show()
+
+        if show_fig_f:
+            plt.show()
 
 
 
@@ -109,17 +110,21 @@ def main():
 
 
     parser.add_option( "-v", "--verify", action="store_true",
-                      dest="verify_fibo_f", default=False,
+                      dest="verify_fibo_f", default=True,
                       help="verify if current price hit Fibo serie")
 
 
-    #parser.add_option("--index_csv",  type="str",
-    #                  dest="index_csv_f", default=None,
-    #                  help="index_csv, used to calc the index csv")
+    parser.add_option("--begin_date",  type="str",
+                      dest="begin_date_f", default="2018-01-01",
+                      help="begin date to use Fibo")
 
     parser.add_option( "-d", "--debug", action="store_true",
                       dest="debug_f", default=False,
                       help="debug ")
+
+    parser.add_option("--show_fig", action="store_true",
+                      dest="show_fig_f", default=False,
+                      help="display the matplot figure ")
 
     parser.add_option( "-i", "--index", action="store_true",
                       dest="index_f", default=False,
@@ -131,6 +136,8 @@ def main():
     verify_fibo_f = options.verify_fibo_f
     debug_f = options.debug_f
     index_f = options.index_f
+    begin_date_f = options.begin_date_f
+    show_fig_f = options.show_fig_f
 
     if index_f:
         d = {
@@ -170,7 +177,7 @@ def main():
                                         'pre_close', 'change', 'pct_chg', 'vol', 'amount'],
                                  converters={'code': str})
                 df['date'] = df['date'].apply(lambda _d: datetime.datetime.strptime(str(_d), '%Y%m%d'))
-                check_fibo(df, code, name)
+                check_fibo(df, code, name,begin_date_f,show_fig_f)
             else:
                 df = pd.read_csv(csv_f, skiprows=1, header=None, names=['code', 'date', 'open', 'high', 'low', 'close',
                                                                     'vol', 'amount', 'ratio'],
@@ -184,7 +191,7 @@ def main():
                 code = df.iloc[0]['code']
                 name = code_name_map[code_name_map['code'] == code].iloc[0]['name']
 
-                check_fibo(df, code, name)
+                check_fibo(df, code, name,begin_date_f,show_fig_f)
 
 
     exit(0)
