@@ -30,12 +30,14 @@ logging.getLogger('matplotlib.font_manager').disabled = True
 # ---- Read , test
 
 
-def check_fibo(df,code, name, begin_date='2018-01-01',show_fig_f=False):
+def check_fibo(df,code, name, begin_date='2018-01-01',show_fig_f=False,save_fig_f=False, min_sample = 500):
     df = df[df['date']>= pd.Timestamp(datetime.date.fromisoformat(begin_date))]
+    rtn_dict = {
+    }
 
-    if df.__len__()<400:
+    if df.__len__()<min_sample:
         print("code "+code+", name "+ name+". no enough record. len "+str(df.__len__()))
-        return
+        return(rtn_dict)
 
     r = finlib.Finlib().fibonocci(df,cri_percent=5, cri_hit = 0.01)
 
@@ -65,7 +67,6 @@ def check_fibo(df,code, name, begin_date='2018-01-01',show_fig_f=False):
 
         print("suggestion: "+suggestion)
 
-
         fig, ax = plt.subplots()
         ax.plot(x_axis, y_axis)
         plt.axhline(y=r['p00'], label=r['p00'])
@@ -92,12 +93,31 @@ def check_fibo(df,code, name, begin_date='2018-01-01',show_fig_f=False):
         ax.text(0.05, 0.95, suggestion, transform=ax.transAxes, fontsize=14,
                 verticalalignment='top', bbox=props)
 
-        fn = "/home/ryan/DATA/result/fib_plot/" + code +"_"+name+"_"+the_day+".png"
-        fig.savefig(fn, bbox_inches='tight')
-        print("figure saved to "+fn+"\n")
+        if save_fig_f:
+            fn = "/home/ryan/DATA/result/fib_plot/" + code +"_"+name+"_"+the_day+".png"
+            fig.savefig(fn, bbox_inches='tight')
+            print("figure saved to "+fn+"\n")
 
         if show_fig_f:
             plt.show()
+
+
+
+        rtn_dict['code']=code
+        rtn_dict['name']=name
+        rtn_dict['date']=the_day
+        rtn_dict['cur_price']=r['pri_cur']
+        rtn_dict['percent']=r['per_cur']
+        rtn_dict['long_in_p']=r['long_enter_price']
+        rtn_dict['long_tp_p']=r['long_take_profit_price']
+        rtn_dict['long_sl_p']=r['long_stop_lost_price']
+        rtn_dict['hit_sum']=r['current_hit_cnt']['sum_cnt']
+        rtn_dict['h_cnt']=r['current_hit_cnt']['h_cnt']
+        rtn_dict['l_cnt']=r['current_hit_cnt']['l_cnt']
+        rtn_dict['o_cnt']=r['current_hit_cnt']['o_cnt']
+        rtn_dict['c_cnt']=r['current_hit_cnt']['c_cnt']
+
+    return(rtn_dict)
 
 
 
@@ -114,23 +134,32 @@ def main():
                       help="verify if current price hit Fibo serie")
 
 
-    parser.add_option("--begin_date",  type="str",
+    parser.add_option("-b", "--begin_date",  type="string", action="store",
                       dest="begin_date_f", default="2018-01-01",
                       help="begin date to use Fibo")
 
-    parser.add_option( "-d", "--debug", action="store_true",
+    parser.add_option("--min_sample",  type="int", action="store",
+                      dest="min_sample_f", default=500,
+                      help="minimal samples number of input to analysis")
+
+
+    parser.add_option("-d", "--debug", action="store_true",
                       dest="debug_f", default=False,
                       help="debug ")
+
+    parser.add_option("--save_fig", action="store_true",
+                      dest="save_fig_f", default=False,
+                      help="save the matplot figure ")
 
     parser.add_option("--show_fig", action="store_true",
                       dest="show_fig_f", default=False,
                       help="display the matplot figure ")
 
-    parser.add_option( "-i", "--index", action="store_true",
+    parser.add_option("-i", "--index", action="store_true",
                       dest="index_f", default=False,
                       help="verify the index SH000001 etc ")
 
-
+    df_rtn  =pd.DataFrame()
 
     (options, args) = parser.parse_args()
     verify_fibo_f = options.verify_fibo_f
@@ -138,6 +167,8 @@ def main():
     index_f = options.index_f
     begin_date_f = options.begin_date_f
     show_fig_f = options.show_fig_f
+    save_fig_f = options.save_fig_f
+    min_sample_f = options.min_sample_f
 
     if index_f:
         d = {
@@ -161,6 +192,8 @@ def main():
     if index_f:
         csv_dir += "/INDEX"
 
+
+
     for index, row in stock_list.iterrows():
         name, code = row['name'], row['code']
 
@@ -177,7 +210,7 @@ def main():
                                         'pre_close', 'change', 'pct_chg', 'vol', 'amount'],
                                  converters={'code': str})
                 df['date'] = df['date'].apply(lambda _d: datetime.datetime.strptime(str(_d), '%Y%m%d'))
-                check_fibo(df, code, name,begin_date_f,show_fig_f)
+                #check_fibo(df, code, name,begin_date_f,show_fig_f)
             else:
                 df = pd.read_csv(csv_f, skiprows=1, header=None, names=['code', 'date', 'open', 'high', 'low', 'close',
                                                                     'vol', 'amount', 'ratio'],
@@ -191,7 +224,13 @@ def main():
                 code = df.iloc[0]['code']
                 name = code_name_map[code_name_map['code'] == code].iloc[0]['name']
 
-                check_fibo(df, code, name,begin_date_f,show_fig_f)
+            rtn_dict_t = check_fibo(df, code, name,begin_date_f,show_fig_f,save_fig_f, min_sample_f)
+            df_t = pd.DataFrame(data=rtn_dict_t, index=[0])
+            #print(df_t)
+            if not df_t.empty:
+                df_rtn = pd.concat([df_rtn, df_t],sort=False).reset_index().drop('index',axis=1)
+
+    print(df_rtn)
 
 
     exit(0)
