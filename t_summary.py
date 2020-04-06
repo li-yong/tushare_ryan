@@ -773,7 +773,7 @@ def generate_result_csv(full_combination=False, debug=False):
         logging.info("\t df_fib length " + str(df_fib.__len__()))
 
 
-        df_fib_index = pd.read_csv(df_fib_index, encoding="utf-8")
+        df_fib_index = pd.read_csv(f_fib_index, encoding="utf-8")
         logging.info("\t df_fib_index length " + str(df_fib_index.__len__()))
 
 
