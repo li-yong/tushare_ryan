@@ -49,14 +49,24 @@ def check_fibo(df,code, name):
     the_day = pd.to_datetime(x_axis[-1]).strftime("%Y-%m-%d")
 
 
-    print("code "+code+", name "+ name
-          +", hit "+str(r['hit'])
-          + ", price " +str(r['pri_cur'])
-          + ", percent " +str(r['per_cur'])
-          + ", history hit "+str(r['current_hit_cnt'])
-          )
+    if not r['hit']:
+        print("code " + code + ", name " + name
+              + ", hit " + str(r['hit']))
 
     if r['hit']:
+        print("code " + code + ", name " + name
+              + ", hit " + str(r['hit'])
+              + ", price " + str(r['pri_cur'])
+              + ", percent " + str(r['per_cur'])
+              + ", history hit " + str(r['current_hit_cnt'])
+              )
+
+
+        suggestion =  " long at " + str( r['long_enter_price'])\
+                      + ", tp " + str(r['long_take_profit_price'])\
+                      + ", sl " + str(r['long_stop_lost_price'])
+
+
         fig, ax = plt.subplots()
         ax.plot(x_axis, y_axis)
         plt.axhline(y=r['p00'], label=r['p00'])
@@ -79,10 +89,14 @@ def check_fibo(df,code, name):
 
         plt.title(the_day+"_"+code + " " + name + " "+str(y_axis[-1]))
 
+        props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
+        ax.text(0.05, 0.95, suggestion, transform=ax.transAxes, fontsize=14,
+                verticalalignment='top', bbox=props)
+
         fn = "/home/ryan/DATA/result/fib_plot/" + code +"_"+name+"_"+the_day+".png"
         fig.savefig(fn, bbox_inches='tight')
-        print("figure saved to "+fn)
-        #plt.show()
+        print("figure saved to "+fn+"\n")
+        plt.show()
 
 
 
