@@ -31,15 +31,30 @@ logging.getLogger('matplotlib.font_manager').disabled = True
 
 
 def check_fibo(df,code, name, begin_date='2018-01-01',show_fig_f=False,save_fig_f=False, min_sample = 500):
-    df = df[df['date']>= pd.Timestamp(datetime.date.fromisoformat(begin_date))]
+
     rtn_dict = {
     }
 
+
+    df = df[df['date']>= pd.Timestamp(datetime.date.fromisoformat(begin_date))]
+
+    #print(df.__len__())
+
+    df = df[df['close']>= 0.1].reset_index().drop('index', axis=1) #some csv close price is 0.0 or 0
+    #print(df.__len__())
+
     if df.__len__()<min_sample:
-        print("code "+code+", name "+ name+". no enough record. len "+str(df.__len__()))
+        #print("code "+code+", name "+ name+". no enough record. len "+str(df.__len__()))
         return(rtn_dict)
 
     r = finlib.Finlib().fibonocci(df,cri_percent=5, cri_hit = 0.01)
+
+
+    #print("HHHHAAAAA" + r['closest'])
+    if r['closest'] in ["NA","00"]:
+        #print("ignore as it's NA or the lowest 00 line")
+        #exit()
+        return(rtn_dict)
 
 
     y_axis = np.array(df['close'])
@@ -48,17 +63,17 @@ def check_fibo(df,code, name, begin_date='2018-01-01',show_fig_f=False,save_fig_
     the_day = pd.to_datetime(x_axis[-1]).strftime("%Y-%m-%d")
 
 
-    if not r['hit']:
-        print("code " + code + ", name " + name
-              + ", hit " + str(r['hit']))
+    #if not r['hit']:
+    #    print("code " + code + ", name " + name
+    #          + ", hit " + str(r['hit']))
 
     if r['hit']:
-        print("code " + code + ", name " + name
-              + ", hit " + str(r['hit'])
-              + ", price " + str(r['pri_cur'])
-              + ", percent " + str(r['per_cur'])
-              + ", history hit " + str(r['current_hit_cnt'])
-              )
+        #print("code " + code + ", name " + name
+        #      + ", hit " + str(r['hit'])
+        #      + ", price " + str(r['pri_cur'])
+        #      + ", percent " + str(r['per_cur'])
+        #      + ", history hit " + str(r['current_hit_cnt'])
+        #      )
 
 
         suggestion = code + " " + name+" long at " + str( r['long_enter_price'])\
@@ -98,9 +113,12 @@ def check_fibo(df,code, name, begin_date='2018-01-01',show_fig_f=False,save_fig_
             fig.savefig(fn, bbox_inches='tight')
             print("figure saved to "+fn+"\n")
 
+
         if show_fig_f:
             plt.show()
 
+        plt.close('all')
+        plt.clf()
 
 
         rtn_dict['code']=code
@@ -171,6 +189,7 @@ def main():
     min_sample_f = options.min_sample_f
 
     if index_f:
+        out_f = "/home/ryan/DATA/result/fib_index.csv"
         d = {
             'code':['000001.SH','000300.SH','000905.SH'],
             'name':['上证综指','沪深300','中证500'],
@@ -178,6 +197,7 @@ def main():
         stock_list = pd.DataFrame(data=d)
         #stock_list = finlib.Finlib().add_market_to_code(stock_list, dot_f=False, tspro_format=False)  # 603999.SH
     else:
+        out_f = "/home/ryan/DATA/result/fib.csv"
         stock_list = finlib.Finlib().get_A_stock_instrment() #603999
         stock_list = finlib.Finlib().add_market_to_code(stock_list, dot_f=False, tspro_format=False) #603999.SH
         stock_list = finlib.Finlib().remove_garbage(stock_list, code_filed_name='code', code_format='C2D6')
@@ -186,15 +206,18 @@ def main():
     #verify_fibo_f = True
 
     if debug_f:
-        stock_list = stock_list[stock_list['code']=="SH600519"]
+        #stock_list = stock_list[stock_list['code']=="SH600519"]
+        stock_list = stock_list[stock_list['code']=="SZ300350"]
 
     csv_dir = "/home/ryan/DATA/DAY_Global/AG"
     if index_f:
         csv_dir += "/INDEX"
 
 
-
+    i = 0
     for index, row in stock_list.iterrows():
+        i+=1
+        print(str(i)+" of "+str(stock_list.__len__()))
         name, code = row['name'], row['code']
 
         csv_f = csv_dir+"/"+code+".csv"
@@ -230,8 +253,10 @@ def main():
             if not df_t.empty:
                 df_rtn = pd.concat([df_rtn, df_t],sort=False).reset_index().drop('index',axis=1)
 
-    print(df_rtn)
 
+    df_rtn.to_csv(out_f, encoding='UTF-8', index=False)
+    print(df_rtn)
+    print("output saved to "+out_f)
 
     exit(0)
 
