@@ -488,7 +488,9 @@ def generate_result_csv(full_combination=False, debug=False):
 
     f_hsgt = "/home/ryan/DATA/result/hsgt_top_10_selected.csv"
 
-
+    #fibonacci
+    f_fib = "/home/ryan/DATA/result/fib.csv"
+    f_fib_index = "/home/ryan/DATA/result/fib_index.csv"
 
 
     arr=[]
@@ -764,6 +766,15 @@ def generate_result_csv(full_combination=False, debug=False):
         df_hsgt = pd.read_csv(f_hsgt, encoding="utf-8")
         df_hsgt = finlib.Finlib().remove_garbage(df_hsgt, code_filed_name='code', code_format='C2D6')
         logging.info("\t df_hsgt length " + str(df_hsgt.__len__()))
+
+
+        df_fib = pd.read_csv(f_fib, encoding="utf-8")
+        df_fib = finlib.Finlib().remove_garbage(df_fib, code_filed_name='code', code_format='C2D6')
+        logging.info("\t df_fib length " + str(df_fib.__len__()))
+
+
+        df_fib_index = pd.read_csv(df_fib_index, encoding="utf-8")
+        logging.info("\t df_fib_index length " + str(df_fib_index.__len__()))
 
 
 
@@ -1147,6 +1158,16 @@ def generate_result_csv(full_combination=False, debug=False):
             df_hsgt = finlib.Finlib().df_filter(df_hsgt)
             arr.append('df_hsgt')
 
+        if 'f_fib' in locals():
+            logging.info("filtering df_fib")
+            df_hsgt = finlib.Finlib().df_filter(df_fib)
+            arr.append('df_fib')
+
+        if 'f_fib_index' in locals():
+            logging.info("filtering df_fib_index")
+            df_hsgt = finlib.Finlib().df_filter(df_fib_index)
+            arr.append('df_fib_index')
+
 
     ####################
     ##
@@ -1261,6 +1282,8 @@ def generate_result_csv(full_combination=False, debug=False):
         print(df_kdj_m.head(2))
         print(df_kdj_w.head(2))
         print(df_kdj_d.head(2))
+        print(df_fib.head(2))
+        print(df_fib_index.head(2))
     ### Ryan debug end
 
 
@@ -1308,6 +1331,8 @@ def generate_result_csv(full_combination=False, debug=False):
     df_dict["df_kdj_d"]={"term":"SHORT TERM","price":"CHEAP"}
 
     df_dict["df_hsgt"]={"term":"SHORT TERM","price":"CHEAP"}
+    df_dict["df_fib"]={"term":"LONG TERM","price":"CHEAP"}
+    df_dict["df_fib_index"]={"term":"LONG TERM","price":"CHEAP"}
 
 
     df_dict["df_sme"]={"term":"NA","price":"NA"}
