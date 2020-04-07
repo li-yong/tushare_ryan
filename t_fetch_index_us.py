@@ -216,6 +216,7 @@ def get_hk_us(df,cons, start_date, appendix,todayS):
 
         try:
             exc_info = sys.exc_info()
+            print("code "+str(code))
             a_stock_df = ts.bar(code, conn=cons, asset='X', adj='qfq', start_date=start_date_req, end_date='')
             #time.sleep(2)
 
