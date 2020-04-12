@@ -50,10 +50,8 @@ def check_fibo(df,code, name, begin_date='2018-01-01',show_fig_f=False,save_fig_
     r = finlib.Finlib().fibonocci(df,cri_percent=5, cri_hit = 0.01)
 
 
-    #print("HHHHAAAAA" + r['closest'])
     if r['closest'] in ["NA","00"]:
-        #print("ignore as it's NA or the lowest 00 line")
-        #exit()
+        #print("ignore as it's NA or at the lowest 00 line")
         return(rtn_dict)
 
 
@@ -61,7 +59,6 @@ def check_fibo(df,code, name, begin_date='2018-01-01',show_fig_f=False,save_fig_
     x_axis = np.array(df['date'])
 
     the_day = pd.to_datetime(x_axis[-1]).strftime("%Y-%m-%d")
-
 
     #if not r['hit']:
     #    print("code " + code + ", name " + name
@@ -74,7 +71,6 @@ def check_fibo(df,code, name, begin_date='2018-01-01',show_fig_f=False,save_fig_
         #      + ", percent " + str(r['per_cur'])
         #      + ", history hit " + str(r['current_hit_cnt'])
         #      )
-
 
         suggestion = code + " " + name+" long at " + str( r['long_enter_price'])\
                       + ", tp " + str(r['long_take_profit_price'])\
@@ -112,7 +108,6 @@ def check_fibo(df,code, name, begin_date='2018-01-01',show_fig_f=False,save_fig_
             fn = "/home/ryan/DATA/result/fib_plot/" + code +"_"+name+"_"+the_day+".png"
             fig.savefig(fn, bbox_inches='tight')
             print("figure saved to "+fn+"\n")
-
 
         if show_fig_f:
             plt.show()
@@ -177,6 +172,10 @@ def main():
                       dest="index_f", default=False,
                       help="verify the index SH000001 etc ")
 
+    parser.add_option( "--log_price", action="store_true",
+                      dest="log_price_f", default=False,
+                      help="log for y-axis price ")
+
     df_rtn  =pd.DataFrame()
 
     (options, args) = parser.parse_args()
@@ -187,6 +186,7 @@ def main():
     show_fig_f = options.show_fig_f
     save_fig_f = options.save_fig_f
     min_sample_f = options.min_sample_f
+    log_price_f = options.log_price_f
 
     if index_f:
         out_f = "/home/ryan/DATA/result/fib_index.csv"
@@ -233,6 +233,8 @@ def main():
                                         'pre_close', 'change', 'pct_chg', 'vol', 'amount'],
                                  converters={'code': str})
                 df['date'] = df['date'].apply(lambda _d: datetime.datetime.strptime(str(_d), '%Y%m%d'))
+
+
                 #check_fibo(df, code, name,begin_date_f,show_fig_f)
             else:
                 df = pd.read_csv(csv_f, skiprows=1, header=None, names=['code', 'date', 'open', 'high', 'low', 'close',
@@ -246,6 +248,13 @@ def main():
                 code_name_map = stock_list
                 code = df.iloc[0]['code']
                 name = code_name_map[code_name_map['code'] == code].iloc[0]['name']
+
+
+            if log_price_f:
+                df['open'] = df['open'].apply(lambda _d: np.log(_d))
+                df['close'] = df['close'].apply(lambda _d: np.log(_d))
+                df['high'] = df['high'].apply(lambda _d: np.log(_d))
+                df['low'] = df['low'].apply(lambda _d: np.log(_d))
 
             rtn_dict_t = check_fibo(df, code, name,begin_date_f,show_fig_f,save_fig_f, min_sample_f)
             df_t = pd.DataFrame(data=rtn_dict_t, index=[0])
