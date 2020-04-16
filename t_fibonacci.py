@@ -217,10 +217,11 @@ def main():
     i = 0
     for index, row in stock_list.iterrows():
         i+=1
-        print(str(i)+" of "+str(stock_list.__len__()))
+        print(str(i)+" of "+str(stock_list.__len__())+" ", end="")
         name, code = row['name'], row['code']
 
         csv_f = csv_dir+"/"+code+".csv"
+        print(csv_f)
 
         if not os.path.exists(csv_f):
             print("csv_f not exist, "+csv_f)
@@ -241,11 +242,16 @@ def main():
                                                                     'vol', 'amount', 'ratio'],
                              converters={'code': str})
 
+                if (df.__len__() <  min_sample_f ):
+                    continue
+
                 # date int to datetime
                 df['date'] = df['date'].apply(lambda _d: datetime.datetime.strptime(str(_d), '%Y-%m-%d'))
 
 
                 code_name_map = stock_list
+
+
                 code = df.iloc[0]['code']
                 name = code_name_map[code_name_map['code'] == code].iloc[0]['name']
 
