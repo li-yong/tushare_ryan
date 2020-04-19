@@ -4026,6 +4026,57 @@ def get_pro_repurchase():
     output_csv = dir+"/pro_repurchase.csv"
     return (pd.read_csv(output_csv))
 
+
+def concept_top():
+    fund_csv = fund_base+'/merged/merged_all_20181231.csv'
+    df_fund = pd.read_csv(fund_csv)
+
+
+    input_csv = fund_base_source+"/market" + "/pro_concept.csv"
+    df = pd.read_csv(input_csv)
+
+    output_csv = '/home/ryan/DATA/result/concept_top.csv'
+    df_out = pd.DataFrame()
+
+    for cat_code in df['cat_code'].unique():
+        #print(cat_code)
+        df_sub = df[df['cat_code']==cat_code].reset_index().drop('index', axis=1)
+        cat_name =df_sub.iloc[0]['cat_name']
+
+        df_fund_sub = df_fund[df_fund['ts_code'].isin(df_sub['ts_code'].to_list())].reset_index().drop('index', axis=1)
+        roe_mean = df_fund_sub['roe'].mean()
+        df_roe = df_fund_sub[df_fund_sub['roe'].rank(pct=True)>0.85][['name','ts_code']] #净资产收益率
+        df_profit_dedt = df_fund_sub[df_fund_sub['profit_dedt'].rank(pct=True)>0.85][['name','ts_code']] #扣除非经常性损益后的净利润
+        df_netprofit_margin = df_fund_sub[df_fund_sub['netprofit_margin'].rank(pct=True)>0.85][['name','ts_code']] #销售净利率
+        df_npta = df_fund_sub[df_fund_sub['npta'].rank(pct=True)>0.85][['name','ts_code']] #总资产净利润
+        df_netdebt = df_fund_sub[df_fund_sub['netdebt'].rank(pct=True)<0.15][['name','ts_code']] #净债务
+        df_debt_to_assets = df_fund_sub[df_fund_sub['debt_to_assets'].rank(pct=True)<0.15][['name','ts_code']] #资产负债率
+        df_q_roe = df_fund_sub[df_fund_sub['q_roe'].rank(pct=True)>0.85][['name','ts_code']] #净资产收益率(单季度)
+
+
+        merged_inner = pd.merge(left=df_roe, right=df_profit_dedt, how='inner', left_on='ts_code', right_on='ts_code',suffixes=('','_x')).drop('name_x', axis=1)
+        merged_inner = pd.merge(left=merged_inner, right=df_netprofit_margin, how='inner', left_on='ts_code', right_on='ts_code',suffixes=('','_x')).drop('name_x', axis=1)
+        merged_inner = pd.merge(left=merged_inner, right=df_npta, how='inner', left_on='ts_code', right_on='ts_code',suffixes=('','_x')).drop('name_x', axis=1)
+        merged_inner = pd.merge(left=merged_inner, right=df_netdebt, how='inner', left_on='ts_code', right_on='ts_code',suffixes=('','_x')).drop('name_x', axis=1)
+        merged_inner = pd.merge(left=merged_inner, right=df_debt_to_assets, how='inner', left_on='ts_code', right_on='ts_code',suffixes=('','_x')).drop('name_x', axis=1)
+        merged_inner = pd.merge(left=merged_inner, right=df_q_roe, how='inner', left_on='ts_code', right_on='ts_code',suffixes=('','_x')).drop('name_x', axis=1)
+
+        merged_inner.insert(2, 'cat_code', cat_code)
+        merged_inner.insert(3, 'cat_name', cat_name)
+
+        print(str(cat_code)+" "+cat_name+", "+str(merged_inner.__len__())+" qualified stocks")
+
+        if merged_inner.__len__() > 0 :
+            print(merged_inner)
+            pass
+
+        df_out = pd.concat([df_out, merged_inner], sort=False).reset_index().drop('index', axis=1)
+        df_out.to_csv(output_csv,  encoding='UTF-8', index=False)
+
+        pass
+    print('concept_top saved to '+output_csv+" ,len "+str(df_out.__len__()))
+    pass
+
 def main():
     ########################
     #
@@ -4079,6 +4130,10 @@ def main():
     parser.add_option("-a", "--analyze", action="store_true",
                       dest="analyze_f", default=False,
                       help="analyze based on the merged quarterly csv")
+
+    parser.add_option("--concept_top", action="store_true",
+                      dest="concept_top_f", default=False,
+                      help="analyze top 3 stocks in each concept")
 
     parser.add_option("--overwrite", action="store_true",
                       dest="overwrite_f", default=False,
@@ -4157,6 +4212,7 @@ def main():
     extract_latest_f = options.extract_latest_f
     merge_quarterly_f = options.merge_quarterly_f
     analyze_f = options.analyze_f
+    concept_top_f = options.concept_top_f
     overwrite_f = options.overwrite_f
     fully_a_f = options.fully_a_f
     daily_a_f = options.daily_a_f
@@ -4179,6 +4235,7 @@ def main():
     logging.info("extract_latest_f: " + str(extract_latest_f))
     logging.info("merge_quarterly_f: " + str(merge_quarterly_f))
     logging.info("analyze_f: " + str(analyze_f))
+    logging.info("concept_top_f: " + str(concept_top_f))
     logging.info("overwrite_f: " + str(overwrite_f))
     logging.info("fully_a_f: " + str(fully_a_f))
     logging.info("daily_a_f: " + str(daily_a_f))
@@ -4221,6 +4278,10 @@ def main():
 
     if options.fetch_cctv_news_f:
         _fetch_cctv_news()
+
+
+    if options.concept_top_f:
+        concept_top()
 
 
 
