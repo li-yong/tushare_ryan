@@ -528,6 +528,12 @@ python t_fibonacci.py --verify --begin_date "2018-01-01"  --min_sample=500
 python t_fibonacci.py --verify --begin_date "2018-01-01"  --min_sample=500 --index
 
 
+##############################
+# fibonacci indicator
+# input: /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/market/pro_concept.csv
+# output: /home/ryan/DATA/result/concept_top.csv
+###############################
+python t_daily_fundamentals_2.py  --concept_top
 
 ################################################
 #run1
