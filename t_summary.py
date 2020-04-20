@@ -492,6 +492,9 @@ def generate_result_csv(full_combination=False, debug=False):
     f_fib = "/home/ryan/DATA/result/fib.csv"
     f_fib_index = "/home/ryan/DATA/result/fib_index.csv"
 
+    #concept_top
+    f_concept_top = "/home/ryan/DATA/result/concept_top.csv"
+
 
     arr=[]
 
@@ -775,6 +778,9 @@ def generate_result_csv(full_combination=False, debug=False):
 
         df_fib_index = pd.read_csv(f_fib_index, encoding="utf-8")
         logging.info("\t df_fib_index length " + str(df_fib_index.__len__()))
+
+        df_concept_top = pd.read_csv(f_concept_top, encoding="utf-8")
+        logging.info("\t df_concept_top length " + str(df_concept_top.__len__()))
 
 
 
@@ -1158,15 +1164,20 @@ def generate_result_csv(full_combination=False, debug=False):
             df_hsgt = finlib.Finlib().df_filter(df_hsgt)
             arr.append('df_hsgt')
 
-        if 'f_fib' in locals():
+        if 'df_fib' in locals():
             logging.info("filtering df_fib")
-            df_hsgt = finlib.Finlib().df_filter(df_fib)
+            df_fib = finlib.Finlib().df_filter(df_fib)
             arr.append('df_fib')
 
-        if 'f_fib_index' in locals():
+        if 'df_fib_index' in locals():
             logging.info("filtering df_fib_index")
-            df_hsgt = finlib.Finlib().df_filter(df_fib_index)
+            df_fib_index = finlib.Finlib().df_filter(df_fib_index)
             arr.append('df_fib_index')
+
+        if 'df_concept_top' in locals():
+            logging.info("filtering df_concept_top")
+            df_concept_top = finlib.Finlib().df_filter(df_concept_top)
+            arr.append('df_concept_top')
 
 
     ####################
@@ -1284,6 +1295,7 @@ def generate_result_csv(full_combination=False, debug=False):
         print(df_kdj_d.head(2))
         print(df_fib.head(2))
         print(df_fib_index.head(2))
+        print(df_concept_top.head(2))
     ### Ryan debug end
 
 
@@ -1333,6 +1345,7 @@ def generate_result_csv(full_combination=False, debug=False):
     df_dict["df_hsgt"]={"term":"SHORT TERM","price":"CHEAP"}
     df_dict["df_fib"]={"term":"LONG TERM","price":"CHEAP"}
     df_dict["df_fib_index"]={"term":"LONG TERM","price":"CHEAP"}
+    df_dict["df_concept_top"]={"term":"MIDDLE TERM","price":"NA"}
 
 
     df_dict["df_sme"]={"term":"NA","price":"NA"}
