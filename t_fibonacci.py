@@ -211,7 +211,7 @@ def main():
 
     csv_dir = "/home/ryan/DATA/DAY_Global/AG"
     if index_f:
-        csv_dir += "/INDEX"
+        csv_dir = "/home/ryan/DATA/DAY_Global/AG_INDEX"
 
 
     i = 0
