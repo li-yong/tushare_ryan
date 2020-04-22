@@ -116,7 +116,7 @@ def main():
     verify_weekly_buy_sel_strategy_f = options.verify_weekly_buy_sel_strategy_f
 
     myToken = '4cc9a1cd78bf41e759dddf92c919cdede5664fa3f1204de572d8221b'
-    csv_dir = '/home/ryan/DATA/DAY_Global/AG/INDEX'
+    csv_dir = '/home/ryan/DATA/DAY_Global/AG_INDEX'
 
     if not os.path.isdir(csv_dir):
         os.mkdir(csv_dir)
