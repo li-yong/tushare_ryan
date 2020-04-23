@@ -4029,7 +4029,7 @@ def get_pro_repurchase():
 
 
 def concept_top():
-    fund_csv = fund_base+'/merged/merged_all_20191231.csv'
+    fund_csv = fund_base+'/merged/merged_all_20181231.csv'
     df_fund = pd.read_csv(fund_csv)
 
 
@@ -4073,10 +4073,9 @@ def concept_top():
 
         df_out = pd.concat([df_out, merged_inner], sort=False).reset_index().drop('index', axis=1)
 
-        df_out = finlib.Finlib().ts_code_to_code(df=df_out)
-        df_out.to_csv(output_csv,  encoding='UTF-8', index=False)
+    df_out = finlib.Finlib().ts_code_to_code(df=df_out)
+    df_out.to_csv(output_csv, encoding='UTF-8', index=False)
 
-        pass
     print('concept_top saved to '+output_csv+" ,len "+str(df_out.__len__()))
     pass
 
