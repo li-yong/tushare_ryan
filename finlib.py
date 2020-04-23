@@ -1419,7 +1419,8 @@ class Finlib:
                                      str(df_last_row['c'].values[0]) + \
                                      ") approach 52 weeks low (" + \
                                      date_min_c + "," + str(min_close_df['c']) + "), " + \
-                                     str(time_delta)) + " days ago"
+                                     str(time_delta) + " days ago")
+
 
                         df_result.loc[i_result] = [df_last_row['date'].values[0], code, 'B',
                                                    code + "_B_pvbreak_lp_year", time_delta, df_last_row['c'].values[0]]

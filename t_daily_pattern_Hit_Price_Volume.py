@@ -471,7 +471,7 @@ def calc_init(array):
         return
 
     exam_date_in_df = df_original.iloc[-1].date
-    exam_date = exam_date_in_df
+    exam_date = str(exam_date_in_df)
     logging.info("exam_date set to latest date in csv " + exam_date)
 
     if False:
@@ -688,7 +688,7 @@ if not merge_only:
     # multicore implmentation:
     for root, dirs, files in os.walk(root_dir):
         pass
-
+    
     cpu_count = multiprocessing.cpu_count()
 
     if single_process:
