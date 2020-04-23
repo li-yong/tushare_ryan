@@ -3795,8 +3795,8 @@ def _fetch_pro_concept():
 
     output_csv = dir + "/pro_concept.csv"
 
-    if finlib.Finlib().is_cached(output_csv, 1):
-        logging.info("not fetch concept as the file updated in 1 day")
+    if finlib.Finlib().is_cached(output_csv, 1) and (not force_run_global):
+        logging.info("not fetch concept as the file updated in 1 day. "+output_csv)
         return()
 
     #df_result = pd.DataFrame(columns=['cat_name', 'cat_code'])
@@ -4028,7 +4028,7 @@ def get_pro_repurchase():
 
 
 def concept_top():
-    fund_csv = fund_base+'/merged/merged_all_20181231.csv'
+    fund_csv = fund_base+'/merged/merged_all_20191231.csv'
     df_fund = pd.read_csv(fund_csv)
 
 
