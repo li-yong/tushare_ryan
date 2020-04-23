@@ -3835,7 +3835,7 @@ def _fetch_pro_concept():
                 logging.info("cat_id: " + id + " cat_name: " + cat_name)
                 sys.exc_clear()
 
-    df_result = finlib.Finlib().ts_code_to_code(df=df_result)
+    
     df_result.to_csv(output_csv, encoding='UTF-8', index=False)
     logging.info("pro concept saved to "+output_csv+" . len "+str(df_result.__len__()))
     return(df_result)
@@ -4072,6 +4072,8 @@ def concept_top():
             pass
 
         df_out = pd.concat([df_out, merged_inner], sort=False).reset_index().drop('index', axis=1)
+
+        df_out = finlib.Finlib().ts_code_to_code(df=df_out)
         df_out.to_csv(output_csv,  encoding='UTF-8', index=False)
 
         pass
