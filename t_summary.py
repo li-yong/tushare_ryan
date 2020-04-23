@@ -25,7 +25,7 @@ from tabulate import tabulate
 
 global stock_global
 
-def refine_df(input_df,has_db_record=False, force_pass=False, force_pass_open_reason='', insert_buy_record_to_db=True, debug=False):
+def refine_df(input_df,has_db_record=False, force_pass=False, force_pass_open_reason='', insert_buy_record_to_db=False, debug=False):
     #the function re-organize ptn hit result from code view, reduce the result from 1000+ to 10~100.
     #has_db_record: db has the ptn perf record.
     #force_pass: when inserting df_ann, that insert db even db doesn't have the ptn perf records.
@@ -197,6 +197,8 @@ def refine_df(input_df,has_db_record=False, force_pass=False, force_pass_open_re
                 data_sql['buy_reason'] = c_op_rsn
                 data_sql['status'] = c_status
                 data_sql['h_ptn_cnt'] = c['op_rsn'].__len__()
+                #print("update_sql "+update_sql)
+                #print("name "+c_name)
 
 
                 cursor.execute(update_sql, data_sql)
