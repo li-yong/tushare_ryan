@@ -1777,6 +1777,14 @@ class Finlib:
         code = str(df.iloc[1, df.columns.get_loc('code')])
         p_cnt = 0
 
+        target="pv" #for pv_div
+        (df_result, i_result, df) = self.calc_div(loop_num=loop_num, code=code, target=target, \
+                                                  target_period=20, \
+                                                  comparing_window=200, df=df, \
+                                                  df_result=df_result, i_result=i_result, \
+                                                  exam_date=exam_date, debug=debug, live_trading=live_trading)
+
+
         for b in ('bool_p_mfi_div', 'bool_p_rsi_div', 'bool_p_natr_div', 'bool_p_tema_div', 'bool_p_trima_div', \
                   'bool_p_adx_div', 'bool_p_adxr_div', 'bool_p_apo_div', 'bool_p_aroon_div', 'bool_p_aroonosc_div', \
                   'bool_p_bop_div', 'bool_p_cci_div', 'bool_p_cmo_div', 'bool_p_dx_div', 'bool_p_minusdi_div', \
@@ -1952,11 +1960,11 @@ class Finlib:
                 # print "loop 5, running target " +target
                 last_record_time_loop_5 = datetime.now()
 
-                (df_result, i_result, df) = self.calc_div(loop_num=loop_num, code=code, target=target, \
-                                                          target_period=target_period, \
-                                                          comparing_window=n_compare, df=df, \
-                                                          df_result=df_result, i_result=i_result, \
-                                                          exam_date=exam_date, debug=debug, live_trading=live_trading)
+                #(df_result, i_result, df) = self.calc_div(loop_num=loop_num, code=code, target=target, \
+                #                                          target_period=target_period, \
+                #                                          comparing_window=n_compare, df=df, \
+                #                                          df_result=df_result, i_result=i_result, \
+                #                                          exam_date=exam_date, debug=debug, live_trading=live_trading)
 
                 if debug:
                     print((code + " loop 5 target " + str(last_record_time) + " took ") + str(
@@ -2022,20 +2030,25 @@ class Finlib:
         start_rec = 1
         end_rec = df.__len__() + 1
 
+        if df.__len__() < pre_days:
+            return(df_result, 0, df)
+
         if live_trading:
             start_rec = df.__len__()
 
-        for i in range(start_rec, end_rec):
+        for i in range(start_rec, end_rec - pre_days):
             # if debug:
             # print "loop #"+str(loop_num)+", "+ str(i) + " of " + str(df.__len__() + 1)
-            # if i == 14:
+            # if i == 14
             #    pass
 
-            start_day = i - pre_days
-            if start_day < 0:
-                start_day = 0
+            #start_day = i - pre_days
+            #if start_day < 10:
+            #    #start_day = 0
+            #    continue
 
-            ds_n_days = df.iloc[start_day:i]  #
+            #ds_n_days = df.iloc[start_day:i]  #
+            ds_n_days = df.iloc[i:i + pre_days]  #
 
             open = np.array(ds_n_days['o'], dtype=float)
             high = np.array(ds_n_days['h'], dtype=float)
@@ -2258,13 +2271,16 @@ class Finlib:
                 upperband, middleband, lowerband = eval(cmd)
                 target_n_days = middleband
                 use_shared_eval = False
+            elif target == 'pv':
+                target_n_days = ds_n_days['vol']
 
 
             else:
                 logging.info("Unknown target, die at finlib.py.")
                 exit(0)
 
-            if use_shared_eval:
+            #if use_shared_eval:
+            if target != 'pv':
                 if debug:
                     logging.info("running " + cmd)
                 target_n_days = eval(cmd)
@@ -2318,14 +2334,14 @@ class Finlib:
                     close_min_target = target_n_days[j]
 
                 if target_n_days[j] >= target_max:
-                    target_max = target_n_days[j]  # max rsi value, real
+                    target_max = target_n_days[j]  # max rtarget_n_dayssi value, real
                     target_max_close = close[j]  # close value of the day_rsi_max
 
                 if target_n_days[j] <= target_min:
                     target_min = target_n_days[j]
                     target_min_close = close[j]
 
-            if (close[-1] == close_max) and (target_n_days[-1] < target_max):  # close_max_target == target_n_days[-1]
+            if (close[-1] >= close_max) and ( (target_n_days[-1] - 0.99 * target_max) < 0):  # close_max_target == target_n_days[-1]
                 if target_max_close == 0 or target_max == 0:
                     logging.info("target_max_close or target_max is zero.  Avoid the div by zero error.")
                     continue
@@ -2344,7 +2360,7 @@ class Finlib:
                     df_result.loc[i_result] = [time, code, 'S', reason, op_strength, close_p]
                     i_result += 1
 
-            elif (close[-1] == close_min) and (target_n_days[-1] > target_min):
+            elif (close[-1] <= close_min) and (target_n_days[-1] - 1.01 * target_min) > 0 :
 
                 if target_min_close == 0 or target_min == 0:
                     logging.info("target_min_close or target_min is zero.  Avoid the div by zero error.")

@@ -544,7 +544,10 @@ python t_daily_fundamentals_2.py  --concept_top
 #output: /home/ryan/DATA/result/today/talib_and_pv_no_db_filter_AG.csv
 ################################################
 rm -f /home/ryan/DATA/result/today/talib_and_pv_no_db_filter_AG.csv
-python t_daily_pattern_Hit_Price_Volume.py -0  -m 30 -x AG  #it was 22 ->222 ->30
+python t_daily_pattern_Hit_Price_Volume.py -m 0 -x AG --bool_calc_std_mean --bool_perc_std_mean --bool_pv_hit 
+
+#python t_daily_pattern_Hit_Price_Volume.py -0  -m 30 -x AG  #it was 22 ->222 ->30
+
 #python t_daily_pattern_Hit_Price_Volume.py -1 -2 -4  -x AG
 #python t_daily_pattern_Hit_Price_Volume.py -1 -2 -4  -m 22  #Only run pv test.
 
