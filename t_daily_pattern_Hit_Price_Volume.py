@@ -384,7 +384,7 @@ if exam_date is None:
     if stock_global in ['US','CN','MG']: #us hk data is one day dalay of GMT +8
         exam_date = exam_date_d - timedelta(2)
         exam_date = exam_date.strftime('%Y%m%d')
-    else:
+    elif (datetime.today().isoweekday() not in (6,7)):
         exam_date = exam_date_d - timedelta(1)  #suppose run the AG on next day morning.
         exam_date = exam_date.strftime('%Y%m%d')
 
