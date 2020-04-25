@@ -500,11 +500,11 @@ def generate_result_csv(full_combination=False, debug=False):
 
     arr=[]
 
-    df_pv_db_buy_filter = pd.DataFrame(columns=['code'])
-    df_pv_no_filter = pd.DataFrame(columns=['code'])
+    #df_pv_db_buy_filter = pd.DataFrame(columns=['code'])
+    #df_pv_no_filter = pd.DataFrame(columns=['code'])
 
-    len_df_pv_db_buy_filter_0 = 0
-    len_df_pv_db_sell_filter_0 = 0
+    #len_df_pv_db_buy_filter_0 = 0
+    #len_df_pv_db_sell_filter_0 = 0
 
 
 
@@ -514,16 +514,11 @@ def generate_result_csv(full_combination=False, debug=False):
         df_pv_no_filter = pd.read_csv(f_pv_no_filter, dtype=str,encoding="utf-8");
         df_pv_no_filter.drop_duplicates(inplace=True)
         df_pv_no_filter = finlib.Finlib().remove_garbage(df_pv_no_filter, code_filed_name='code', code_format='C2D6')
+        arr.append('df_pv_no_filter')
     else:
-        logging.info("ERROR: NOT found file " + f_pv_no_filter)
-        #exit(0)
+        logging.info("NOT found file " + f_pv_no_filter)
 
-
-
-    if df_pv_no_filter.__len__() <= 0:
-        logging.info("empty df_pv_no_filter")
-        #exit()
-    else:
+    if 'df_pv_no_filter' in locals():
         if 'index' in df_pv_no_filter.columns: df_pv_no_filter = df_pv_no_filter.drop('index', axis=1)
         if 'level_0' in df_pv_no_filter.columns: df_pv_no_filter = df_pv_no_filter.drop('level_0', axis=1)
         if 'Unnamed: 0' in df_pv_no_filter.columns:  df_pv_no_filter = df_pv_no_filter.drop('Unnamed: 0', axis=1)
@@ -1251,29 +1246,29 @@ def generate_result_csv(full_combination=False, debug=False):
       exec(s)
 
     ### Ryan debug start
-    print(df_max_daily_increase.head(2))
-    print(df_max_daily_decrease.head(2))
-    print(df_pv_break.head(2))
-    print(df_low_price_year.head(2))
-    print(df_low_vol_year.head(2))
+    if 'df_max_daily_increase' in locals():  print(df_max_daily_increase.head(2))
+    if 'df_max_daily_decrease' in locals():  print(df_max_daily_decrease.head(2))
+    if 'df_pv_break' in locals(): print(df_pv_break.head(2))
+    if 'df_low_price_year' in locals(): print(df_low_price_year.head(2))
+    if 'df_low_vol_year' in locals(): print(df_low_vol_year.head(2))
     #print(df_high_price_year.head(2))
     #print(df_high_vol_year.head(2))
-    print(df_decrease_gap.head(2))
-    print(df_increase_gap.head(2))
-    print(df_pv_no_filter.head(2))
+    if 'df_decrease_gap' in locals(): print(df_decrease_gap.head(2))
+    if 'df_increase_gap' in locals(): print(df_increase_gap.head(2))
+    if 'df_pv_no_filter' in locals(): print(df_pv_no_filter.head(2))
 
     if stock_global in ['AG']:
-        print(df_fenghong.head(2))
+        if 'df_fenghong' in locals(): print(df_fenghong.head(2))
         #print(df_ann.head(2))
-        print(df_fund.head(2))
-        print(df_fund_2.head(2))
-        print(df_pe_pb_roe_history.head(2))
-        print(df_whitehorse.head(2))
-        print(df_freecashflow_price_ratio.head(2))
-        print(df_hen_cow.head(2))
+        if 'df_fund' in locals(): print(df_fund.head(2))
+        if 'df_fund_2' in locals(): print(df_fund_2.head(2))
+        if 'df_pe_pb_roe_history' in locals(): print(df_pe_pb_roe_history.head(2))
+        if 'df_whitehorse' in locals(): print(df_whitehorse.head(2))
+        if 'df_freecashflow_price_ratio' in locals(): print(df_freecashflow_price_ratio.head(2))
+        if 'df_hen_cow' in locals(): print(df_hen_cow.head(2))
 
-        print(df_pv_db_buy_filter.head(2))
-        print(df_pv_db_sell_filter.head(2))
+        if 'df_pv_db_buy_filter' in locals(): print(df_pv_db_buy_filter.head(2))
+        if 'df_pv_db_sell_filter' in locals(): print(df_pv_db_sell_filter.head(2))
 
 
         '''
@@ -1285,19 +1280,19 @@ def generate_result_csv(full_combination=False, debug=False):
         print(df_industry_top.head(2))
         #print(df_area_top.head(2))
         '''
-        print(df_peg_ps.head(2))
-        print(df_disclosure_date_notify.head(2))
+        if 'df_peg_ps' in locals(): print(df_peg_ps.head(2))
+        if 'df_disclosure_date_notify' in locals(): print(df_disclosure_date_notify.head(2))
 
-        print(df_support_resist_line_today.head(2))
-        print(df_macd_m.head(2))
-        print(df_macd_w.head(2))
-        print(df_macd_d.head(2))
-        print(df_kdj_m.head(2))
-        print(df_kdj_w.head(2))
-        print(df_kdj_d.head(2))
-        print(df_fib.head(2))
-        print(df_fib_index.head(2))
-        print(df_concept_top.head(2))
+        if 'df_support_resist_line_today' in locals(): print(df_support_resist_line_today.head(2))
+        if 'df_macd_m' in locals(): print(df_macd_m.head(2))
+        if 'df_macd_w' in locals(): print(df_macd_w.head(2))
+        if 'df_macd_d' in locals(): print(df_macd_d.head(2))
+        if 'df_kdj_m' in locals(): print(df_kdj_m.head(2))
+        if 'df_kdj_w' in locals(): print(df_kdj_w.head(2))
+        if 'df_kdj_d' in locals(): print(df_kdj_d.head(2))
+        if 'df_fib' in locals(): print(df_fib.head(2))
+        if 'df_fib_index' in locals(): print(df_fib_index.head(2))
+        if 'df_concept_top' in locals(): print(df_concept_top.head(2))
     ### Ryan debug end
 
 
