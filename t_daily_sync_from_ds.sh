@@ -26,6 +26,7 @@ rsync -az /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/individ
 ######################################
 
 rsync -az   haha_data_source:/home/ryan/DATA/DAY_Global/AG/  /home/ryan/DATA/DAY_Global/AG/
+rsync -az   haha_data_source:/home/ryan/DATA/DAY_Global/AG_INDEX/  /home/ryan/DATA/DAY_Global/AG_INDEX/
 rsync -az   haha_data_source:/home/ryan/DATA/DAY_Global/CH/  /home/ryan/DATA/DAY_Global/CH/
 rsync -az   haha_data_source:/home/ryan/DATA/DAY_Global/KG/  /home/ryan/DATA/DAY_Global/KG/
 rsync -az   haha_data_source:/home/ryan/DATA/DAY_Global/KH/  /home/ryan/DATA/DAY_Global/KH/
