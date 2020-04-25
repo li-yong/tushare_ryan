@@ -706,28 +706,17 @@ class Finlib:
         else:
             instrument_csv = "/home/ryan/DATA/pickle/instrument_A.csv"
 
-        # if os.path.isfile(instrument_csv) and force_update:
-        #    logging.info("removing "+instrument_csv)
-        #    os.remove(instrument_csv)
-        todayS = self.get_last_trading_day()
-        dump = "/home/ryan/DATA/pickle/daily_update_source/" + todayS + "ts_ud.pickle"
+
 
         if os.path.isfile(instrument_csv) and (not force_update):
             df = pd.read_csv(instrument_csv, converters={'code': str})
-        elif os.path.isfile(dump):
-            logging.info("read from pickle " + dump)
-            df = pandas.read_pickle(dump)
         else:
-            if today_df is None:
-                df = ts.get_today_all()
-            else:
-                df = today_df
+            print("file not exist. "+instrument_csv)
+            exit()
 
         df = df[['name', 'code']]
         df = df.drop_duplicates()
 
-        df.to_csv(instrument_csv, encoding='UTF-8', index=False)  # len 3515
-        logging.info("\nsaved to " + instrument_csv)
 
         return df
 

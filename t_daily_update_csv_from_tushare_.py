@@ -38,46 +38,44 @@ def update_holc(todayS_l, base_dir, pickle_only, add_miss):
         logging.error("usage error, file dump exists, removing --add_miss to update csv(s). " + dump)
         exit(0)
 
+    pro = ts.pro_api(token="4cc9a1cd78bf41e759dddf92c919cdede5664fa3f1204de572d8221b")
+
     if not os.path.isfile(dump):
         if add_miss:
-            today_all = ts.get_day_all(todayS_s)
+            #today_all = ts.get_day_all(todayS_s)
+            today_all = pro.daily(trade_date=todayS_s)
         else:
-            today_all = ts.get_today_all()
+            #today_all = ts.get_today_all()
+            today_all = pro.daily(trade_date=todayS_s)
             today_all.to_pickle(dump)
             logging.info("Pickle saved to "+dump)
     else:
         logging.info("read pickle from "+dump)
         today_all=pandas.read_pickle(dump)
 
-    #ryan add 20180511. update code_map_csv
-    if os.path.isfile("/home/ryan/DATA/pickle/instrument_A.csv"):
-        os.remove("/home/ryan/DATA/pickle/instrument_A.csv")
-    finlib.Finlib().get_A_stock_instrment(today_df=today_all)
+    today_all = finlib.Finlib().remove_market_from_tscode(today_all)
 
+
+    #ryan add 20180511. update code_map_csv
+    instrument_csv = "/home/ryan/DATA/pickle/instrument_A.csv"
+    df_basic = pro.stock_basic()
+    df_basic = finlib.Finlib().remove_market_from_tscode(df_basic)
+    df_basic.to_csv(instrument_csv, encoding='UTF-8', index=False)  # len 3515
+    logging.info("\nsaved to " + instrument_csv)
 
 
     if pickle_only:
         logging.info("Save pickle only, exit")
         exit(0)
 
-
     a=today_all['code']
-    #today_all.to_csv("~/get_day_all.12.08.csv")
+    #security_csv = "/home/ryan/DATA/pickle/security.csv"
+    #code_name_map = today_all[['code','name']]  #only select code and name column
 
+    #code_name_map = finlib.Finlib().add_market_to_code(df=code_name_map)  #600000 --> SH600000
 
-    security_csv = "/home/ryan/DATA/pickle/security.csv"
-    code_name_map = today_all[['code','name']]  #only select code and name column
-
-    code_name_map = finlib.Finlib().add_market_to_code(df=code_name_map)  #600000 --> SH600000
-
-        #code_name_map.set_value(index, code_name_map.columns.get_loc('code'), code_S)
-        #code_name_map.set_value(index, code_name_map.columns.get_loc('code'), code_S)
-        #code_name_map.iloc[index, code_name_map.columns.get_loc('code')]=code_S
-
-
-
-    code_name_map.to_csv(security_csv, encoding='UTF-8')
-    logging.info("saved code<->name map to "+security_csv)
+    #code_name_map.to_csv(security_csv, encoding='UTF-8')
+    #logging.info("saved code<->name map to "+security_csv)
 
     for i in range(0, a.__len__()):
         code= a.iloc[i]
@@ -87,22 +85,12 @@ def update_holc(todayS_l, base_dir, pickle_only, add_miss):
         h = today_all.iloc[i]['high']
         l = today_all.iloc[i]['low']
 
-        volume = today_all.iloc[i]['volume']
+        volume = int(today_all.iloc[i]['vol']*100)
 
-        if add_miss:
-            volume = volume*100 #
-
-
-        if add_miss:
-            c = today_all.iloc[i]['price']
-            settlement = 0
-            turnoverratio = 0
-            amount = 0
-        else:
-            settlement = today_all.iloc[i]['settlement']
-            c = today_all.iloc[i]['trade']
-            turnoverratio = round(today_all.iloc[i]['turnoverratio']/100,8)
-            amount = today_all.iloc[i]['amount']
+        settlement = today_all.iloc[i]['pre_close']
+        c = today_all.iloc[i]['close']
+        turnoverratio = 0
+        amount = int(today_all.iloc[i]['amount']*1000)
 
         if re.match('^6',code):
             csv_f= base_dir+'/SH'+code+'.csv'
@@ -120,14 +108,8 @@ def update_holc(todayS_l, base_dir, pickle_only, add_miss):
 
 
 
-       # if re.match('^00', code):
-       #     csv_f = base_dir + '/SZ' + code + '.csv'
-       #     code_S = "SZ" + code
-       #     #print 1
-
         csv_append_s=code_S+","+todayS_l+","+str(o)+","+str(h)+","+str(l)+","+str(c)+"," \
                      +str(volume)+","+str(amount)+","+str(turnoverratio) +"\n"
-                     #+ "," + str(turnoverratio)+ "," + "1\n"
 
 
         if os.path.isfile(csv_f):
