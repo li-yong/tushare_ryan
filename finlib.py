@@ -1772,8 +1772,8 @@ class Finlib:
 
         target="pv" #for pv_div
         (df_result, i_result, df) = self.calc_div(loop_num=loop_num, code=code, target=target, \
-                                                  target_period=20, \
-                                                  comparing_window=200, df=df, \
+                                                  target_period=max_exam_day, \
+                                                  comparing_window=253, df=df, \
                                                   df_result=df_result, i_result=i_result, \
                                                   exam_date=exam_date, debug=debug, live_trading=live_trading)
 
@@ -2050,227 +2050,227 @@ class Finlib:
             volume = np.array(ds_n_days['vol'], dtype=float)
 
             use_shared_eval = True
+            if True:
+                if target == 'mfi':
+                    cmd = "talib." + target.upper() + "(high, low, close, volume, timeperiod=target_period)"
+                elif target == 'rsi':
+                    cmd = "talib." + target.upper() + "(close, timeperiod=target_period)"
+                elif target == 'natr':
+                    cmd = "talib." + target.upper() + "(high, low, close, timeperiod=target_period)"
+                elif target == 'tema':
+                    cmd = "talib." + target.upper() + "(close, timeperiod=target_period)"
+                elif target == 'trima':
+                    cmd = "talib." + target.upper() + "(close, timeperiod=target_period)"
 
-            if target == 'mfi':
-                cmd = "talib." + target.upper() + "(high, low, close, volume, timeperiod=target_period)"
-            elif target == 'rsi':
-                cmd = "talib." + target.upper() + "(close, timeperiod=target_period)"
-            elif target == 'natr':
-                cmd = "talib." + target.upper() + "(high, low, close, timeperiod=target_period)"
-            elif target == 'tema':
-                cmd = "talib." + target.upper() + "(close, timeperiod=target_period)"
-            elif target == 'trima':
-                cmd = "talib." + target.upper() + "(close, timeperiod=target_period)"
+                elif target == 'adx':
+                    cmd = "talib." + target.upper() + "(high, low, close, timeperiod=14)"
+                elif target == 'adxr':
+                    cmd = "talib." + target.upper() + "(high, low, close, timeperiod=14)"
+                elif target == 'apo':
+                    cmd = "talib." + target.upper() + "(close, fastperiod=12, slowperiod=26, matype=0)"
+                elif target == 'aroon':
+                    cmd = "talib.AROON(high, low, timeperiod=14)"
+                    aroondown, aroonup = eval(cmd)
+                    target_n_days = aroondown
+                    use_shared_eval = False
 
-            elif target == 'adx':
-                cmd = "talib." + target.upper() + "(high, low, close, timeperiod=14)"
-            elif target == 'adxr':
-                cmd = "talib." + target.upper() + "(high, low, close, timeperiod=14)"
-            elif target == 'apo':
-                cmd = "talib." + target.upper() + "(close, fastperiod=12, slowperiod=26, matype=0)"
-            elif target == 'aroon':
-                cmd = "talib.AROON(high, low, timeperiod=14)"
-                aroondown, aroonup = eval(cmd)
-                target_n_days = aroondown
-                use_shared_eval = False
-
-            elif target == 'aroonosc':
-                cmd = "talib." + target.upper() + "(high, low, timeperiod=14)"
-            elif target == 'bop':
-                cmd = "talib." + target.upper() + "(open, high, low, close)"
-            elif target == 'cci':
-                cmd = "talib." + target.upper() + "(high, low, close, timeperiod=14)"
-            elif target == 'cmo':
-                cmd = "talib." + target.upper() + "(close, timeperiod=14)"
-            elif target == 'dx':
-                cmd = "talib." + target.upper() + "(high, low, close, timeperiod=14)"
-            elif target == 'minusdi':
-                cmd = "talib.MINUS_DI(high, low, close, timeperiod=14)"
-            elif target == 'minusdm':
-                cmd = "talib.MINUS_DM(high, low, timeperiod=14)"
-            elif target == 'mom':
-                cmd = "talib." + target.upper() + "(close, timeperiod=10)"
-            elif target == 'plusdi':
-                cmd = "talib.PLUS_DI(high, low, close, timeperiod=14)"
-            elif target == 'plusdm':
-                cmd = "talib.PLUS_DM(high, low, timeperiod=14)"
-            elif target == 'ppo':
-                cmd = "talib." + target.upper() + "(close, fastperiod=12, slowperiod=26, matype=0)"
-            elif target == 'roc':
-                cmd = "talib." + target.upper() + "(close, timeperiod=10)"
-            elif target == 'rocp':
-                cmd = "talib." + target.upper() + "(close, timeperiod=10)"
-            elif target == 'rocr':
-                cmd = "talib." + target.upper() + "(close, timeperiod=10)"
-            elif target == 'rocr100':
-                cmd = "talib." + target.upper() + "(close, timeperiod=10)"
-            elif target == 'trix':
-                cmd = "talib." + target.upper() + "(close, timeperiod=30)"
-            elif target == 'ultosc':
-                cmd = "talib." + target.upper() + "(high, low, close, timeperiod1=7, timeperiod2=14, timeperiod3=28)"
-            elif target == 'willr':
-                cmd = "talib." + target.upper() + "(high, low, close, timeperiod=14)"
-
-
-            elif target == 'macd':
-                cmd = "talib.MACD(close, fastperiod=12, slowperiod=26, signalperiod=9)"
-                macd, macdsignal, macdhist = eval(cmd)
-                target_n_days = macd
-                use_shared_eval = False
-
-            elif target == 'macdext':
-                cmd = "talib.MACDEXT(close, fastperiod=12, fastmatype=0, slowperiod=26, slowmatype=0, signalperiod=9, signalmatype=0)"
-                macd, macdsignal, macdhist = eval(cmd)
-                target_n_days = macd
-                use_shared_eval = False
-
-            elif target == 'macdfix':
-                cmd = "talib.MACDFIX(close, signalperiod=9)"
-                macd, macdsignal, macdhist = eval(cmd)
-                target_n_days = macd
-                use_shared_eval = False
-
-            elif target == 'ad':
-                cmd = "talib." + target.upper() + "(high, low, close, volume)"
-
-            elif target == 'adosc':
-                cmd = "talib." + target.upper() + "(high, low, close, volume, fastperiod=3, slowperiod=10)"
-
-            elif target == 'obv':
-                cmd = "talib." + target.upper() + "(close, volume)"
-
-            elif target == 'avgprice':
-                cmd = "talib." + target.upper() + "(open, high, low, close)"
-
-            elif target == 'medprice':
-                cmd = "talib." + target.upper() + "(high, low)"
-
-            elif target == 'typprice':
-                cmd = "talib." + target.upper() + "(high, low, close)"
-
-            elif target == 'wclprice':
-                cmd = "talib." + target.upper() + "(high, low, close)"
-
-            elif target == 'ht_dcperiod':
-                cmd = "talib." + target.upper() + "(close)"
-
-            elif target == 'ht_dcphase':
-                cmd = "talib." + target.upper() + "(close)"
-
-            elif target == 'ht_phasor':
-                cmd = "talib." + target.upper() + "(close)"
-
-            elif target == 'ht_sine':
-                cmd = "talib." + target.upper() + "(close)"
-
-            elif target == 'ht_trendmode':
-                cmd = "talib." + target.upper() + "(close)"
-
-            elif target == 'beta':
-                cmd = "talib." + target.upper() + "(high, low, timeperiod=5)"
-
-            elif target == 'correl':
-                cmd = "talib." + target.upper() + "(high, low, timeperiod=30)"
-
-            elif target == 'linearreg':
-                cmd = "talib." + target.upper() + "(close, timeperiod=14)"
-
-            elif target == 'linearreg_angle':
-                cmd = "talib." + target.upper() + "(close, timeperiod=14)"
-
-            elif target == 'linearreg_intercept':
-                cmd = "talib." + target.upper() + "(close, timeperiod=14)"
-
-            elif target == 'linearreg_slope':
-                cmd = "talib." + target.upper() + "(close, timeperiod=14)"
-
-            elif target == 'stddev':
-                cmd = "talib." + target.upper() + "(close, timeperiod=5, nbdev=1)"
-
-            elif target == 'tsf':
-                cmd = "talib." + target.upper() + "(close, timeperiod=14)"
-
-            elif target == 'var':
-                cmd = "talib." + target.upper() + "(close, timeperiod=5, nbdev=1)"
-
-            elif target == 'wma':
-                cmd = "talib." + target.upper() + "(close, timeperiod=30)"
+                elif target == 'aroonosc':
+                    cmd = "talib." + target.upper() + "(high, low, timeperiod=14)"
+                elif target == 'bop':
+                    cmd = "talib." + target.upper() + "(open, high, low, close)"
+                elif target == 'cci':
+                    cmd = "talib." + target.upper() + "(high, low, close, timeperiod=14)"
+                elif target == 'cmo':
+                    cmd = "talib." + target.upper() + "(close, timeperiod=14)"
+                elif target == 'dx':
+                    cmd = "talib." + target.upper() + "(high, low, close, timeperiod=14)"
+                elif target == 'minusdi':
+                    cmd = "talib.MINUS_DI(high, low, close, timeperiod=14)"
+                elif target == 'minusdm':
+                    cmd = "talib.MINUS_DM(high, low, timeperiod=14)"
+                elif target == 'mom':
+                    cmd = "talib." + target.upper() + "(close, timeperiod=10)"
+                elif target == 'plusdi':
+                    cmd = "talib.PLUS_DI(high, low, close, timeperiod=14)"
+                elif target == 'plusdm':
+                    cmd = "talib.PLUS_DM(high, low, timeperiod=14)"
+                elif target == 'ppo':
+                    cmd = "talib." + target.upper() + "(close, fastperiod=12, slowperiod=26, matype=0)"
+                elif target == 'roc':
+                    cmd = "talib." + target.upper() + "(close, timeperiod=10)"
+                elif target == 'rocp':
+                    cmd = "talib." + target.upper() + "(close, timeperiod=10)"
+                elif target == 'rocr':
+                    cmd = "talib." + target.upper() + "(close, timeperiod=10)"
+                elif target == 'rocr100':
+                    cmd = "talib." + target.upper() + "(close, timeperiod=10)"
+                elif target == 'trix':
+                    cmd = "talib." + target.upper() + "(close, timeperiod=30)"
+                elif target == 'ultosc':
+                    cmd = "talib." + target.upper() + "(high, low, close, timeperiod1=7, timeperiod2=14, timeperiod3=28)"
+                elif target == 'willr':
+                    cmd = "talib." + target.upper() + "(high, low, close, timeperiod=14)"
 
 
-            elif target == 't3':
-                cmd = "talib." + target.upper() + "(close, timeperiod=5, vfactor=0)"
+                elif target == 'macd':
+                    cmd = "talib.MACD(close, fastperiod=12, slowperiod=26, signalperiod=9)"
+                    macd, macdsignal, macdhist = eval(cmd)
+                    target_n_days = macd
+                    use_shared_eval = False
+
+                elif target == 'macdext':
+                    cmd = "talib.MACDEXT(close, fastperiod=12, fastmatype=0, slowperiod=26, slowmatype=0, signalperiod=9, signalmatype=0)"
+                    macd, macdsignal, macdhist = eval(cmd)
+                    target_n_days = macd
+                    use_shared_eval = False
+
+                elif target == 'macdfix':
+                    cmd = "talib.MACDFIX(close, signalperiod=9)"
+                    macd, macdsignal, macdhist = eval(cmd)
+                    target_n_days = macd
+                    use_shared_eval = False
+
+                elif target == 'ad':
+                    cmd = "talib." + target.upper() + "(high, low, close, volume)"
+
+                elif target == 'adosc':
+                    cmd = "talib." + target.upper() + "(high, low, close, volume, fastperiod=3, slowperiod=10)"
+
+                elif target == 'obv':
+                    cmd = "talib." + target.upper() + "(close, volume)"
+
+                elif target == 'avgprice':
+                    cmd = "talib." + target.upper() + "(open, high, low, close)"
+
+                elif target == 'medprice':
+                    cmd = "talib." + target.upper() + "(high, low)"
+
+                elif target == 'typprice':
+                    cmd = "talib." + target.upper() + "(high, low, close)"
+
+                elif target == 'wclprice':
+                    cmd = "talib." + target.upper() + "(high, low, close)"
+
+                elif target == 'ht_dcperiod':
+                    cmd = "talib." + target.upper() + "(close)"
+
+                elif target == 'ht_dcphase':
+                    cmd = "talib." + target.upper() + "(close)"
+
+                elif target == 'ht_phasor':
+                    cmd = "talib." + target.upper() + "(close)"
+
+                elif target == 'ht_sine':
+                    cmd = "talib." + target.upper() + "(close)"
+
+                elif target == 'ht_trendmode':
+                    cmd = "talib." + target.upper() + "(close)"
+
+                elif target == 'beta':
+                    cmd = "talib." + target.upper() + "(high, low, timeperiod=5)"
+
+                elif target == 'correl':
+                    cmd = "talib." + target.upper() + "(high, low, timeperiod=30)"
+
+                elif target == 'linearreg':
+                    cmd = "talib." + target.upper() + "(close, timeperiod=14)"
+
+                elif target == 'linearreg_angle':
+                    cmd = "talib." + target.upper() + "(close, timeperiod=14)"
+
+                elif target == 'linearreg_intercept':
+                    cmd = "talib." + target.upper() + "(close, timeperiod=14)"
+
+                elif target == 'linearreg_slope':
+                    cmd = "talib." + target.upper() + "(close, timeperiod=14)"
+
+                elif target == 'stddev':
+                    cmd = "talib." + target.upper() + "(close, timeperiod=5, nbdev=1)"
+
+                elif target == 'tsf':
+                    cmd = "talib." + target.upper() + "(close, timeperiod=14)"
+
+                elif target == 'var':
+                    cmd = "talib." + target.upper() + "(close, timeperiod=5, nbdev=1)"
+
+                elif target == 'wma':
+                    cmd = "talib." + target.upper() + "(close, timeperiod=30)"
 
 
-            elif target == 'sma':
-                cmd = "talib." + target.upper() + "(close, timeperiod=30)"
+                elif target == 't3':
+                    cmd = "talib." + target.upper() + "(close, timeperiod=5, vfactor=0)"
 
 
-            elif target == 'sarext':
-                cmd = "talib." + target.upper() + "(high, low, startvalue=0, offsetonreverse=0, accelerationinitlong=0, accelerationlong=0, accelerationmaxlong=0, accelerationinitshort=0, accelerationshort=0, accelerationmaxshort=0)"
+                elif target == 'sma':
+                    cmd = "talib." + target.upper() + "(close, timeperiod=30)"
 
 
-            elif target == 'sar':
-                cmd = "talib." + target.upper() + "(high, low, acceleration=0, maximum=0)"
+                elif target == 'sarext':
+                    cmd = "talib." + target.upper() + "(high, low, startvalue=0, offsetonreverse=0, accelerationinitlong=0, accelerationlong=0, accelerationmaxlong=0, accelerationinitshort=0, accelerationshort=0, accelerationmaxshort=0)"
 
 
-            elif target == 'midprice':
-                cmd = "talib." + target.upper() + "(high, low, timeperiod=14)"
+                elif target == 'sar':
+                    cmd = "talib." + target.upper() + "(high, low, acceleration=0, maximum=0)"
 
 
-            elif target == 'midpoint':
-                cmd = "talib." + target.upper() + "(close, timeperiod=14)"
+                elif target == 'midprice':
+                    cmd = "talib." + target.upper() + "(high, low, timeperiod=14)"
 
 
-            # elif target == 'mavp':
-            #    logging.info('mavp is not implemented yet')
-            #    return
-            # cmd = "talib." + target.upper() + "(close, periods=np.array([5.0,7.0]), minperiod=2, maxperiod=30, matype=0)"
-            # talib.MAVP(np.array([ 8.31,  8.5]), periods=np.array([5.0,7.0]), minperiod=2, maxperiod=30, matype=0)
-            # array([ nan,  nan])
-
-            # talib.MAVP(np.array([ 8.31,  8.5 ,  8.53]), periods=np.array([5.0,7.0]), minperiod=2, maxperiod=30, matype=0)
-            # Exception: input lengths are different
-
-            elif target == 'mama':
-                # cmd = "talib." + target.upper() + "(close, fastlimit=0, slowlimit=0)" #Exception: TA_MAMA function failed with error code 2: Bad Parameter (TA_BAD_PARAM)
-
-                cmd = "talib." + target.upper() + "(close)"
-                mama, fama = eval(cmd)
-                target_n_days = mama
-                use_shared_eval = False
+                elif target == 'midpoint':
+                    cmd = "talib." + target.upper() + "(close, timeperiod=14)"
 
 
-            elif target == 'ma':
-                cmd = "talib." + target.upper() + "(close, timeperiod=30, matype=0)"
+                # elif target == 'mavp':
+                #    logging.info('mavp is not implemented yet')
+                #    return
+                # cmd = "talib." + target.upper() + "(close, periods=np.array([5.0,7.0]), minperiod=2, maxperiod=30, matype=0)"
+                # talib.MAVP(np.array([ 8.31,  8.5]), periods=np.array([5.0,7.0]), minperiod=2, maxperiod=30, matype=0)
+                # array([ nan,  nan])
+
+                # talib.MAVP(np.array([ 8.31,  8.5 ,  8.53]), periods=np.array([5.0,7.0]), minperiod=2, maxperiod=30, matype=0)
+                # Exception: input lengths are different
+
+                elif target == 'mama':
+                    # cmd = "talib." + target.upper() + "(close, fastlimit=0, slowlimit=0)" #Exception: TA_MAMA function failed with error code 2: Bad Parameter (TA_BAD_PARAM)
+
+                    cmd = "talib." + target.upper() + "(close)"
+                    mama, fama = eval(cmd)
+                    target_n_days = mama
+                    use_shared_eval = False
 
 
-            elif target == 'kama':
-                cmd = "talib." + target.upper() + "(close, timeperiod=30)"
+                elif target == 'ma':
+                    cmd = "talib." + target.upper() + "(close, timeperiod=30, matype=0)"
 
 
-            elif target == 'ht_trendline':
-                cmd = "talib." + target.upper() + "(close)"
+                elif target == 'kama':
+                    cmd = "talib." + target.upper() + "(close, timeperiod=30)"
 
 
-            elif target == 'ema':
-                cmd = "talib." + target.upper() + "(close, timeperiod=30)"
+                elif target == 'ht_trendline':
+                    cmd = "talib." + target.upper() + "(close)"
 
 
-            elif target == 'dema':
-                cmd = "talib." + target.upper() + "(close, timeperiod=30)"
-
-            elif target == 'bbands':
-                cmd = "talib." + target.upper() + "(close, timeperiod=5, nbdevup=2, nbdevdn=2, matype=0)"
-                upperband, middleband, lowerband = eval(cmd)
-                target_n_days = middleband
-                use_shared_eval = False
-            elif target == 'pv':
-                target_n_days = ds_n_days['vol']
+                elif target == 'ema':
+                    cmd = "talib." + target.upper() + "(close, timeperiod=30)"
 
 
-            else:
-                logging.info("Unknown target, die at finlib.py.")
-                exit(0)
+                elif target == 'dema':
+                    cmd = "talib." + target.upper() + "(close, timeperiod=30)"
+
+                elif target == 'bbands':
+                    cmd = "talib." + target.upper() + "(close, timeperiod=5, nbdevup=2, nbdevdn=2, matype=0)"
+                    upperband, middleband, lowerband = eval(cmd)
+                    target_n_days = middleband
+                    use_shared_eval = False
+                elif target == 'pv':
+                    target_n_days = ds_n_days['vol']
+
+
+                else:
+                    logging.info("Unknown target, die at finlib.py.")
+                    exit(0)
 
             #if use_shared_eval:
             if target != 'pv':
