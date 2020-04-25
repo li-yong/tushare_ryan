@@ -994,7 +994,7 @@ class Finlib:
     #
     # Return:
     #
-    def calc(self, opt, df, df_52_week, outputF, outputF_today, exam_date, live_trading=False):
+    def calc(self,max_exam_day, opt, df, df_52_week, outputF, outputF_today, exam_date, live_trading=False):
         try:
             debug = opt['debug']
             forex = opt['forex']
@@ -1104,7 +1104,7 @@ class Finlib:
 
                 time_loop_1 = datetime.now()
                 # if debug:
-                print(str(time_loop_1) + " " + code + " loop 1(std,mean) start ")
+                logging.info(str(time_loop_1) + " " + code + " loop 1(std,mean) start ")
                 last_record_time = time_loop_1
 
                 # new_value_df = pd.DataFrame([0]*df.__len__(),columns=['c_mean_10D']) #
@@ -1141,10 +1141,10 @@ class Finlib:
                 new_value_df = pd.DataFrame([0] * df.__len__(), columns=['vol_mean_15D'])
                 df = new_value_df.join(df)  # the inserted column on the head
 
-                pre_days = 220  # ryan modified from 21 to 220, using a year range for comparation
+                # pre_days = 220  # ryan modified from 21 to 220, using a year range for comparation
                 # check n days's statistic, include today. When verify, need change Date n-1 value.
 
-                for i in range(1, df.__len__() + 1):
+                for i in range(df.__len__() - max_exam_day -253, df.__len__() + 1):
                     # c_perc = stats.percentileofscore(c, df.iloc[i]['c']) / 100
                     # df.iloc[i, df.columns.get_loc('c_perc')] = c_perc
                     # print "loop " + str(i)
@@ -1152,17 +1152,17 @@ class Finlib:
                     # if debug:
                     #    print "loop #1, " + str(i) + " of " + str(df.__len__() + 1)
 
-                    start_day = i - pre_days
-                    if start_day < 0:
-                        start_day = 0
+                    #start_day = i - pre_days
+                    #if start_day < 0:
+                    #    start_day = 0
 
                     # if debug:
                     #    if  df.iloc[i-1, df.columns.get_loc('date')] == "2015-11-26":
                     #        logging.info(1)
 
                     # previous pre_days, include today
-                    c_prev = c[start_day:i]
-                    vol_prev = vol[start_day:i]
+                    c_prev = c[i-253:i]
+                    vol_prev = vol[i-253:i]
 
                     # the script runs after a day close, make decision based on the day close price.
                     # the decision is going to be executed on today's close price at the next day's market opening.
@@ -1225,19 +1225,21 @@ class Finlib:
                 new_value_df = pd.DataFrame([0] * df.__len__(), columns=['perc_std_15D_vol'])  #
                 df = new_value_df.join(df)  #
 
-                pre_days = 220  # ryan modified from 21 to 220, using year range for comparation
+                #pre_days =   # ryan modified from 21 to 220, using year range for comparation
 
-                for i in range(pre_days, df.__len__()):
+                for i in range(df.__len__() - max_exam_day, df.__len__()):
                     # if debug:
                     #    print "loop #2, " + str(i) + " of " + str(df.__len__() + 1)
-                    start_day = i - pre_days
-                    if start_day < 0:
-                        start_day = 0
+
+                    #start_day = i - pre_days
+                    #if start_day < 0:
+                    #    #start_day = 0
+                    #    continue
 
                     df.iloc[i, df.columns.get_loc('perc_std_15D_c')] = round(
-                        stats.percentileofscore(df.iloc[start_day:i, 'std_15D_c'], df.iloc[i]['std_15D_c']) / 100, 1)
+                        stats.percentileofscore(df.iloc[(i-253):i]['std_15D_c'], df.iloc[i]['std_15D_c']) / 100, 1)
                     df.iloc[i, df.columns.get_loc('perc_std_15D_vol')] = round(
-                        stats.percentileofscore(df.iloc[start_day:i, 'std_15D_vol'], df.iloc[i]['std_15D_vol']) / 100,
+                        stats.percentileofscore(df.iloc[(i - 253):i]['std_15D_vol'], df.iloc[i]['std_15D_vol']) / 100,
                         1)
 
             ###############################
@@ -1252,8 +1254,8 @@ class Finlib:
                         time_loop_2_5 - last_record_time))
                 last_record_time = time_loop_2_5
 
-                # df_loop_2_5 = df_52_week[df_52_week.__len__()/2:] #half year
-                df_loop_2_5 = df_52_week[-30:]  # ryan, debug, 30 day, more chance to be hitted.
+                df_loop_2_5 = df_52_week[int(df_52_week.__len__()/2):] #half year
+                # df_loop_2_5 = df_52_week[-30:]  # ryan, debug, 30 day, more chance to be hitted.
 
                 df_loop_2_5 = df_loop_2_5.reset_index().drop('index', axis=1)
 
@@ -1385,7 +1387,7 @@ class Finlib:
             if bool_pv_hit:  # share same switch with pv_hit
                 time_loop_3_5 = datetime.now()
                 # if debug:
-                print(str(
+                logging.info(str(
                     time_loop_3_5) + " " + code + " loop 3.5(52 weeks price analyze) started. Last loop took " + str(
                     time_loop_3_5 - last_record_time))
                 last_record_time = time_loop_3_5
@@ -1401,11 +1403,6 @@ class Finlib:
                 df_last_row = df_52_week[-1:]
 
                 # 52week price
-                tmp_a = df_last_row['c'].values[0] - min_close_df['c']
-                # tmp_b = max_close_df['c'] - min_close_df['c']
-                tmp_b = min_close_df['c']
-                # tmp_c = tmp_a/tmp_b
-
                 if (df_last_row['c'].values[0] - min_close_df['c']) < 0.02 * min_close_df[
                     'c']:  # 2% near the lowest price
                     date_min_c = min_close_df['date']
@@ -1449,10 +1446,6 @@ class Finlib:
                 # 52week volume
                 max_vol_df = df_52_week.loc[df_52_week['vol'].idxmax()]
                 min_vol_df = df_52_week.loc[df_52_week['vol'].idxmin()]
-
-                tmp_a = df_last_row['vol'].values[0] - min_vol_df['vol']
-                tmp_b = min_vol_df['vol']
-                # tmp_c = tmp_a/tmp_b
 
                 # if tmp_c < 0.1: #10% near the lowest vol
                 if (df_last_row['vol'].values[0] - min_vol_df['vol']) < 0.03 * min_vol_df[
@@ -1500,7 +1493,7 @@ class Finlib:
             if bool_pv_hit:
                 time_loop_4 = datetime.now()
                 # if debug:
-                print(str(time_loop_4) + " " + code + " loop 4(PV Analyze) started. Last loop took " + str(
+                logging.info(str(time_loop_4) + " " + code + " loop 4(PV Analyze) started. Last loop took " + str(
                     time_loop_4 - last_record_time))
                 last_record_time = time_loop_4
 
@@ -1516,7 +1509,7 @@ class Finlib:
                 df = pd.DataFrame([''] * df.__len__(), columns=['c_pos']).join(df)  #
                 df = pd.DataFrame([''] * df.__len__(), columns=['5D_c_vlt']).join(df)  #
 
-                for i in range(start_rec, df.__len__() + 1):
+                for i in range(df.__len__() - pre_days, df.__len__() + 1):
                     # if debug:
                     #   print "loop #4, " + str(i) + " of " + str(df.__len__() + 1)
                     cnt_vol_vlt_low = 0
@@ -1530,18 +1523,18 @@ class Finlib:
                     cnt_c_pos_low = 0
                     cnt_c_pos_high = 0
 
-                    start_day = i - pre_days
+                    #start_day = i - pre_days
 
-                    if start_day < 0:
-                        start_day = 0
+                    #if start_day < 0:
+                    #    start_day = 0
 
                     # previous pre_days vol, include today
-                    vol_prev = df["perc_vol"][start_day:i]
-                    vol_std_prev = df["perc_std_15D_vol"][start_day:i]
+                    vol_prev = df["perc_vol"][i-253:i]
+                    vol_std_prev = df["perc_std_15D_vol"][i-253:i]
 
                     # previous pre_days close, include today
-                    c_prev = df["perc_c"][start_day:i]
-                    c_std_prev = df["perc_std_15D_c"][start_day:i]
+                    c_prev = df["perc_c"][i-253:i]
+                    c_std_prev = df["perc_std_15D_c"][i-253:i]
 
                     # previous op
                     op_pre = df['op'][:i]  # not last 7 days, check all
@@ -1582,9 +1575,9 @@ class Finlib:
 
                     # vol std
                     for i2 in vol_std_prev:
-                        if i2 <= 0.3 and i2 > 0:
+                        if i2 <= 0.15 and i2 > 0:
                             cnt_vol_vlt_low += 1
-                        elif i2 >= 0.8:
+                        elif i2 >= 0.85:
                             cnt_vol_vlt_high += 1
 
                     if (cnt_vol_vlt_low >= threhold) and (cnt_vol_vlt_high < 1):  # more than 3 out of 5
@@ -1594,9 +1587,9 @@ class Finlib:
 
                     # vol
                     for i2 in vol_prev:
-                        if i2 <= 0.3 and i2 > 0:
+                        if i2 <= 0.15 and i2 > 0:
                             cnt_vol_pos_low += 1
-                        elif i2 >= 0.8:
+                        elif i2 >= 0.85:
                             cnt_vol_pos_high += 1
 
                     if (cnt_vol_pos_low >= threhold) and (cnt_vol_pos_high < 1):  # more than 3 out of 5
@@ -1606,9 +1599,9 @@ class Finlib:
 
                     # close std
                     for i2 in c_std_prev:
-                        if i2 <= 0.3 and i2 > 0:
+                        if i2 <= 0.15 and i2 > 0:
                             cnt_c_vlt_low += 1
-                        elif i2 >= 0.8:
+                        elif i2 >= 0.85:
                             cnt_c_vlt_high += 1
 
                     if (cnt_c_vlt_low >= threhold) and (cnt_c_vlt_high < 1):  # more than 3 out of 5. No vlt_high
@@ -1618,9 +1611,9 @@ class Finlib:
 
                     # close
                     for i2 in c_prev:
-                        if i2 <= 0.3 and i2 > 0:
+                        if i2 <= 0.15 and i2 > 0:
                             cnt_c_pos_low += 1
-                        elif i2 >= 0.8:
+                        elif i2 >= 0.85:
                             cnt_c_pos_high += 1
 
                     if (cnt_c_pos_low >= threhold) and (cnt_c_pos_high < 1):  # more than 3 out of 5
@@ -1967,7 +1960,7 @@ class Finlib:
                 #                                          exam_date=exam_date, debug=debug, live_trading=live_trading)
 
                 if debug:
-                    print((code + " loop 5 target " + str(last_record_time) + " took ") + str(
+                    logging.info((code + " loop 5 target " + str(last_record_time) + " took ") + str(
                         datetime.now() - last_record_time_loop_5) + \
                           ", loop 5 took " + str(datetime.now() - last_record_time))
 

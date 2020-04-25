@@ -464,54 +464,36 @@ def calc_init(array):
         df = pd.read_csv(inputF, skiprows=1, converters={'code': str}, header=None, names=['code', 'date', 'o', 'h', 'l', 'c', 'vol', 'amnt', 'tnv'])
 
     df_original= df
-    # print df.head(1)
-
-    if df_original.__len__() <= 0:
-        logging.info("not continue. empty csv "+inputF)
-        return
-
-    exam_date_in_df = df_original.iloc[-1].date
-    exam_date = str(exam_date_in_df)
-    logging.info("exam_date set to latest date in csv " + exam_date)
-
-    if False:
-        if exam_date_in_df < exam_date: #request to exam on day 2, but csv updated to day 1.
-            #logging.info("not continue, the df is not update to date. the csv updated to "+str(exam_date_in_df)+". Expect "+exam_date)
-            logging.info("warning, will reset exam_date to lastest date in csv. df is not update to date. the csv updated to "+str(exam_date_in_df)+". Requested to check "+exam_date)
-            #return
-            exam_date = exam_date_in_df
-            logging.info("exam_date set to latest date in csv " + exam_date)
-        else: #request to exam on day 1, and csv updated to day 2.
-            exam_date = exam_date_in_df
-            logging.info("exam_date set to latest date in csv "+exam_date)
 
     if df_original.__len__() <= 1:
         logging.info("empty or only one line file, remove file "+inputF)
         #os.remove(inputF) # Don't remove, the stock just released to market and only have one line, and ReadOnly file sytem.
         return
 
+    if df_original.__len__() <= (max_exam_day + 253): #253 trading days a year.
+        logging.info("not continue. day available less than specified max_exam_day+253 records" + inputF)
+        return
+
+    exam_date_in_df = df_original.iloc[-1].date
+    exam_date = str(exam_date_in_df)
+    logging.info("exam_date set to latest date in csv " + exam_date)
+
     # take last 3000 rows for analysis
     if max_exam_day == 0:
-            logging.info("explicitly check all the records "+str(df.__len__()) +" in file " + inputF)
-    elif df_original.__len__() >= max_exam_day:
-        logging.info("check latest "+str(max_exam_day)+" records in file " + inputF)
-        #df = df_original.ix[df.__len__() - max_exam_day:]
-        df = df_original.iloc[df.__len__() - max_exam_day:]
-        #df_not_processed = df_original.ix[:df_original.__len__() - max_exam_day - 1]
-        df_not_processed = df_original.iloc[:df_original.__len__() - max_exam_day - 1]
+        logging.info("explicitly check all the records " + str(df.__len__()) + " in file " + inputF)
     else:
-        logging.info("day available less than specified max_exam_day, implicitly check all the records " + str(df.__len__()) + " in file " + inputF)
-        #df = df_original.ix[df.__len__() - max_exam_day:]
-        df = df_original.iloc[df.__len__() - max_exam_day:]
-        #df_not_processed = df_original.ix[:df_original.__len__() - max_exam_day - 1]
-        df_not_processed = df_original.iloc[:df_original.__len__() - max_exam_day - 1]
+        logging.info("check latest "+str(max_exam_day)+" records in file " + inputF)
+        df = df_original.iloc[df_original.__len__() - max_exam_day - 253:]
+        df_not_processed = df_original.iloc[:df_original.__len__() - max_exam_day -253 - 1]
 
-    df_52_week = df_original
-    df_52_week = df_52_week.reset_index().drop('index', axis=1)
 
-    if df_52_week.__len__() >= 250: #near 251 working days in a year
-        #df_52_week = df_original.ix[df_original.__len__() - 250:]
-        df_52_week = df_original.iloc[df_original.__len__() - 250:]
+    df_52_week = df_original.iloc[df_original.__len__() - max_exam_day - 253:]
+
+    #df_52_week = df_original
+    #df_52_week = df_52_week.reset_index().drop('index', axis=1)
+
+    #if df_52_week.__len__() >= 250: #near 251 working days in a year
+    #    df_52_week = df_original.iloc[df_original.__len__() - 250:]
 
 
     df.reset_index(inplace=True)
@@ -609,7 +591,7 @@ def calc_init(array):
     #df, df_result saves to file right after they calculated, so no need to warriy about the multi-proc, especially in function calls
     try:
         exc_info = sys.exc_info()
-        (df, df_result) = finlib.Finlib().calc(opt,df,df_52_week,outputF,outputF_today,exam_date)
+        (df, df_result) = finlib.Finlib().calc(max_exam_day,opt,df,df_52_week,outputF,outputF_today,exam_date)
 
 
         if local_source: #this is for pattern performance statisc using?
