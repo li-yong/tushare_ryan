@@ -69,13 +69,6 @@ def update_holc(todayS_l, base_dir, pickle_only, add_miss):
         exit(0)
 
     a=today_all['code']
-    #security_csv = "/home/ryan/DATA/pickle/security.csv"
-    #code_name_map = today_all[['code','name']]  #only select code and name column
-
-    #code_name_map = finlib.Finlib().add_market_to_code(df=code_name_map)  #600000 --> SH600000
-
-    #code_name_map.to_csv(security_csv, encoding='UTF-8')
-    #logging.info("saved code<->name map to "+security_csv)
 
     for i in range(0, a.__len__()):
         code= a.iloc[i]
@@ -194,25 +187,6 @@ def main():
 
 
 
-
-
-
-
-
-
-    # if debug:
-    #    print "debug is boolean True"
-
-
-
-    # This script Run every day after marketing closing.
-    # It update the csv files in base_dir
-    # base_dir='/home/ryan/DATA/DAY'
-
-    # debug, use when missing one day
-    # add_miss=False
-    # add_miss=True
-    #  for i in {8..0}; do X=`date -d "-$i day" '+%Y-%m-%d'`; python t_daily_update_csv_from_tushare_.py -a -e $X;  done
     if add_miss:
          todayS_l = exam_date
     else:
