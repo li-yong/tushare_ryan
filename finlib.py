@@ -1133,7 +1133,8 @@ class Finlib:
                 # pre_days = 220  # ryan modified from 21 to 220, using a year range for comparation
                 # check n days's statistic, include today. When verify, need change Date n-1 value.
 
-                for i in range(df.__len__() - max_exam_day -253, df.__len__() + 1):
+                for i in range(df.__len__() - max_exam_day, df.__len__() + 1):
+                #for i in range(1, df.__len__() + 1):
                     # c_perc = stats.percentileofscore(c, df.iloc[i]['c']) / 100
                     # df.iloc[i, df.columns.get_loc('c_perc')] = c_perc
                     # print "loop " + str(i)
@@ -1254,7 +1255,7 @@ class Finlib:
 
                 closeP = str(df_loop_2_5[-1:]['c'].values[0])
 
-                for i in range(1, df_loop_2_5.__len__()):
+                for i in range(df_loop_2_5.__len__() -max_exam_day, df_loop_2_5.__len__()):
                     yesterday_close = df_loop_2_5.iloc[i - 1]['c']
 
                     today_close = df_loop_2_5.iloc[i]['c']
@@ -1337,7 +1338,7 @@ class Finlib:
                     if live_trading:
                         start_rec = tmp.__len__()
 
-                    for j in range(start_rec, tmp.__len__() + 1):
+                    for j in range(tmp.__len__() + 1 - max_exam_day, tmp.__len__() + 1):
                         # if debug:
                         #    print "loop #3. ptn " + str(p) + ". ptnCnt: "+ str(p_cnt) + ' of ' + str(pattern.__len__())+". bt record on ptn:"+ str(j)+' of '+ str(tmp.__len__() + 1)
 
@@ -1426,7 +1427,7 @@ class Finlib:
                                      str(df_last_row['c'].values[0]) + \
                                      ") approach 52 weeks high (" + \
                                      date_max_c + "," + str(max_close_df['c']) + "), " + \
-                                     str(time_delta)) + " days ago"
+                                     str(time_delta) + " days ago")
 
                         df_result.loc[i_result] = [df_last_row['date'].values[0], code, 'S',
                                                    code + "_S_pvbreak_hp_year", time_delta, df_last_row['c'].values[0]]
@@ -2005,20 +2006,20 @@ class Finlib:
     def calc_div(self, loop_num, code, target, target_period=14, comparing_window=15, df='', \
                  df_result='', i_result='', exam_date='', debug=False, live_trading=False):
 
-        pre_days = target_period + comparing_window + 1
+        #pre_days = target_period + comparing_window + 1
         target = str(target).lower()
         # print ("target is "+target)
 
         start_rec = 1
         end_rec = df.__len__() + 1
 
-        if df.__len__() < pre_days:
-            return(df_result, 0, df)
+        if df.__len__() < target_period + comparing_window:
+            return(df_result, i_result, df)
 
         if live_trading:
             start_rec = df.__len__()
 
-        for i in range(start_rec, end_rec - pre_days):
+        for i in range( df.__len__() - target_period,  df.__len__() + 1):
             # if debug:
             # print "loop #"+str(loop_num)+", "+ str(i) + " of " + str(df.__len__() + 1)
             # if i == 14
@@ -2030,7 +2031,7 @@ class Finlib:
             #    continue
 
             #ds_n_days = df.iloc[start_day:i]  #
-            ds_n_days = df.iloc[i:i + pre_days]  #
+            ds_n_days = df.iloc[i-comparing_window:i]  #
 
             open = np.array(ds_n_days['o'], dtype=float)
             high = np.array(ds_n_days['h'], dtype=float)
