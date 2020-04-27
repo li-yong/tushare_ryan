@@ -127,17 +127,52 @@ def analyze_hsgt_top_10():
     print("Based on recent "+str(period_days) +" days selected hsgt_top_10 was saved to " + output_csv)
 
 
-
-
-
-
-def fetch_moneyflow():
+def fetch_moneyflow_dd(fetch_whole = False, fetch_today = True):
     ts.set_token(myToken)
     pro = ts.pro_api()
 
-    df_4 = pro.moneyflow(trade_date='20190403')
-    df_4 = df_4.sort_values('net_mf_amount', ascending=False, inplace=False)
-    print(tabulate.tabulate(df_4, headers='keys', tablefmt='psql'))
+    stock_list = finlib.Finlib().get_A_stock_instrment()
+    stock_list = finlib.Finlib().add_market_to_code(stock_list, dot_f=False, tspro_format=False)  # SH600519
+
+    i = 0
+    csv_dir = "/home/ryan/DATA/DAY_Global/AG_MoneyFlow"
+    if not os.path.isdir(csv_dir):
+        os.mkdir(csv_dir)
+
+    if fetch_today:
+        df_today = pro.moneyflow(trade_date=finlib.Finlib().get_last_trading_day())
+        df_today = finlib.Finlib().ts_code_to_code(df_today)
+
+    for index, row in stock_list.iterrows():
+        i += 1
+        print(str(i) + " of " + str(stock_list.__len__()) + " ", end="")
+        name, code = row['name'], row['code']
+        ts_code =  finlib.Finlib().add_market_to_code(pd.DataFrame([code], columns=['code']), dot_f=True, tspro_format=True).iloc[0]['code']
+
+        csv_f = csv_dir + "/" + code + ".csv"
+        if fetch_today:
+            df_tmp = df_today[df_today['code']==code]
+            
+            if os.path.exists(csv_f):
+                df_old = pd.read_csv(csv_f)
+                df_new = pd.concat([df_old, df_tmp],sort=False).drop_duplicates().reset_index().drop('index', axis=1)
+            else:
+                df_new = df_tmp
+            df_new.to_csv(csv_f,  encoding='UTF-8', index=False)
+
+        elif fetch_whole:
+            #SH600519 --> 600519.SH
+            df = pro.moneyflow(ts_code=ts_code)
+            #df = pro.moneyflow(ts_code=code, start_date = '20200101', end_date = trade_day)
+            #ts_code = '002149.SZ', start_date = '20190115', end_date = '20190315
+            df = finlib.Finlib().ts_code_to_code(df)
+            df = df.reindex(index=df.index[::-1])
+            df.to_csv(csv_f,  encoding='UTF-8', index=False)
+            print("len "+str(df.__len__())+" "+csv_f)
+
+    #df_4 = pro.moneyflow(trade_date=trade_day)
+    #df_4 = df_4.sort_values('net_mf_amount', ascending=False, inplace=False)
+    #print(tabulate.tabulate(df_4, headers='keys', tablefmt='psql'))
 
 
 ### MAIN ####
@@ -163,6 +198,14 @@ if __name__ == '__main__':
                       dest="fetch_all_f", default=False,
                       help="fetch all hsgt ")
 
+    parser.add_option("--fetch_hsgt_top_10", action="store_true",
+                      dest="fetch_hsgt_top_10_f", default=False,
+                      help="fetch hsgt ")
+
+    parser.add_option("--fetch_moneyflow_dd", action="store_true",
+                      dest="fetch_moneyflow_dd_f", default=False,
+                      help="fetch money flow dd")
+
     parser.add_option("-a", "--analyze", action="store_true",
                       dest="analyze_f", default=False,
                       help="analyze hsgt ")
@@ -171,11 +214,15 @@ if __name__ == '__main__':
 
     (options, args) = parser.parse_args()
     fetch_all_f = options.fetch_all_f
+    fetch_hsgt_top_10_f = options.fetch_hsgt_top_10_f
+    fetch_moneyflow_dd_f = options.fetch_moneyflow_dd_f
     analyze_f = options.analyze_f
     force_run_f = options.force_run_f
     debug_f = options.debug_f
 
     logging.info("fetch_all_f: " + str(fetch_all_f))
+    logging.info("fetch_hsgt_top_10_f: " + str(fetch_hsgt_top_10_f))
+    logging.info("fetch_moneyflow_dd_f: " + str(fetch_moneyflow_dd_f))
     logging.info("analyze_f: " + str(analyze_f))
 
     set_global(debug=debug_f,force_run=force_run_f)
@@ -183,7 +230,12 @@ if __name__ == '__main__':
 
     if fetch_all_f:
         fetch_hsgt_top_10()
-        fetch_moneyflow()
+        fetch_moneyflow_dd(fetch_whole=True, fetch_today=False)
+    elif fetch_hsgt_top_10_f:
+        fetch_hsgt_top_10()
+    elif fetch_moneyflow_dd_f:
+        #todayS = finlib.Finlib().get_last_trading_day()
+        fetch_moneyflow_dd(fetch_whole=False, fetch_today=True)
     elif analyze_f:
         analyze_hsgt_top_10()
 

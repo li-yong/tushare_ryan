@@ -774,14 +774,12 @@ class Finlib:
                 code_S = "SZ" + dot + code
                 code_S2 = code + dot + "SZ"
             elif re.match('^[9]', code):  # B Gu
-                logging.info(("ignore B GU " + code))
+                #logging.info(("ignore B GU " + code))
                 continue
             elif re.match('^SH', code):  #
                 code_S = code
                 code_number = re.match('^SH(.*)', code).group(1)  # 600519
                 code_S2 = code_number + dot + 'SH'
-
-
             elif re.match('^SZ', code):  #
                 code_S = code
                 code_number = re.match('^SZ(.*)', code).group(1)  # 600519
