@@ -57,7 +57,9 @@ python t_daily_fundamentals_2.py --fetch_data_all --fast_fetch  --force_run #mos
 # /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/daily_money_flow/hsgt_top10.csv
 #
 ######################################
-python t_daily_hsgt.py --fetch_data_all
+python t_daily_hsgt.py --fetch_hsgt_top_10
+python t_daily_hsgt.py --fetch_moneyflow_all
+python t_daily_hsgt.py --fetch_moneyflow_daily 
 
 
 

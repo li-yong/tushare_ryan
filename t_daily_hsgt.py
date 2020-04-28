@@ -127,7 +127,7 @@ def analyze_hsgt_top_10():
     print("Based on recent "+str(period_days) +" days selected hsgt_top_10 was saved to " + output_csv)
 
 
-def fetch_moneyflow_dd(fetch_whole = False, fetch_today = True):
+def fetch_moneyflow(fetch_whole = False, fetch_today = True):
     ts.set_token(myToken)
     pro = ts.pro_api()
 
@@ -147,12 +147,14 @@ def fetch_moneyflow_dd(fetch_whole = False, fetch_today = True):
         i += 1
         print(str(i) + " of " + str(stock_list.__len__()) + " ", end="")
         name, code = row['name'], row['code']
+
+        # SH600519 --> 600519.SH
         ts_code =  finlib.Finlib().add_market_to_code(pd.DataFrame([code], columns=['code']), dot_f=True, tspro_format=True).iloc[0]['code']
 
         csv_f = csv_dir + "/" + code + ".csv"
         if fetch_today:
             df_tmp = df_today[df_today['code']==code]
-            
+
             if os.path.exists(csv_f):
                 df_old = pd.read_csv(csv_f)
                 df_new = pd.concat([df_old, df_tmp],sort=False).drop_duplicates().reset_index().drop('index', axis=1)
@@ -161,8 +163,10 @@ def fetch_moneyflow_dd(fetch_whole = False, fetch_today = True):
             df_new.to_csv(csv_f,  encoding='UTF-8', index=False)
 
         elif fetch_whole:
-            #SH600519 --> 600519.SH
+            if finlib.Finlib.is_cached(csv_f,3):
+                continue
             df = pro.moneyflow(ts_code=ts_code)
+            time.sleep(0.5)
             #df = pro.moneyflow(ts_code=code, start_date = '20200101', end_date = trade_day)
             #ts_code = '002149.SZ', start_date = '20190115', end_date = '20190315
             df = finlib.Finlib().ts_code_to_code(df)
@@ -173,6 +177,130 @@ def fetch_moneyflow_dd(fetch_whole = False, fetch_today = True):
     #df_4 = pro.moneyflow(trade_date=trade_day)
     #df_4 = df_4.sort_values('net_mf_amount', ascending=False, inplace=False)
     #print(tabulate.tabulate(df_4, headers='keys', tablefmt='psql'))
+
+
+def describe_std(code, name, df_sub, col_name, force_print=False):
+    td = df_sub.iloc[-1:]['trade_date'].values[0]
+    df_description = df_sub[col_name].describe()
+    std = df_description['std']
+    mean = df_description['mean']
+    current_v = df_sub.iloc[-1:][col_name].values[0]
+    sig = round((current_v - mean) / std, 1)
+
+    rst={'col_name':col_name,
+         'des':df_description,
+         'sig':sig,
+         'date':td,
+         'col_v':current_v,
+         'hit':False,
+         }
+
+    threshold = 3  # 3 sigma, 99.8% chance
+    if sig > threshold or (-1 * sig) > threshold or force_print:
+        rst['hit'] = True
+        print(
+            code + " " + name + " " + str(td) + " sig " + str(sig) + " " + col_name + " " + str(current_v))
+        print("last 10 day " +col_name+" " + str(df_sub[col_name][-10:].describe()['std']))
+        print("-30:-10 day " +col_name+" " + str(df_sub[col_name][-30:-10].describe()['std']))
+
+        todayS = finlib.Finlib().get_last_trading_day()
+        if todayS == td:
+            print("TODAY HITTED. "+ code + " " + name + " " + str(td) + " sig " + str(sig) + " " + col_name + " " + str(current_v))
+        # print(df_sub['(bv1+bv2)/bv0'][-10:].describe())
+        # print(df_sub['(bv1-sv1)/bv0'][-10:].describe())
+        # print(df_sub['(bm1-sm1)/bm0'][-10:].describe())
+        pass
+
+    return(rst)
+
+
+def analyze_moneyflow(fetch_whole = False, fetch_today = True):
+    ts.set_token(myToken)
+
+    stock_list = finlib.Finlib().get_A_stock_instrment()
+    stock_list = finlib.Finlib().add_market_to_code(stock_list, dot_f=False, tspro_format=False)  # SH600519
+    stock_list = finlib.Finlib().remove_garbage(stock_list, code_filed_name='code', code_format='C2D6')
+
+    i = 0
+    csv_in_dir = "/home/ryan/DATA/DAY_Global/AG_MoneyFlow"
+    csv_out_dir = "/home/ryan/DATA/tmp/moneyflow_ana"
+    if not os.path.isdir(csv_out_dir):
+        os.mkdir(csv_out_dir)
+
+    for index, row in stock_list.iterrows():
+        i += 1
+        print(str(i) + " of " + str(stock_list.__len__()) + " ", end="")
+        name, code = row['name'], row['code']
+
+        csv_in = csv_in_dir + "/" + code + ".csv"
+        csv_out = csv_out_dir + "/" + code + ".csv"
+
+        if os.path.exists(csv_in):
+            df = pd.read_csv(csv_in)
+            #analysis start
+            # b: buy, s:sell, v:volume, m:amount
+            # 0: all, 1:extr large, 2:large, 3:middle, 4:small
+
+            df = pd.DataFrame([0] * df.__len__(), columns=['bv0']).join(df) # the inserted column on the head
+            df = pd.DataFrame([0] * df.__len__(), columns=['sv0']).join(df) # the inserted column on the head
+            df['bv0'] = df['buy_elg_vol']+df['buy_lg_vol']+df['buy_md_vol']+df['buy_sm_vol']
+            df['sv0'] = df['sell_elg_vol']+df['sell_lg_vol']+df['sell_md_vol']+df['sell_sm_vol']
+
+            df = pd.DataFrame([0] * df.__len__(), columns=['bm0']).join(df) # the inserted column on the head
+            df = pd.DataFrame([0] * df.__len__(), columns=['sm0']).join(df) # the inserted column on the head
+            df['bm0'] = df['buy_elg_amount']+df['buy_lg_amount']+df['buy_md_amount']+df['buy_sm_amount']
+            df['sm0'] = df['sell_elg_amount']+df['sell_lg_amount']+df['sell_md_amount']+df['sell_sm_amount']
+
+            df = pd.DataFrame([0] * df.__len__(), columns=['bv1/bv0']).join(df) # the inserted column on the head
+            df = pd.DataFrame([0] * df.__len__(), columns=['sv1/sv0']).join(df) # the inserted column on the head
+            df['bv1/bv0'] = df['buy_elg_vol']/df['bv0']
+            df['sv1/sv0'] = df['sell_elg_vol']/df['sv0']
+
+            df = pd.DataFrame([0] * df.__len__(), columns=['(bv1-sv1)/bv0']).join(df) # the inserted column on the head
+            df['(bv1-sv1)/bv0']=(df['buy_elg_vol']-df['sell_elg_vol'])/df['bv0']
+
+            df = pd.DataFrame([0] * df.__len__(), columns=['(bm1-sm1)/bm0']).join(df) # the inserted column on the head
+            df['(bm1-sm1)/bm0'] = (df['buy_elg_amount']-df['sell_elg_amount']) / df['bm0']
+
+            df = pd.DataFrame([0] * df.__len__(), columns=['(bv1+bv2)/bv0']).join(df)  # the inserted column on the head
+            df = pd.DataFrame([0] * df.__len__(), columns=['(sv1+sv2)/sv0']).join(df)  # the inserted column on the head
+            df['(bv1+bv2)/bv0'] = (df['buy_elg_vol']+df['buy_lg_vol']) / df['bv0']
+            df['(sv1+sv2)/sv0'] = (df['sell_elg_vol']+df['sell_lg_vol']) / df['sv0']
+
+            pre_days = 3 #analysis last 100 rows
+            for i in range(df.__len__()-pre_days, df.__len__()):
+                df_sub = df[i-253: i] #compare with previous one year data for each row
+                #df['trade_date'].iloc[df['bv0'].idxmax()]
+
+
+                target = '(bv1+bv2)/bv0'
+                rst = describe_std(code, name, df_sub, target,force_print=False)
+
+
+                if rst['hit']:
+                    if rst['sig'] > 0:
+                        print("buy, hold short " + code + " " + name + " " + str(rst['date'])+" sig "+str(rst['sig']))
+                    elif rst['sig'] < 0:
+                        print("buy, hold long  " + code + " " + name + " " + str(rst['date'])+" sig "+str(rst['sig']))
+
+                    rst = describe_std(row['code'], row['name'], df_sub, '(sv1+sv2)/sv0', force_print=True)
+                    rst = describe_std(row['code'], row['name'], df_sub, 'bv1/bv0', force_print=True)
+                    rst = describe_std(row['code'], row['name'], df_sub, '(bv1-sv1)/bv0', force_print=True)
+                    rst = describe_std(row['code'], row['name'], df_sub, '(bm1-sm1)/bm0', force_print=True)
+
+
+            df.to_csv(csv_out, encoding='UTF-8', index=False)
+            logging.info("saved to "+csv_out)
+            pass
+        else:
+            logging.warning("no such file "+csv_in)
+            continue
+
+
+
+
+
+
 
 
 ### MAIN ####
@@ -194,50 +322,56 @@ if __name__ == '__main__':
                       dest="force_run_f", default=False,
                       help="force fetch, force generate file, even when file exist or just updated")
 
-    parser.add_option("-f", "--fetch_data_all", action="store_true",
-                      dest="fetch_all_f", default=False,
-                      help="fetch all hsgt ")
+    parser.add_option("--fetch_moneyflow_all", action="store_true",
+                      dest="fetch_moneyflow_all_f", default=False,
+                      help="fetch moneyflow full history for stocks ")
 
     parser.add_option("--fetch_hsgt_top_10", action="store_true",
                       dest="fetch_hsgt_top_10_f", default=False,
                       help="fetch hsgt ")
 
-    parser.add_option("--fetch_moneyflow_dd", action="store_true",
-                      dest="fetch_moneyflow_dd_f", default=False,
-                      help="fetch money flow dd")
+    parser.add_option("--fetch_moneyflow_daily", action="store_true",
+                      dest="fetch_moneyflow_daily_f", default=False,
+                      help="fetch today moneyflow and update to all stocks )")
 
-    parser.add_option("-a", "--analyze", action="store_true",
-                      dest="analyze_f", default=False,
+    parser.add_option("--analyze_hsgt", action="store_true",
+                      dest="analyze_hsgt_f", default=False,
                       help="analyze hsgt ")
+
+    parser.add_option("--analyze_moneyflow", action="store_true",
+                      dest="analyze_moneyflow_f", default=False,
+                      help="analyze moneyflow ")
 
 
 
     (options, args) = parser.parse_args()
-    fetch_all_f = options.fetch_all_f
     fetch_hsgt_top_10_f = options.fetch_hsgt_top_10_f
-    fetch_moneyflow_dd_f = options.fetch_moneyflow_dd_f
-    analyze_f = options.analyze_f
+
+    fetch_moneyflow_all_f = options.fetch_moneyflow_all_f
+    fetch_moneyflow_daily_f = options.fetch_moneyflow_daily_f
+    analyze_moneyflow_f = options.analyze_moneyflow_f
+    analyze_hsgt_f = options.analyze_hsgt_f
     force_run_f = options.force_run_f
     debug_f = options.debug_f
 
-    logging.info("fetch_all_f: " + str(fetch_all_f))
+    logging.info("fetch_moneyflow_all_f: " + str(fetch_moneyflow_all_f))
     logging.info("fetch_hsgt_top_10_f: " + str(fetch_hsgt_top_10_f))
-    logging.info("fetch_moneyflow_dd_f: " + str(fetch_moneyflow_dd_f))
-    logging.info("analyze_f: " + str(analyze_f))
+    logging.info("fetch_moneyflow_daily_f: " + str(fetch_moneyflow_daily_f))
+    logging.info("analyze_moneyflow_f: " + str(analyze_moneyflow_f))
+    logging.info("analyze_hsgt_f: " + str(analyze_hsgt_f))
+    logging.info("debug_f: " + str(debug_f))
 
     set_global(debug=debug_f,force_run=force_run_f)
 
 
-    if fetch_all_f:
-        fetch_hsgt_top_10()
-        fetch_moneyflow_dd(fetch_whole=True, fetch_today=False)
+    if fetch_moneyflow_all_f:
+        fetch_moneyflow(fetch_whole=True, fetch_today=False)
     elif fetch_hsgt_top_10_f:
         fetch_hsgt_top_10()
-    elif fetch_moneyflow_dd_f:
+    elif fetch_moneyflow_daily_f:
         #todayS = finlib.Finlib().get_last_trading_day()
-        fetch_moneyflow_dd(fetch_whole=False, fetch_today=True)
-    elif analyze_f:
+        fetch_moneyflow(fetch_whole=False, fetch_today=True)
+    elif analyze_hsgt_f:
         analyze_hsgt_top_10()
-
-
-    pass
+    elif analyze_moneyflow_f:
+        analyze_moneyflow()

@@ -1107,7 +1107,7 @@ class Finlib:
 
                 # close price percent score in all times, 期望找到 价格在底部
                 new_value_df = pd.DataFrame([0] * df.__len__(), columns=['perc_c'])
-                df = new_value_df.join(df)  # the inserted colun on the head
+                df = new_value_df.join(df)  # the inserted column on the head
 
                 # 期望找到成交量在底部
                 new_value_df = pd.DataFrame([0] * df.__len__(), columns=['perc_vol'])  #
