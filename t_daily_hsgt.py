@@ -145,7 +145,8 @@ def fetch_moneyflow(fetch_whole = False, fetch_today = True):
 
     for index, row in stock_list.iterrows():
         i += 1
-        print(str(i) + " of " + str(stock_list.__len__()) + " ", end="")
+        #print(str(i) + " of " + str(stock_list.__len__()) + " ", end="")
+        print(str(i) + " of " + str(stock_list.__len__()))
         name, code = row['name'], row['code']
 
         # SH600519 --> 600519.SH
@@ -163,7 +164,7 @@ def fetch_moneyflow(fetch_whole = False, fetch_today = True):
             df_new.to_csv(csv_f,  encoding='UTF-8', index=False)
 
         elif fetch_whole:
-            if finlib.Finlib.is_cached(csv_f,3):
+            if finlib.Finlib().is_cached(csv_f,3):
                 continue
             df = pro.moneyflow(ts_code=ts_code)
             time.sleep(0.5)
@@ -229,7 +230,8 @@ def analyze_moneyflow(fetch_whole = False, fetch_today = True):
 
     for index, row in stock_list.iterrows():
         i += 1
-        print(str(i) + " of " + str(stock_list.__len__()) + " ", end="")
+        #print(str(i) + " of " + str(stock_list.__len__()) + " ", end="")
+        print(str(i) + " of " + str(stock_list.__len__()) )
         name, code = row['name'], row['code']
 
         csv_in = csv_in_dir + "/" + code + ".csv"
