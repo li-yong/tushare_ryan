@@ -217,13 +217,17 @@ def describe_std(code, name, df_sub, col_name, force_print=False):
     return(rst)
 
 
-def analyze_moneyflow(fetch_whole = False, fetch_today = True):
+def analyze_moneyflow(mf_ana_pre_days=3, mf_ana_test_hold_days=5, prime_stock_list=True):
     ts.set_token(myToken)
 
-    stock_list = finlib.Finlib().get_A_stock_instrment()
-    stock_list = finlib.Finlib().add_market_to_code(stock_list, dot_f=False, tspro_format=False)  # SH600519
-    stock_list = finlib.Finlib().remove_garbage(stock_list, code_filed_name='code', code_format='C2D6')
-    stock_list = finlib.Finlib().selected_stock_list()
+
+    if prime_stock_list:
+        stock_list = finlib.Finlib().prime_stock_list()
+    else: #all stocks
+        stock_list = finlib.Finlib().get_A_stock_instrment()
+        stock_list = finlib.Finlib().add_market_to_code(stock_list, dot_f=False, tspro_format=False)  # SH600519
+        stock_list = finlib.Finlib().remove_garbage(stock_list, code_filed_name='code', code_format='C2D6')
+
 
     i = 0
     csv_in_dir = "/home/ryan/DATA/DAY_Global/AG_MoneyFlow"
@@ -279,7 +283,7 @@ def analyze_moneyflow(fetch_whole = False, fetch_today = True):
             df['(bv1+bv2)/bv0'] = (df['buy_elg_vol']+df['buy_lg_vol']) / df['bv0']
             df['(sv1+sv2)/sv0'] = (df['sell_elg_vol']+df['sell_lg_vol']) / df['sv0']
 
-            pre_days = 9 #analysis last 100 rows
+            pre_days = mf_ana_pre_days  #analysis last 100 rows
             for i2 in range(df.__len__()-pre_days, df.__len__()):
                 df_sub = df[i2-253: i2] #compare with previous one year data for each row
 
@@ -292,7 +296,7 @@ def analyze_moneyflow(fetch_whole = False, fetch_today = True):
                 if rst['hit']:
                     reason = rst['col_name'] + " outstanding std"
                     in_date = datetime.datetime.strptime(str(rst['date']), '%Y%m%d')
-                    out_date = in_date + datetime.timedelta(5)
+                    out_date = in_date + datetime.timedelta(mf_ana_test_hold_days)
                     today = datetime.datetime.today()
 
                     if today < out_date:
@@ -399,6 +403,19 @@ if __name__ == '__main__':
                       dest="analyze_moneyflow_f", default=False,
                       help="analyze moneyflow ")
 
+    parser.add_option("--mf_ana_pre_days", type="int", default=3,
+                      dest="mf_ana_pre_days",
+                      help="analyze moneyflow, check from how many days before today")
+
+    parser.add_option("--mf_ana_test_hold_days", type="int", default=5,
+                      dest="mf_ana_test_hold_days",
+                      help="analyze moneyflow, test profit of holding n days. 5 had a good result in few tests.")
+
+
+    parser.add_option("--mf_ana_prime_stock", action="store_true", default=False,
+                      dest="mf_ana_prime_stock",
+                      help="analyze moneyflow, analyze prime stocks only.")
+
 
 
     (options, args) = parser.parse_args()
@@ -410,12 +427,18 @@ if __name__ == '__main__':
     analyze_hsgt_f = options.analyze_hsgt_f
     force_run_f = options.force_run_f
     debug_f = options.debug_f
+    mf_ana_pre_days = options.mf_ana_pre_days
+    mf_ana_test_hold_days = options.mf_ana_test_hold_days
+    mf_ana_prime_stock = options.mf_ana_prime_stock
 
     logging.info("fetch_moneyflow_all_f: " + str(fetch_moneyflow_all_f))
     logging.info("fetch_hsgt_top_10_f: " + str(fetch_hsgt_top_10_f))
     logging.info("fetch_moneyflow_daily_f: " + str(fetch_moneyflow_daily_f))
     logging.info("analyze_moneyflow_f: " + str(analyze_moneyflow_f))
     logging.info("analyze_hsgt_f: " + str(analyze_hsgt_f))
+    logging.info("mf_ana_pre_days: " + str(mf_ana_pre_days))
+    logging.info("mf_ana_test_hold_days: " + str(mf_ana_test_hold_days))
+    logging.info("mf_ana_prime_stock: " + str(mf_ana_prime_stock))
     logging.info("debug_f: " + str(debug_f))
 
     set_global(debug=debug_f,force_run=force_run_f)
@@ -426,9 +449,8 @@ if __name__ == '__main__':
     elif fetch_hsgt_top_10_f:
         fetch_hsgt_top_10()
     elif fetch_moneyflow_daily_f:
-        #todayS = finlib.Finlib().get_last_trading_day()
         fetch_moneyflow(fetch_whole=False, fetch_today=True)
     elif analyze_hsgt_f:
         analyze_hsgt_top_10()
     elif analyze_moneyflow_f:
-        analyze_moneyflow()
+        analyze_moneyflow(mf_ana_pre_days=mf_ana_pre_days, mf_ana_test_hold_days=mf_ana_test_hold_days, prime_stock_list=mf_ana_prime_stock)

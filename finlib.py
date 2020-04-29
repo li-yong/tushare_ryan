@@ -2880,7 +2880,7 @@ class Finlib:
 
         return (rtn)
 
-    def selected_stock_list(self):
+    def prime_stock_list(self):
         csv = '/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/report/step6/multiple_years_score_selected.csv'
         logging.info("loading , "+ csv)
         if (os.path.isfile(csv)) and os.stat(csv).st_size >= 10:  # > 10 bytes
