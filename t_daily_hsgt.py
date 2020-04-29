@@ -223,6 +223,7 @@ def analyze_moneyflow(fetch_whole = False, fetch_today = True):
     stock_list = finlib.Finlib().get_A_stock_instrment()
     stock_list = finlib.Finlib().add_market_to_code(stock_list, dot_f=False, tspro_format=False)  # SH600519
     stock_list = finlib.Finlib().remove_garbage(stock_list, code_filed_name='code', code_format='C2D6')
+    stock_list = finlib.Finlib().selected_stock_list()
 
     i = 0
     csv_in_dir = "/home/ryan/DATA/DAY_Global/AG_MoneyFlow"
@@ -278,7 +279,7 @@ def analyze_moneyflow(fetch_whole = False, fetch_today = True):
             df['(bv1+bv2)/bv0'] = (df['buy_elg_vol']+df['buy_lg_vol']) / df['bv0']
             df['(sv1+sv2)/sv0'] = (df['sell_elg_vol']+df['sell_lg_vol']) / df['sv0']
 
-            pre_days = 3 #analysis last 100 rows
+            pre_days = 9 #analysis last 100 rows
             for i2 in range(df.__len__()-pre_days, df.__len__()):
                 df_sub = df[i2-253: i2] #compare with previous one year data for each row
 
@@ -291,7 +292,7 @@ def analyze_moneyflow(fetch_whole = False, fetch_today = True):
                 if rst['hit']:
                     reason = rst['col_name'] + " outstanding std"
                     in_date = datetime.datetime.strptime(str(rst['date']), '%Y%m%d')
-                    out_date = in_date + datetime.timedelta(3)
+                    out_date = in_date + datetime.timedelta(5)
                     today = datetime.datetime.today()
 
                     if today < out_date:

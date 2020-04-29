@@ -2880,6 +2880,15 @@ class Finlib:
 
         return (rtn)
 
+    def selected_stock_list(self):
+        csv = '/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/report/step6/multiple_years_score_selected.csv'
+        logging.info("loading , "+ csv)
+        if (os.path.isfile(csv)) and os.stat(csv).st_size >= 10:  # > 10 bytes
+            df = pd.read_csv(csv, encoding="utf-8")
+        return(df)
+
+
+
     def remove_garbage(self, df, code_filed_name, code_format):
         # code_filed_name in code, ts_code
         # code_format in "D6.C2", "C2D6"
