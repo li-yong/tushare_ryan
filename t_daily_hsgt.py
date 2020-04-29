@@ -1,5 +1,6 @@
 # coding: utf-8
-
+#import pdb
+#pdb.set_trace()
 import tushare as ts
 import talib
 import pickle
@@ -157,8 +158,9 @@ def fetch_moneyflow(fetch_whole = False, fetch_today = True):
             df_tmp = df_today[df_today['code']==code]
 
             if os.path.exists(csv_f):
-                df_old = pd.read_csv(csv_f)
+                df_old = pd.read_csv(csv_f, converters={'trade_date': str})
                 df_new = pd.concat([df_old, df_tmp],sort=False).drop_duplicates().reset_index().drop('index', axis=1)
+
             else:
                 df_new = df_tmp
             df_new.to_csv(csv_f,  encoding='UTF-8', index=False)
