@@ -1,6 +1,5 @@
 # coding: utf-8
-#import pdb
-#pdb.set_trace()
+import pdb
 import tushare as ts
 import talib
 import pickle
@@ -24,6 +23,7 @@ logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m_%d %H:%M:%S',l
 
 
 import os
+import shutil
 import tabulate
 
 
@@ -196,22 +196,22 @@ def describe_std(code, name, df_sub, col_name, force_print=False):
          'date':td,
          'col_v':current_v,
          'hit':False,
+         'hit_today':False,
+
          }
 
     threshold = 3  # 3 sigma, 99.8% chance
     if sig > threshold or (-1 * sig) > threshold or force_print:
         rst['hit'] = True
-        print(
-            code + " " + name + " " + str(td) + " sig " + str(sig) + " " + col_name + " " + str(current_v))
-        print("last 10 day " +col_name+" " + str(df_sub[col_name][-10:].describe()['std']))
-        print("-30:-10 day " +col_name+" " + str(df_sub[col_name][-30:-10].describe()['std']))
+        #print(
+        #    code + " " + name + " " + str(td) + " sig " + str(sig) + " " + col_name + " " + str(current_v))
+        #print("last 10 day " +col_name+" " + str(df_sub[col_name][-10:].describe()['std']))
+        #print("-30:-10 day " +col_name+" " + str(df_sub[col_name][-30:-10].describe()['std']))
 
         todayS = finlib.Finlib().get_last_trading_day()
-        if todayS == td:
-            print("TODAY HITTED. "+ code + " " + name + " " + str(td) + " sig " + str(sig) + " " + col_name + " " + str(current_v))
-        # print(df_sub['(bv1+bv2)/bv0'][-10:].describe())
-        # print(df_sub['(bv1-sv1)/bv0'][-10:].describe())
-        # print(df_sub['(bm1-sm1)/bm0'][-10:].describe())
+        if str(todayS) == str(td):
+            rst['hit_today'] = True
+        #    print("TODAY HITTED. "+ code + " " + name + " " + str(td) + " sig " + str(sig) + " " + col_name + " " + str(current_v))
         pass
 
     return(rst)
@@ -227,17 +227,24 @@ def analyze_moneyflow(fetch_whole = False, fetch_today = True):
     i = 0
     csv_in_dir = "/home/ryan/DATA/DAY_Global/AG_MoneyFlow"
     csv_out_dir = "/home/ryan/DATA/tmp/moneyflow_ana"
-    if not os.path.isdir(csv_out_dir):
-        os.mkdir(csv_out_dir)
+
+
+    if os.path.isdir(csv_out_dir):
+        shutil.rmtree(csv_out_dir)
+    os.mkdir(csv_out_dir)
+
+    df_history = pd.DataFrame(columns=['code', 'name', 'date', 'operation', 'strength', 'reason'])
+    df_today = pd.DataFrame(columns=['code', 'name', 'date', 'operation', 'strength', 'reason'])
+    csv_out_today = csv_out_dir + "/today_moneyflow_hit.csv"
+    csv_out_history = csv_out_dir + "/history_moneyflow_hit.csv"
 
     for index, row in stock_list.iterrows():
         i += 1
-        #print(str(i) + " of " + str(stock_list.__len__()) + " ", end="")
-        print(str(i) + " of " + str(stock_list.__len__()) )
+        logging.info(str(i) + " of " + str(stock_list.__len__()) )
         name, code = row['name'], row['code']
 
         csv_in = csv_in_dir + "/" + code + ".csv"
-        csv_out = csv_out_dir + "/" + code + ".csv"
+
 
         if os.path.exists(csv_in):
             df = pd.read_csv(csv_in)
@@ -272,30 +279,55 @@ def analyze_moneyflow(fetch_whole = False, fetch_today = True):
             df['(sv1+sv2)/sv0'] = (df['sell_elg_vol']+df['sell_lg_vol']) / df['sv0']
 
             pre_days = 3 #analysis last 100 rows
-            for i in range(df.__len__()-pre_days, df.__len__()):
-                df_sub = df[i-253: i] #compare with previous one year data for each row
-                #df['trade_date'].iloc[df['bv0'].idxmax()]
+            for i2 in range(df.__len__()-pre_days, df.__len__()):
+                df_sub = df[i2-253: i2] #compare with previous one year data for each row
 
+                if df_sub.__len__() == 0:
+                    continue
 
                 target = '(bv1+bv2)/bv0'
                 rst = describe_std(code, name, df_sub, target,force_print=False)
 
-
                 if rst['hit']:
+                    reason = rst['col_name'] + " outstanding std"
+
                     if rst['sig'] > 0:
-                        print("buy, hold short " + code + " " + name + " " + str(rst['date'])+" sig "+str(rst['sig']))
+                        logging.info("buy, hold short " + code + " " + name + " " + str(rst['date'])+" sig "+str(rst['sig']))
+                        operation = "buy, hold short"
+
                     elif rst['sig'] < 0:
-                        print("buy, hold long  " + code + " " + name + " " + str(rst['date'])+" sig "+str(rst['sig']))
+                        logging.info("buy, hold long  " + code + " " + name + " " + str(rst['date'])+" sig "+str(rst['sig']))
+                        operation = "buy, hold long"
+
+                    df_history = df_history.append({'code': code,
+                                     'name': name,
+                                     'date': str(rst['date']),
+                                     'operation': operation,
+                                     'strength': rst['sig'],
+                                     'reason': reason}, ignore_index=True)
+
+                    df_history.to_csv(csv_out_history, encoding='UTF-8', index=False)
+                    logging.info("hit saved to " + csv_out_today)
+                    #pdb.set_trace()
+
+
 
                     rst = describe_std(row['code'], row['name'], df_sub, '(sv1+sv2)/sv0', force_print=True)
                     rst = describe_std(row['code'], row['name'], df_sub, 'bv1/bv0', force_print=True)
                     rst = describe_std(row['code'], row['name'], df_sub, '(bv1-sv1)/bv0', force_print=True)
                     rst = describe_std(row['code'], row['name'], df_sub, '(bm1-sm1)/bm0', force_print=True)
 
+                    if rst['hit_today']:
+                        logging.info("today is hit")
+                        df_today = df_today.append({'code':code,
+                                         'name':name,
+                                         'date':str(rst['date']),
+                                         'operation':operation,
+                                         'strength':rst['sig'],
+                                         'reason':reason}, ignore_index=True)
+                        df_today.to_csv(csv_out_today, encoding='UTF-8', index=False)
+                        logging.info("Today hit saved to " + csv_out_today)
 
-            df.to_csv(csv_out, encoding='UTF-8', index=False)
-            logging.info("saved to "+csv_out)
-            pass
         else:
             logging.warning("no such file "+csv_in)
             continue
