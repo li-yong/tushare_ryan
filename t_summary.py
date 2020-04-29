@@ -444,6 +444,7 @@ def generate_result_csv(full_combination=False, debug=False):
     f_p_m_div=base+"/"+"price_mfi_div.csv"
     f_t_p=base+"/"+"talib_pattern.csv"
     f_fund=base+"/"+"fundamentals.csv"
+    f_moneyflow=base+"/"+"moneyflow.csv"
 
     #f_fund="/home/ryan/DATA/result/latest_fundamental_quarter.csv"
 
