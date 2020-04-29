@@ -108,6 +108,13 @@ fi
 python t_daily_hsgt.py --analyze
 
 
+#########################
+#input:  /home/ryan/DATA/DAY_Global/AG_MoneyFlow/*.csv
+#output : /home/ryan/DATA/tmp/moneyflow_ana/history_moneyflow_hit.csv
+#         /home/ryan/DATA/tmp/moneyflow_ana/today_moneyflow_hit.csv
+#########################
+python t_daily_hsgt.py --analyze_moneyflow --mf_ana_pre_days 3 --mf_ana_test_hold_days 5
+
 ######################### merge_local_basic
 #input: /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/basic_daily/basic_*.csv
 #output : /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/basic.csv
