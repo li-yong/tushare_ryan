@@ -290,6 +290,17 @@ def analyze_moneyflow(fetch_whole = False, fetch_today = True):
 
                 if rst['hit']:
                     reason = rst['col_name'] + " outstanding std"
+                    in_date = datetime.datetime.strptime(str(rst['date']), '%Y%m%d')
+                    out_date = in_date + datetime.timedelta(3)
+                    today = datetime.datetime.today
+
+                    if today < out_date:
+                        out_date = today
+
+                    p_in = finlib.Finlib().get_price(code_m=code, date=in_date.strftime('%Y-%m-%d'))
+                    p_out = finlib.Finlib().get_price(code_m=code, date=out_date.strftime('%Y-%m-%d'))
+
+                    profit = round((p_out-p_in)/p_in*100,1)
 
                     if rst['sig'] > 0:
                         logging.info("buy, hold short " + code + " " + name + " " + str(rst['date'])+" sig "+str(rst['sig']))
@@ -304,7 +315,13 @@ def analyze_moneyflow(fetch_whole = False, fetch_today = True):
                                      'date': str(rst['date']),
                                      'operation': operation,
                                      'strength': rst['sig'],
-                                     'reason': reason}, ignore_index=True)
+                                     'reason': reason,
+                                     'date_in': in_date,
+                                     'date_out': out_date,
+                                     'p_in': p_in,
+                                     'p_out': p_out,
+                                     'profit': profit,
+                                                    }, ignore_index=True)
 
                     df_history.to_csv(csv_out_history, encoding='UTF-8', index=False)
                     logging.info("hit saved to " + csv_out_today)
