@@ -292,7 +292,7 @@ def analyze_moneyflow(fetch_whole = False, fetch_today = True):
                     reason = rst['col_name'] + " outstanding std"
                     in_date = datetime.datetime.strptime(str(rst['date']), '%Y%m%d')
                     out_date = in_date + datetime.timedelta(3)
-                    today = datetime.datetime.today
+                    today = datetime.datetime.today()
 
                     if today < out_date:
                         out_date = today
@@ -316,8 +316,8 @@ def analyze_moneyflow(fetch_whole = False, fetch_today = True):
                                      'operation': operation,
                                      'strength': rst['sig'],
                                      'reason': reason,
-                                     'date_in': in_date,
-                                     'date_out': out_date,
+                                     'date_in': in_date.strftime('%Y-%m-%d'),
+                                     'date_out': out_date.strftime('%Y-%m-%d'),
                                      'p_in': p_in,
                                      'p_out': p_out,
                                      'profit': profit,
@@ -349,6 +349,9 @@ def analyze_moneyflow(fetch_whole = False, fetch_today = True):
             logging.warning("no such file "+csv_in)
             continue
 
+    logging.info("history profit describe:")
+    logging.info(df_history['profit'].describe())
+    logging.info("today hit account, len "+ str(df_today.__len__())+" "+csv_out_today)
 
 
 
