@@ -1694,6 +1694,8 @@ def generate_result_csv(full_combination=False, debug=False):
 
         pass
 
+    dict_df={}
+
     logging.info("------ Combination 1 -------")
     for a in arr:
         logging.info("=== " + a + " ====")
@@ -1707,6 +1709,9 @@ def generate_result_csv(full_combination=False, debug=False):
         tmp = eval(a)
         tmp = combin_filter(tmp, post_combine=True, debug=debug)
 
+
+
+
         if tmp.__len__() == 0:
             logging.info("empty " + a)
             continue
@@ -1716,6 +1721,7 @@ def generate_result_csv(full_combination=False, debug=False):
 
         if ('date' in tmp.columns):
             tmp = tmp[tmp['date'] >= day_3_before_date]
+
 
         logging.info("sorting " + a)
         tmp = my_sort(tmp, debug=debug)
@@ -1742,6 +1748,7 @@ def generate_result_csv(full_combination=False, debug=False):
         elif df_dict[a]['price'] == "EXPENSIVE":
             expensive_cnt += 1
 
+        dict_df[a] = tmp
         if tmp.__len__() > 0:
             rst = "\n==== " + str(cheap_cnt) + " cheap " + str(
                 expensive_cnt) + " exp, " + str(short_term) + "s " + str(
@@ -1756,809 +1763,102 @@ def generate_result_csv(full_combination=False, debug=False):
             fh.close()
             logging.info(rst)
 
-    logging.info("------ Combination 2 -------")
-    for subset in itertools.combinations(arr, 2):
+    for combi in range(2,arr.__len__()+1):
+    #def _proc_combination(arr, combi, skip_sets, df_dict, day_3_before_date, debug, rpt):
+        logging.info("------ Combination " + str(combi) + " -------")
+        for subset in itertools.combinations(arr, combi):
+            if ('df_low_price_year' in subset) and ('df_high_price_year' in subset):
+                continue
 
-        if ('df_low_price_year' in subset) and (
-                'df_high_price_year' in subset):
-            continue
+            if ('df_low_vol_year' in subset) and ('df_high_vol_year' in subset):
+                continue
 
-        if ('df_low_vol_year' in subset) and ('df_high_vol_year' in subset):
-            continue
+            # every(all) subset are in skipset
+            if subset.__len__() == set(subset).intersection(set(skip_sets)).__len__():
+                logging.info("skip list set combination: " + " ".join(set(subset)))
+                continue
 
-        if (subset[0] in skip_sets) and (subset[1] in skip_sets):
-            logging.info("skip list set combination: " + subset[0] + " " +
-                         subset[1])
-            continue
+            long_term = 0
+            middle_term = 0
+            short_term = 0
 
-        comb_df_name = subset[0] + "_" + subset[1]
+            cheap_cnt = 0
+            expensive_cnt = 0
 
-        cmd = "pd.merge(" + subset[0] + "," + subset[
-            1] + ", on='code',how='inner',suffixes=('','_y0'))"
+            for sub_item in subset:
+                if df_dict[sub_item]['term'] == "LONG TERM":
+                    long_term += 1
+                elif df_dict[sub_item]['term'] == "MIDDLE TERM":
+                    middle_term += 1
+                elif df_dict[sub_item]['term'] == "SHORT TERM":
+                    short_term += 1
 
-        tmp = eval(cmd)
-        if 'date' in tmp.columns:
-            tmp = tmp[tmp['date'] >= day_3_before_date]
+                if df_dict[sub_item]['price'] == "CHEAP":
+                    cheap_cnt += 1
+                elif df_dict[sub_item]['price'] == "EXPENSIVE":
+                    expensive_cnt += 1
 
+            comb_df_name = subset[0]
+            for _ in range(1, subset.__len__() - 1):
+                comb_df_name += "_" + subset[_]
+            # print(comb_df_name)
+
+            if comb_df_name in dict_df.keys():
+                tmp = dict_df[comb_df_name]
+                logging.info(("reuse saved combined df " + comb_df_name))
+            else:
+                logging.info("combination no instance, " + comb_df_name)
+                continue
+
+            '''
+            # tmp = pd.DataFrame(columns=['code'])
+            if comb_df_name in locals():
+                exec("tmp=" + comb_df_name)
+                logging.info(("reuse saved combined df " + comb_df_name))
+            else:
+                logging.info("combination no instance, " + comb_df_name)
+                _ = eval("pd.DataFrame(columns=['code'])")
+                #exec(comb_df_name + " = _")
+                tmp = comb_df_name
+                # continue
+
+            if tmp.__len__() == 0:
+                continue
+            '''
+
+            dup_suffix = "_y" + str(subset.__len__() - 2)
+            tmp = eval("pd.merge(tmp," + subset[
+                subset.__len__() - 1] + ", on='code',how='inner',suffixes=('','" + dup_suffix + "'))")
+            tmp = combin_filter(tmp, post_combine=True, debug=debug)
+
+            if 'date' in tmp.columns:
+                tmp = tmp[tmp['date'] >= day_3_before_date]
             tmp = my_sort(tmp, debug=debug)
 
-        tmp = combin_filter(tmp, post_combine=True, debug=debug)
-
-        #After 3..11 combine will be discards as empty inner join anything is empty.
-        if tmp.__len__(
-        ) > 0:  #not generate the df_variable if combine result is empty.
-            exec(comb_df_name +
-                 "=tmp")  #df_max_daily_increase_df_max_daily_decrease
-            logging.info(("saved combined df " + comb_df_name))
-
-        if tmp.__len__() == 0:
-            logging.info("empty tmp " + subset[0] + ", " + subset[1])
-
-        long_term = 0
-        middle_term = 0
-        short_term = 0
-
-        cheap_cnt = 0
-        expensive_cnt = 0
-
-        for sub_item in subset:
-            if df_dict[sub_item]['term'] == "LONG TERM":
-                long_term += 1
-            elif df_dict[sub_item]['term'] == "MIDDLE TERM":
-                middle_term += 1
-            elif df_dict[sub_item]['term'] == "SHORT TERM":
-                short_term += 1
-
-            if df_dict[sub_item]['price'] == "CHEAP":
-                cheap_cnt += 1
-            elif df_dict[sub_item]['price'] == "EXPENSIVE":
-                expensive_cnt += 1
-
-        if tmp.__len__() > 0:
-
-            rst = "\n==== "+str(cheap_cnt)+" cheap "+str(expensive_cnt)+" exp, "+str(short_term)+"s "+str(middle_term)+"m "+str(long_term)+"l " + "len " + \
-                  str(tmp.__len__()) + ". " + subset[0] + ", " + subset[1]
-            rst += "\n" + tabulate(tmp, headers='keys', tablefmt='psql') + "\n"
-
-            fh = open(rpt, "a")
-            fh.write(rst)
-            fh.close()
-            logging.info(rst)
-
-            if (subset[0] in buy_sets) and (subset[1] in buy_sets) and (
-                    stock_global in ['AG']):
-                logging.info("Buy set combination: " + subset[0] + " " +
-                             subset[1])
-                tmp = refine_df(tmp,
-                                has_db_record=False,
-                                debug=debug,
-                                force_pass=True,
-                                force_pass_open_reason=subset[0] + "+" +
-                                subset[1])
-
-    logging.info("------ Combination 3 -------")
-    for subset in itertools.combinations(arr, 3):
-        if ('df_low_price_year' in subset) and (
-                'df_high_price_year' in subset):
-            continue
-
-        if ('df_low_vol_year' in subset) and ('df_high_vol_year' in subset):
-            continue
-
-        if (subset[0] in skip_sets) and (subset[1] in skip_sets) and (
-                subset[2] in skip_sets):
-            logging.info("skip list set combination: " + subset[0] + " " +
-                         subset[1] + " " + subset[2])
-            continue
-
-        comb_df_name = subset[0] + "_" + subset[1]
-        if comb_df_name in locals():
-            exec("tmp=" + comb_df_name)
-            logging.info(("saved combined df " + comb_df_name))
-        else:
-            continue
-            #tmp=eval("pd.merge("+subset[0]+","+subset[1]+", on='code',how='inner',suffixes=('','_y0'))")
-            #tmp = combin_filter(tmp, post_combine=True)
-
-        tmp = eval("pd.merge(tmp," + subset[2] +
-                   ", on='code',how='inner',suffixes=('','_y1'))")
-        tmp = combin_filter(tmp, post_combine=True, debug=debug)
-
-        if 'date' in tmp.columns:
-            tmp = tmp[tmp['date'] >= day_3_before_date]
-        tmp = my_sort(tmp, debug=debug)
-        comb_df_name = comb_df_name + "_" + subset[2]
-
-        if tmp.__len__() == 0:
-            continue
-
-        long_term = 0
-        middle_term = 0
-        short_term = 0
-
-        cheap_cnt = 0
-        expensive_cnt = 0
-
-        for sub_item in subset:
-            if df_dict[sub_item]['term'] == "LONG TERM":
-                long_term += 1
-            elif df_dict[sub_item]['term'] == "MIDDLE TERM":
-                middle_term += 1
-            elif df_dict[sub_item]['term'] == "SHORT TERM":
-                short_term += 1
-
-            if df_dict[sub_item]['price'] == "CHEAP":
-                cheap_cnt += 1
-            elif df_dict[sub_item]['price'] == "EXPENSIVE":
-                expensive_cnt += 1
-
-        if tmp.__len__() > 0:
-            exec(comb_df_name + "=tmp")
-            logging.info(("saved combined df " + comb_df_name))
-            rst = "\n==== " +str(cheap_cnt)+" cheap "+str(expensive_cnt)+" exp, "+str(short_term)+"s "+str(middle_term)+"m "+str(long_term)+"l "+ \
-                  "len " + str(tmp.__len__()) + ". " + subset[0] + ", " + subset[1] + ", " + subset[2]
-            #rst += "\n"+str(tmp) + "\n"
-            rst += "\n" + tabulate(tmp, headers='keys', tablefmt='psql') + "\n"
-            fh = open(rpt, "a")
-            fh.write(rst)
-            fh.close()
-            logging.info(rst)
-
-    logging.info("------ Combination 4 -------")
-    for subset in itertools.combinations(arr, 4):
-        if ('df_low_price_year' in subset) and (
-                'df_high_price_year' in subset):
-            continue
-
-        if ('df_low_vol_year' in subset) and ('df_high_vol_year' in subset):
-            continue
-
-        if (subset[0] in skip_sets) and (subset[1] in skip_sets) and (
-                subset[2] in skip_sets) and (subset[3] in skip_sets):
-            logging.info("skip list set combination: " + subset[0] + " " +
-                         subset[1] + " " + subset[2] + " " + subset[3])
-            continue
-
-        long_term = 0
-        middle_term = 0
-        short_term = 0
-
-        cheap_cnt = 0
-        expensive_cnt = 0
-
-        for sub_item in subset:
-            if df_dict[sub_item]['term'] == "LONG TERM":
-                long_term += 1
-            elif df_dict[sub_item]['term'] == "MIDDLE TERM":
-                middle_term += 1
-            elif df_dict[sub_item]['term'] == "SHORT TERM":
-                short_term += 1
-
-            if df_dict[sub_item]['price'] == "CHEAP":
-                cheap_cnt += 1
-            elif df_dict[sub_item]['price'] == "EXPENSIVE":
-                expensive_cnt += 1
-
-        comb_df_name = subset[0] + "_" + subset[1] + "_" + subset[2]
-        if comb_df_name in locals():
-            exec("tmp=" + comb_df_name)
-            logging.info(("saved combined df " + comb_df_name))
-        else:
-            continue
-
-        tmp = eval("pd.merge(tmp," + subset[3] +
-                   ", on='code',how='inner',suffixes=('','_y2'))")
-        tmp = combin_filter(tmp, post_combine=True, debug=debug)
-
-        if 'date' in tmp.columns:
-            tmp = tmp[tmp['date'] >= day_3_before_date]
-        tmp = my_sort(tmp, debug=debug)
-
-        comb_df_name = comb_df_name + "_" + subset[3]
-
-        if tmp.__len__() == 0:
-            continue
-
-        if tmp.__len__() > 0:
-            exec(comb_df_name + "=tmp")
-            logging.info(("saved combined df " + comb_df_name))
-
-            rst = "\n==== " +str(cheap_cnt)+" cheap "+str(expensive_cnt)+" exp, "+str(short_term)+"s "+str(middle_term)+"m "+str(long_term)+"l "+ \
-                  "len " + str(tmp.__len__()) + ". " + subset[0] + ", " + subset[1] + ", " + subset[
-                2] + ", " + subset[3]
-            #rst += "\n"+str(tmp) + "\n"
-            rst += "\n" + tabulate(tmp, headers='keys', tablefmt='psql') + "\n"
-            fh = open(rpt, "a")
-            fh.write(rst)
-            fh.close()
-            logging.info(rst)
-
-    logging.info("------ Combination 5 -------")
-    for subset in itertools.combinations(arr, 5):
-        if ('df_low_price_year' in subset) and (
-                'df_high_price_year' in subset):
-            continue
-
-        if ('df_low_vol_year' in subset) and ('df_high_vol_year' in subset):
-            continue
-
-        if (subset[0] in skip_sets) and (subset[1] in skip_sets) and (
-                subset[2] in skip_sets) and (subset[3] in skip_sets) and (
-                    subset[4] in skip_sets):
-            logging.info("skip list set combination: " + subset[0] + " " +
-                         subset[1] + " " + subset[2] + " " + subset[3] + " " +
-                         subset[4])
-            continue
-
-        long_term = 0
-        middle_term = 0
-        short_term = 0
-
-        cheap_cnt = 0
-        expensive_cnt = 0
-
-        for sub_item in subset:
-            if df_dict[sub_item]['term'] == "LONG TERM":
-                long_term += 1
-            elif df_dict[sub_item]['term'] == "MIDDLE TERM":
-                middle_term += 1
-            elif df_dict[sub_item]['term'] == "SHORT TERM":
-                short_term += 1
-
-            if df_dict[sub_item]['price'] == "CHEAP":
-                cheap_cnt += 1
-            elif df_dict[sub_item]['price'] == "EXPENSIVE":
-                expensive_cnt += 1
-
-        comb_df_name = subset[0] + "_" + subset[1] + "_" + subset[
-            2] + "_" + subset[3]
-        if comb_df_name in locals():
-            exec("tmp=" + comb_df_name)
-            logging.info(("saved combined df " + comb_df_name))
-        else:
-            continue
-
-        tmp = eval("pd.merge(tmp," + subset[4] +
-                   ", on='code',how='inner',suffixes=('','_y3'))")
-        tmp = combin_filter(tmp, post_combine=True, debug=debug)
-
-        if 'date' in tmp.columns:
-            tmp = tmp[tmp['date'] >= day_3_before_date]
-        tmp = my_sort(tmp, debug=debug)
-
-        comb_df_name = comb_df_name + "_" + subset[4]
-
-        if tmp.__len__() == 0:
-            continue
-
-        if tmp.__len__() > 0:
-            exec(comb_df_name + "=tmp")
-            logging.info(("saved combined df " + comb_df_name))
-
-            rst = "\n==== "+str(cheap_cnt)+" cheap "+str(expensive_cnt)+" exp, "+str(short_term)+"s "+str(middle_term)+"m "+str(long_term)+"l " + "len " + str(tmp.__len__()) + ". " + subset[0] + \
-                  ", " + subset[1] + ", " + subset[2] + ", " + subset[3] + ", " + subset[4]
-            #rst += "\n"+str(tmp) + "\n"
-            rst += "\n" + tabulate(tmp, headers='keys', tablefmt='psql') + "\n"
-            fh = open(rpt, "a")
-            fh.write(rst)
-            fh.close()
-            logging.info(rst)
-
-    logging.info("------ Combination 6 -------")
-    for subset in itertools.combinations(arr, 6):
-        if ('df_low_price_year' in subset) and (
-                'df_high_price_year' in subset):
-            continue
-
-        if ('df_low_vol_year' in subset) and ('df_high_vol_year' in subset):
-            continue
-
-        if (subset[0] in skip_sets) and (subset[1] in skip_sets) and (
-                subset[2] in skip_sets) and (subset[3] in skip_sets) and (
-                    subset[4] in skip_sets):
-            logging.info("skip list set combination: " + subset[0] + " " +
-                         subset[1] + " " + subset[2] + " " + subset[3] + " " +
-                         subset[4])
-            continue
-
-        long_term = 0
-        middle_term = 0
-        short_term = 0
-
-        cheap_cnt = 0
-        expensive_cnt = 0
-
-        for sub_item in subset:
-            if df_dict[sub_item]['term'] == "LONG TERM":
-                long_term += 1
-            elif df_dict[sub_item]['term'] == "MIDDLE TERM":
-                middle_term += 1
-            elif df_dict[sub_item]['term'] == "SHORT TERM":
-                short_term += 1
-
-            if df_dict[sub_item]['price'] == "CHEAP":
-                cheap_cnt += 1
-            elif df_dict[sub_item]['price'] == "EXPENSIVE":
-                expensive_cnt += 1
-
-        comb_df_name = subset[0] + "_" + subset[1] + "_" + subset[
-            2] + "_" + subset[3] + "_" + subset[4]
-        if comb_df_name in locals():
-            exec("tmp=" + comb_df_name)
-            logging.info(("saved combined df " + comb_df_name))
-        else:
-            continue
-
-        tmp = eval("pd.merge(tmp," + subset[5] +
-                   ", on='code',how='inner',suffixes=('','_y4'))")
-        tmp = combin_filter(tmp, post_combine=True, debug=debug)
-
-        if 'date' in tmp.columns:
-            tmp = tmp[tmp['date'] >= day_3_before_date]
-        tmp = my_sort(tmp, debug=debug)
-
-        comb_df_name = comb_df_name + "_" + subset[5]
-
-        if tmp.__len__() == 0:
-            continue
-
-        if tmp.__len__() > 0:
-            exec(comb_df_name + "=tmp")
-            logging.info(("saved combined df " + comb_df_name))
-
-            rst = "\n==== "+str(cheap_cnt)+" cheap "+str(expensive_cnt)+" exp, "+str(short_term)+"s "+str(middle_term)+"m "+str(long_term)+"l " + "len " + str(tmp.__len__()) + ". " + subset[0] + \
-                  ", " + subset[1] + ", " + subset[2] + ", " + subset[3] + ", " + subset[4] + ", " + subset[5]
-            #rst += "\n"+str(tmp) + "\n"
-            rst += "\n" + tabulate(tmp, headers='keys', tablefmt='psql') + "\n"
-            fh = open(rpt, "a")
-            fh.write(rst)
-            fh.close()
-            logging.info(rst)
-
-    logging.info("------ Combination 7 -------")
-
-    for subset in itertools.combinations(arr, 7):
-        if ('df_low_price_year' in subset) and (
-                'df_high_price_year' in subset):
-            continue
-
-        if ('df_low_vol_year' in subset) and ('df_high_vol_year' in subset):
-            continue
-
-        if (subset[0] in skip_sets) and (subset[1] in skip_sets) and (
-                subset[2] in skip_sets) and (subset[3] in skip_sets) and (
-                    subset[4] in skip_sets):
-            logging.info("skip list set combination: " + subset[0] + " " +
-                         subset[1] + " " + subset[2] + " " + subset[3] + " " +
-                         subset[4])
-            continue
-
-        long_term = 0
-        middle_term = 0
-        short_term = 0
-
-        cheap_cnt = 0
-        expensive_cnt = 0
-
-        for sub_item in subset:
-            if df_dict[sub_item]['term'] == "LONG TERM":
-                long_term += 1
-            elif df_dict[sub_item]['term'] == "MIDDLE TERM":
-                middle_term += 1
-            elif df_dict[sub_item]['term'] == "SHORT TERM":
-                short_term += 1
-
-            if df_dict[sub_item]['price'] == "CHEAP":
-                cheap_cnt += 1
-            elif df_dict[sub_item]['price'] == "EXPENSIVE":
-                expensive_cnt += 1
-
-        comb_df_name = subset[0] + "_" + subset[1] + "_" + subset[
-            2] + "_" + subset[3] + "_" + subset[4] + "_" + subset[5]
-        if comb_df_name in locals():
-            exec("tmp=" + comb_df_name)
-            logging.info(("saved combined df " + comb_df_name))
-        else:
-            continue
-
-        tmp = eval("pd.merge(tmp," + subset[6] +
-                   ", on='code',how='inner',suffixes=('','_y5'))")
-
-        if tmp.__len__() == 0:
-            continue
-        tmp = combin_filter(tmp, post_combine=True, debug=debug)
-
-        if 'date' in tmp.columns:
-            tmp = tmp[tmp['date'] >= day_3_before_date]
-        tmp = my_sort(tmp, debug=debug)
-
-        comb_df_name = comb_df_name + "_" + subset[6]
-
-        if tmp.__len__() == 0:
-            continue
-
-        if tmp.__len__() > 0:
-            exec(comb_df_name + "=tmp")
-            logging.info(("saved combined df " + comb_df_name))
-            rst =  "\n==== "+str(cheap_cnt)+" cheap "+str(expensive_cnt)+" exp, "+str(short_term)+"s "+str(middle_term)+"m "+str(long_term)+"l "  + "len " + str(tmp.__len__()) + ". " + subset[0] + \
-                  ", " + subset[1] + ", " + subset[2] + ", " + subset[3] + ", " + subset[4] + ", " + subset[5] + ", " + \
-                  subset[6]
-            #rst+= "\n"+str(tmp) + "\n"
-            rst += "\n" + tabulate(tmp, headers='keys', tablefmt='psql') + "\n"
-            fh = open(rpt, "a")
-            fh.write(rst)
-            fh.close()
-            logging.info(rst)
-
-    logging.info("------ Combination 8 -------")
-    for subset in itertools.combinations(arr, 8):
-        if ('df_low_price_year' in subset) and (
-                'df_high_price_year' in subset):
-            continue
-
-        if ('df_low_vol_year' in subset) and ('df_high_vol_year' in subset):
-            continue
-
-        if (subset[0] in skip_sets) and (subset[1] in skip_sets) and (
-                subset[2] in skip_sets) and (subset[3] in skip_sets) and (
-                    subset[4] in skip_sets):
-            logging.info("skip list set combination: " + subset[0] + " " +
-                         subset[1] + " " + subset[2] + " " + subset[3] + " " +
-                         subset[4])
-            continue
-
-        long_term = 0
-        middle_term = 0
-        short_term = 0
-
-        cheap_cnt = 0
-        expensive_cnt = 0
-
-        for sub_item in subset:
-            if df_dict[sub_item]['term'] == "LONG TERM":
-                long_term += 1
-            elif df_dict[sub_item]['term'] == "MIDDLE TERM":
-                middle_term += 1
-            elif df_dict[sub_item]['term'] == "SHORT TERM":
-                short_term += 1
-
-            if df_dict[sub_item]['price'] == "CHEAP":
-                cheap_cnt += 1
-            elif df_dict[sub_item]['price'] == "EXPENSIVE":
-                expensive_cnt += 1
-
-        comb_df_name = subset[0] + "_" + subset[1] + "_" + subset[
-            2] + "_" + subset[3] + "_" + subset[4] + "_" + subset[
-                5] + "_" + subset[6]
-        if comb_df_name in locals():
-            exec("tmp=" + comb_df_name)
-            logging.info(("saved combined df " + comb_df_name))
-        else:
-            continue
-
-        tmp = eval("pd.merge(tmp," + subset[7] +
-                   ", on='code',how='inner',suffixes=('','_y6'))")
-        tmp = combin_filter(tmp, post_combine=True, debug=debug)
-
-        if 'date' in tmp.columns:
-            tmp = tmp[tmp['date'] >= day_3_before_date]
-        tmp = my_sort(tmp, debug=debug)
-
-        comb_df_name = comb_df_name + "_" + subset[7]
-        if tmp.__len__() == 0:
-            continue
-
-        if tmp.__len__() > 0:
-            exec(comb_df_name + "=tmp")
-            logging.info(("saved combined df " + comb_df_name))
-
-            rst = "\n==== "+str(cheap_cnt)+" cheap "+str(expensive_cnt)+" exp, "+str(short_term)+"s "+str(middle_term)+"m "+str(long_term)+"l " + "len " + str(tmp.__len__()) + ". " + subset[0] + \
-                  ", " + subset[1] + ", " + subset[2] + ", " + subset[3] + ", " + subset[4] + ", " + subset[5] + ", " + \
-                  subset[6] + ", " + subset[7]
-            #rst += "\n"+str(tmp) + "\n"
-            rst += "\n" + tabulate(tmp, headers='keys', tablefmt='psql') + "\n"
-            fh = open(rpt, "a")
-            fh.write(rst)
-            fh.close()
-            logging.info(rst)
-
-    logging.info("------ Combination 9 -------")
-    for subset in itertools.combinations(arr, 9):
-        if ('df_low_price_year' in subset) and (
-                'df_high_price_year' in subset):
-            continue
-
-        if ('df_low_vol_year' in subset) and ('df_high_vol_year' in subset):
-            continue
-
-        if (subset[0] in skip_sets) and (subset[1] in skip_sets) and (
-                subset[2] in skip_sets) and (subset[3] in skip_sets) and (
-                    subset[4] in skip_sets):
-            logging.info("skip list set combination: " + subset[0] + " " +
-                         subset[1] + " " + subset[2] + " " + subset[3] + " " +
-                         subset[4])
-            continue
-
-        long_term = 0
-        middle_term = 0
-        short_term = 0
-
-        cheap_cnt = 0
-        expensive_cnt = 0
-
-        for sub_item in subset:
-            if df_dict[sub_item]['term'] == "LONG TERM":
-                long_term += 1
-            elif df_dict[sub_item]['term'] == "MIDDLE TERM":
-                middle_term += 1
-            elif df_dict[sub_item]['term'] == "SHORT TERM":
-                short_term += 1
-
-            if df_dict[sub_item]['price'] == "CHEAP":
-                cheap_cnt += 1
-            elif df_dict[sub_item]['price'] == "EXPENSIVE":
-                expensive_cnt += 1
-
-        comb_df_name = subset[0] + "_" + subset[1] + "_" + subset[
-            2] + "_" + subset[3] + "_" + subset[4] + "_" + subset[
-                5] + "_" + subset[6] + "_" + subset[7]
-        if comb_df_name in locals():
-            exec("tmp=" + comb_df_name)
-            logging.info(("saved combined df " + comb_df_name))
-        else:
-            continue
-
-        tmp = eval("pd.merge(tmp," + subset[8] +
-                   ", on='code',how='inner',suffixes=('','_y7'))")
-        tmp = combin_filter(tmp, post_combine=True, debug=debug)
-
-        if 'date' in tmp.columns:
-            tmp = tmp[tmp['date'] >= day_3_before_date]
-        tmp = my_sort(tmp, debug=debug)
-
-        comb_df_name = comb_df_name + "_" + subset[8]
-
-        if tmp.__len__() == 0:
-            continue
-
-        if tmp.__len__() > 0:
-            exec(comb_df_name + "=tmp")
-            logging.info(("saved combined df " + comb_df_name))
-
-            rst = "\n==== "+str(cheap_cnt)+" cheap "+str(expensive_cnt)+" exp, "+str(short_term)+"s "+str(middle_term)+"m "+str(long_term)+"l " + "len " + str(tmp.__len__()) + ". " + subset[0] + \
-                  ", " + subset[1] + ", " + subset[2] + ", " + subset[3] + ", " + subset[4] + ", " + subset[5] + ", " + \
-                  subset[6] + \
-                  ", " + subset[7] + ", " + subset[8]
-            #rst += "\n"+str(tmp) + "\n"
-            rst += "\n" + tabulate(tmp, headers='keys', tablefmt='psql') + "\n"
-            fh = open(rpt, "a")
-            fh.write(rst)
-            fh.close()
-            logging.info(rst)
-
-    logging.info("------ Combination 10 -------")
-    for subset in itertools.combinations(arr, 10):
-        if ('df_low_price_year' in subset) and (
-                'df_high_price_year' in subset):
-            continue
-
-        if ('df_low_vol_year' in subset) and ('df_high_vol_year' in subset):
-            continue
-
-        if (subset[0] in skip_sets) and (subset[1] in skip_sets) and (
-                subset[2] in skip_sets) and (subset[3] in skip_sets) and (
-                    subset[4] in skip_sets):
-            logging.info("skip list set combination: " + subset[0] + " " +
-                         subset[1] + " " + subset[2] + " " + subset[3] + " " +
-                         subset[4])
-            continue
-
-        long_term = 0
-        middle_term = 0
-        short_term = 0
-
-        cheap_cnt = 0
-        expensive_cnt = 0
-
-        for sub_item in subset:
-            if df_dict[sub_item]['term'] == "LONG TERM":
-                long_term += 1
-            elif df_dict[sub_item]['term'] == "MIDDLE TERM":
-                middle_term += 1
-            elif df_dict[sub_item]['term'] == "SHORT TERM":
-                short_term += 1
-
-            if df_dict[sub_item]['price'] == "CHEAP":
-                cheap_cnt += 1
-            elif df_dict[sub_item]['price'] == "EXPENSIVE":
-                expensive_cnt += 1
-
-        comb_df_name = subset[0] + "_" + subset[1] + "_" + subset[
-            2] + "_" + subset[3] + "_" + subset[4] + "_" + subset[
-                5] + "_" + subset[6] + "_" + subset[7] + "_" + subset[8]
-        if comb_df_name in locals():
-            exec("tmp=" + comb_df_name)
-            logging.info(("saved combined df " + comb_df_name))
-        else:
-            continue
-
-        tmp = eval("pd.merge(tmp," + subset[9] +
-                   ", on='code',how='inner',suffixes=('','_y8'))")
-        tmp = combin_filter(tmp, post_combine=True, debug=debug)
-
-        if 'date' in tmp.columns:
-            tmp = tmp[tmp['date'] >= day_3_before_date]
-        tmp = my_sort(tmp, debug=debug)
-        comb_df_name = comb_df_name + "_" + subset[9]
-
-        if tmp.__len__() == 0:
-            continue
-
-        if tmp.__len__() > 0:
-            exec(comb_df_name + "=tmp")
-            logging.info(("saved combined df " + comb_df_name))
-
-            rst = "\n==== "+str(cheap_cnt)+" cheap "+str(expensive_cnt)+" exp, "+str(short_term)+"s "+str(middle_term)+"m "+str(long_term)+"l " + "len " + str(tmp.__len__()) + ". " + subset[0] + \
-                  ", " + subset[1] + ", " + subset[2] + ", " + subset[3] + ", " + subset[4] + ", " + subset[5] + ", " + \
-                  subset[6] + \
-                  ", " + subset[7] + ", " + subset[8] + ", " + subset[9]
-            #rst += "\n"+str(tmp) + "\n"
-            rst += "\n" + tabulate(tmp, headers='keys', tablefmt='psql') + "\n"
-            fh = open(rpt, "a")
-            fh.write(rst)
-            fh.close()
-            logging.info(rst)
-
-    logging.info("------ Combination 11 -------")
-    for subset in itertools.combinations(arr, 11):
-        if ('df_low_price_year' in subset) and (
-                'df_high_price_year' in subset):
-            continue
-
-        if ('df_low_vol_year' in subset) and ('df_high_vol_year' in subset):
-            continue
-
-        if (subset[0] in skip_sets) and (subset[1] in skip_sets) and (
-                subset[2] in skip_sets) and (subset[3] in skip_sets) and (
-                    subset[4] in skip_sets):
-            logging.info("skip list set combination: " + subset[0] + " " +
-                         subset[1] + " " + subset[2] + " " + subset[3] + " " +
-                         subset[4])
-            continue
-
-        long_term = 0
-        middle_term = 0
-        short_term = 0
-
-        cheap_cnt = 0
-        expensive_cnt = 0
-
-        for sub_item in subset:
-            if df_dict[sub_item]['term'] == "LONG TERM":
-                long_term += 1
-            elif df_dict[sub_item]['term'] == "MIDDLE TERM":
-                middle_term += 1
-            elif df_dict[sub_item]['term'] == "SHORT TERM":
-                short_term += 1
-
-            if df_dict[sub_item]['price'] == "CHEAP":
-                cheap_cnt += 1
-            elif df_dict[sub_item]['price'] == "EXPENSIVE":
-                expensive_cnt += 1
-
-        comb_df_name = subset[0] + "_" + subset[1] + "_" + subset[
-            2] + "_" + subset[3] + "_" + subset[4] + "_" + subset[
-                5] + "_" + subset[6] + "_" + subset[7] + "_" + subset[
-                    8] + "_" + subset[9]
-        if comb_df_name in locals():
-            exec("tmp=" + comb_df_name)
-            logging.info(("saved combined df " + comb_df_name))
-        else:
-            continue
-
-        tmp = eval("pd.merge(tmp," + subset[10] +
-                   ", on='code',how='inner',suffixes=('','_y9'))")
-        tmp = combin_filter(tmp, post_combine=True, debug=debug)
-        if 'date' in tmp.columns:
-            tmp = tmp[tmp['date'] >= day_3_before_date]
-        tmp = my_sort(tmp, debug=debug)
-        comb_df_name = comb_df_name + "_" + subset[10]
-
-        if tmp.__len__() == 0:
-            continue
-
-        if tmp.__len__() > 0:
-            exec(comb_df_name + "=tmp")
-            logging.info(("saved combined df " + comb_df_name))
-
-            rst = "\n==== "+str(cheap_cnt)+" cheap "+str(expensive_cnt)+" exp, "+str(short_term)+"s "+str(middle_term)+"m "+str(long_term)+"l " + "len " + str(tmp.__len__()) + ". " + subset[0] + \
-                  ", " + subset[1] + ", " + subset[2] + ", " + subset[3] + ", " + subset[4] + ", " + subset[5] + ", " + \
-                  subset[6] + \
-                  ", " + subset[7] + ", " + subset[8] + ", " + subset[9] + ", " + subset[10]
-            #rst += "\n"+str(tmp) + "\n"
-            rst += "\n" + tabulate(tmp, headers='keys', tablefmt='psql') + "\n"
-            fh = open(rpt, "a")
-            fh.write(rst)
-            fh.close()
-            logging.info(rst)
-
-    logging.info("------ Combination 12 -------")
-    for subset in itertools.combinations(arr, 12):
-        if ('df_low_price_year' in subset) and (
-                'df_high_price_year' in subset):
-            continue
-
-        if ('df_low_vol_year' in subset) and ('df_high_vol_year' in subset):
-            continue
-
-        if (subset[0] in skip_sets) and (subset[1] in skip_sets) and (
-                subset[2] in skip_sets) and (subset[3] in skip_sets) and (
-                    subset[4] in skip_sets):
-            logging.info("skip list set combination: " + subset[0] + " " +
-                         subset[1] + " " + subset[2] + " " + subset[3] + " " +
-                         subset[4])
-            continue
-
-        long_term = 0
-        middle_term = 0
-        short_term = 0
-
-        cheap_cnt = 0
-        expensive_cnt = 0
-
-        for sub_item in subset:
-            if df_dict[sub_item]['term'] == "LONG TERM":
-                long_term += 1
-            elif df_dict[sub_item]['term'] == "MIDDLE TERM":
-                middle_term += 1
-            elif df_dict[sub_item]['term'] == "SHORT TERM":
-                short_term += 1
-
-            if df_dict[sub_item]['price'] == "CHEAP":
-                cheap_cnt += 1
-            elif df_dict[sub_item]['price'] == "EXPENSIVE":
-                expensive_cnt += 1
-
-        comb_df_name = subset[0] + "_" + subset[1] + "_" + subset[
-            2] + "_" + subset[3] + "_" + subset[4] + "_" + subset[
-                5] + "_" + subset[6] + "_" + subset[7] + "_" + subset[
-                    8] + "_" + subset[9] + "_" + subset[10]
-        if comb_df_name in locals():
-            exec("tmp=" + comb_df_name)
-            logging.info(("saved combined df " + comb_df_name))
-        else:
-            continue
-
-        tmp = eval("pd.merge(tmp," + subset[11] +
-                   ", on='code',how='inner',suffixes=('','_y10'))")
-        tmp = combin_filter(tmp, post_combine=True, debug=debug)
-        if 'date' in tmp.columns:
-            tmp = tmp[tmp['date'] >= day_3_before_date]
-        tmp = my_sort(tmp, debug=debug)
-        comb_df_name = comb_df_name + "_" + subset[11]
-
-        if tmp.__len__() == 0:
-            continue
-
-        if tmp.__len__() > 0:
-            exec(comb_df_name + "=tmp")
-            logging.info(("saved combined df " + comb_df_name))
-
-            rst = "\n==== "+str(cheap_cnt)+" cheap "+str(expensive_cnt)+" exp, "+str(short_term)+"s "+str(middle_term)+"m "+str(long_term)+"l " + "len " + str(tmp.__len__()) + ". " + subset[0] + \
-                  ", " + subset[1] + ", " + subset[2] + ", " + subset[3] + ", " + subset[4] + ", " + subset[5] + ", " + \
-                  subset[6] + \
-                  ", " + subset[7] + ", " + subset[8] + ", " + subset[9] + ", " + subset[10] + ", " + subset[11]
-            #rst += "\n"+str(tmp) + "\n"
-            rst += "\n" + tabulate(tmp, headers='keys', tablefmt='psql') + "\n"
-            fh = open(rpt, "a")
-            fh.write(rst)
-            fh.close()
-            logging.info(rst)
+            comb_df_name = comb_df_name + "_" + subset[subset.__len__() - 1]
+
+            if tmp.__len__() > 0:
+                dict_df[comb_df_name] = tmp
+                logging.info(("saved combined df " + comb_df_name))
+                rst = "\n==== " + str(cheap_cnt) + " cheap " \
+                      + str(expensive_cnt) + " exp, " \
+                      + str(short_term) + "s " \
+                      + str(middle_term) + "m " \
+                      + str(long_term) + "l " \
+                      + "len " + str(tmp.__len__()) + ". " + ", ".join(set(subset))
+
+                rst += "\n" + tabulate(tmp, headers='keys', tablefmt='psql') + "\n"
+                fh = open(rpt, "a")
+                fh.write(rst)
+                fh.close()
+                logging.info(rst)
 
     logging.info(("result saved to " + rpt))
     logging.info("script completed")
 
     os._exit(0)
+
+
 
 
 def ana_result():
