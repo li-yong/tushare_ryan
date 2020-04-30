@@ -1805,26 +1805,10 @@ def generate_result_csv(full_combination=False, debug=False):
 
             if comb_df_name in dict_df.keys():
                 tmp = dict_df[comb_df_name]
-                logging.info(("reuse saved combined df " + comb_df_name))
+                #logging.info(("reuse saved combined df " + comb_df_name))
             else:
-                logging.info("combination no instance, " + comb_df_name)
+                #logging.info("combination no instance, " + comb_df_name)
                 continue
-
-            '''
-            # tmp = pd.DataFrame(columns=['code'])
-            if comb_df_name in locals():
-                exec("tmp=" + comb_df_name)
-                logging.info(("reuse saved combined df " + comb_df_name))
-            else:
-                logging.info("combination no instance, " + comb_df_name)
-                _ = eval("pd.DataFrame(columns=['code'])")
-                #exec(comb_df_name + " = _")
-                tmp = comb_df_name
-                # continue
-
-            if tmp.__len__() == 0:
-                continue
-            '''
 
             dup_suffix = "_y" + str(subset.__len__() - 2)
             tmp = eval("pd.merge(tmp," + subset[
