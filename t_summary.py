@@ -755,6 +755,7 @@ def generate_result_csv(full_combination=False, debug=False):
         #df_ann=pd.DataFrame(columns=['code'])  #removed since ann stop working after julang info web adjusted. 20190228
 
         df_p_m_div = pd.DataFrame(columns=['code'])
+        df_moneyflow = pd.DataFrame(columns=['code'])
 
         df_talib_ptn = pd.DataFrame(columns=['code'])
 
@@ -766,16 +767,10 @@ def generate_result_csv(full_combination=False, debug=False):
         df_hen_cow = pd.DataFrame(columns=['code'])
 
         df_p_r_div = pd.DataFrame(columns=['code'])
+        df_industry_top = pd.DataFrame(columns=['code'])
 
         #df_lanchou=pd.DataFrame(columns=['code'])
 
-        df_industry_top = pd.read_csv(f_industry_top,
-                                      converters={'code': str},
-                                      encoding="utf-8")
-        df_industry_top = finlib.Finlib().remove_garbage(
-            df_industry_top, code_filed_name='code', code_format='C2D6')
-        logging.info("\t df_industry_top length " +
-                     str(df_industry_top.__len__()))
 
         #df_area_top = pd.read_csv(f_area_top, converters={'code': str}, encoding="utf-8"  ) #removed to make report concise.
         #df_area_top = finlib.Finlib().remove_garbage(df_area_top, code_filed_name='code', code_format='C2D6')
@@ -957,6 +952,33 @@ def generate_result_csv(full_combination=False, debug=False):
             #print("stop and exit")
             #exit(1)
         '''
+        logging.info("loading df_industry_top " + f_industry_top)
+        if (os.path.isfile(f_industry_top) and os.stat(f_industry_top).st_size >= 10):
+            df_industry_top = pd.read_csv(f_industry_top,
+                                          converters={'code': str},
+                                          encoding="utf-8")
+            df_industry_top = finlib.Finlib().remove_garbage(
+                df_industry_top, code_filed_name='code', code_format='C2D6')
+        else:
+            logging.warning("file not exist or no content "+f_industry_top)
+
+        logging.info("\t df_industry_top length " +
+                     str(df_industry_top.__len__()))
+
+
+        logging.info("loading df_moneyflow " + f_moneyflow)
+        if (os.path.isfile(f_moneyflow) and os.stat(f_moneyflow).st_size >= 10):
+            df_moneyflow = pd.read_csv(f_moneyflow,
+                                          converters={'code': str},
+                                          encoding="utf-8")
+            df_moneyflow = finlib.Finlib().remove_garbage(
+                df_moneyflow, code_filed_name='code', code_format='C2D6')
+        else:
+            logging.warning("file not exist or no content " + f_moneyflow)
+
+        logging.info("\t df_moneyflow length " +
+                     str(df_moneyflow.__len__()))
+
 
         logging.info("loading df_fund " + f_fund)
         if (os.path.isfile(f_fund) and os.stat(f_fund).st_size >= 10):

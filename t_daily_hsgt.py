@@ -255,8 +255,18 @@ def analyze_moneyflow(
     csv_in_dir = "/home/ryan/DATA/DAY_Global/AG_MoneyFlow"
     csv_out_dir = "/home/ryan/DATA/tmp/moneyflow_ana"
 
+    csv_out_today = "/home/ryan/DATA/result/today/money_flow.csv"
+    csv_out_history = csv_out_dir + "/history_moneyflow_hit.csv"
+
+    if os.path.exists(csv_out_today):
+        os.remove(csv_out_today)
+
+    if os.path.exists(csv_out_history):
+        os.remove(csv_out_history)
+
     if os.path.isdir(csv_out_dir):
         shutil.rmtree(csv_out_dir)
+
     os.mkdir(csv_out_dir)
 
     df_history = pd.DataFrame(
@@ -264,8 +274,8 @@ def analyze_moneyflow(
     df_today = pd.DataFrame(
         columns=['code', 'name', 'date', 'operation', 'strength', 'reason'])
     #csv_out_today = csv_out_dir + "/today_moneyflow_hit.csv"
-    csv_out_today = "/home/ryan/DATA/result/today/money_flow.csv"
-    csv_out_history = csv_out_dir + "/history_moneyflow_hit.csv"
+
+
 
     for index, row in stock_list.iterrows():
         i += 1
