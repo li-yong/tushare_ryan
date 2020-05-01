@@ -756,7 +756,7 @@ def _ts_pro_fetch(pro_con, stock_list, fast_fetch, query, query_fields,
 
             #if (finlib.Finlib().is_cached(ind_csv, day=3)) and (not force_run_global) :
             if (finlib.Finlib().is_cached(ind_csv, day=3)):
-                logging.info("file updated in 3 day, not fetch again " +
+                logging.info("file updated in 3 day, no--concept_topt fetch again " +
                              ind_csv)
                 continue
             elif not os.path.exists(ind_csv):
@@ -852,17 +852,19 @@ def _ts_pro_fetch(pro_con, stock_list, fast_fetch, query, query_fields,
                                                end_date=period)
 
                 logging.info(". received len " + str(df_tmp.__len__()))
+                logging.info(df_tmp.head(2))
+                logging.info(df_tmp.tail(2))
 
                 signal.alarm(0)
                 # df_tmp = df_tmp.astype(str)
                 # logging.info(df_tmp)
 
                 field = ''
-                if df_tmp.columns.contains('end_date'):
+                if 'end_date' in df_tmp.columns:
                     field = 'end_date'
-                elif df_tmp.columns.contains('period'):
+                elif 'period' in  df_tmp.columns:
                     field = 'period'
-                elif df_tmp.columns.contains('ann_date'):
+                elif 'ann_date' in df_tmp.columns:
                     field = 'ann_date'
 
                 if (not force_run_global) and fast_fetch:
