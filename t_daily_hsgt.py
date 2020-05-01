@@ -199,7 +199,7 @@ def fetch_moneyflow(fetch_whole=False, fetch_today=True):
     #print(tabulate.tabulate(df_4, headers='keys', tablefmt='psql'))
 
 
-def describe_std(code, name, df_sub, col_name, force_print=False):
+def describe_std(code, name, df_sub, col_name, mf_ana_date, force_print=False):
     td = df_sub.iloc[-1:]['trade_date'].values[0]
     df_description = df_sub[col_name].describe()
     std = df_description['std']
@@ -225,8 +225,8 @@ def describe_std(code, name, df_sub, col_name, force_print=False):
         #print("last 10 day " +col_name+" " + str(df_sub[col_name][-10:].describe()['std']))
         #print("-30:-10 day " +col_name+" " + str(df_sub[col_name][-30:-10].describe()['std']))
 
-        todayS = finlib.Finlib().get_last_trading_day()
-        if str(todayS) == str(td):
+
+        if str(mf_ana_date) == str(td):
             rst['hit_today'] = True
         #    print("TODAY HITTED. "+ code + " " + name + " " + str(td) + " sig " + str(sig) + " " + col_name + " " + str(current_v))
         pass
@@ -234,9 +234,11 @@ def describe_std(code, name, df_sub, col_name, force_print=False):
     return (rst)
 
 
-def analyze_moneyflow(mf_ana_pre_days=3,
-                      mf_ana_test_hold_days=5,
-                      prime_stock_list=True):
+def analyze_moneyflow(
+        mf_ana_date,
+        mf_ana_pre_days=3,
+        mf_ana_test_hold_days=5,
+        prime_stock_list=True):
     ts.set_token(myToken)
 
     if prime_stock_list:
@@ -340,6 +342,7 @@ def analyze_moneyflow(mf_ana_pre_days=3,
                                    name,
                                    df_sub,
                                    target,
+                                   mf_ana_date,
                                    force_print=False)
 
                 if rst['hit']:
@@ -391,28 +394,32 @@ def analyze_moneyflow(mf_ana_pre_days=3,
                     df_history.to_csv(csv_out_history,
                                       encoding='UTF-8',
                                       index=False)
-                    logging.info("hit saved to " + csv_out_today)
+                    logging.info("hit saved to " + csv_out_history)
                     #pdb.set_trace()
+
+
 
                     rst = describe_std(row['code'],
                                        row['name'],
                                        df_sub,
                                        '(sv1+sv2)/sv0',
+                                       mf_ana_date,
                                        force_print=True)
                     rst = describe_std(row['code'],
                                        row['name'],
                                        df_sub,
                                        'bv1/bv0',
+                                       mf_ana_date,
                                        force_print=True)
                     rst = describe_std(row['code'],
                                        row['name'],
                                        df_sub,
-                                       '(bv1-sv1)/bv0',
+                                       '(bv1-sv1)/bv0',mf_ana_date,
                                        force_print=True)
                     rst = describe_std(row['code'],
                                        row['name'],
                                        df_sub,
-                                       '(bm1-sm1)/bm0',
+                                       '(bm1-sm1)/bm0',mf_ana_date,
                                        force_print=True)
 
                     if rst['hit_today']:
@@ -496,6 +503,11 @@ if __name__ == '__main__':
                       default=False,
                       help="analyze moneyflow ")
 
+    parser.add_option("--mf_ana_date",
+                      type="str",
+                      help="the date (YYYYMMDD) to be analyzed moneyflow ")
+
+
     parser.add_option(
         "--mf_ana_pre_days",
         type="int",
@@ -530,6 +542,10 @@ if __name__ == '__main__':
     mf_ana_pre_days = options.mf_ana_pre_days
     mf_ana_test_hold_days = options.mf_ana_test_hold_days
     mf_ana_prime_stock = options.mf_ana_prime_stock
+    mf_ana_date = options.mf_ana_date
+
+    if mf_ana_date == None:
+        mf_ana_date = finlib.Finlib().get_last_trading_day()
 
     logging.info("fetch_moneyflow_all_f: " + str(fetch_moneyflow_all_f))
     logging.info("fetch_hsgt_top_10_f: " + str(fetch_hsgt_top_10_f))
@@ -539,9 +555,11 @@ if __name__ == '__main__':
     logging.info("mf_ana_pre_days: " + str(mf_ana_pre_days))
     logging.info("mf_ana_test_hold_days: " + str(mf_ana_test_hold_days))
     logging.info("mf_ana_prime_stock: " + str(mf_ana_prime_stock))
+    logging.info("mf_ana_date: " + str(mf_ana_date))
     logging.info("debug_f: " + str(debug_f))
 
     set_global(debug=debug_f, force_run=force_run_f)
+
 
     if fetch_moneyflow_all_f:
         fetch_moneyflow(fetch_whole=True, fetch_today=False)
@@ -552,6 +570,8 @@ if __name__ == '__main__':
     elif analyze_hsgt_f:
         analyze_hsgt_top_10()
     elif analyze_moneyflow_f:
-        analyze_moneyflow(mf_ana_pre_days=mf_ana_pre_days,
+        analyze_moneyflow(mf_ana_date=mf_ana_date,
+                          mf_ana_pre_days=mf_ana_pre_days,
                           mf_ana_test_hold_days=mf_ana_test_hold_days,
-                          prime_stock_list=mf_ana_prime_stock)
+                          prime_stock_list=mf_ana_prime_stock,
+                          )

@@ -3306,6 +3306,9 @@ class Finlib:
         logging.info("loading , " + csv)
         if (os.path.isfile(csv)) and os.stat(csv).st_size >= 10:  # > 10 bytes
             df = pd.read_csv(csv, encoding="utf-8")
+        else:
+            logging.error("no such file "+csv)
+            exit()
         return (df)
 
     def remove_garbage(self, df, code_filed_name, code_format):
