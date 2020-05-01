@@ -354,21 +354,19 @@ class Finlib:
         if m == 1 or m == 2 or m == 3:
             fetch_most_recent_report_perid.append(str(year - 1) + "1231")
             stable_report_perid = str(year - 2) + "1231"
-        elif m == 4:
+        elif m == 4 or m == 5 or m == 6:
             fetch_most_recent_report_perid.append(str(year - 1) + "1231")
             fetch_most_recent_report_perid.append(str(year) + "0331")
-        elif m == 5 or m == 6:
-            fetch_most_recent_report_perid.append(str(year) + "0331")
-            pass
-        elif m == 7 or m == 8:
+        #elif m == 6:
+        #    fetch_most_recent_report_perid.append(str(year) + "0331")
+        #    pass
+        elif m == 7 or m == 8 or m == 9:
             fetch_most_recent_report_perid.append(str(year) + "0630")
-        elif m == 9:
-            fetch_most_recent_report_perid.append(str(year) + "0630")
-            pass
-        elif m == 10:
+        #elif m == 9:
+        #    fetch_most_recent_report_perid.append(str(year) + "0630")
+        #    pass
+        elif m == 10 or m == 11 or m == 12:
             # 第三季报在十月份
-            fetch_most_recent_report_perid.append(str(year) + "0930")
-        elif m == 11 or m == 12:
             fetch_most_recent_report_perid.append(str(year) + "0630")
             fetch_most_recent_report_perid.append(str(year) + "0930")
             pass
