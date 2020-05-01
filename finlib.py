@@ -3105,7 +3105,7 @@ class Finlib:
                 print("exist T, update T, len " + flen + " " + file_path)
             return ({"exist": True, "update": True})
 
-    def is_cached(self, file_path, day=3):
+    def is_cached(self, file_path, day=1):
         '''
         copied from /home/ryan/anaconda2/lib/python2.7/site-packages/finsymbols/symbol_helper.py
         Checks if the file cached is still valid
@@ -3202,7 +3202,7 @@ class Finlib:
                 last_year)  # using by t_daily_fundamentals.py
             rtn['completed_quarter_number'] = "4"
 
-        elif m == 5 or m == 6:
+        elif  m == 5 or m == 6:
             rtn['year_report'] = 'published'
             rtn['quarter_1_report'] = 'published'
             rtn['half_year_report'] = 'not_start'
@@ -3215,7 +3215,7 @@ class Finlib:
             rtn['completed_quarter_year'] = str(
                 this_year)  # using by t_daily_fundamentals.py
             rtn['completed_quarter_number'] = "1"
-            rtn['process_fund_or_not'] = False
+            #rtn['process_fund_or_not'] = False #alway fetch
 
             # lst.append(tmp['ann_date_1q_before']) #<<< better be empty? comment is to empty.
 
@@ -3260,7 +3260,9 @@ class Finlib:
             rtn['completed_quarter_year'] = str(
                 this_year)  # using by t_daily_fundamentals.py
             rtn['completed_quarter_number'] = "2"
-            rtn['process_fund_or_not'] = False
+            #rtn['process_fund_or_not'] = False  # always fetch.
+
+
 
         elif m == 10:
             # 第三季报在十月份  每年10月1日——10月31日
@@ -3292,9 +3294,9 @@ class Finlib:
             rtn['completed_quarter_year'] = str(
                 this_year)  # using by t_daily_fundamentals.py
             rtn['completed_quarter_number'] = "3"
-            rtn['process_fund_or_not'] = False
+            #rtn['process_fund_or_not'] = False #aways fetch
 
-        rtn['process_fund_or_not'] = True  # ryan debug. should be remove on production
+        #rtn['process_fund_or_not'] = True  # ryan debug. should be remove on production
 
         return (rtn)
 

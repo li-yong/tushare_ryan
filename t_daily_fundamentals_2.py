@@ -673,7 +673,7 @@ def fetch(fast_fetch=False):
 
     #if (select == 0)  or fast_fetch or force_run_global: #'save_only' runs on the HK VPS.
 
-    # not fetching/calculating fundermental data at month 5,6,9, 11, 12
+    # not fetching/calculating fundermental data at month 6,9, 11, 12
     if not finlib.Finlib().get_report_publish_status()['process_fund_or_not']:
         print("not processing fundermental data at this month. ")
         return ()
