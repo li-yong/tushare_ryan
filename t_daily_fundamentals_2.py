@@ -890,7 +890,7 @@ def _ts_pro_fetch(pro_con, stock_list, fast_fetch, query, query_fields,
                 for ed in end_date_lst:
 
                     if ed in already_fetch_p:
-                        print("already fetched " + ed)
+                        #print("already fetched " + ed)
                         continue
 
                     df_tmp_sub = df_tmp[df_tmp[field] == ed]
