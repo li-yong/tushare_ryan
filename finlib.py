@@ -3114,6 +3114,9 @@ class Finlib:
         if not os.path.exists(file_path):
             return False
 
+        if os.stat(file_path).st_size <= 10:
+            return False
+
         file_time = datetime.fromtimestamp(os.path.getctime(file_path))
         current_time = datetime.now()
         file_age = (current_time - file_time).total_seconds()
