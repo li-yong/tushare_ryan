@@ -33,6 +33,8 @@ urls = {
 }
 indices = {}
 for url in urls:
+    print("getting "+url+" from "+urls[url])
+
     if url == 'nasdqa100':
         df = pd.read_csv(urls[url], usecols=[0, 1], header=0)
         df.columns = ['code', 'name']
@@ -42,17 +44,20 @@ for url in urls:
         bs = BeautifulSoup(c, 'lxml')
         table = str(bs.find('table', {'class': 'wikitable sortable'}))
         df = pd.read_html(table)[0]
-        df.columns = df.iloc[0]  #set the first row as columns header
-        df.drop(0, inplace=True)  #drop the first row
+        #df.columns = df.iloc[0]  #set the first row as columns header
+        #df.drop(0, inplace=True)  #drop the first row
         if url == 'dow':
             df = df[['Symbol', 'Company']]
             df.columns = ['code', 'name']
         elif url == 'SNP500':
-            df = df[['Ticker symbol', 'Security', 'CIK']]
-            df.columns = ['code', 'name', 'cik']
-        else:
-            df = df[['Ticker Symbol', 'Company']]
-            df.columns = ['Symbol', 'Name']
+            #df = df[['Ticker symbol', 'Security', 'CIK']]
+            df = df[['Symbol', 'Security', 'CIK', 'Founded']]
+            df.columns = ['code', 'name', 'cik','founded']
+        else: #SP400
+            #df = df[['Ticker Symbol', 'Company']]
+            df = df[['Ticker symbol', 'Security']]
+            #df.columns = ['Symbol', 'Name']
+            df.columns = ['code', 'name']
     df = df.rename(columns={'Symbol': 'code', 'Name': 'name'})
     df.to_csv(output_csv_base + "/" + url + '.csv',
               index=False,
@@ -74,7 +79,13 @@ urls = {
     'NASDAQ':
     'http://www.nasdaq.com/screening/companies-by-industry.aspx?exchange=NASDAQ&render=download'
 }
-exchanges = {i: pd.read_csv(urls[i], usecols=[0, 1], header=0) for i in urls}
+
+exchanges={}
+for i in urls:
+    print("getting exchange from " +i)
+    exchanges[i]=pd.read_csv(urls[i], usecols=[0, 1], header=0)
+
+#exchanges = {i: pd.read_csv(urls[i], usecols=[0, 1], header=0) for i in urls}
 
 # In[4]:
 
