@@ -95,6 +95,10 @@ def get_hk_us(df, cons, start_date, appendix, todayS):
             if os.path.isfile(a_csv):
                 continue
 
+        if finlib.Finlib().is_cached(a_csv):
+            logging.info("file has been updated in a day, not fetch again. "+a_csv)
+            continue
+
         if os.path.isfile(a_csv):
 
             if os.stat(a_csv).st_size == 0:
@@ -149,6 +153,9 @@ def get_hk_us(df, cons, start_date, appendix, todayS):
                                 adj='qfq',
                                 start_date=start_date_req,
                                 end_date='')
+            if str(a_stock_df) != 'None':
+                logging.info("fetched df len "+str(a_stock_df.__len__()))
+
             #time.sleep(2)
 
             if str(a_stock_df) == 'None':
