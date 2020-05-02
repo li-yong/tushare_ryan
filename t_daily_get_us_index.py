@@ -29,7 +29,7 @@ urls = {
     'dow':
     'https://en.wikipedia.org/wiki/Dow_Jones_Industrial_Average',
     'nasdqa100':
-    'http://www.nasdaq.com/quotes/nasdaq-100-stocks.aspx?render=download'
+    'https://www.nasdaq.com/market-activity/quotes/nasdaq-ndx-index?render=download'
 }
 indices = {}
 for url in urls:
