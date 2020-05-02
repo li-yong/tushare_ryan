@@ -27,6 +27,8 @@ rsync -az /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/individ
 
 rsync -az   haha_data_source:/home/ryan/DATA/DAY_Global/AG/  /home/ryan/DATA/DAY_Global/AG/
 rsync -az   haha_data_source:/home/ryan/DATA/DAY_Global/AG_INDEX/  /home/ryan/DATA/DAY_Global/AG_INDEX/
+rsync -az   haha_data_source:/home/ryan/DATA/DAY_Global/US_INDEX/  /home/ryan/DATA/DAY_Global/US_INDEX/
+rsync -az   haha_data_source:/home/ryan/DATA/DAY_Global/HK_INDEX/  /home/ryan/DATA/DAY_Global/HK_INDEX/
 rsync -az   haha_data_source:/home/ryan/DATA/DAY_Global/AG_MoneyFlow/  /home/ryan/DATA/DAY_Global/AG_MoneyFlow/
 rsync -az   haha_data_source:/home/ryan/DATA/DAY_Global/CH/  /home/ryan/DATA/DAY_Global/CH/
 rsync -az   haha_data_source:/home/ryan/DATA/DAY_Global/KG/  /home/ryan/DATA/DAY_Global/KG/
@@ -80,7 +82,7 @@ rsync -az haha_data_source:/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals
 rsync -az haha_data_source:/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/individual/20191231/ /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/individual/20191231/
 
 
-rsync -az haha_data_source:/home/ryan/DATA/pickle/DOW_SP/  /home/ryan/DATA/pickle/DOW_SP/
+#rsync -az haha_data_source:/home/ryan/DATA/pickle/DOW_SP/  /home/ryan/DATA/pickle/DOW_SP/
 rsync -az haha_data_source:/home/ryan/DATA/pickle/Forbes/  /home/ryan/DATA/pickle/Forbes/
 rsync -az haha_data_source:/home/ryan/DATA/pickle/INDEX/  /home/ryan/DATA/pickle/INDEX/
 rsync -az haha_data_source:/home/ryan/DATA/pickle/INDEX_US_HK/  /home/ryan/DATA/pickle/INDEX_US_HK/
