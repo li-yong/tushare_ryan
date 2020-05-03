@@ -1,0 +1,17 @@
+US:
+    - AAPL: APPLE        
+    - ZM: ZOOM
+    - BILI: 哔哩哔哩
+HK:
+    - '03690': 美团点评
+    - '00700': 腾讯控股
+    - '01810': 小米集团
+    - '01658': 邮储银行
+CN:
+    - SH600519: 贵州茅台
+CN_INDEX:
+    - 000001.SH: SH_INDEX
+US_INDEX:
+    - sp500: sp500 
+    - dow: dow
+
