@@ -29,7 +29,7 @@ from jaqs.data.dataapi import DataApi
 import glob
 
 import logging
-
+import yaml
 logging.basicConfig(format='%(asctime)s %(message)s',
                     datefmt='%m_%d %H:%M:%S',
                     level=logging.DEBUG)
@@ -953,7 +953,7 @@ class Finlib:
     #
     # todayS = datetime.strptime(todayS, '%Y-%m-%d').strftime('%Y%m%d') #last trading day. eg. 20181202-->20181130
 
-    def get_last_trading_day(self, date=None):
+    def get_last_trading_day(self, date=None,debug=True):
 
         if date is None:
 
@@ -997,13 +997,15 @@ class Finlib:
         tdy_idx = a[a['cal_date'] == int(todayS)].index.values[0]
 
         if a.at[tdy_idx, "is_open"] == 0:
-            logging.info("Today " + todayS +
+            if debug:
+                logging.info("Today " + todayS +
                          " is not a trading day, checking previous days")
             tdy_idx = a[a['cal_date'] == int(todayS)].index.values[0]
             for i in range(tdy_idx, 0, -1):
                 if a.at[i, "is_open"] == 1:
                     exam_date = str(a.at[i, "cal_date"])
-                    logging.info("Day " + exam_date + " is a trading day.")
+                    if debug:
+                        logging.info("Day " + exam_date + " is a trading day.")
                     break
 
         return str(exam_date)
@@ -3421,6 +3423,17 @@ class Finlib:
 
         return (df)
 
+    def regular_df_date_to_ymd(self,df):
+        if 'date' not in df.columns:
+            logging.fatal("no cloumn date in df")
+            exit(0)
+
+        if str(df['date'].iloc[0]).count("-") == 2:
+            df['date'] = df['date'].apply(lambda _d: datetime.strptime(str(_d), '%Y-%m-%d'))
+            df['date'] = df['date'].apply(lambda _d: _d.strftime('%Y%m%d'))
+
+        return(df)
+
     def zzz_kdj(self, csv_f, market='AG'):
         # https://raw.githubusercontent.com/Abhay64/KDJ-Indicator/master/KDJ_Indicator.py
 
@@ -3689,3 +3702,155 @@ class Finlib:
         }
 
         return (rtn)
+
+    def get_stock_data_info(self, market, code):
+        rtn = {'valid':False, 'updated':False, 'csv':None}
+        code = str(code)
+
+        data_base = '/home/ryan/DATA/DAY_Global'
+        last_trading_day_Ymd = self.get_last_trading_day(debug=False)
+        last_trading_day_Y_m_d = datetime.strptime(last_trading_day_Ymd, "%Y%m%d").strftime("%Y-%m-%d")
+
+        date_col_name = 'date'
+
+
+        if market == 'CN':
+            data_csv = data_base + "/AG/" + code + ".csv"
+        elif market=="CN_INDEX":
+            data_csv = data_base + "/AG_INDEX/" + code + ".csv"
+            date_col_name='trade_date' #19901219
+        elif market == 'US':
+            data_csv = data_base + "/" + market + "/" + code + ".US"
+            date_col_name = 'datetime'
+            last_trading_day = self.get_last_trading_day_us()
+        elif market == 'US_INDEX':
+            data_csv = data_base + "/" + market + "/" + code + ".csv"
+            date_col_name = 'Date'
+            last_trading_day = self.get_last_trading_day_us()
+        elif market == 'HK':
+            data_csv = data_base + "/KH/" + code + ".KH"
+            date_col_name='datetime'
+
+        if not os.path.isfile(data_csv):
+            logging.warning("warn: data file doesn't exist. " + data_csv)
+            return(rtn)
+        else:
+            rtn['exist']=True
+            rtn['csv']=data_csv
+
+        if market == 'CN':
+            date_col_name = 'date'
+            df = pd.read_csv(data_csv,  names=['code', date_col_name, 'o', 'h', 'l', 'c', 'vol', 'amt', 'exchage_rate'])
+        else:
+            df = pd.read_csv(data_csv)
+
+        last_day_in_csv = self.rgular_date_to_ymd(str(df[date_col_name].iloc[-1:].values[0]))
+
+        rtn['last_day_in_csv'] = last_day_in_csv
+        rtn['expected_update_date'] = last_trading_day_Ymd
+
+        if last_day_in_csv == last_trading_day_Ymd:
+            rtn['updated'] = True
+        else:
+            logging.warning("out-of-date, expected date "
+                            +str(last_trading_day_Y_m_d)+". date in csv "
+                            +str(last_day_in_csv)+" "+data_csv)
+
+        pass
+        return(rtn)
+
+
+
+    def load_select(self):
+        select_csv = "/home/ryan/DATA/DAY_Global/select.yml"
+
+        rst = {}
+
+        with open(select_csv) as file:
+            cfg = yaml.load(file, Loader=yaml.FullLoader)
+            file.close()
+
+        for market in cfg.keys():
+            rst[market]=[]
+
+            for code_name_dict in cfg[market]:
+                for code in code_name_dict.keys():
+                    rst[market].append(code)
+
+
+        return(rst)
+
+
+    #convert YYYY-MM-DD to YYYYMMDD
+    def rgular_date_to_ymd(self,dateStr):
+        if (dateStr.count("-") == 2):
+            dateStr = datetime.strptime(dateStr, '%Y-%m-%d').strftime('%Y%m%d')
+        elif(dateStr.count("-") != 0):
+            logging.fatal("unknow date format, "+str(dateStr))
+            exit(0)
+        return(dateStr)
+
+    #regular df to format: code, name, open,high,low,close,volume
+    def rgular_df_to_stdard(self,data_csv):
+        base_dir = "/home/ryan/DATA/DAY_Global"
+        data_csv = str(data_csv)
+        rtn_df = pd.DataFrame()
+
+        data_csv_fp = os.path.abspath(data_csv)
+        dir = os.path.dirname(data_csv_fp)
+
+        if not os.path.isfile(data_csv_fp):
+            logging.fatal("file not exist. "+data_csv_fp)
+            exit(0)
+
+
+        if dir == base_dir+"/AG":
+            rtn_df = pd.read_csv(data_csv_fp,
+                             converters={'code': str},
+                             header=None,
+                             skiprows=1,
+                             names=[
+                                 'code', 'date', 'open', 'high', 'low', 'close',
+                                 'volume', 'amount', 'tnv'
+                             ])
+            #rtn_df = self.ts_code_to_code(rtn_df)
+
+        elif dir == base_dir+"/US":
+            rtn_df = pd.read_csv(data_csv_fp,converters={'code': str}, encoding="utf-8")
+        elif dir == base_dir+"/KH":
+            rtn_df = pd.read_csv(data_csv_fp, converters={'code': str},encoding="utf-8")
+        elif dir == base_dir+"/AG_INDEX":
+            rtn_df = pd.read_csv(data_csv_fp,
+                             skiprows=1,
+                             header=None,
+                             names=[
+                                 'code', 'date', 'close', 'open', 'high',
+                                 'low', 'pre_close', 'change', 'pct_chg',
+                                 'vol', 'amount'
+                             ],
+                             converters={'code': str},  encoding="utf-8")
+        elif dir == base_dir+"/US_INDEX":
+            #dow.csv  sp500.csv
+
+            if str(data_csv_fp).count("dow"):
+                code = "dow"
+            elif str(data_csv_fp).count("sp500"):
+                code = "sp500"
+
+            rtn_df = pd.read_csv(data_csv_fp,
+                                 skiprows=1,
+                                 names=[
+                                     'date', 'open', 'high',
+                                     'low', 'close', 'volume'  ]
+                                 , encoding="utf-8")
+            rtn_df = pd.DataFrame([code] * rtn_df.__len__(), columns=['code']).join(rtn_df)
+        else:
+            logging.fatal("unknown path file "+data_csv_fp)
+            exit(0)
+
+        rtn_df = self.regular_column_names(rtn_df)
+        rtn_df = self.regular_df_date_to_ymd(rtn_df)
+
+
+        return(rtn_df)
+

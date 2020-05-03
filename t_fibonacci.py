@@ -218,6 +218,24 @@ def main():
                       default=False,
                       help="log for y-axis price ")
 
+    parser.add_option(
+        "-x",
+        "--stock_global",
+        dest="stock_global",
+        help=
+        "[CH(US)|KG(HK)|KH(HK)|MG(US)|US(US)|AG(AG)|dev(debug)], source is /home/ryan/DATA/DAY_global/xx/"
+    )
+
+    parser.add_option(
+        "--selected",
+        action="store_true",
+        dest="selected",
+        default=False,
+        help=
+        "only check stocks defined in /home/ryan/DATA/DAY_Global/select.yml"
+    )
+
+
     df_rtn = pd.DataFrame()
 
     (options, args) = parser.parse_args()
@@ -229,8 +247,12 @@ def main():
     save_fig_f = options.save_fig_f
     min_sample_f = options.min_sample_f
     log_price_f = options.log_price_f
+    selected = options.selected
+    stock_global = options.stock_global
 
-    if index_f:
+
+    if stock_global == 'AG' and index_f:
+        csv_dir = "/home/ryan/DATA/DAY_Global/AG_INDEX"
         out_f = "/home/ryan/DATA/result/fib_index.csv"
         d = {
             'code': ['000001.SH', '000300.SH', '000905.SH'],
@@ -238,14 +260,30 @@ def main():
         }
         stock_list = pd.DataFrame(data=d)
         #stock_list = finlib.Finlib().add_market_to_code(stock_list, dot_f=False, tspro_format=False)  # 603999.SH
-    else:
-        out_f = "/home/ryan/DATA/result/fib.csv"
-        stock_list = finlib.Finlib().get_A_stock_instrment()  #603999
-        stock_list = finlib.Finlib().add_market_to_code(
-            stock_list, dot_f=False, tspro_format=False)  #603999.SH
-        stock_list = finlib.Finlib().remove_garbage(stock_list,
-                                                    code_filed_name='code',
-                                                    code_format='C2D6')
+    elif stock_global == 'AG' and (not index_f):
+        csv_dir = "/home/ryan/DATA/DAY_Global/AG"
+
+        if selected:
+            out_f = "/home/ryan/DATA/result/selected/ag_fib.csv"
+            stock_list = finlib.Finlib().load_select()['CN']
+        else:
+            out_f = "/home/ryan/DATA/result/fib.csv"
+            stock_list = finlib.Finlib().get_A_stock_instrment()  #603999
+            stock_list = finlib.Finlib().add_market_to_code(
+                stock_list, dot_f=False, tspro_format=False)  #603999.SH
+
+
+            stock_list = finlib.Finlib().remove_garbage(stock_list,
+                                                        code_filed_name='code',
+                                                        code_format='C2D6')
+    elif stock_global == 'HK':
+        out_f = "/home/ryan/DATA/result/selected/hk_fib.csv"
+        stock_list = finlib.Finlib().load_select()['HK']
+
+    elif stock_global == 'US':
+        out_f = "/home/ryan/DATA/result/selected/us_fib.csv"
+        stock_list = finlib.Finlib().load_select()['US']
+
 
     #debug_f = True
     #verify_fibo_f = True
@@ -254,24 +292,23 @@ def main():
         #stock_list = stock_list[stock_list['code']=="SH600519"]
         stock_list = stock_list[stock_list['code'] == "SZ300350"]
 
-    csv_dir = "/home/ryan/DATA/DAY_Global/AG"
-    if index_f:
-        csv_dir = "/home/ryan/DATA/DAY_Global/AG_INDEX"
 
     i = 0
-    for index, row in stock_list.iterrows():
-        i += 1
-        print(str(i) + " of " + str(stock_list.__len__()) + " ", end="")
-        name, code = row['name'], row['code']
 
-        csv_f = csv_dir + "/" + code + ".csv"
-        print(csv_f)
+    if stock_global == 'AG' and not selected:
+        for index, row in stock_list.iterrows():
+            i += 1
+            print(str(i) + " of " + str(stock_list.__len__()) + " ", end="")
+            name, code = row['name'], row['code']
 
-        if not os.path.exists(csv_f):
-            print("csv_f not exist, " + csv_f)
-            continue
+            csv_f = csv_dir + "/" + code + ".csv"
+            print(csv_f)
 
-        if verify_fibo_f:
+            if not os.path.exists(csv_f):
+                print("csv_f not exist, " + csv_f)
+                continue
+
+
             if index_f:
                 df = pd.read_csv(csv_f,
                                  skiprows=1,

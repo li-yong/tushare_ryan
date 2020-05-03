@@ -29,9 +29,7 @@ import logging
 
 from optparse import OptionParser
 
-logging.basicConfig(format='%(asctime)s %(message)s',
-                    datefmt='%m_%d %H:%M:%S',
-                    level=logging.DEBUG)
+logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m_%d %H:%M:%S', level=logging.DEBUG)
 
 
 def _kdj(csv_f, period):
@@ -60,14 +58,7 @@ def _kdj(csv_f, period):
 
     #csv_f = '/home/ryan/DATA/DAY_Global/AG/SH600519.csv' #ryan debug
 
-    df = pd.read_csv(csv_f,
-                     converters={'code': str},
-                     header=None,
-                     skiprows=1,
-                     names=[
-                         'code', 'date', 'open', 'high', 'low', 'close',
-                         'volume', 'amount', 'tnv'
-                     ])
+    df = pd.read_csv(csv_f, converters={'code': str}, header=None, skiprows=1, names=['code', 'date', 'open', 'high', 'low', 'close', 'volume', 'amount', 'tnv'])
 
     if df.__len__() < 100:
         logging.info('file less than 100 records. ' + csv_f)
@@ -85,11 +76,9 @@ def _kdj(csv_f, period):
     df = df[-1000:]  #last 4 years.
 
     if period == "M":
-        df_period = finlib.Finlib().daily_to_monthly_bar(
-            df_daily=df)['df_monthly']
+        df_period = finlib.Finlib().daily_to_monthly_bar(df_daily=df)['df_monthly']
     elif period == "W":
-        df_period = finlib.Finlib().daily_to_monthly_bar(
-            df_daily=df)['df_weekly']
+        df_period = finlib.Finlib().daily_to_monthly_bar(df_daily=df)['df_weekly']
     elif period == "D":
         df['date'] = pd.to_datetime(df['date'], format="%Y-%m-%d")
         df_period = df
@@ -128,30 +117,24 @@ def _kdj(csv_f, period):
         this_action = 'BUY'
         print('excessive sell. Should buy. ' + csv_f)
 
-    if (_d2 - _k2) / abs(
-            _d2) >= 0.1:  #d more than 10% of k. Means low price. undervalued
+    if (_d2 - _k2) / abs(_d2) >= 0.1:  #d more than 10% of k. Means low price. undervalued
         if _k1 >= _d1:
             this_strength = round((_k1 - _d1) / abs(_d1), 2)
-            this_reason = "K cross over D,  K " + str(_k1) + ", D " + str(
-                _d1) + ", strength " + str(this_strength)
+            this_reason = "K cross over D,  K " + str(_k1) + ", D " + str(_d1) + ", strength " + str(this_strength)
             this_action = 'BUY'
             print("K cross over D, should buy. " + csv_f)
 
-        elif (_d1 -
-              _k1) / abs(_d1) <= 0.05:  # k still less than d, but very close
+        elif (_d1 - _k1) / abs(_d1) <= 0.05:  # k still less than d, but very close
             t = round((_d1 - _k1) / abs(_d1), 2)
             this_reason = 'K is less than 5% to D, ' + str(t)
             this_strength = round((1 - t), 2)
             this_action = 'BUY_EARLY'
-            print("K is less than 5% to D, early stage, should buy little " +
-                  csv_f)
+            print("K is less than 5% to D, early stage, should buy little " + csv_f)
 
-    if (_k2 - _d2) / abs(
-            _k2) >= 0.1:  #k more than 10% of d. Means high price. overvalued
+    if (_k2 - _d2) / abs(_k2) >= 0.1:  #k more than 10% of d. Means high price. overvalued
         if (_d1 - _k1) / abs(_d1) >= 0.05:  #k less than d more than 5%
             t = round((_d1 - _k1) / abs(_d1), 2)
-            this_reason = 'K cross down D, K ' + str(_k1) + ", D " + str(
-                _d1) + ", Percent " + str(t)
+            this_reason = 'K cross down D, K ' + str(_k1) + ", D " + str(_d1) + ", Percent " + str(t)
             this_strength = round(t, 2)
             this_action = 'SELL'
             print("K cross down D, should sell. " + csv_f)
@@ -185,9 +168,7 @@ def kdj(period):
     df_rtn = pd.DataFrame()
 
     stock_list = finlib.Finlib().get_A_stock_instrment()
-    stock_list = finlib.Finlib().add_market_to_code(stock_list,
-                                                    dot_f=False,
-                                                    tspro_format=False)
+    stock_list = finlib.Finlib().add_market_to_code(stock_list, dot_f=False, tspro_format=False)
 
     #stock_list = stock_list.head(100) #ryan debug
 
@@ -208,13 +189,9 @@ def kdj(period):
         print("KDJ no qualified  stock found.")
     else:
         df_rtn = pd.merge(df_rtn, stock_list, how='inner', on='code')
-        df_rtn = df_rtn[[
-            'code', 'name', 'date', 'action', 'strength', 'reason', 'k1', 'd1',
-            'j1', 'k2', 'd2', 'j2'
-        ]]
+        df_rtn = df_rtn[['code', 'name', 'date', 'action', 'strength', 'reason', 'k1', 'd1', 'j1', 'k2', 'd2', 'j2']]
         df_rtn.to_csv(output_csv, encoding='UTF-8', index=False)
-        logging.info("kdj selection saved to " + output_csv + " . len " +
-                     str(df_rtn.__len__()))
+        logging.info("kdj selection saved to " + output_csv + " . len " + str(df_rtn.__len__()))
 
 
 def _macd(csv_f, period):
@@ -239,14 +216,7 @@ def _macd(csv_f, period):
 
     #csv_f = '/home/ryan/DATA/DAY_Global/AG/SH600519.csv' #ryan debug
 
-    df = pd.read_csv(csv_f,
-                     converters={'code': str},
-                     header=None,
-                     skiprows=1,
-                     names=[
-                         'code', 'date', 'open', 'high', 'low', 'close',
-                         'volume', 'amount', 'tnv'
-                     ])
+    df = pd.read_csv(csv_f, converters={'code': str}, header=None, skiprows=1, names=['code', 'date', 'open', 'high', 'low', 'close', 'volume', 'amount', 'tnv'])
 
     if df.__len__() < 100:
         logging.info('file less than 100 records. ' + csv_f)
@@ -264,11 +234,9 @@ def _macd(csv_f, period):
     df = df[-1000:]  #last 4 years.
 
     if period == "M":
-        df_period = finlib.Finlib().daily_to_monthly_bar(
-            df_daily=df)['df_monthly']
+        df_period = finlib.Finlib().daily_to_monthly_bar(df_daily=df)['df_monthly']
     elif period == "W":
-        df_period = finlib.Finlib().daily_to_monthly_bar(
-            df_daily=df)['df_weekly']
+        df_period = finlib.Finlib().daily_to_monthly_bar(df_daily=df)['df_weekly']
     elif period == "D":
         df['date'] = pd.to_datetime(df['date'], format="%Y-%m-%d")
         df_period = df
@@ -281,19 +249,13 @@ def _macd(csv_f, period):
     MACD Histogram: 2*(MACD - Signal Line)
     '''
     stock = stockstats.StockDataFrame.retype(df_period)
-    df_macd = stock[['macd', 'macds', 'macdh'
-                     ]]  #macds: # MACD signal line, macdh: # MACD histogram
+    df_macd = stock[['macd', 'macds', 'macdh']]  #macds: # MACD signal line, macdh: # MACD histogram
     df_macd.rename(columns={
         "macd": "DIF_main",
         "macds": "DEA_signal",
         "macdh": "MACD_histogram",
-    },
-                   inplace=True)
-    df_macd = df_macd.round({
-        'DIF_main': 1,
-        'DEA_signal': 1,
-        'MACD_histogram': 1
-    })
+    }, inplace=True)
+    df_macd = df_macd.round({'DIF_main': 1, 'DEA_signal': 1, 'MACD_histogram': 1})
 
     #print(tabulate.tabulate(df_macd[-2:], headers='keys', tablefmt='psql'))
 
@@ -373,9 +335,7 @@ def macd(period):
     df_rtn = pd.DataFrame()
 
     stock_list = finlib.Finlib().get_A_stock_instrment()
-    stock_list = finlib.Finlib().add_market_to_code(stock_list,
-                                                    dot_f=False,
-                                                    tspro_format=False)
+    stock_list = finlib.Finlib().add_market_to_code(stock_list, dot_f=False, tspro_format=False)
 
     #stock_list = stock_list.head(10) #debug
 
@@ -396,13 +356,10 @@ def macd(period):
         print("MACD no qualified stock found.")
     else:
         df_rtn = pd.merge(df_rtn, stock_list, how='inner', on='code')
-        df_rtn = df_rtn[[
-            'code', 'name', 'date', 'action', 'reason', 'strength'
-        ]]
+        df_rtn = df_rtn[['code', 'name', 'date', 'action', 'reason', 'strength']]
         df_rtn.to_csv(output_csv, encoding='UTF-8', index=False)
 
-        logging.info("MACD selection saved to " + output_csv + " . len " +
-                     str(df_rtn.__len__()))
+        logging.info("MACD selection saved to " + output_csv + " . len " + str(df_rtn.__len__()))
 
 
 def calculate(indicator, period):
@@ -431,8 +388,7 @@ def analyze(indicator):
         'date': 'date_m',
         'reason': 'reason_m',
         'strength': 'strength_m',
-    },
-                inplace=True)
+    }, inplace=True)
 
     df_w = pd.read_csv(input_csv_w)
     df_w.rename(columns={
@@ -440,8 +396,7 @@ def analyze(indicator):
         'date': 'date_w',
         'reason': 'reason_w',
         'strength': 'strength_w',
-    },
-                inplace=True)
+    }, inplace=True)
 
     df_d = pd.read_csv(input_csv_d)
     df_d.rename(columns={
@@ -449,17 +404,12 @@ def analyze(indicator):
         'date': 'date_d',
         'reason': 'reason_d',
         'strength': 'strength_d',
-    },
-                inplace=True)
+    }, inplace=True)
 
     df_merge = pd.merge(df_m, df_w, on=['code', 'name'], how='outer')
     df_merge = pd.merge(df_merge, df_d, on=['code', 'name'], how='outer')
 
-    cols = [
-        'code', 'name', 'date_m', 'date_w', 'date_d', 'action_m', 'action_w',
-        'action_d', 'reason_m', 'reason_w', 'reason_d', 'strength_m',
-        'strength_w', 'strength_d'
-    ]
+    cols = ['code', 'name', 'date_m', 'date_w', 'date_d', 'action_m', 'action_w', 'action_d', 'reason_m', 'reason_w', 'reason_d', 'strength_m', 'strength_w', 'strength_d']
 
     df_merge = df_merge[cols]
     print(tabulate.tabulate(df_merge[-20:], headers='keys', tablefmt='psql'))
@@ -473,24 +423,11 @@ def main():
 
     parser = OptionParser()
 
-    parser.add_option("--indicator",
-                      type="str",
-                      dest="indicator_f",
-                      default=None,
-                      help="indicator, one of [KDJ|MACD]")
+    parser.add_option("--indicator", type="str", dest="indicator_f", default=None, help="indicator, one of [KDJ|MACD]")
 
-    parser.add_option("--period",
-                      type="str",
-                      dest="period_f",
-                      default=None,
-                      help="period, one of [M|W|D]")
+    parser.add_option("--period", type="str", dest="period_f", default=None, help="period, one of [M|W|D]")
 
-    parser.add_option("-a",
-                      "--analyze",
-                      action="store_true",
-                      dest="analyze_f",
-                      default=False,
-                      help="analyze based on [MACD|KDJ] M|W|D result.")
+    parser.add_option("-a", "--analyze", action="store_true", dest="analyze_f", default=False, help="analyze based on [MACD|KDJ] M|W|D result.")
 
     (options, args) = parser.parse_args()
 
