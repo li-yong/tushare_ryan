@@ -517,7 +517,7 @@ def generate_result_csv(full_combination=False, debug=False):
 
     #fibonacci
     f_fib = "/home/ryan/DATA/result/fib.csv"
-    f_fib_index = "/home/ryan/DATA/result/fib_index.csv"
+    f_fib_index = "/home/ryan/DATA/result/selected/ag_index_fib.csv"
 
     #concept_top
     f_concept_top = "/home/ryan/DATA/result/concept_top.csv"

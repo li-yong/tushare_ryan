@@ -527,12 +527,12 @@ python t_daily_indicator_kdj_macd.py --indicator MACD --period D
 
 ##############################
 # fibonacci indicator
-# input: DAY_Global/AG,  DAY_Global/AG/INDEX
+# input: DAY_Global/AG,  DAY_Global/AG_INDEX
 # output: ~/DATA/result/fib.csv
-# 	  ~/DATA/result/fib_index.csv
+# 	  ~/DATA/result/selected/ag_index_fib.csv
 ###############################
-python t_fibonacci.py --verify --begin_date "2018-01-01"  --min_sample=500 
-python t_fibonacci.py --verify --begin_date "2018-01-01"  --min_sample=500 --index
+python t_fibonacci.py --begin_date "20180101"  --min_sample=500 -x AG_INDEX --selected
+python t_fibonacci.py --begin_date "20180101"  --min_sample=500 -x AG
 
 
 ##############################

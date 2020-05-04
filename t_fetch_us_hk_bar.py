@@ -44,13 +44,32 @@ parser.add_option("-u",
                   default=False,
                   help="fetch US stock")
 
+parser.add_option(
+    "-x",
+    "--stock_global",
+    dest="stock_global",
+    help=
+    "[CH(US)|KG(HK)|KH(HK)|MG(US)|US(US)|AG(AG)|dev(debug)], source is /home/ryan/DATA/DAY_global/xx/"
+)
+
+parser.add_option(
+    "--selected",
+    action="store_true",
+    dest="selected",
+    default=False,
+    help=
+    "only check stocks defined in /home/ryan/DATA/DAY_Global/select.yml"
+)
+
 (options, args) = parser.parse_args()
 
 fetch_hk = options.fetch_hk
 fetch_us = options.fetch_us
+selected = options.selected
+stock_global = options.stock_global
+
 
 # This script to get US,HK stock daily bar.
-
 # delete /home/ryan/DATA/pickle/instrument.csv to fetch again.
 
 
@@ -79,8 +98,8 @@ def get_hk_us(df, cons, start_date, appendix, todayS):
             str(i) + "/" + str(df.__len__()) + " get " + str(code) + " " +
             str(name) + ". " + appendix + ". ")  #print without newline
         #a_csv = '/home/ryan/DATA/DAY_Global/' + str(code) + '.' + appendix  # WUBA.CH
-        a_csv = '/home/ryan/DATA/DAY_Global/' + appendix + '/' + str(
-            code) + '.' + appendix  # DATA/DAY_Global/CH/WUBA.CH
+        #a_csv = '/home/ryan/DATA/DAY_Global/' + appendix + '/' + str(code) + '.' + appendix  # DATA/DAY_Global/CH/WUBA.CH
+        a_csv = '/home/ryan/DATA/DAY_Global/' + appendix + '/' + str(code) + '.csv'  # DATA/DAY_Global/CH/WUBA.CH
 
         #if finlib.Finlib().is_cached(a_csv, day=1):
         #    logging.info("ignore because file was updated within 24 hours, " + a_csv)
@@ -243,9 +262,6 @@ def get_hk_us(df, cons, start_date, appendix, todayS):
 
         pass
 
-
-df_instrument = finlib.Finlib().get_instrument()
-
 #instrument.csv
 #/home/ryan/DATA/pickle/market.csv
 #market,category,name,short_name
@@ -259,12 +275,57 @@ df_instrument = finlib.Finlib().get_instrument()
 cons = ts.get_apis()
 start_date = '2010-01-01'
 
+rst = finlib.Finlib().get_stock_configuration(selected=selected, stock_global=stock_global)
+out_dir = rst['out_dir']
+csv_dir = rst['csv_dir']
+stock_list = rst['stock_list']
+
+todayS = datetime.datetime.today().strftime('%Y-%m-%d')
+get_hk_us(stock_list, cons, start_date, stock_global, todayS=todayS)
+
+logging.info('script completed')
+os._exit(0)
+
+
+i = 0
+df_instrument = finlib.Finlib().get_instrument()
+for index, row in stock_list.iterrows():
+    i += 1
+    logging.info(str(i) + " of " + str(stock_list.__len__()) + " ", end="")
+    name, code = row['name'], row['code']
+
+    csv_f = csv_dir + "/" + code + ".csv"
+    logging.info(csv_f)
+
+
+
+    if not os.path.isfile(csv_f):
+        logging.warning("file not exist. " + csv_f)
+        continue
+
+    df = finlib.Finlib().regular_read_csv_to_stdard_df(csv_f)
+
+    code_name_map = stock_list
+
+    code = df.iloc[0]['code']
+    name = code_name_map[code_name_map['code'] == code].iloc[0]['name']
+
+    rtn_dict_t = check_fibo()
+    df_t = pd.DataFrame(data=rtn_dict_t, index=[0])
+
+    if not df_t.empty:
+        df_rtn = pd.concat([df_rtn, df_t], sort=False).reset_index().drop('index', axis=1)
+
+df_rtn.to_csv(out_f, encoding='UTF-8', index=False)
+print(df_rtn)
+print("output saved to " + out_f)
+
+exit(0)
+
 if fetch_hk:
     todayS = datetime.datetime.today().strftime('%Y-%m-%d')
 
-    df_KH = df_instrument.query(
-        "market==31 and category==2").reset_index().drop('index',
-                                                         axis=1)  # 1973
+    df_KH = df_instrument.query( "market==31 and category==2").reset_index().drop('index',  axis=1)  # 1973
     df_KG = df_instrument.query(
         "market==48 and category==2").reset_index().drop('index',
                                                          axis=1)  # 425

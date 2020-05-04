@@ -3864,3 +3864,72 @@ class Finlib:
 
         return(rtn_df)
 
+
+    def get_stock_configuration(self,selected,stock_global):
+        rtn = {
+            "stock_list":None,
+            "csv_dir":None,
+            "out_dir":None,
+        }
+
+        if selected:
+            selected_stocks = self.load_select()
+            out_dir = "/home/ryan/DATA/result/selected"
+
+            # INDEX first
+            if stock_global == 'AG_INDEX':
+                csv_dir = "/home/ryan/DATA/DAY_Global/AG_INDEX"
+                stock_list = selected_stocks['CN_INDEX']
+            elif stock_global == 'US_INDEX':
+                csv_dir = "/home/ryan/DATA/DAY_Global/US_INDEX"
+                stock_list = selected_stocks['US_INDEX']
+            elif stock_global == "HK_INDEX":
+                csv_dir = "/home/ryan/DATA/DAY_Global/HK_INDEX"
+                stock_list = selected_stocks['HK_INDEX']
+
+            # Then Stocks
+            elif stock_global == "AG":
+                csv_dir = "/home/ryan/DATA/DAY_Global/AG"
+                stock_list = selected_stocks['CN']
+            elif stock_global == 'HK':
+                csv_dir = "/home/ryan/DATA/DAY_Global/KH"
+                stock_list = selected_stocks['HK']
+            elif stock_global == 'US':
+                csv_dir = "/home/ryan/DATA/DAY_Global/US"
+                stock_list = selected_stocks['US']
+        else:  # selected == False
+            if stock_global == 'AG':
+                csv_dir = "/home/ryan/DATA/DAY_Global/AG"
+                out_dir = "/home/ryan/DATA/result"
+                stock_list = self.get_A_stock_instrment()  # 603999
+                stock_list = self.add_market_to_code(stock_list, dot_f=False, tspro_format=False)  # 603999.SH
+                stock_list = self.remove_garbage(stock_list, code_filed_name='code', code_format='C2D6')
+            elif stock_global == 'HK':
+                csv_dir = "/home/ryan/DATA/DAY_Global/KH"
+                out_dir = "/home/ryan/DATA/result/kh"
+                df_instrument = self.get_instrument()
+                stock_list = df_instrument.query("market==31 and category==2").reset_index().drop('index', axis=1)  # 1973
+            elif stock_global == 'US':
+                csv_dir = "/home/ryan/DATA/DAY_Global/US"
+                out_dir = "/home/ryan/DATA/result/us"
+                df_instrument = self.get_instrument()
+                stock_list = df_instrument.query("market==74 and category==13").reset_index().drop('index',axis=1)  # 11278
+            elif stock_global == 'MG': #41,11,美股知名公司,MG
+                csv_dir = "/home/ryan/DATA/DAY_Global/MG"
+                out_dir = "/home/ryan/DATA/result/mg"
+                df_instrument = self.get_instrument()
+                stock_list = df_instrument.query("market==41 and category==11").reset_index().drop('index',axis=1)  # 289
+            elif stock_global == 'CH': #40,11,中国概念股,CH
+                csv_dir = "/home/ryan/DATA/DAY_Global/CH"
+                out_dir = "/home/ryan/DATA/result/ch"
+                df_instrument = self.get_instrument()
+                stock_list = df_instrument.query("market==40 and category==11").reset_index().drop('index',axis=1)  # 78
+
+        rtn = {
+            "stock_list":stock_list,
+            "csv_dir":csv_dir,
+            "out_dir":out_dir,
+        }
+
+
+        return(rtn)

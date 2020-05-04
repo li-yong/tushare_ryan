@@ -164,13 +164,6 @@ def main():
 
     parser = OptionParser()
 
-    parser.add_option("-v",
-                      "--verify",
-                      action="store_true",
-                      dest="verify_fibo_f",
-                      default=True,
-                      help="verify if current price hit Fibo serie")
-
     parser.add_option("-b",
                       "--begin_date",
                       type="string",
@@ -205,13 +198,6 @@ def main():
                       default=False,
                       help="display the matplot figure ")
 
-    parser.add_option("-i",
-                      "--index",
-                      action="store_true",
-                      dest="index_f",
-                      default=False,
-                      help="verify the index SH000001 etc ")
-
     parser.add_option("--log_price",
                       action="store_true",
                       dest="log_price_f",
@@ -239,9 +225,7 @@ def main():
     df_rtn = pd.DataFrame()
 
     (options, args) = parser.parse_args()
-    verify_fibo_f = options.verify_fibo_f
     debug_f = options.debug_f
-    index_f = options.index_f
     begin_date_f = options.begin_date_f
     show_fig_f = options.show_fig_f
     save_fig_f = options.save_fig_f
@@ -250,55 +234,11 @@ def main():
     selected = options.selected
     stock_global = options.stock_global
 
-    if selected:
-        selected_stocks = finlib.Finlib().load_select()
-        out_dir = "/home/ryan/DATA/result/selected"
-
-          #INDEX first
-        if stock_global == 'AG_INDEX':
-            csv_dir = "/home/ryan/DATA/DAY_Global/AG_INDEX"
-            out_f = out_dir+"/ag_index_fib.csv"
-            stock_list = selected_stocks['CN_INDEX']
-        elif stock_global == 'US_INDEX':
-            csv_dir = "/home/ryan/DATA/DAY_Global/US_INDEX"
-            out_f = out_dir+"/us_index_fib.csv"
-            stock_list = selected_stocks['US_INDEX']
-        elif stock_global == "HK_INDEX":
-            csv_dir = "/home/ryan/DATA/DAY_Global/HK_INDEX"
-            out_f = out_dir+"/hk_index_fib.csv"
-            stock_list = selected_stocks['HK_INDEX']
-
-        # Then Stocks
-        elif stock_global == "AG":
-            csv_dir = "/home/ryan/DATA/DAY_Global/AG"
-            out_f = out_dir+"/ag_fib.csv"
-            stock_list = selected_stocks['CN']
-        elif stock_global == 'HK':
-            csv_dir = "/home/ryan/DATA/DAY_Global/KH"
-            out_f = out_dir+"/hk_fib.csv"
-            stock_list = selected_stocks['HK']
-        elif stock_global == 'US':
-            csv_dir = "/home/ryan/DATA/DAY_Global/US"
-            out_f =  out_dir+"/us_fib.csv"
-            stock_list = selected_stocks['US']
-    else: # selected == False
-        if stock_global == 'AG':
-            csv_dir = "/home/ryan/DATA/DAY_Global/AG"
-            out_dir = "/home/ryan/DATA/result"
-            out_f = out_dir+"/fib.csv"
-            stock_list = finlib.Finlib().get_A_stock_instrment()  #603999
-            stock_list = finlib.Finlib().add_market_to_code(stock_list, dot_f=False, tspro_format=False)  #603999.SH
-            stock_list = finlib.Finlib().remove_garbage(stock_list,
-                                                        code_filed_name='code',
-                                                        code_format='C2D6')
-
-            #debug_f = True
-            #verify_fibo_f = True
-
-            if debug_f:
-                #stock_list = stock_list[stock_list['code']=="SH600519"]
-                stock_list = stock_list[stock_list['code'] == "SZ300350"]
-
+    rst = finlib.Finlib().get_stock_configuration(selected=selected, stock_global=stock_global)
+    out_dir = rst['out_dir']
+    csv_dir = rst['csv_dir']
+    stock_list = rst['stock_list']
+    out_f = out_dir+"/"+stock_global.lower()+"_fib.csv" #/home/ryan/DATA/result/selected/us_index_fib.csv
 
     if not os.path.isdir(out_dir):
         os.mkdir(out_dir)
@@ -312,6 +252,10 @@ def main():
 
         csv_f = csv_dir + "/" + code + ".csv"
         print(csv_f)
+
+        if not os.path.isfile(csv_f):
+            logging.warning("file not exist. "+csv_f)
+            continue
 
         df = finlib.Finlib().regular_read_csv_to_stdard_df(csv_f)
 
