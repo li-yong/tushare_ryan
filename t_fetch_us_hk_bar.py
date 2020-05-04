@@ -30,20 +30,6 @@ logging.info("SCRIPT STARTING " + " ".join(sys.argv))
 
 parser = OptionParser()
 
-parser.add_option("-k",
-                  "--fetch_hk",
-                  action="store_true",
-                  dest="fetch_hk",
-                  default=False,
-                  help="fetch HK stock")
-
-parser.add_option("-u",
-                  "--fetch_us",
-                  action="store_true",
-                  dest="fetch_us",
-                  default=False,
-                  help="fetch US stock")
-
 parser.add_option(
     "-x",
     "--stock_global",
@@ -282,87 +268,6 @@ stock_list = rst['stock_list']
 
 todayS = datetime.datetime.today().strftime('%Y-%m-%d')
 get_hk_us(stock_list, cons, start_date, stock_global, todayS=todayS)
-
-logging.info('script completed')
-os._exit(0)
-
-
-i = 0
-df_instrument = finlib.Finlib().get_instrument()
-for index, row in stock_list.iterrows():
-    i += 1
-    logging.info(str(i) + " of " + str(stock_list.__len__()) + " ", end="")
-    name, code = row['name'], row['code']
-
-    csv_f = csv_dir + "/" + code + ".csv"
-    logging.info(csv_f)
-
-
-
-    if not os.path.isfile(csv_f):
-        logging.warning("file not exist. " + csv_f)
-        continue
-
-    df = finlib.Finlib().regular_read_csv_to_stdard_df(csv_f)
-
-    code_name_map = stock_list
-
-    code = df.iloc[0]['code']
-    name = code_name_map[code_name_map['code'] == code].iloc[0]['name']
-
-    rtn_dict_t = check_fibo()
-    df_t = pd.DataFrame(data=rtn_dict_t, index=[0])
-
-    if not df_t.empty:
-        df_rtn = pd.concat([df_rtn, df_t], sort=False).reset_index().drop('index', axis=1)
-
-df_rtn.to_csv(out_f, encoding='UTF-8', index=False)
-print(df_rtn)
-print("output saved to " + out_f)
-
-exit(0)
-
-if fetch_hk:
-    todayS = datetime.datetime.today().strftime('%Y-%m-%d')
-
-    df_KH = df_instrument.query( "market==31 and category==2").reset_index().drop('index',  axis=1)  # 1973
-    df_KG = df_instrument.query(
-        "market==48 and category==2").reset_index().drop('index',
-                                                         axis=1)  # 425
-    df_GH = df_instrument.query(
-        "market==71 and category==2").reset_index().drop('index',
-                                                         axis=1)  # 568
-
-    df_KH = df_KH.append(df_GH).sort_values(by='code').reset_index().drop(
-        'index', axis=1)
-
-    logging.info("df_KH " + str(df_KH.__len__()))  #2075
-    logging.info("df_KG " + str(df_KG.__len__()))
-
-    get_hk_us(df_KH, cons, start_date, 'KH', todayS=todayS)  #31,2,香港主板,KH
-    get_hk_us(df_KG, cons, start_date, 'KG', todayS=todayS)  #48,2,香港创业板,KG
-
-if fetch_us:
-    yesterday = datetime.datetime.today() - datetime.timedelta(1)
-    todayS = yesterday.strftime('%Y-%m-%d')
-
-    df_CH = df_instrument.query(
-        "market==40 and category==11").reset_index().drop('index',
-                                                          axis=1)  # 78
-    df_MG = df_instrument.query(
-        "market==41 and category==11").reset_index().drop('index',
-                                                          axis=1)  # 289
-    df_US = df_instrument.query(
-        "market==74 and category==13").reset_index().drop('index',
-                                                          axis=1)  # 11278
-
-    logging.info("df_CH " + str(df_CH.__len__()))
-    logging.info("df_MG " + str(df_MG.__len__()))
-    logging.info("df_US " + str(df_US.__len__()))
-
-    get_hk_us(df_CH, cons, start_date, 'CH', todayS=todayS)  #40,11,中国概念股,CH
-    get_hk_us(df_MG, cons, start_date, 'MG', todayS=todayS)  #41,11,美股知名公司,MG
-    get_hk_us(df_US, cons, start_date, 'US', todayS=todayS)  #74,13,美国股票,US
 
 logging.info('script completed')
 os._exit(0)

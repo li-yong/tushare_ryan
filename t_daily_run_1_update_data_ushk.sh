@@ -16,13 +16,24 @@
 ### Backup will be taken at the scp to haha_66
 
 echo "updating US stock daily "
+#################
+# get sp500/dow consistant stocks
+# output: ~/DATA/pickle/INDEX_US_HK/*.csv
 python t_daily_get_us_index.py
 
 
-#update Index (dow, sp)
+
+#################
+# update Index (dow, sp), get sp500/dow daily
+# output: /DATA/DAY_Global/US_INDEX/#dow.csv  sp500.csv
 bash -x t_get_dow_sp500.sh
-python t_format_dow_sp_index_csv.py
 
+#####################################
+#fetch daily us/hk stocks
+# output: /DATA/DAY_Global/US/*.csv
+#         /DATA/DAY_Global/KH/*.csv
 
-python ~/tushare_ryan/t_fetch_us_hk_bar.py --fetch_us;
-echo "Done, daily US (CH,MG,US) update completed."
+#python ~/tushare_ryan/t_fetch_us_hk_bar.py -x US; #very long list, 17000+ stocks
+python ~/tushare_ryan/t_fetch_us_hk_bar.py --selected -x US ;
+#python ~/tushare_ryan/t_fetch_us_hk_bar.py --selected -x HK ;
+echo "Done, daily US update completed."
