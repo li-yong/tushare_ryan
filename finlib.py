@@ -3431,6 +3431,11 @@ class Finlib:
         if str(df['date'].iloc[0]).count("-") == 2:
             df['date'] = df['date'].apply(lambda _d: datetime.strptime(str(_d), '%Y-%m-%d'))
             df['date'] = df['date'].apply(lambda _d: _d.strftime('%Y%m%d'))
+        elif str(df['date'].iloc[0]).count("-") == 0:
+            df['date'] = df['date'].apply(lambda _d: str(_d))
+        else:
+            logging.fatal("unknown date format "+str(df['date'].iloc[0]))
+            exit(0)
 
         return(df)
 
@@ -3760,7 +3765,14 @@ class Finlib:
         return(rtn)
 
 
-
+    '''
+    rst['CN_INDEX']
+    Out[5]: 
+            code   name
+    0  000001.SH   上证综指
+    1  000300.SH  沪深300
+    2  000905.SH  中证500
+    '''
     def load_select(self):
         select_csv = "/home/ryan/DATA/DAY_Global/select.yml"
 
@@ -3771,18 +3783,16 @@ class Finlib:
             file.close()
 
         for market in cfg.keys():
-            rst[market]=[]
+            rst[market]=pd.DataFrame(columns=['code','name'])
 
             for code_name_dict in cfg[market]:
                 for code in code_name_dict.keys():
-                    rst[market].append(code)
-
-
+                    rst[market] = rst[market].append({'code':code, 'name':code_name_dict[code]},ignore_index =True)
         return(rst)
 
 
     #convert YYYY-MM-DD to YYYYMMDD
-    def rgular_date_to_ymd(self,dateStr):
+    def regular_date_to_ymd(self,dateStr):
         if (dateStr.count("-") == 2):
             dateStr = datetime.strptime(dateStr, '%Y-%m-%d').strftime('%Y%m%d')
         elif(dateStr.count("-") != 0):
@@ -3791,7 +3801,7 @@ class Finlib:
         return(dateStr)
 
     #regular df to format: code, name, open,high,low,close,volume
-    def rgular_df_to_stdard(self,data_csv):
+    def regular_read_csv_to_stdard_df(self,data_csv):
         base_dir = "/home/ryan/DATA/DAY_Global"
         data_csv = str(data_csv)
         rtn_df = pd.DataFrame()

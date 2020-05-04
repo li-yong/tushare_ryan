@@ -33,15 +33,15 @@ logging.getLogger('matplotlib.font_manager').disabled = True
 def check_fibo(df,
                code,
                name,
-               begin_date='2018-01-01',
+               begin_date='20180101',
                show_fig_f=False,
                save_fig_f=False,
                min_sample=500):
 
     rtn_dict = {}
 
-    df = df[
-        df['date'] >= pd.Timestamp(datetime.date.fromisoformat(begin_date))]
+    df = df[df['date'] >= str(begin_date)]
+    #df = df[df['date'] >= pd.Timestamp(datetime.date.fromisoformat())]
 
     #print(df.__len__())
 
@@ -250,116 +250,91 @@ def main():
     selected = options.selected
     stock_global = options.stock_global
 
+    if selected:
+        selected_stocks = finlib.Finlib().load_select()
+        out_dir = "/home/ryan/DATA/result/selected"
 
-    if stock_global == 'AG' and index_f:
-        csv_dir = "/home/ryan/DATA/DAY_Global/AG_INDEX"
-        out_f = "/home/ryan/DATA/result/fib_index.csv"
-        d = {
-            'code': ['000001.SH', '000300.SH', '000905.SH'],
-            'name': ['上证综指', '沪深300', '中证500'],
-        }
-        stock_list = pd.DataFrame(data=d)
-        #stock_list = finlib.Finlib().add_market_to_code(stock_list, dot_f=False, tspro_format=False)  # 603999.SH
-    elif stock_global == 'AG' and (not index_f):
-        csv_dir = "/home/ryan/DATA/DAY_Global/AG"
+          #INDEX first
+        if stock_global == 'AG_INDEX':
+            csv_dir = "/home/ryan/DATA/DAY_Global/AG_INDEX"
+            out_f = out_dir+"/ag_index_fib.csv"
+            stock_list = selected_stocks['CN_INDEX']
+        elif stock_global == 'US_INDEX':
+            csv_dir = "/home/ryan/DATA/DAY_Global/US_INDEX"
+            out_f = out_dir+"/us_index_fib.csv"
+            stock_list = selected_stocks['US_INDEX']
+        elif stock_global == "HK_INDEX":
+            csv_dir = "/home/ryan/DATA/DAY_Global/HK_INDEX"
+            out_f = out_dir+"/hk_index_fib.csv"
+            stock_list = selected_stocks['HK_INDEX']
 
-        if selected:
-            out_f = "/home/ryan/DATA/result/selected/ag_fib.csv"
-            stock_list = finlib.Finlib().load_select()['CN']
-        else:
-            out_f = "/home/ryan/DATA/result/fib.csv"
+        # Then Stocks
+        elif stock_global == "AG":
+            csv_dir = "/home/ryan/DATA/DAY_Global/AG"
+            out_f = out_dir+"/ag_fib.csv"
+            stock_list = selected_stocks['CN']
+        elif stock_global == 'HK':
+            csv_dir = "/home/ryan/DATA/DAY_Global/KH"
+            out_f = out_dir+"/hk_fib.csv"
+            stock_list = selected_stocks['HK']
+        elif stock_global == 'US':
+            csv_dir = "/home/ryan/DATA/DAY_Global/US"
+            out_f =  out_dir+"/us_fib.csv"
+            stock_list = selected_stocks['US']
+    else: # selected == False
+        if stock_global == 'AG':
+            csv_dir = "/home/ryan/DATA/DAY_Global/AG"
+            out_dir = "/home/ryan/DATA/result"
+            out_f = out_dir+"/fib.csv"
             stock_list = finlib.Finlib().get_A_stock_instrment()  #603999
-            stock_list = finlib.Finlib().add_market_to_code(
-                stock_list, dot_f=False, tspro_format=False)  #603999.SH
-
-
+            stock_list = finlib.Finlib().add_market_to_code(stock_list, dot_f=False, tspro_format=False)  #603999.SH
             stock_list = finlib.Finlib().remove_garbage(stock_list,
                                                         code_filed_name='code',
                                                         code_format='C2D6')
-    elif stock_global == 'HK':
-        out_f = "/home/ryan/DATA/result/selected/hk_fib.csv"
-        stock_list = finlib.Finlib().load_select()['HK']
 
-    elif stock_global == 'US':
-        out_f = "/home/ryan/DATA/result/selected/us_fib.csv"
-        stock_list = finlib.Finlib().load_select()['US']
+            #debug_f = True
+            #verify_fibo_f = True
+
+            if debug_f:
+                #stock_list = stock_list[stock_list['code']=="SH600519"]
+                stock_list = stock_list[stock_list['code'] == "SZ300350"]
 
 
-    #debug_f = True
-    #verify_fibo_f = True
-
-    if debug_f:
-        #stock_list = stock_list[stock_list['code']=="SH600519"]
-        stock_list = stock_list[stock_list['code'] == "SZ300350"]
-
+    if not os.path.isdir(out_dir):
+        os.mkdir(out_dir)
 
     i = 0
 
-    if stock_global == 'AG' and not selected:
-        for index, row in stock_list.iterrows():
-            i += 1
-            print(str(i) + " of " + str(stock_list.__len__()) + " ", end="")
-            name, code = row['name'], row['code']
+    for index, row in stock_list.iterrows():
+        i += 1
+        print(str(i) + " of " + str(stock_list.__len__()) + " ", end="")
+        name, code = row['name'], row['code']
 
-            csv_f = csv_dir + "/" + code + ".csv"
-            print(csv_f)
+        csv_f = csv_dir + "/" + code + ".csv"
+        print(csv_f)
 
-            if not os.path.exists(csv_f):
-                print("csv_f not exist, " + csv_f)
-                continue
+        df = finlib.Finlib().regular_read_csv_to_stdard_df(csv_f)
 
+        if (df.__len__() < min_sample_f):
+            continue
 
-            if index_f:
-                df = pd.read_csv(csv_f,
-                                 skiprows=1,
-                                 header=None,
-                                 names=[
-                                     'code', 'date', 'close', 'open', 'high',
-                                     'low', 'pre_close', 'change', 'pct_chg',
-                                     'vol', 'amount'
-                                 ],
-                                 converters={'code': str})
-                df['date'] = df['date'].apply(
-                    lambda _d: datetime.datetime.strptime(str(_d), '%Y%m%d'))
+        code_name_map = stock_list
 
-                #check_fibo(df, code, name,begin_date_f,show_fig_f)
-            else:
-                df = pd.read_csv(csv_f,
-                                 skiprows=1,
-                                 header=None,
-                                 names=[
-                                     'code', 'date', 'open', 'high', 'low',
-                                     'close', 'vol', 'amount', 'ratio'
-                                 ],
-                                 converters={'code': str})
+        code = df.iloc[0]['code']
+        name = code_name_map[code_name_map['code'] == code].iloc[0]['name']
 
-                if (df.__len__() < min_sample_f):
-                    continue
+        if log_price_f:
+            df['open'] = df['open'].apply(lambda _d: np.log(_d))
+            df['close'] = df['close'].apply(lambda _d: np.log(_d))
+            df['high'] = df['high'].apply(lambda _d: np.log(_d))
+            df['low'] = df['low'].apply(lambda _d: np.log(_d))
 
-                # date int to datetime
-                df['date'] = df['date'].apply(
-                    lambda _d: datetime.datetime.strptime(str(_d), '%Y-%m-%d'))
-
-                code_name_map = stock_list
-
-                code = df.iloc[0]['code']
-                name = code_name_map[code_name_map['code'] ==
-                                     code].iloc[0]['name']
-
-            if log_price_f:
-                df['open'] = df['open'].apply(lambda _d: np.log(_d))
-                df['close'] = df['close'].apply(lambda _d: np.log(_d))
-                df['high'] = df['high'].apply(lambda _d: np.log(_d))
-                df['low'] = df['low'].apply(lambda _d: np.log(_d))
-
-            rtn_dict_t = check_fibo(df, code, name, begin_date_f, show_fig_f,
-                                    save_fig_f, min_sample_f)
-            df_t = pd.DataFrame(data=rtn_dict_t, index=[0])
-            #print(df_t)
-            if not df_t.empty:
-                df_rtn = pd.concat([df_rtn, df_t],
-                                   sort=False).reset_index().drop('index',
-                                                                  axis=1)
+        rtn_dict_t = check_fibo(df, code, name, begin_date_f, show_fig_f,
+                                save_fig_f, min_sample_f)
+        df_t = pd.DataFrame(data=rtn_dict_t, index=[0])
+        #print(df_t)
+        if not df_t.empty:
+            df_rtn = pd.concat([df_rtn, df_t],  sort=False).reset_index().drop('index',  axis=1)
 
     df_rtn.to_csv(out_f, encoding='UTF-8', index=False)
     print(df_rtn)
