@@ -1,6 +1,9 @@
 # coding: utf-8
 #from futuquant import *
-import futuquant as ft
+#import futuquant as ft
+
+#from futu import *
+import futu as ft
 import sys
 import re
 import pandas as pd

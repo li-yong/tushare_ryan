@@ -2,6 +2,29 @@ US:
     - AAPL: APPLE        
     - ZM: ZOOM
     - BILI: 哔哩哔哩
+    - AMZN: Amazon
+    - MKC: McCormick
+    - HUBS: Hubspot
+    - TWLO: Twilio
+    - COST: Costco
+    - INTU: Intuit
+    - NFLX: Netflix
+    - APPN: Appian
+    - ANET: Arista_Networks
+    - SHOP: Shopify
+    - SIVB: SVB_Financial_Group
+    - TTD: The_Trade_Desk
+    - TSLA: Tesla
+    - FB: Facebook
+    - ZNGA: Zynga
+    - MA: Mastercard
+    - MMM: 3M
+    - NVDA: NVIDIA
+    - RH: RH
+    - ADBE: Adobe_Systems
+    - DIS: Walt_Disney
+    - SBUX: Starbucks
+    - WB: Weibo
 HK:
     - '03690': 美团点评
     - '00700': 腾讯控股
@@ -9,6 +32,10 @@ HK:
     - '01658': 邮储银行
 CN:
     - SH600519: 贵州茅台
+    - SZ000333: 美的集团
+    - SH600036: 招商银行
+    - SH601398: 工商银行
+    - SZ000895: 双汇发展
 CN_INDEX:
     - 000001.SH: 上证综指
     - 000300.SH: 沪深300
