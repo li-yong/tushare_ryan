@@ -38,7 +38,7 @@ global myToken
 
 #rst = finlib.Finlib().load_select()
 
-select_csv = "/home/ryan/DATA/DAY_Global/select.yml"
+select_csv = "/home/ryan/tushare_ryan/select.yml"
 
 with open(select_csv) as file:
     cfg = yaml.load(file, Loader=yaml.FullLoader)
