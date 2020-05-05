@@ -49,8 +49,7 @@ parser.add_option(
 
 (options, args) = parser.parse_args()
 
-fetch_hk = options.fetch_hk
-fetch_us = options.fetch_us
+
 selected = options.selected
 stock_global = options.stock_global
 

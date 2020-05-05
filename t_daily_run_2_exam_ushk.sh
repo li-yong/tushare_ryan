@@ -11,9 +11,9 @@ cd   /home/ryan/repo/trading/tushare_ryan
 #output:  /home/ryan/DATA/result/key_points_AG_today_selected.csv
 ################################################
 ## add --force_run to force run
-python t_daily_get_key_points.py  -x CH  --calc_base #slow (10hours).  run every 7 days. output: /home/ryan/DATA/result/key_points_CH.csv
-python t_daily_get_key_points.py  -x CH  --calc_today  #fast. output: /home/ryan/DATA/result/key_points_CH_today.csv
-python t_daily_get_key_points.py  -x CH  --today_selection #fast. output: /home/ryan/DATA/result/key_points_CH_today_selected.csv
+#python t_daily_get_key_points.py  -x CH  --calc_base #slow (10hours).  run every 7 days. output: /home/ryan/DATA/result/key_points_CH.csv
+#python t_daily_get_key_points.py  -x CH  --calc_today  #fast. output: /home/ryan/DATA/result/key_points_CH_today.csv
+#python t_daily_get_key_points.py  -x CH  --today_selection #fast. output: /home/ryan/DATA/result/key_points_CH_today_selected.csv
 
 
 

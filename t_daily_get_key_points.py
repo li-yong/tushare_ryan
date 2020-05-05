@@ -346,6 +346,10 @@ def check_last_day(df_hl, df):
 
 
 def today_selection(inputF):
+    if not finlib.Finlib().is_cached(file_path=inputF, day=0):
+        logging.fatal("file not exist. "+inputF)
+        exit(0)
+
     df = pd.read_csv(inputF, converters={'code': str})
     df = df.fillna(0)
 
@@ -487,9 +491,9 @@ def main():
         )
         exit(0)
 
-    outputF = "/home/ryan/DATA/result/key_points_" + stock_global + ".csv"
-    outputF_today = "/home/ryan/DATA/result/key_points_" + stock_global + "_today.csv"
-    outputF_today_s = "/home/ryan/DATA/result/key_points_" + stock_global + "_today_selected.csv"
+    outputF = "/home/ryan/DATA/result/key_points_" + stock_global.lower() + ".csv"
+    outputF_today = "/home/ryan/DATA/result/key_points_" + stock_global.lower() + "_today.csv"
+    outputF_today_s = "/home/ryan/DATA/result/key_points_" + stock_global.lower() + "_today_selected.csv"
 
     rst = finlib.Finlib().get_stock_configuration(selected=selected, stock_global=stock_global)
     out_dir = rst['out_dir']
@@ -589,6 +593,10 @@ def main():
 
         if calc_today:
             # L then H,  down_cnt more then less, long_expect_ear more than less.
+            if df_rtn.__len__() == 0:
+                logging.info("empty df for calc_today, stop.")
+                exit(0)
+
             df_rtn = df_rtn.sort_values(
                 by=['last_is_h_or_l', 'down_cnt', 'long_expect_ear_perct'],
                 ascending=[False, False, False])
