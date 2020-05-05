@@ -3774,7 +3774,7 @@ class Finlib:
     2  000905.SH  中证500
     '''
     def load_select(self):
-        select_csv = "/home/ryan/DATA/DAY_Global/select.yml"
+        select_csv = "/home/ryan/tushare_ryan/select.yml"
 
         rst = {}
 

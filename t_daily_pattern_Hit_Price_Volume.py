@@ -108,7 +108,7 @@ parser.add_option(
     dest="selected",
     default=False,
     help=
-    "only check stocks defined in /home/ryan/DATA/DAY_Global/select.yml"
+    "only check stocks defined in /home/ryan/tushare_ryan/select.yml"
 )
 
 

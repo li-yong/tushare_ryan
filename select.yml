@@ -10,7 +10,9 @@ HK:
 CN:
     - SH600519: 贵州茅台
 CN_INDEX:
-    - 000001.SH: SH_INDEX
+    - 000001.SH: 上证综指
+    - 000300.SH: 沪深300
+    - 000905.SH: 中证500
 US_INDEX:
     - sp500: sp500 
     - dow: dow
