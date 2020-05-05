@@ -103,6 +103,16 @@ parser.add_option(
 )
 
 parser.add_option(
+    "--selected",
+    action="store_true",
+    dest="selected",
+    default=False,
+    help=
+    "only check stocks defined in /home/ryan/DATA/DAY_Global/select.yml"
+)
+
+
+parser.add_option(
     "-g",
     "--merge_today_only",
     action="store_true",
@@ -500,6 +510,7 @@ single_process = options.single_process
 exam_date = options.exam_date
 forex = options.forex
 stock_global = options.stock_global
+selected = options.selected
 
 if stock_global is None:
     logging.info(
@@ -944,9 +955,15 @@ if forex:
 
 elif stock_global is not None:
     root_dir = '/home/ryan/DATA/DAY_Global/' + stock_global
+    #if stock_global == "HK":
+    #    root_dir = '/home/ryan/DATA/DAY_Global/HK'
+
     if local_source:
         root_dir = '/home/ryan/DATA/DAY_Global_local/' + stock_global  #have to copy the folder manually,coz this script will be called looply.
-#else:
+        #if stock_global =="HK":
+        #    root_dir = '/home/ryan/DATA/DAY_Global_local/HK'
+
+        #else:
 #    root_dir = '/home/ryan/DATA/DAY'
 #    if local_source:
 #        root_dir = '/home/ryan/DATA/DAY_local' #have to copy the folder manually,coz this script will be called looply.
@@ -993,6 +1010,13 @@ if not merge_only:
     # multicore implmentation:
     for root, dirs, files in os.walk(root_dir):
         pass
+
+    if selected:
+        rst = finlib.Finlib().get_stock_configuration(selected=selected, stock_global=stock_global)
+        stock_list = rst['stock_list']
+        stock_list['code'] = stock_list['code'].apply(lambda _d: _d + ".csv")
+        files = stock_list['code'].to_list()
+
 
     cpu_count = multiprocessing.cpu_count()
 
@@ -1066,7 +1090,7 @@ for file in files:
 df.drop_duplicates(inplace=True)
 df = df.reset_index()
 
-if stock_global in ['KG', 'KH', 'CH', 'MG', 'US']:  #HK, US
+if stock_global in ['KG', 'HK', 'CH', 'MG', 'US']:  #HK, US
     df_code_name_map = finlib.Finlib().get_instrument()
     df_code_name_map = df_code_name_map[['code', 'name'
                                          ]]  # only select code and name column
@@ -1078,7 +1102,12 @@ elif stock_global in ['AG']:  #A stock
     df_code_name_map = df_code_name_map[['code', 'name'
                                          ]]  #only select code and name column
 
-result_csv = "/home/ryan/DATA/result/today/talib_and_pv_no_db_filter_" + stock_global + ".csv"
+
+if selected:
+    result_csv = "/home/ryan/DATA/result/selected/talib_and_pv_no_db_filter_" + stock_global.lower() + ".csv"
+else:
+    result_csv = "/home/ryan/DATA/result/today/talib_and_pv_no_db_filter_" + stock_global.lower() + ".csv"
+
 #df is today's ptn(talib+pv) hit
 #filter not trading stock out.
 df = df.loc[df['close_p'] != 0.0]

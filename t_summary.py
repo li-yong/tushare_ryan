@@ -1155,7 +1155,7 @@ def generate_result_csv(full_combination=False, debug=False):
             logging.info("ERROR: NOT found file " + f_pv_db_sell_filter)
             #exit(0)
 
-    if stock_global in ['KH', 'KG']:
+    if stock_global in ['HK', 'KG']:
         df_hkhs_index = pd.read_csv(f_hkhs_index,
                                     converters={'code': str},
                                     encoding="utf-8")

@@ -54,6 +54,9 @@ fetch_us = options.fetch_us
 selected = options.selected
 stock_global = options.stock_global
 
+if (stock_global not in ['US', 'HK']):
+    logging.fatal("stock_global only can be in [US, HK]")
+    exit()
 
 # This script to get US,HK stock daily bar.
 # delete /home/ryan/DATA/pickle/instrument.csv to fetch again.
@@ -86,6 +89,9 @@ def get_hk_us(df, cons, start_date, appendix, todayS):
         #a_csv = '/home/ryan/DATA/DAY_Global/' + str(code) + '.' + appendix  # WUBA.CH
         #a_csv = '/home/ryan/DATA/DAY_Global/' + appendix + '/' + str(code) + '.' + appendix  # DATA/DAY_Global/CH/WUBA.CH
         a_csv = '/home/ryan/DATA/DAY_Global/' + appendix + '/' + str(code) + '.csv'  # DATA/DAY_Global/CH/WUBA.CH
+
+        #if appendix == 'KH':
+        #    a_csv = '/home/ryan/DATA/DAY_Global/HK/' + str(code) + '.csv'
 
         #if finlib.Finlib().is_cached(a_csv, day=1):
         #    logging.info("ignore because file was updated within 24 hours, " + a_csv)

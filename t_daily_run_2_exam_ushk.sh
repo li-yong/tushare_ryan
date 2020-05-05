@@ -16,45 +16,26 @@ python t_daily_get_key_points.py  -x CH  --calc_today  #fast. output: /home/ryan
 python t_daily_get_key_points.py  -x CH  --today_selection #fast. output: /home/ryan/DATA/result/key_points_CH_today_selected.csv
 
 
-python t_daily_get_key_points.py  -x KG  --calc_base
-python t_daily_get_key_points.py  -x KG  --calc_today
-python t_daily_get_key_points.py  -x KG  --today_selection
+
+#python t_daily_get_key_points.py  -x MG  --calc_base
+#python t_daily_get_key_points.py  -x MG  --calc_today
+#python t_daily_get_key_points.py  -x MG  --today_selection
+
+python t_daily_get_key_points.py  -x US  --selected --calc_base
+python t_daily_get_key_points.py  -x US  --selected --calc_today
+python t_daily_get_key_points.py  -x US  --selected --today_selection
+
+python t_daily_get_key_points.py  -x HK  --selected --calc_base
+python t_daily_get_key_points.py  -x HK  --selected --calc_today
+python t_daily_get_key_points.py  -x HK  --selected --today_selection
 
 
-python t_daily_get_key_points.py  -x KH  --calc_base
-python t_daily_get_key_points.py  -x KH  --calc_today
-python t_daily_get_key_points.py  -x KH  --today_selection
+#/home/ryan/DATA/result/selected/talib_and_pv_no_db_filter_us.csv
+python t_daily_pattern_Hit_Price_Volume.py --bool_calc_std_mean --bool_perc_std_mean --bool_pv_hit -m 7 -x US --selected
 
-
-python t_daily_get_key_points.py  -x MG  --calc_base
-python t_daily_get_key_points.py  -x MG  --calc_today
-python t_daily_get_key_points.py  -x MG  --today_selection
-
-python t_daily_get_key_points.py  -x US  --calc_base
-python t_daily_get_key_points.py  -x US  --calc_today
-python t_daily_get_key_points.py  -x US  --today_selection
-
-
-
-
-### HK First, because it take less time  ########
-python t_daily_pattern_Hit_Price_Volume.py -0  -m 30 -x KG #it was 22 ->222 ->30
-#python t_daily_pattern_Hit_Price_Volume.py -1 -2 -4   -m 30 -x KG #it was 22 ->222 ->30
-python t_summary.py -x KG --action generate_report
-
-python t_daily_pattern_Hit_Price_Volume.py -0  -m 30 -x KH #it was 22 ->222 ->30
-#python t_daily_pattern_Hit_Price_Volume.py  -1 -2 -4   -m 30 -x KH #it was 22 ->222 ->30
-python t_summary.py -x KH --action generate_report
+#/home/ryan/DATA/result/selected/talib_and_pv_no_db_filter_hk.csv
+python t_daily_pattern_Hit_Price_Volume.py --bool_calc_std_mean --bool_perc_std_mean --bool_pv_hit -m 7 -x HK --selected
+python t_summary.py -x HK --action generate_report
 
 #this is local run
-python t_daily_pattern_Hit_Price_Volume.py -0 -m 30 -x CH;
-#python t_daily_pattern_Hit_Price_Volume.py  -1 -2 -4  -m 30 -x CH;
-python t_summary.py -x CH --action generate_report
-
-python t_daily_pattern_Hit_Price_Volume.py -0 -m 30 -x MG;
-#python t_daily_pattern_Hit_Price_Volume.py  -1 -2 -4  -m 30 -x MG;
-python t_summary.py -x MG --action generate_report
-
-python t_daily_pattern_Hit_Price_Volume.py -0 -m 30 -x US;
-#python t_daily_pattern_Hit_Price_Volume.py  -1 -2 -4  -m 30 -x US;
-python t_summary.py -x US --action generate_report
+python t_daily_pattern_Hit_Price_Volume.py --bool_calc_std_mean --bool_perc_std_mean --bool_pv_hit -m 7 -x MG

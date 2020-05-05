@@ -11,8 +11,8 @@ ssh haha_66 "cd ~/tushare_ryan; git pull"
 ######################################
 rsync -avz   /home/ryan/DATA/DAY_Global/CH/  haha_66:/hdd/DATA/DAY_Global/CH/
 rsync -avz   /home/ryan/DATA/DAY_Global/KG/  haha_66:/hdd/DATA/DAY_Global/KG/
-rsync -avz   /home/ryan/DATA/DAY_Global/KH/  haha_66:/hdd/DATA/DAY_Global/KH/
-rsync -avz   /home/ryan/DATA/DAY_Global/KH.product/  haha_66:/hdd/DATA/DAY_Global/KH.product/
+rsync -avz   /home/ryan/DATA/DAY_Global/HK/  haha_66:/hdd/DATA/DAY_Global/HK/
+#rsync -avz   /home/ryan/DATA/DAY_Global/KH.product/  haha_66:/hdd/DATA/DAY_Global/KH.product/
 rsync -avz   /home/ryan/DATA/DAY_Global/MG/  haha_66:/hdd/DATA/DAY_Global/MG/
 rsync -avz   /home/ryan/DATA/DAY_Global/US/  haha_66:/hdd/DATA/DAY_Global/US/
 

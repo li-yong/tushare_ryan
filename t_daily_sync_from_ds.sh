@@ -36,7 +36,7 @@ rsync -az   haha_data_source:/home/ryan/DATA/DAY_Global/AG_MoneyFlow/  /home/rya
 rsync -az   haha_power:/home/ryan/DATA/DAY_Global/US/  /home/ryan/DATA/DAY_Global/US/
 rsync -az   haha_power:/home/ryan/DATA/DAY_Global/CH/  /home/ryan/DATA/DAY_Global/CH/
 rsync -az   haha_power/ryan/DATA/DAY_Global/KG/  /home/ryan/DATA/DAY_Global/KG/
-rsync -az   haha_power/ryan/DATA/DAY_Global/KH/  /home/ryan/DATA/DAY_Global/KH/
+rsync -az   haha_power/ryan/DATA/DAY_Global/HK/  /home/ryan/DATA/DAY_Global/HK/
 rsync -az   haha_power/ryan/DATA/DAY_Global/MG/  /home/ryan/DATA/DAY_Global/MG/
 
 

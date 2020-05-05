@@ -63,7 +63,7 @@ def verify_file_exist_update(hide_pass=True, print_len=True):
                                 day=3,
                                 hide_pass=True,
                                 print_len=False)
-    finlib.Finlib().file_verify(base + "/DAY_Global/KH/*.csv",
+    finlib.Finlib().file_verify(base + "/DAY_Global/HK/*.csv",
                                 day=3,
                                 hide_pass=True,
                                 print_len=False)
@@ -332,37 +332,37 @@ def verify_price_utd():
             "FAIL. KG stock price is not update to date. /home/ryan/DATA/DAY_Global/KG/08001.KG "
         )
 
-    df = pd.read_csv("/home/ryan/DATA/DAY_Global/KH/00001.KH")
+    df = pd.read_csv("/home/ryan/DATA/DAY_Global/HK/00001.csv")
     if len(df[df["datetime"] == today_s]) == 1:
         print(
-            "PASS. KH stock price is update to date. /home/ryan/DATA/DAY_Global/KH/00001.KH "
+            "PASS. HK stock price is update to date. /home/ryan/DATA/DAY_Global/HK/00001.csv "
         )
     else:
         print(
-            "FAIL. KH stock price is not update to date. /home/ryan/DATA/DAY_Global/KH/00001.KH "
+            "FAIL. HK stock price is not update to date. /home/ryan/DATA/DAY_Global/HK/00001.csv "
         )
 
-    df = pd.read_csv("/home/ryan/DATA/DAY_Global/KH/00007.KH")
+    df = pd.read_csv("/home/ryan/DATA/DAY_Global/HK/00007.csv")
     if len(df[df["datetime"] == today_s]) == 1:
         print(
-            "PASS. KH stock price is update to date. /home/ryan/DATA/DAY_Global/KH/00007.KH "
+            "PASS. HK stock price is update to date. /home/ryan/DATA/DAY_Global/HK/00007.csv "
         )
     else:
         print(
-            "FAIL. KH stock price is not update to date. /home/ryan/DATA/DAY_Global/KH/00007.KH"
+            "FAIL. HK stock price is not update to date. /home/ryan/DATA/DAY_Global/HK/00007.csv"
         )
 
     #######check us
     today_s_us = finlib.Finlib().get_last_trading_day_us()
 
-    df = pd.read_csv("/home/ryan/DATA/DAY_Global/US/AAPL.US")
+    df = pd.read_csv("/home/ryan/DATA/DAY_Global/US/AAPL.csv")
     if len(df[df["datetime"] == today_s_us]) == 1:
         print(
-            "PASS. US stock price is update to date. /home/ryan/DATA/DAY_Global/US/AAPL.US"
+            "PASS. US stock price is update to date. /home/ryan/DATA/DAY_Global/US/AAPL.csv"
         )
     else:
         print(
-            "FAIL. US stock price is not update to date. /home/ryan/DATA/DAY_Global/US/AAPL.US"
+            "FAIL. US stock price is not update to date. /home/ryan/DATA/DAY_Global/US/AAPL.csv"
         )
 
     df = pd.read_csv("/home/ryan/DATA/DAY_Global/MG/MSFT.MG")

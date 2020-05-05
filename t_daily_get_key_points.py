@@ -256,11 +256,9 @@ def check_last_day(df_hl, df):
 
             down_date = df_hl.iloc[i].date
 
-            last_date = datetime.datetime.strptime(last_date,
-                                                   '%Y-%m-%d').date()
-            up_date = datetime.datetime.strptime(up_date, '%Y-%m-%d').date()
-            down_date = datetime.datetime.strptime(down_date,
-                                                   '%Y-%m-%d').date()
+            last_date = datetime.datetime.strptime(last_date,'%Y%m%d').date()
+            up_date = datetime.datetime.strptime(str(up_date), '%Y%m%d').date()
+            down_date = datetime.datetime.strptime(str(down_date),'%Y%m%d').date()
 
             df_hl.iloc[i, df_hl.columns.get_loc('day_to_up')] = (last_date -
                                                                  up_date).days
@@ -436,9 +434,23 @@ def main():
         "force fetch, force generate file, even when file exist or just updated"
     )
 
+    parser.add_option(
+        "--selected",
+        action="store_true",
+        dest="selected",
+        default=False,
+        help=
+        "only check stocks defined in /home/ryan/DATA/DAY_Global/select.yml"
+    )
+
+
+
+
     (options, args) = parser.parse_args()
 
     stock_global = options.stock_global
+    selected = options.selected
+
     calc_base = options.calc_base
     calc_today = options.calc_today
     today_selection_f = options.today_selection
@@ -479,30 +491,12 @@ def main():
     outputF_today = "/home/ryan/DATA/result/key_points_" + stock_global + "_today.csv"
     outputF_today_s = "/home/ryan/DATA/result/key_points_" + stock_global + "_today_selected.csv"
 
+    rst = finlib.Finlib().get_stock_configuration(selected=selected, stock_global=stock_global)
+    out_dir = rst['out_dir']
+    csv_dir = rst['csv_dir']
+    stock_list = rst['stock_list']
+
     root_dir = '/home/ryan/DATA/DAY_Global/' + stock_global
-
-    if stock_global == 'AG':
-        df_code_name_map = finlib.Finlib().get_A_stock_instrment(debug=debug)
-        df_code_name_map = finlib.Finlib().add_market_to_code(
-            df=df_code_name_map)
-        valid_df = finlib.Finlib().remove_garbage(df_code_name_map,
-                                                  code_filed_name='code',
-                                                  code_format='C2D6')
-    else:
-        # '''
-        for root, dirs, files in os.walk(root_dir):
-            pass
-
-        valid_df = pd.DataFrame()
-        for inputF in files:
-            regx = re.match('(.*)\.' + stock_global, inputF)
-            if regx:
-                code = regx.group(1)
-                sys.stdout.write(code + ",")
-                tmp_df = pd.DataFrame({'code': [code]}, columns=['code'])
-                valid_df = valid_df.append(tmp_df)
-
-        valid_df = valid_df.reset_index().drop('index', axis=1)
 
     df_rtn = pd.DataFrame()
 
@@ -528,18 +522,15 @@ def main():
             exit(0)
 
         j = 1
-        looplen = str(valid_df.__len__())
+        looplen = str(stock_list.__len__())
 
         tmp_dir = "/home/ryan/DATA/tmp/support_resistent"
 
         if not os.path.isdir(tmp_dir):
             os.mkdir(tmp_dir)
 
-        for code in valid_df['code']:
-            if stock_global == "AG":
-                inputF = root_dir + "/" + code + ".csv"
-            else:
-                inputF = root_dir + "/" + code + "." + stock_global
+        for code in stock_list['code']:
+            inputF = root_dir + "/" + code + ".csv"
 
             print(str(j) + " of " + looplen + ". " + inputF + " . ")
             j += 1
@@ -548,27 +539,12 @@ def main():
                 print("file not exist, " + inputF)
                 continue
 
-            if not re.match(".*DAY_Global/AG", root_dir):
-                df = pd.read_csv(inputF, converters={'code': str})
-                df.rename(columns={"datetime": "date"}, inplace=True)
-                df.rename(columns={"high": "h"}, inplace=True)
-                df.rename(columns={"open": "o"}, inplace=True)
-                df.rename(columns={"low": "l"}, inplace=True)
-                df.rename(columns={"close": "close"}, inplace=True)
-                df.rename(columns={"vol": "vol"}, inplace=True)
-            else:
-                df = pd.read_csv(inputF,
-                                 skiprows=1,
-                                 converters={'code': str},
-                                 header=None,
-                                 names=[
-                                     'code', 'date', 'o', 'h', 'l', 'close',
-                                     'vol', 'amnt', 'tnv'
-                                 ])
+            df = finlib.Finlib().regular_read_csv_to_stdard_df(inputF)
+
 
             #adding name column
             df = pd.merge(df,
-                          valid_df,
+                          stock_list,
                           on='code',
                           how='inner',
                           suffixes=('', '_x'))
