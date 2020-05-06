@@ -15,48 +15,68 @@ cd   /home/ryan/repo/trading/tushare_ryan
 #python t_daily_get_key_points.py  -x CH  --calc_today  #fast. output: /home/ryan/DATA/result/key_points_CH_today.csv
 #python t_daily_get_key_points.py  -x CH  --today_selection #fast. output: /home/ryan/DATA/result/key_points_CH_today_selected.csv
 
-# /home/ryan/DATA/result/selected/ag_index_fib.csv
-python t_fibonacci.py --begin_date "20180101"  --min_sample=500 -x AG_INDEX --selected
-
-# /home/ryan/DATA/result/selected/ag_fib.csv
-python t_fibonacci.py --begin_date "20180101"  --min_sample=500 -x AG --selected
-
 
 #python t_daily_get_key_points.py  -x MG  --calc_base
 #python t_daily_get_key_points.py  -x MG  --calc_today
 #python t_daily_get_key_points.py  -x MG  --today_selection
 
-#output: /home/ryan/DATA/result/selected/key_points_us.csv
-python t_daily_get_key_points.py  -x US  --selected --calc_base
+#-----------  FIB ---------------------------#
+  ########### AG, AG_INDEX fib
+  # /home/ryan/DATA/result/selected/ag_index_fib.csv
+  python t_fibonacci.py --begin_date "20180101"  --min_sample=500 -x AG_INDEX --selected
 
-#output: /home/ryan/DATA/result/selected/key_points_us_today.csv
-python t_daily_get_key_points.py  -x US  --selected --calc_today
+  # /home/ryan/DATA/result/selected/ag_fib.csv
+  python t_fibonacci.py --begin_date "20180101"  --min_sample=500 -x AG --selected
 
-#/home/ryan/DATA/result/selected/key_points_us_today_selected.csv
-python t_daily_get_key_points.py  -x US  --selected --today_selection
 
-#/home/ryan/DATA/result/selected/key_points_hk.csv
-python t_daily_get_key_points.py  -x HK  --selected --calc_base
+  ############ US, US_INDEX, HK fib
+  #/home/ryan/DATA/result/selected/us_fib.csv
+  python t_fibonacci.py --begin_date "20180101"  --min_sample=500 -x US --selected
 
-#/home/ryan/DATA/result/selected/key_points_hk_today.csv
-python t_daily_get_key_points.py  -x HK  --selected --calc_today
+  #/home/ryan/DATA/result/selected/us_index_fib.csv
+  python t_fibonacci.py --begin_date "20180101"  --min_sample=500 -x US_INDEX --selected
 
-python t_daily_get_key_points.py  -x HK  --selected --today_selection
+  #/home/ryan/DATA/result/selected/hk_fib.csv
+  python t_fibonacci.py --begin_date "20180101"  --min_sample=500 -x HK --selected
 
-#/home/ryan/DATA/result/selected/talib_and_pv_no_db_filter_us.csv
-python t_daily_pattern_Hit_Price_Volume.py --bool_calc_std_mean --bool_perc_std_mean --bool_pv_hit -m 7 -x US --selected
 
-#/home/ryan/DATA/result/selected/talib_and_pv_no_db_filter_hk.csv
-python t_daily_pattern_Hit_Price_Volume.py --bool_calc_std_mean --bool_perc_std_mean --bool_pv_hit -m 7 -x HK --selected
 
-#/home/ryan/DATA/result/selected/us_fib.csv
-python t_fibonacci.py --begin_date "20180101"  --min_sample=500 -x US --selected
+#----------------- KP ---------------------------#
+  ########## AG KP
+  #output: /home/ryan/DATA/result/selected/key_points_ag.csv
+  python t_daily_get_key_points.py  -x AG  --selected --calc_base
+  #output: /home/ryan/DATA/result/selected/key_points_ag_today.csv
+  python t_daily_get_key_points.py  -x AG  --selected --calc_today
+  #/home/ryan/DATA/result/selected/key_points_ag_today_selected.csv
+  python t_daily_get_key_points.py  -x AG  --selected --today_selection
 
-#/home/ryan/DATA/result/selected/us_index_fib.csv
-python t_fibonacci.py --begin_date "20180101"  --min_sample=500 -x US_INDEX --selected
+  ########### US KP
+  #output: /home/ryan/DATA/result/selected/key_points_us.csv
+  python t_daily_get_key_points.py  -x US  --selected --calc_base
+  #output: /home/ryan/DATA/result/selected/key_points_us_today.csv
+  python t_daily_get_key_points.py  -x US  --selected --calc_today
+  #/home/ryan/DATA/result/selected/key_points_us_today_selected.csv
+  python t_daily_get_key_points.py  -x US  --selected --today_selection
 
-#/home/ryan/DATA/result/selected/hk_fib.csv
-python t_fibonacci.py --begin_date "20180101"  --min_sample=500 -x HK --selected
+  ########### HK KP
+  #/home/ryan/DATA/result/selected/key_points_hk.csv
+  python t_daily_get_key_points.py  -x HK  --selected --calc_base
+  #/home/ryan/DATA/result/selected/key_points_hk_today.csv
+  python t_daily_get_key_points.py  -x HK  --selected --calc_today
+  python t_daily_get_key_points.py  -x HK  --selected --today_selection
+
+
+#--------------- PV ---------------------------#
+  ############ US pv
+  #/home/ryan/DATA/result/selected/talib_and_pv_no_db_filter_us.csv
+  python t_daily_pattern_Hit_Price_Volume.py --bool_calc_std_mean --bool_perc_std_mean --bool_pv_hit -m 7 -x US --selected
+
+  ############ HK pv
+  #/home/ryan/DATA/result/selected/talib_and_pv_no_db_filter_hk.csv
+  python t_daily_pattern_Hit_Price_Volume.py --bool_calc_std_mean --bool_perc_std_mean --bool_pv_hit -m 7 -x HK --selected
+
+  #/home/ryan/DATA/result/selected/talib_and_pv_no_db_filter_ag.csv
+  python t_daily_pattern_Hit_Price_Volume.py --bool_calc_std_mean --bool_perc_std_mean --bool_pv_hit -m 7 -x AG --selected
 
 
 python t_summary.py  --select  --action=generate_report

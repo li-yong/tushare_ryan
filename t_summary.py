@@ -489,6 +489,11 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
     #us_index selected
     f_fib_us_index_selected = "/home/ryan/DATA/result/selected/us_index_fib.csv"
 
+    #ag selected
+    f_key_points_ag_selected = "/home/ryan/DATA/result/key_points_ag_today_selected.csv"
+    f_pv_no_filter_ag_selected = "/home/ryan/DATA/result/selected/talib_and_pv_no_db_filter_ag.csv"
+    f_fib_ag_selected = "/home/ryan/DATA/result/selected/ag_fib.csv"
+
     #us selected
     f_key_points_us_selected = "/home/ryan/DATA/result/key_points_us_today_selected.csv"
     f_pv_no_filter_us_selected = "/home/ryan/DATA/result/selected/talib_and_pv_no_db_filter_us.csv"
@@ -556,7 +561,7 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
         else:
             logging.info("NOT found file " + f_fib_us_index_selected)
 
-
+        ########## us
         if finlib.Finlib().is_cached(f_key_points_us_selected, day=2):
             df_key_points_us_selected = pd.read_csv(f_key_points_us_selected, dtype=str, encoding="utf-8")
             arr.append('df_key_points_us_selected')
@@ -577,6 +582,7 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
         else:
             logging.info("NOT found file " + f_fib_us_selected)
 
+        ######## hk
         if finlib.Finlib().is_cached(f_key_points_hk_selected, day=2):
             df_key_points_hk_selected = pd.read_csv(f_key_points_hk_selected, dtype=str, encoding="utf-8")
             arr.append('df_key_points_hk_selected')
@@ -596,6 +602,28 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
             arr.append('df_fib_hk_selected')
         else:
             logging.info("NOT found file " + f_fib_hk_selected)
+
+
+        ######## ag
+        if finlib.Finlib().is_cached(f_key_points_ag_selected, day=2):
+            df_key_points_ag_selected = pd.read_csv(f_key_points_ag_selected, dtype=str, encoding="utf-8")
+            arr.append('df_key_points_ag_selected')
+        else:
+            logging.info("NOT found file " + f_key_points_ag_selected)
+
+
+        if finlib.Finlib().is_cached(f_pv_no_filter_ag_selected, day=2):
+            df_pv_no_filter_ag_selected = pd.read_csv(f_pv_no_filter_ag_selected, dtype=str, encoding="utf-8")
+            arr.append('df_pv_no_filter_ag_selected')
+        else:
+            logging.info("NOT found file " + f_pv_no_filter_ag_selected)
+
+
+        if finlib.Finlib().is_cached(f_fib_ag_selected, day=2):
+            df_fib_ag_selected = pd.read_csv(f_fib_ag_selected, dtype=str, encoding="utf-8")
+            arr.append('df_fib_ag_selected')
+        else:
+            logging.info("NOT found file " + f_fib_ag_selected)
 
 
 
