@@ -4,7 +4,7 @@
 #mv  /home/ryan/DATA/result/today ~/DATA/result/today.del
 #mkdir  /home/ryan/DATA/result/today
 
-cd   /home/ryan/repo/trading/tushare_ryan
+cd /home/ryan/tushare_ryan
 
 ################################################
 #input:  /home/ryan/DATA/DAY_Global/CH|KG..|/
