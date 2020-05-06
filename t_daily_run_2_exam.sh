@@ -531,11 +531,12 @@ python t_daily_indicator_kdj_macd.py --indicator MACD --period D
 # output: ~/DATA/result/fib.csv
 # 	  ~/DATA/result/selected/ag_index_fib.csv
 ###############################
+#----------------- selected moved to t_daily_run_2_exam_ushk.sh
 # /home/ryan/DATA/result/selected/ag_index_fib.csv
-python t_fibonacci.py --begin_date "20180101"  --min_sample=500 -x AG_INDEX --selected
+# python t_fibonacci.py --begin_date "20180101"  --min_sample=500 -x AG_INDEX --selected
 
 # /home/ryan/DATA/result/selected/ag_fib.csv
-python t_fibonacci.py --begin_date "20180101"  --min_sample=500 -x AG --selected
+# python t_fibonacci.py --begin_date "20180101"  --min_sample=500 -x AG --selected
 
 # /home/ryan/DATA/result/ag_fib.csv
 python t_fibonacci.py --begin_date "20180101"  --min_sample=500 -x AG

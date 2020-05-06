@@ -418,18 +418,20 @@ def calc_init(array):
         #logging.info("Work on file " + inputF + ", last date is " + exam_date + ", run " + str(progress_run) + "/" + str(toal_run))
         logging.info("Work on file " + inputF + ", run " + str(progress_run) + "/" + str(toal_run))
         lock.release()
-
+    '''
     if not re.match(".*DAY_Global.*/AG/.*", inputF):
-        df = pd.read_csv(inputF, converters={'code': str})
-        df.rename(columns={"datetime": "date"}, inplace=True)
-        df.rename(columns={"high": "h"}, inplace=True)
-        df.rename(columns={"open": "o"}, inplace=True)
-        df.rename(columns={"low": "l"}, inplace=True)
-        df.rename(columns={"close": "c"}, inplace=True)
-        df.rename(columns={"vol": "vol"}, inplace=True)
+        
+        #df = pd.read_csv(inputF, converters={'code': str})
+        #df.rename(columns={"datetime": "date"}, inplace=True)
+        #df.rename(columns={"high": "h"}, inplace=True)
+        #df.rename(columns={"open": "o"}, inplace=True)
+        #df.rename(columns={"low": "l"}, inplace=True)
+        #df.rename(columns={"close": "c"}, inplace=True)
+        #df.rename(columns={"volume": "vol"}, inplace=True)
     else:
         df = pd.read_csv(inputF, skiprows=1, converters={'code': str}, header=None, names=['code', 'date', 'o', 'h', 'l', 'c', 'vol', 'amnt', 'tnv'])
-
+    '''
+    df = finlib.Finlib().regular_read_csv_to_stdard_df(inputF)
     df_original = df
 
     if df_original.__len__() <= 1:

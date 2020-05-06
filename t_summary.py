@@ -347,10 +347,22 @@ def my_sort(df, debug=False):
     return df
 
 
+def remove_unwant_columns(df):
+    if 'index' in df.columns:
+        df = df.drop('index', axis=1)
+    if 'level_0' in df.columns:
+        df = df.drop('level_0', axis=1)
+    if 'Unnamed: 0' in df.columns:
+        df = df.drop('Unnamed: 0', axis=1)
+    return(df)
+
+
 def combin_filter(df, post_combine=False, debug=False):
 
     if debug:
-        return (df)
+        return(df)
+
+    df = remove_unwant_columns(df)
 
     cols = []
     keep_df_cols = [
@@ -405,6 +417,9 @@ def combin_filter(df, post_combine=False, debug=False):
         else:
             if col in keep_df_cols:
                 cols.append(col)
+
+    if 'date' in cols:
+        cols.insert(0, cols.pop(cols.index('date')))
 
     if 'name' in cols:
         cols.insert(0, cols.pop(cols.index('name')))
@@ -1069,7 +1084,7 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
         else:
             logging.info("no such file " + f_hen_cow)
 
-        logging.info("loading  df_pv_db_buy_filter")
+        logging.info("loading df_pv_db_buy_filter")
         if (os.path.isfile(f_pv_db_buy_filter)) and os.stat(f_pv_db_buy_filter).st_size >= 10:  # > 10 bytes
             df_pv_db_buy_filter = pd.read_csv(f_pv_db_buy_filter, dtype=str, encoding="utf-8")
             df_pv_db_buy_filter.drop_duplicates(inplace=True)
@@ -1459,7 +1474,8 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
     df_dict["df_key_points_hk_selected"] = {"term": "NA", "price": "NA"}
     df_dict["df_pv_no_filter_hk_selected"] = {"term": "NA", "price": "NA"}
     df_dict["df_fib_hk_selected"] = {"term": "NA", "price": "NA"}
-
+    df_dict["df_pv_no_filter_ag_selected"] = {"term": "NA", "price": "NA"}
+    df_dict["df_key_points_ag_selected"] = {"term": "NA", "price": "NA"}
 
 
     if (stock_global in ['AG']) and (not full_combination):  #for AG

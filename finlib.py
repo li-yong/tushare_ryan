@@ -492,7 +492,7 @@ class Finlib:
                 df_the_day = pd_tmp[pd_tmp['date'] <= date]
                 if df_the_day.__len__() > 0:
                     actual_date = df_the_day.iloc[-1:]['date'].values[0]
-                    actual_price = df_the_day.iloc[-1:]['c'].values[0]  # '11.8231'
+                    actual_price = df_the_day.iloc[-1:]['close'].values[0]  # '11.8231'
 
                     if actual_date != date:
                         # logging.info("request "+code_m+" "+date+", return "+actual_date)
@@ -501,7 +501,7 @@ class Finlib:
                 else:
                     logging.info("no record of " + code_m + " " + date)
             else:
-                price = pd_tmp['c'][-1:].values[0]
+                price = pd_tmp['close'][-1:].values[0]
 
             price = float(price)
         else:
@@ -1050,15 +1050,15 @@ class Finlib:
             code = str(df.iloc[1, df.columns.get_loc('code')])
 
             date = df.iloc[:, df.columns.get_loc('date')]
-            o = df.iloc[:, df.columns.get_loc('o')]
-            h = df.iloc[:, df.columns.get_loc('h')]
-            l = df.iloc[:, df.columns.get_loc('l')]
-            c = df.iloc[:, df.columns.get_loc('c')]
-            vol = df.iloc[:, df.columns.get_loc('vol')]  # volume
+            o = df.iloc[:, df.columns.get_loc('open')]
+            h = df.iloc[:, df.columns.get_loc('high')]
+            l = df.iloc[:, df.columns.get_loc('low')]
+            c = df.iloc[:, df.columns.get_loc('close')]
+            vol = df.iloc[:, df.columns.get_loc('volume')]  # volume
             # amnt=df.iloc[:,df.columns.get_loc('amnt')]  #amount
             # tnv=df.iloc[:,df.columns.get_loc('tnv')]  #turnoverratio
 
-            if df[-1:]['c'].values[0] == 0 or df[-1:]['o'].values[0] == 0 or df[-1:]['vol'].values[0] == 0:
+            if df[-1:]['close'].values[0] == 0 or df[-1:]['open'].values[0] == 0 or df[-1:]['volume'].values[0] == 0:
                 logging.info("ignore as the close price/open price/volume is 0")
                 return (df, df_result)
 
@@ -1112,7 +1112,7 @@ class Finlib:
 
                 for i in range(df.__len__() - max_exam_day, df.__len__() + 1):
                     #for i in range(1, df.__len__() + 1):
-                    # c_perc = stats.percentileofscore(c, df.iloc[i]['c']) / 100
+                    # c_perc = stats.percentileofscore(c, df.iloc[i]['close']) / 100
                     # df.iloc[i, df.columns.get_loc('c_perc')] = c_perc
                     # print "loop " + str(i)
 
@@ -1135,8 +1135,8 @@ class Finlib:
                     # the decision is going to be executed on today's close price at the next day's market opening.
 
                     # today close at the position of the previous (15 days <-- include today)
-                    perc_c = stats.percentileofscore(c_prev, df.iloc[i - 1]['c']) / 100
-                    perc_vol = stats.percentileofscore(vol_prev, df.iloc[i - 1]['vol']) / 100
+                    perc_c = stats.percentileofscore(c_prev, df.iloc[i - 1]['close']) / 100
+                    perc_vol = stats.percentileofscore(vol_prev, df.iloc[i - 1]['volume']) / 100
 
                     df.iloc[i - 1, df.columns.get_loc('perc_c')] = round(perc_c, 1)  # 0,0.1, 0.2...1
                     df.iloc[i - 1, df.columns.get_loc('perc_vol')] = round(perc_vol, 1)
@@ -1158,12 +1158,12 @@ class Finlib:
                     if std_15D_c == 0:
                         df.iloc[i - 1, df.columns.get_loc('c_brk_sig')] = 0
                     else:
-                        df.iloc[i - 1, df.columns.get_loc('c_brk_sig')] = round((df.iloc[i - 1]['c'] - c_mean_15D) * 1.0 / std_15D_c, 1)
+                        df.iloc[i - 1, df.columns.get_loc('c_brk_sig')] = round((df.iloc[i - 1]['close'] - c_mean_15D) * 1.0 / std_15D_c, 1)
 
                     if std_15D_vol == 0:
                         df.iloc[i - 1, df.columns.get_loc('vol_brk_sig')] = 0
                     else:
-                        df.iloc[i - 1, df.columns.get_loc('vol_brk_sig')] = round((df.iloc[i - 1]['vol'] - vol_mean_15D) * 1.0 / std_15D_vol, 1)
+                        df.iloc[i - 1, df.columns.get_loc('vol_brk_sig')] = round((df.iloc[i - 1]['volume'] - vol_mean_15D) * 1.0 / std_15D_vol, 1)
 
                     strength = abs(df.iloc[i - 1, df.columns.get_loc('vol_brk_sig')]) + \
                                abs(df.iloc[i - 1, df.columns.get_loc('c_brk_sig')])
@@ -1220,12 +1220,12 @@ class Finlib:
                 new_value_df = pd.DataFrame([0] * df_loop_2_5.__len__(), columns=['price_change_perc'])  # today_close - yesterday_close
                 df_loop_2_5 = new_value_df.join(df_loop_2_5)  #
 
-                closeP = str(df_loop_2_5[-1:]['c'].values[0])
+                closeP = str(df_loop_2_5[-1:]['close'].values[0])
 
                 for i in range(df_loop_2_5.__len__() - max_exam_day, df_loop_2_5.__len__()):
-                    yesterday_close = df_loop_2_5.iloc[i - 1]['c']
+                    yesterday_close = df_loop_2_5.iloc[i - 1]['close']
 
-                    today_close = df_loop_2_5.iloc[i]['c']
+                    today_close = df_loop_2_5.iloc[i]['close']
 
                     delta_perc = (today_close - yesterday_close) * 1.0 / yesterday_close * 100
                     delta_perc = round(delta_perc, 2)
@@ -1242,15 +1242,15 @@ class Finlib:
                     i_result += 1
 
                 # check price gap between yesterdy_close and today_open
-                today_high = df_loop_2_5.iloc[-1:]['h'].values[0]
-                today_open = df_loop_2_5.iloc[-1:]['o'].values[0]
-                today_low = df_loop_2_5.iloc[-1:]['l'].values[0]
-                today_close = df_loop_2_5.iloc[-1:]['c'].values[0]
+                today_high = df_loop_2_5.iloc[-1:]['high'].values[0]
+                today_open = df_loop_2_5.iloc[-1:]['open'].values[0]
+                today_low = df_loop_2_5.iloc[-1:]['low'].values[0]
+                today_close = df_loop_2_5.iloc[-1:]['close'].values[0]
 
-                yesterday_high = df_loop_2_5.iloc[-2:-1]['h'].values[0]
-                yesterday_open = df_loop_2_5.iloc[-2:-1]['o'].values[0]
-                yesterday_low = df_loop_2_5.iloc[-2:-1]['l'].values[0]
-                yesterday_close = df_loop_2_5.iloc[-2:-1]['c'].values[0]
+                yesterday_high = df_loop_2_5.iloc[-2:-1]['high'].values[0]
+                yesterday_open = df_loop_2_5.iloc[-2:-1]['open'].values[0]
+                yesterday_low = df_loop_2_5.iloc[-2:-1]['low'].values[0]
+                yesterday_close = df_loop_2_5.iloc[-2:-1]['close'].values[0]
 
                 # if yesterday_close > 0 and (today_open < yesterday_close) and (today_open > today_close) : #and (round(today_open,1) == round(today_high,1))
                 if yesterday_close > 0 and (today_open < yesterday_close) and (yesterday_close > today_close) and (today_high < yesterday_close):  # and (round(today_open,1) == round(today_high,1))
@@ -1302,7 +1302,7 @@ class Finlib:
 
                         date = df.iloc[j - 1, df.columns.get_loc('date')]
                         code = str(df.iloc[j - 1, df.columns.get_loc('code')])
-                        closeP = df.iloc[j - 1, df.columns.get_loc('c')]
+                        closeP = df.iloc[j - 1, df.columns.get_loc('close')]
 
                         if tmp[j - 1] == 0:
                             # print "no talib op, ptn "+p
@@ -1340,8 +1340,8 @@ class Finlib:
 
                 exam_date_in_df = df_52_week.iloc[-1].date
 
-                max_close_index = df_52_week['c'].idxmax()
-                min_close_index = df_52_week['c'].idxmin()
+                max_close_index = df_52_week['close'].idxmax()
+                min_close_index = df_52_week['close'].idxmin()
 
                 max_close_df = df_52_week.loc[max_close_index]
                 min_close_df = df_52_week.loc[min_close_index]
@@ -1349,7 +1349,7 @@ class Finlib:
                 df_last_row = df_52_week[-1:]
 
                 # 52week price
-                if (df_last_row['c'].values[0] - min_close_df['c']) < 0.02 * min_close_df['c']:  # 2% near the lowest price
+                if (df_last_row['close'].values[0] - min_close_df['close']) < 0.02 * min_close_df['close']:  # 2% near the lowest price
                     date_min_c = min_close_df['date']
                     time_delta = datetime.strptime(df_last_row['date'].values[0], '%Y-%m-%d') - datetime.strptime(date_min_c, '%Y-%m-%d')
                     time_delta = time_delta.days
@@ -1357,37 +1357,37 @@ class Finlib:
                     if time_delta >= 0:
                         logging.info(code + ", today price ( " + \
                                      df_last_row['date'].values[0] + ", " + \
-                                     str(df_last_row['c'].values[0]) + \
+                                     str(df_last_row['close'].values[0]) + \
                                      ") approach 52 weeks low (" + \
-                                     date_min_c + "," + str(min_close_df['c']) + "), " + \
+                                     date_min_c + "," + str(min_close_df['close']) + "), " + \
                                      str(time_delta) + " days ago")
 
-                        df_result.loc[i_result] = [df_last_row['date'].values[0], code, 'B', code + "_B_pvbreak_lp_year", time_delta, df_last_row['c'].values[0]]
+                        df_result.loc[i_result] = [df_last_row['date'].values[0], code, 'B', code + "_B_pvbreak_lp_year", time_delta, df_last_row['close'].values[0]]
                         i_result += 1
 
-                if (max_close_df['c'] - df_last_row['c'].values[0]) < 0.02 * max_close_df['c']:  # 2% near the highest price
-                    # if tmp_a/max_close_df['c']  > 0.9: #90% near the highest price
+                if (max_close_df['close'] - df_last_row['close'].values[0]) < 0.02 * max_close_df['close']:  # 2% near the highest price
+                    # if tmp_a/max_close_df['close']  > 0.9: #90% near the highest price
                     date_max_c = max_close_df['date']
-                    time_delta = datetime.strptime(df_last_row['date'].values[0], '%Y-%m-%d') - datetime.strptime(date_max_c, '%Y-%m-%d')
+                    time_delta = datetime.strptime(df_last_row['date'].values[0], '%Y%m%d') - datetime.strptime(date_max_c, '%Y%m%d')
                     time_delta = time_delta.days
 
                     if time_delta >= 0:
                         logging.info(code + ", today price( " + \
                                      df_last_row['date'].values[0] + ", " + \
-                                     str(df_last_row['c'].values[0]) + \
+                                     str(df_last_row['close'].values[0]) + \
                                      ") approach 52 weeks high (" + \
-                                     date_max_c + "," + str(max_close_df['c']) + "), " + \
+                                     date_max_c + "," + str(max_close_df['close']) + "), " + \
                                      str(time_delta) + " days ago")
 
-                        df_result.loc[i_result] = [df_last_row['date'].values[0], code, 'S', code + "_S_pvbreak_hp_year", time_delta, df_last_row['c'].values[0]]
+                        df_result.loc[i_result] = [df_last_row['date'].values[0], code, 'S', code + "_S_pvbreak_hp_year", time_delta, df_last_row['close'].values[0]]
                         i_result += 1
 
                 # 52week volume
-                max_vol_df = df_52_week.loc[df_52_week['vol'].idxmax()]
-                min_vol_df = df_52_week.loc[df_52_week['vol'].idxmin()]
+                max_vol_df = df_52_week.loc[df_52_week['volume'].idxmax()]
+                min_vol_df = df_52_week.loc[df_52_week['volume'].idxmin()]
 
                 # if tmp_c < 0.1: #10% near the lowest vol
-                if (df_last_row['vol'].values[0] - min_vol_df['vol']) < 0.03 * min_vol_df['vol']:  # 3% near the lowest vol
+                if (df_last_row['volume'].values[0] - min_vol_df['volume']) < 0.03 * min_vol_df['volume']:  # 3% near the lowest vol
                     date_min_v = min_vol_df['date']
                     time_delta = datetime.strptime(df_last_row['date'].values[0], '%Y-%m-%d') - datetime.strptime(date_min_v, '%Y-%m-%d')
                     time_delta = time_delta.days
@@ -1395,16 +1395,16 @@ class Finlib:
                     if time_delta > 0:
                         logging.info(code + ", today volume( " + \
                                      df_last_row['date'].values[0] + ", " + \
-                                     str(df_last_row['vol'].values[0]) + \
+                                     str(df_last_row['volume'].values[0]) + \
                                      ") approach 52 weeks low (" + \
-                                     date_min_v + "," + str(min_vol_df['vol']) + "), " + \
+                                     date_min_v + "," + str(min_vol_df['volume']) + "), " + \
                                      str(time_delta)) + " days ago"
 
-                        df_result.loc[i_result] = [date, code, 'B', code + "_B_pvbreak_lv_year", time_delta, df_last_row['c'].values[0]]
+                        df_result.loc[i_result] = [date, code, 'B', code + "_B_pvbreak_lv_year", time_delta, df_last_row['close'].values[0]]
                         i_result += 1
 
-                # if tmp_a/max_vol_df['vol'] > 0.9: #90% near the highest vol
-                if (max_vol_df['vol'] - df_last_row['vol'].values[0]) < 0.03 * max_vol_df['vol']:
+                # if tmp_a/max_vol_df['volume'] > 0.9: #90% near the highest vol
+                if (max_vol_df['volume'] - df_last_row['volume'].values[0]) < 0.03 * max_vol_df['volume']:
                     date_max_v = max_vol_df['date']
                     time_delta = datetime.strptime(df_last_row['date'].values[0], '%Y-%m-%d') - datetime.strptime(date_max_v, '%Y-%m-%d')
                     time_delta = time_delta.days
@@ -1412,12 +1412,12 @@ class Finlib:
                     if time_delta > 0:
                         logging.info(code + ", today volume( " + \
                                      df_last_row['date'].values[0] + ", " + \
-                                     str(df_last_row['vol'].values[0]) + \
+                                     str(df_last_row['volume'].values[0]) + \
                                      ") approach 52 weeks high (" + \
-                                     date_max_v + "," + str(max_vol_df['vol']) + "), " + \
+                                     date_max_v + "," + str(max_vol_df['volume']) + "), " + \
                                      str(time_delta)) + " days ago"
 
-                        df_result.loc[i_result] = [date, code, 'S', code + "_S_pvbreak_hv_year", time_delta, df_last_row['c'].values[0]]
+                        df_result.loc[i_result] = [date, code, 'S', code + "_S_pvbreak_hv_year", time_delta, df_last_row['close'].values[0]]
                         i_result += 1
 
             ###############################
@@ -1568,7 +1568,7 @@ class Finlib:
                     # exit(1)
 
                     time = str(df.iloc[i - 1, df.columns.get_loc('date')])
-                    close_p = str(df.iloc[i - 1, df.columns.get_loc('c')])  # suppose close(today) == open(next_day)
+                    close_p = str(df.iloc[i - 1, df.columns.get_loc('close')])  # suppose close(today) == open(next_day)
 
                     vol_pos = df.iloc[i - 1, df.columns.get_loc('vol_pos')]
                     vol_vlt = df.iloc[i - 1, df.columns.get_loc('5D_vol_vlt')]
@@ -2046,11 +2046,11 @@ class Finlib:
             #ds_n_days = df.iloc[start_day:i]  #
             ds_n_days = df.iloc[i - comparing_window:i]  #
 
-            open = np.array(ds_n_days['o'], dtype=float)
-            high = np.array(ds_n_days['h'], dtype=float)
-            low = np.array(ds_n_days['l'], dtype=float)
-            close = np.array(ds_n_days['c'], dtype=float)
-            volume = np.array(ds_n_days['vol'], dtype=float)
+            open = np.array(ds_n_days['open'], dtype=float)
+            high = np.array(ds_n_days['high'], dtype=float)
+            low = np.array(ds_n_days['low'], dtype=float)
+            close = np.array(ds_n_days['close'], dtype=float)
+            volume = np.array(ds_n_days['volume'], dtype=float)
 
             use_shared_eval = True
             if True:
@@ -2256,7 +2256,7 @@ class Finlib:
                     target_n_days = middleband
                     use_shared_eval = False
                 elif target == 'pv':
-                    target_n_days = ds_n_days['vol']
+                    target_n_days = ds_n_days['volume']
 
                 else:
                     logging.info("Unknown target, die at finlib.py.")
@@ -2288,7 +2288,7 @@ class Finlib:
             target_max = target_min = close_max_target = close_min_target = target_n_days[0]
 
             time = ds_n_days['date'][-1:].values[0]
-            close_p = ds_n_days['c'][-1:].values[0]
+            close_p = ds_n_days['close'][-1:].values[0]
 
             for j in range(target_n_days.__len__()):
 
@@ -3046,11 +3046,11 @@ class Finlib:
         # converting from UNIX timestamp to normal
         df['date'] = pd.to_datetime(df['date'], format="%Y-%m-%d").dt.date
         array_date = np.array(df['date'])
-        array_close = np.array(df['c'])
-        array_open = np.array(df['o'])
-        array_high = np.array(df['h'])
-        array_low = np.array(df['l'])
-        array_volume = np.array(df['vol'])
+        array_close = np.array(df['close'])
+        array_open = np.array(df['open'])
+        array_high = np.array(df['high'])
+        array_low = np.array(df['low'])
+        array_volume = np.array(df['volume'])
         # print("High Array size", array_high.size)
         # print("Low Array size", array_low.size)
         # print("Open Array size", array_open.size)
