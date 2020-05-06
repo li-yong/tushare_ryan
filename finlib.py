@@ -3422,6 +3422,21 @@ class Finlib:
         if 'datetime' in df.columns:
             df.rename(columns={"datetime": "date"}, inplace=True)
 
+        if 'Code' in df.columns:
+            df.rename(columns={"Code": "code"}, inplace=True)
+        if 'Date' in df.columns:
+            df.rename(columns={"Date": "date"}, inplace=True)
+        if 'Open' in df.columns:
+            df.rename(columns={"Open": "open"}, inplace=True)
+        if 'High' in df.columns:
+            df.rename(columns={"High": "high"}, inplace=True)
+        if 'Low' in df.columns:
+            df.rename(columns={"Low": "low"}, inplace=True)
+        if 'Close' in df.columns:
+            df.rename(columns={"Close": "close"}, inplace=True)
+        if 'Volume' in df.columns:
+            df.rename(columns={"Volume": "volume"}, inplace=True)
+
         return (df)
 
     def regular_df_date_to_ymd(self,df):
@@ -3847,6 +3862,8 @@ class Finlib:
 
         rtn_df = self.regular_column_names(rtn_df)
         rtn_df = self.regular_df_date_to_ymd(rtn_df)
+
+        rtn_df['code'] = rtn_df['code'].apply(lambda _d: str(_d).upper())
 
         return(rtn_df)
 

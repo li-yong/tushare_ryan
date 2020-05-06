@@ -15,16 +15,16 @@
 
 ### Backup will be taken at the scp to haha_66
 
-echo "updating US stock daily "
+#echo "updating US stock daily "
 #################
 # get sp500/dow consistant stocks
 # output: ~/DATA/pickle/INDEX_US_HK/*.csv
-python t_daily_get_us_index.py
+#python t_daily_get_us_index.py  # NO LONGER WORK
 
 
 
 #################
-# update Index (dow, sp), get sp500/dow daily
+# update Index (dow, sp), get sp500/dow daily. and update selected US stocks in yaml.
 # output: /DATA/DAY_Global/stooq/S_INDEX/#dow.csv  sp500.csv
 #         /DATA/DAY_Global/stooq/US/*.csv
 python t_daily_update_csv_from_stooq.py

@@ -18,6 +18,19 @@ import pathlib
 
 #This script download [US, US_INDEX] in selected yaml from stooq.com. Run daily.
 
+
+
+#url='https://www.nasdaq.com/market-activity/quotes/nasdaq-ndx-index?render=download'
+#req = requests.get(url)
+#url_content = req.content
+#csv_file = open("csv.del", 'wb')
+#csv_file.write(url_content)
+#csv_file.close()
+#logging.info("fetched to "+"csv.del")
+
+
+
+
 def stooq_download(code,mkt, days=1):
     code = code.lower()
     mkt = mkt.lower()
@@ -63,8 +76,10 @@ def stooq_download(code,mkt, days=1):
 
 
 rst = finlib.Finlib().load_select()
-i = 0
+
 for mkt in ['US_INDEX','US']:
+#for mkt in ['HK']: ## stooq doesn't have HK data
+    i = 0
     stock_list=rst[mkt]
     for index, row in stock_list.iterrows():
         i += 1

@@ -500,7 +500,11 @@ def main():
     csv_dir = rst['csv_dir']
     stock_list = rst['stock_list']
 
-    root_dir = '/home/ryan/DATA/DAY_Global/' + stock_global
+    root_dir = '/home/ryan/DATA/DAY_Global'
+    if stock_global in ['US', 'US_INDEX']:
+        root_dir = root_dir +"/stooq/"+ stock_global
+    else:
+        root_dir = root_dir+"/"+stock_global
 
     df_rtn = pd.DataFrame()
 
@@ -559,7 +563,7 @@ def main():
                 tmp_base_f = tmp_dir + "/" + str(code) + ".csv"
 
                 if (not force_run_global) and finlib.Finlib().is_cached(
-                        tmp_base_f, 6):
+                        tmp_base_f, 1):
                     df_tmp = pd.read_csv(tmp_base_f)
                 else:
                     df = df[df['close'] > 0]
