@@ -346,34 +346,23 @@ def check_last_day(df_hl, df):
 
 
 def today_selection(inputF):
-    if not finlib.Finlib().is_cached(file_path=inputF, day=0):
-        logging.fatal("file not exist. "+inputF)
+    if not finlib.Finlib().is_cached(file_path=inputF, day=30):
+        logging.fatal("file not exist. or more than 30 days no changes. "+inputF)
         exit(0)
 
     df = pd.read_csv(inputF, converters={'code': str})
     df = df.fillna(0)
 
-    df_long = df[df.long_expect_ear_perct.notnull()].reset_index().drop(
-        'index', axis=1)
-    df_long = df_long[df_long['long_expect_ear_perct'] > 9].reset_index().drop(
-        'index', axis=1)
-    df_long = df_long[(df_long['long_expect_ear_perct'] +
-                       df_long['delta_to_long_enter']) > 9].reset_index().drop(
-                           'index', axis=1)
-    df_long = df_long[df_long['down_cnt'] > 1].reset_index().drop('index',
-                                                                  axis=1)
+    df_long = df[df.long_expect_ear_perct.notnull()].reset_index().drop('index', axis=1)
+    df_long = df_long[df_long['long_expect_ear_perct'] > 9].reset_index().drop('index', axis=1)
+    #df_long = df_long[(df_long['long_expect_ear_perct'] +df_long['delta_to_long_enter']) > 9].reset_index().drop('index', axis=1)
+    df_long = df_long[df_long['down_cnt'] > 1].reset_index().drop('index',axis=1)
 
     df_short = df[df.short_expect_ear_perct.notnull()].reset_index().drop(
         'index', axis=1)
-    df_short = df_short[
-        df_short['short_expect_ear_perct'] > 9].reset_index().drop('index',
-                                                                   axis=1)
-    df_short = df_short[(
-        df_short['short_expect_ear_perct'] +
-        df_short['delta_to_short_enter']) > 9].reset_index().drop('index',
-                                                                  axis=1)
-    df_short = df_short[df_short['up_cnt'] > 1].reset_index().drop('index',
-                                                                   axis=1)
+    df_short = df_short[df_short['short_expect_ear_perct'] > 9].reset_index().drop('index',axis=1)
+    #df_short = df_short[(df_short['short_expect_ear_perct'] + df_short['delta_to_short_enter']) > 9].reset_index().drop('index', axis=1)
+    df_short = df_short[df_short['up_cnt'] > 1].reset_index().drop('index',axis=1)
 
     #df_rtn = df_long.append(df_short)  #df_short no meaning for A stock. long only.
     df_rtn = df_long

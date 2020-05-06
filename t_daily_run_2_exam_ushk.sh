@@ -21,8 +21,13 @@ cd   /home/ryan/repo/trading/tushare_ryan
 #python t_daily_get_key_points.py  -x MG  --calc_today
 #python t_daily_get_key_points.py  -x MG  --today_selection
 
+#output: /home/ryan/DATA/result/key_points_us.csv
 python t_daily_get_key_points.py  -x US  --selected --calc_base
+
+#output: /home/ryan/DATA/result/key_points_us_today.csv
 python t_daily_get_key_points.py  -x US  --selected --calc_today
+
+#/home/ryan/DATA/result/key_points_us_today_selected.csv
 python t_daily_get_key_points.py  -x US  --selected --today_selection
 
 python t_daily_get_key_points.py  -x HK  --selected --calc_base
