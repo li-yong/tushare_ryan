@@ -275,6 +275,10 @@ def my_sort(df, debug=False):
         #logging.info(df.head(1))
         pass
 
+    if 'level_0' in df.columns:
+        df = df.drop('level_0', axis=1, inplace=False)
+
+    finlib.Finlib().pprint(df)
     df = df.drop_duplicates().reset_index()
 
     if 'index' in df.columns:
@@ -412,7 +416,7 @@ def combin_filter(df, post_combine=False, debug=False):
     return df
 
 
-def generate_result_csv(full_combination=False, debug=False):
+def generate_result_csv(full_combination=False, select=True, debug=False):
     #cons = ts.get_apis()
     #ts.close_apis(cons)  #ryan add 03/15, not sure if it impacts script running.
     today_d = datetime.today().strftime('%d')
@@ -420,7 +424,10 @@ def generate_result_csv(full_combination=False, debug=False):
     exam_date = finlib.Finlib().get_last_trading_day()
     #exam_date="2018-03-05"
 
-    rpt = "/home/ryan/DATA/result/report_" + exam_date + "_" + stock_global + ".txt"
+    if select:
+        rpt = "/home/ryan/DATA/result/report_" + exam_date + "_selected.txt"
+    else:
+        rpt = "/home/ryan/DATA/result/report_" + exam_date + "_" + stock_global + ".txt"
     rst = "\nGetting today's summary report " + exam_date + "\n\n"  #the string contains the report content.
     fh = open(rpt, "w")
     fh.write(rst)
@@ -453,9 +460,11 @@ def generate_result_csv(full_combination=False, debug=False):
 
     f_p_r_div = base + "/" + "price_rsi_div.csv"
     #f_lanchou=base+"/"+"lanchou.csv"
-    f_pv_db_buy_filter = base + "/" + "talib_and_pv_db_buy_filtered_" + stock_global + ".csv"
-    f_pv_db_sell_filter = base + "/" + "talib_and_pv_db_sell_filtered_" + stock_global + ".csv"
-    f_pv_no_filter = base + "/" + "talib_and_pv_no_db_filter_" + stock_global + ".csv"
+
+    if not select:
+        f_pv_db_buy_filter = base + "/" + "talib_and_pv_db_buy_filtered_" + stock_global + ".csv"
+        f_pv_db_sell_filter = base + "/" + "talib_and_pv_db_sell_filtered_" + stock_global + ".csv"
+        f_pv_no_filter = base + "/" + "talib_and_pv_no_db_filter_" + stock_global + ".csv"
 
     f_industry_top = "/home/ryan/DATA/result/industry_top.csv"
     f_area_top = "/home/ryan/DATA/result/area_top.csv"
@@ -468,9 +477,31 @@ def generate_result_csv(full_combination=False, debug=False):
     f_sp400_index = "/home/ryan/DATA/pickle/INDEX_US_HK/sp400.csv"
     f_dow_index = "/home/ryan/DATA/pickle/INDEX_US_HK/dow.csv"
     f_nasdqa100_index = "/home/ryan/DATA/pickle/INDEX_US_HK/nasdqa100.csv"
+    #ag fib
+    f_fib_ag = "home/ryan/DATA/result/ag_fib.csv"
+
+    #ag_index_fib
+    f_fib_ag_index_selected = "/home/ryan/DATA/result/selected/ag_index_fib.csv"
+
+    #ag fib selected
+    f_fib_ag_selected = "/home/ryan/DATA/result/selected/ag_fib.csv"
+
+    #us_index selected
+    f_fib_us_index_selected = "/home/ryan/DATA/result/selected/us_index_fib.csv"
+
+    #us selected
+    f_key_points_us_selected = "/home/ryan/DATA/result/key_points_us_today_selected.csv"
+    f_pv_no_filter_us_selected = "/home/ryan/DATA/result/selected/talib_and_pv_no_db_filter_us.csv"
+    f_fib_us_selected = "/home/ryan/DATA/result/selected/us_fib.csv"
+
+    #hk selected
+    f_key_points_hk_selected = "/home/ryan/DATA/result/key_points_hk_today_selected.csv"
+    f_pv_no_filter_hk_selected = "/home/ryan/DATA/result/selected/talib_and_pv_no_db_filter_hk.csv"
+    f_fib_hk_selected = "/home/ryan/DATA/result/selected/hk_fib.csv"
 
     #key_points_AG_today_selected.csv
-    f_support_resist_line_today = "/home/ryan/DATA/result/key_points_" + stock_global + "_today_selected.csv"
+    if not select:
+        f_support_resist_line_today = "/home/ryan/DATA/result/key_points_" + stock_global + "_today_selected.csv"
 
     #disclosure_date in a week.
     f_disclosure_date_notify = "/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/latest/disclosure_date_notify.csv"
@@ -501,163 +532,232 @@ def generate_result_csv(full_combination=False, debug=False):
     #len_df_pv_db_buy_filter_0 = 0
     #len_df_pv_db_sell_filter_0 = 0
 
-    logging.info("loading  df_pv_no_filter, " + f_pv_no_filter)
-    if (os.path.isfile(f_pv_no_filter)) and os.stat(f_pv_no_filter).st_size >= 10:  # > 10 bytes
-        df_pv_no_filter = pd.read_csv(f_pv_no_filter, dtype=str, encoding="utf-8")
-        df_pv_no_filter.drop_duplicates(inplace=True)
-        df_pv_no_filter = finlib.Finlib().remove_garbage(df_pv_no_filter, code_filed_name='code', code_format='C2D6')
-        arr.append('df_pv_no_filter')
-    else:
-        logging.info("NOT found file " + f_pv_no_filter)
-
-    if 'df_pv_no_filter' in locals():
-        if 'index' in df_pv_no_filter.columns:
-            df_pv_no_filter = df_pv_no_filter.drop('index', axis=1)
-        if 'level_0' in df_pv_no_filter.columns:
-            df_pv_no_filter = df_pv_no_filter.drop('level_0', axis=1)
-        if 'Unnamed: 0' in df_pv_no_filter.columns:
-            df_pv_no_filter = df_pv_no_filter.drop('Unnamed: 0', axis=1)
-
-        df_pv_no_filter = df_pv_no_filter.loc[df_pv_no_filter['close_p'] != '0.0']
-        df_pv_no_filter = refine_df(df_pv_no_filter, has_db_record=False, force_pass=True, insert_buy_record_to_db=False, debug=debug)
-
-        len_df_pv_no_filter_0 = str(df_pv_no_filter.__len__())
-
-        #==== Low price ====
-        logging.info("loading df_pv_break")
-        df_pv_break = df_pv_no_filter[df_pv_no_filter['op_rsn'].str.contains('_pvbreak_')]
-
-        df_pv_break = refine_df(df_pv_break, has_db_record=False, force_pass=True, insert_buy_record_to_db=False, debug=debug)
-
-        if False:
-            if 'index' in df_pv_break.columns:
-                df_pv_break = df_pv_break.drop('index', axis=1)
-
-            if 'level_0' in df_pv_break.columns:
-                df_pv_break = df_pv_break.drop('level_0', axis=1)
-
-            if 'Unnamed: 0' in df_pv_break.columns:
-                df_pv_break = df_pv_break.drop('Unnamed: 0', axis=1)
-
-            df_pv_break = df_pv_break.reset_index()
-
-        if df_pv_break.__len__() <= 0:
-            logging.info("empty df_pv_break")
-            exit()
+    ##################################################
+    # AG: load df
+    ##################################################
+    if select:
+        if finlib.Finlib().is_cached(f_fib_ag_index_selected, day=2):
+            df_fib_ag_index_selected = pd.read_csv(f_fib_ag_index_selected, dtype=str, encoding="utf-8")
+            arr.append('df_fib_ag_index_selected')
         else:
-            df_pv_break = df_pv_break.loc[df_pv_break['close_p'] != '0.0']
-            len_df_pv_break_0 = str(df_pv_break.__len__())
+            logging.info("NOT found file " + f_fib_ag_index_selected)
 
-        #====== max_daily_increase
-        logging.info("loading df_max_daily_increase")
-        df_max_daily_increase = df_pv_no_filter[df_pv_no_filter['op_rsn'].str.contains('_max_daily_increase')]
-        df_max_daily_increase = df_max_daily_increase.reset_index()
-        df_max_daily_increase = refine_df(df_max_daily_increase, has_db_record=False, force_pass=True, insert_buy_record_to_db=False, debug=debug)
-        df_max_daily_increase = finlib.Finlib().remove_garbage(df_max_daily_increase, code_filed_name='code', code_format='C2D6')
-        logging.info("\t df_max_daily_increase length " + str(df_max_daily_increase.__len__()))
 
-        #====== max_daily_decrease
-        logging.info("loading df_max_daily_decrease")
-        df_max_daily_decrease = df_pv_no_filter[df_pv_no_filter['op_rsn'].str.contains('_max_daily_decrease')]
-        df_max_daily_decrease = df_max_daily_decrease.reset_index()
-        df_max_daily_decrease = refine_df(df_max_daily_decrease, has_db_record=False, force_pass=True, insert_buy_record_to_db=False, debug=debug)
-        df_max_daily_decrease = finlib.Finlib().remove_garbage(df_max_daily_decrease, code_filed_name='code', code_format='C2D6')
-        logging.info("\t df_max_daily_decrease length " + str(df_max_daily_decrease.__len__()))
+        if finlib.Finlib().is_cached(f_fib_ag_selected, day=2):
+            df_fib_ag_selected = pd.read_csv(f_fib_ag_selected, dtype=str, encoding="utf-8")
+            arr.append('df_fib_ag_selected')
+        else:
+            logging.info("NOT found file " + f_fib_ag_selected)
 
-        #====== decrease gap
-        logging.info("loading df_decrease_gap")
-        df_decrease_gap = df_pv_no_filter[df_pv_no_filter['op_rsn'].str.contains('_decrease_gap')]
-        df_decrease_gap = df_decrease_gap.reset_index()
-        df_decrease_gap = refine_df(df_decrease_gap, has_db_record=False, force_pass=True, insert_buy_record_to_db=False, debug=debug)
-        df_decrease_gap = finlib.Finlib().remove_garbage(df_decrease_gap, code_filed_name='code', code_format='C2D6')
-        logging.info("\t df_decrease_gap length " + str(df_decrease_gap.__len__()))
 
-        #====== increase gap
-        logging.info("loading df_increase_gap")
-        df_increase_gap = df_pv_no_filter[df_pv_no_filter['op_rsn'].str.contains('_increase_gap')]
-        df_increase_gap = df_increase_gap.reset_index()
-        df_increase_gap = refine_df(df_increase_gap, has_db_record=False, force_pass=True, insert_buy_record_to_db=False, debug=debug)
-        df_increase_gap = finlib.Finlib().remove_garbage(df_increase_gap, code_filed_name='code', code_format='C2D6')
-        logging.info("\t df_increase_gap length " + str(df_increase_gap.__len__()))
+        if finlib.Finlib().is_cached(f_fib_us_index_selected, day=2):
+            df_fib_us_index_selected = pd.read_csv(f_fib_us_index_selected, dtype=str, encoding="utf-8")
+            arr.append('df_fib_us_index_selected')
+        else:
+            logging.info("NOT found file " + f_fib_us_index_selected)
 
-        #====== 52 week low price
-        logging.info("loading df_low_price_year")
-        df_low_price_year = df_pv_no_filter[df_pv_no_filter['op_rsn'].str.contains('_pvbreak_lp_year')]
 
-        #if 'index' in df_low_price_year.columns: df_low_price_year = df_low_price_year.drop('index', axis=1)
-        #if 'level_0' in df_low_price_year.columns: df_low_price_year = df_low_price_year.drop('level_0', axis=1)
-        #if 'Unnamed: 0' in df_low_price_year.columns:  df_low_price_year = df_low_price_year.drop('Unnamed: 0', axis=1)
-        df_low_price_year = df_low_price_year.reset_index()
-        df_low_price_year = refine_df(df_low_price_year, has_db_record=False, force_pass=True, insert_buy_record_to_db=False, debug=debug)
-        df_low_price_year = finlib.Finlib().remove_garbage(df_low_price_year, code_filed_name='code', code_format='C2D6')
-        logging.info("\t df_low_price_year length " + str(df_low_price_year.__len__()))
+        if finlib.Finlib().is_cached(f_key_points_us_selected, day=2):
+            df_key_points_us_selected = pd.read_csv(f_key_points_us_selected, dtype=str, encoding="utf-8")
+            arr.append('df_key_points_us_selected')
+        else:
+            logging.info("NOT found file " + f_key_points_us_selected)
 
-        #====== 52 week low volume
-        logging.info("loading df_low_vol_year")
-        df_low_vol_year = df_pv_no_filter[df_pv_no_filter['op_rsn'].str.contains('_pvbreak_lv_year')]
-        #if 'index' in df_low_vol_year.columns: df_low_vol_year = df_low_vol_year.drop('index', axis=1)
-        #if 'level_0' in df_low_vol_year.columns: df_low_vol_year = df_low_vol_year.drop('level_0', axis=1)
-        #if 'Unnamed: 0' in df_low_vol_year.columns:  df_low_vol_year = df_low_vol_year.drop('Unnamed: 0', axis=1)
-        df_low_vol_year = df_low_vol_year.reset_index()
-        df_low_vol_year = refine_df(df_low_vol_year, has_db_record=False, force_pass=True, insert_buy_record_to_db=False, debug=debug)
-        df_low_vol_year = finlib.Finlib().remove_garbage(df_low_vol_year, code_filed_name='code', code_format='C2D6')
-        logging.info("\t df_low_vol_year length " + str(df_low_vol_year.__len__()))
 
-        #====== 52 week high price
-        '''
-        logging.info("loading df_high_price_year")
-        df_high_price_year = df_pv_no_filter[df_pv_no_filter['op_rsn'].str.contains('_pvbreak_hp_year')]
-        #if 'index' in df_high_price_year.columns: df_high_price_year = df_high_price_year.drop('index', axis=1)
-        #if 'level_0' in df_high_price_year.columns: df_high_price_year = df_high_price_year.drop('level_0', axis=1)
-        #if 'Unnamed: 0' in df_high_price_year.columns:  df_high_price_year = df_high_price_year.drop('Unnamed: 0', axis=1)
-        df_high_price_year = df_high_price_year.reset_index()
-        df_high_price_year = refine_df(df_high_price_year, has_db_record=False, force_pass=True, insert_buy_record_to_db=False, debug=debug)
-        df_high_price_year = finlib.Finlib().remove_garbage(df_high_price_year, code_filed_name='code', code_format='C2D6')
-        logging.info("\t df_high_price_year length "+str(df_high_price_year.__len__()))
-    
-    
-        #====== 52 week high volume
-        logging.info("loading df_high_vol_year")
-        df_high_vol_year = df_pv_no_filter[df_pv_no_filter['op_rsn'].str.contains('_pvbreak_hv_year')]
-        #if 'index' in df_high_vol_year.columns: df_high_vol_year = df_high_vol_year.drop('index', axis=1)
-        #if 'level_0' in df_high_vol_year.columns: df_high_vol_year = df_high_vol_year.drop('level_0', axis=1)
-        #if 'Unnamed: 0' in df_high_vol_year.columns:  df_high_vol_year = df_high_vol_year.drop('Unnamed: 0', axis=1)
-        df_high_vol_year = df_high_vol_year.reset_index()
-        df_high_vol_year = refine_df(df_high_vol_year, has_db_record=False, force_pass=True, insert_buy_record_to_db=False, debug=debug)
-        df_high_vol_year = finlib.Finlib().remove_garbage(df_high_vol_year, code_filed_name='code', code_format='C2D6')
-        logging.info("\t df_high_vol_year length "+str(df_high_vol_year.__len__()))
-        '''
+        if finlib.Finlib().is_cached(f_pv_no_filter_us_selected, day=2):
+            df_pv_no_filter_us_selected = pd.read_csv(f_pv_no_filter_us_selected, dtype=str, encoding="utf-8")
+            arr.append('df_pv_no_filter_us_selected')
+        else:
+            logging.info("NOT found file " + f_pv_no_filter_us_selected)
 
-    #commen df shared by AG, MG, HK ..
-    if 'df_max_daily_increase' in locals():
-        arr.append('df_max_daily_increase')
 
-    if 'df_max_daily_decrease' in locals():
-        arr.append('df_max_daily_decrease')
+        if finlib.Finlib().is_cached(f_fib_us_selected, day=2):
+            df_fib_us_selected = pd.read_csv(f_fib_us_selected, dtype=str, encoding="utf-8")
+            arr.append('df_fib_us_selected')
+        else:
+            logging.info("NOT found file " + f_fib_us_selected)
 
-    if 'df_pv_break' in locals():
-        arr.append('df_pv_break')
+        if finlib.Finlib().is_cached(f_key_points_hk_selected, day=2):
+            df_key_points_hk_selected = pd.read_csv(f_key_points_hk_selected, dtype=str, encoding="utf-8")
+            arr.append('df_key_points_hk_selected')
+        else:
+            logging.info("NOT found file " + f_key_points_hk_selected)
 
-    if 'df_low_price_year' in locals():
-        arr.append('df_low_price_year')
 
-    if 'df_low_vol_year' in locals():
-        arr.append('df_low_vol_year')
+        if finlib.Finlib().is_cached(f_pv_no_filter_hk_selected, day=2):
+            df_pv_no_filter_hk_selected = pd.read_csv(f_pv_no_filter_hk_selected, dtype=str, encoding="utf-8")
+            arr.append('df_pv_no_filter_hk_selected')
+        else:
+            logging.info("NOT found file " + f_pv_no_filter_hk_selected)
 
-    if 'df_high_price_year' in locals():
-        arr.append('df_high_price_year')
 
-    if 'df_high_vol_year' in locals():
-        arr.append('df_high_vol_year')
+        if finlib.Finlib().is_cached(f_fib_hk_selected, day=2):
+            df_fib_hk_selected = pd.read_csv(f_fib_hk_selected, dtype=str, encoding="utf-8")
+            arr.append('df_fib_hk_selected')
+        else:
+            logging.info("NOT found file " + f_fib_hk_selected)
 
-    if 'df_decrease_gap' in locals():
-        arr.append('df_decrease_gap')
 
-    if 'df_increase_gap' in locals():
-        arr.append('df_increase_gap')
 
-    #For df than only available for AG
-    if stock_global in ['AG']:
+    elif stock_global in ['AG']:
+        logging.info("loading  df_pv_no_filter, " + f_pv_no_filter)
+        if (os.path.isfile(f_pv_no_filter)) and os.stat(f_pv_no_filter).st_size >= 10:  # > 10 bytes
+            df_pv_no_filter = pd.read_csv(f_pv_no_filter, dtype=str, encoding="utf-8")
+            df_pv_no_filter.drop_duplicates(inplace=True)
+            df_pv_no_filter = finlib.Finlib().remove_garbage(df_pv_no_filter, code_filed_name='code',
+                                                             code_format='C2D6')
+            arr.append('df_pv_no_filter')
+        else:
+            logging.info("NOT found file " + f_pv_no_filter)
+
+        if 'df_pv_no_filter' in locals():
+            if 'index' in df_pv_no_filter.columns:
+                df_pv_no_filter = df_pv_no_filter.drop('index', axis=1)
+            if 'level_0' in df_pv_no_filter.columns:
+                df_pv_no_filter = df_pv_no_filter.drop('level_0', axis=1)
+            if 'Unnamed: 0' in df_pv_no_filter.columns:
+                df_pv_no_filter = df_pv_no_filter.drop('Unnamed: 0', axis=1)
+
+            df_pv_no_filter = df_pv_no_filter.loc[df_pv_no_filter['close_p'] != '0.0']
+            df_pv_no_filter = refine_df(df_pv_no_filter, has_db_record=False, force_pass=True,
+                                        insert_buy_record_to_db=False, debug=debug)
+
+            len_df_pv_no_filter_0 = str(df_pv_no_filter.__len__())
+
+            # ==== Low price ====
+            logging.info("loading df_pv_break")
+            df_pv_break = df_pv_no_filter[df_pv_no_filter['op_rsn'].str.contains('_pvbreak_')]
+
+            df_pv_break = refine_df(df_pv_break, has_db_record=False, force_pass=True, insert_buy_record_to_db=False,
+                                    debug=debug)
+
+            if df_pv_break.__len__() <= 0:
+                logging.info("empty df_pv_break")
+                exit()
+            else:
+                df_pv_break = df_pv_break.loc[df_pv_break['close_p'] != '0.0']
+                len_df_pv_break_0 = str(df_pv_break.__len__())
+
+            # ====== max_daily_increase
+            logging.info("loading df_max_daily_increase")
+            df_max_daily_increase = df_pv_no_filter[df_pv_no_filter['op_rsn'].str.contains('_max_daily_increase')]
+            df_max_daily_increase = df_max_daily_increase.reset_index()
+            df_max_daily_increase = refine_df(df_max_daily_increase, has_db_record=False, force_pass=True,
+                                              insert_buy_record_to_db=False, debug=debug)
+            df_max_daily_increase = finlib.Finlib().remove_garbage(df_max_daily_increase, code_filed_name='code',
+                                                                   code_format='C2D6')
+            logging.info("\t df_max_daily_increase length " + str(df_max_daily_increase.__len__()))
+
+            # ====== max_daily_decrease
+            logging.info("loading df_max_daily_decrease")
+            df_max_daily_decrease = df_pv_no_filter[df_pv_no_filter['op_rsn'].str.contains('_max_daily_decrease')]
+            df_max_daily_decrease = df_max_daily_decrease.reset_index()
+            df_max_daily_decrease = refine_df(df_max_daily_decrease, has_db_record=False, force_pass=True,
+                                              insert_buy_record_to_db=False, debug=debug)
+            df_max_daily_decrease = finlib.Finlib().remove_garbage(df_max_daily_decrease, code_filed_name='code',
+                                                                   code_format='C2D6')
+            logging.info("\t df_max_daily_decrease length " + str(df_max_daily_decrease.__len__()))
+
+            # ====== decrease gap
+            logging.info("loading df_decrease_gap")
+            df_decrease_gap = df_pv_no_filter[df_pv_no_filter['op_rsn'].str.contains('_decrease_gap')]
+            df_decrease_gap = df_decrease_gap.reset_index()
+            df_decrease_gap = refine_df(df_decrease_gap, has_db_record=False, force_pass=True,
+                                        insert_buy_record_to_db=False, debug=debug)
+            df_decrease_gap = finlib.Finlib().remove_garbage(df_decrease_gap, code_filed_name='code',
+                                                             code_format='C2D6')
+            logging.info("\t df_decrease_gap length " + str(df_decrease_gap.__len__()))
+
+            # ====== increase gap
+            logging.info("loading df_increase_gap")
+            df_increase_gap = df_pv_no_filter[df_pv_no_filter['op_rsn'].str.contains('_increase_gap')]
+            df_increase_gap = df_increase_gap.reset_index()
+            df_increase_gap = refine_df(df_increase_gap, has_db_record=False, force_pass=True,
+                                        insert_buy_record_to_db=False, debug=debug)
+            df_increase_gap = finlib.Finlib().remove_garbage(df_increase_gap, code_filed_name='code',
+                                                             code_format='C2D6')
+            logging.info("\t df_increase_gap length " + str(df_increase_gap.__len__()))
+
+            # ====== 52 week low price
+            logging.info("loading df_low_price_year")
+            df_low_price_year = df_pv_no_filter[df_pv_no_filter['op_rsn'].str.contains('_pvbreak_lp_year')]
+
+            # if 'index' in df_low_price_year.columns: df_low_price_year = df_low_price_year.drop('index', axis=1)
+            # if 'level_0' in df_low_price_year.columns: df_low_price_year = df_low_price_year.drop('level_0', axis=1)
+            # if 'Unnamed: 0' in df_low_price_year.columns:  df_low_price_year = df_low_price_year.drop('Unnamed: 0', axis=1)
+            df_low_price_year = df_low_price_year.reset_index()
+            df_low_price_year = refine_df(df_low_price_year, has_db_record=False, force_pass=True,
+                                          insert_buy_record_to_db=False, debug=debug)
+            df_low_price_year = finlib.Finlib().remove_garbage(df_low_price_year, code_filed_name='code',
+                                                               code_format='C2D6')
+            logging.info("\t df_low_price_year length " + str(df_low_price_year.__len__()))
+
+            # ====== 52 week low volume
+            logging.info("loading df_low_vol_year")
+            df_low_vol_year = df_pv_no_filter[df_pv_no_filter['op_rsn'].str.contains('_pvbreak_lv_year')]
+            # if 'index' in df_low_vol_year.columns: df_low_vol_year = df_low_vol_year.drop('index', axis=1)
+            # if 'level_0' in df_low_vol_year.columns: df_low_vol_year = df_low_vol_year.drop('level_0', axis=1)
+            # if 'Unnamed: 0' in df_low_vol_year.columns:  df_low_vol_year = df_low_vol_year.drop('Unnamed: 0', axis=1)
+            df_low_vol_year = df_low_vol_year.reset_index()
+            df_low_vol_year = refine_df(df_low_vol_year, has_db_record=False, force_pass=True,
+                                        insert_buy_record_to_db=False, debug=debug)
+            df_low_vol_year = finlib.Finlib().remove_garbage(df_low_vol_year, code_filed_name='code',
+                                                             code_format='C2D6')
+            logging.info("\t df_low_vol_year length " + str(df_low_vol_year.__len__()))
+
+            # ====== 52 week high price
+            '''
+            logging.info("loading df_high_price_year")
+            df_high_price_year = df_pv_no_filter[df_pv_no_filter['op_rsn'].str.contains('_pvbreak_hp_year')]
+            #if 'index' in df_high_price_year.columns: df_high_price_year = df_high_price_year.drop('index', axis=1)
+            #if 'level_0' in df_high_price_year.columns: df_high_price_year = df_high_price_year.drop('level_0', axis=1)
+            #if 'Unnamed: 0' in df_high_price_year.columns:  df_high_price_year = df_high_price_year.drop('Unnamed: 0', axis=1)
+            df_high_price_year = df_high_price_year.reset_index()
+            df_high_price_year = refine_df(df_high_price_year, has_db_record=False, force_pass=True, insert_buy_record_to_db=False, debug=debug)
+            df_high_price_year = finlib.Finlib().remove_garbage(df_high_price_year, code_filed_name='code', code_format='C2D6')
+            logging.info("\t df_high_price_year length "+str(df_high_price_year.__len__()))
+
+
+            #====== 52 week high volume
+            logging.info("loading df_high_vol_year")
+            df_high_vol_year = df_pv_no_filter[df_pv_no_filter['op_rsn'].str.contains('_pvbreak_hv_year')]
+            #if 'index' in df_high_vol_year.columns: df_high_vol_year = df_high_vol_year.drop('index', axis=1)
+            #if 'level_0' in df_high_vol_year.columns: df_high_vol_year = df_high_vol_year.drop('level_0', axis=1)
+            #if 'Unnamed: 0' in df_high_vol_year.columns:  df_high_vol_year = df_high_vol_year.drop('Unnamed: 0', axis=1)
+            df_high_vol_year = df_high_vol_year.reset_index()
+            df_high_vol_year = refine_df(df_high_vol_year, has_db_record=False, force_pass=True, insert_buy_record_to_db=False, debug=debug)
+            df_high_vol_year = finlib.Finlib().remove_garbage(df_high_vol_year, code_filed_name='code', code_format='C2D6')
+            logging.info("\t df_high_vol_year length "+str(df_high_vol_year.__len__()))
+            '''
+
+        # common df shared by AG, MG, HK ..
+        if 'df_max_daily_increase' in locals():
+            arr.append('df_max_daily_increase')
+
+        if 'df_max_daily_decrease' in locals():
+            arr.append('df_max_daily_decrease')
+
+        if 'df_pv_break' in locals():
+            arr.append('df_pv_break')
+
+        if 'df_low_price_year' in locals():
+            arr.append('df_low_price_year')
+
+        if 'df_low_vol_year' in locals():
+            arr.append('df_low_vol_year')
+
+        if 'df_high_price_year' in locals():
+            arr.append('df_high_price_year')
+
+        if 'df_high_vol_year' in locals():
+            arr.append('df_high_vol_year')
+
+        if 'df_decrease_gap' in locals():
+            arr.append('df_decrease_gap')
+
+        if 'df_increase_gap' in locals():
+            arr.append('df_increase_gap')
+
         df_fenghong = pd.read_csv(f_fenghong, converters={'code': str}, encoding="utf-8")
         df_fenghong = df_fenghong[df_fenghong['score'] >= 0.8]
         df_fenghong = finlib.Finlib().remove_garbage(df_fenghong, code_filed_name='code', code_format='C2D6')
@@ -972,11 +1072,11 @@ def generate_result_csv(full_combination=False, debug=False):
             logging.info("ERROR: NOT found file " + f_pv_db_sell_filter)
             #exit(0)
 
-    if stock_global in ['HK', 'KG']:
+    elif stock_global in ['HK', 'KG']:
         df_hkhs_index = pd.read_csv(f_hkhs_index, converters={'code': str}, encoding="utf-8")
         arr.append('df_hkhs_index')
 
-    if stock_global in ['MG', 'US', 'CN']:
+    elif stock_global in ['MG', 'US', 'CN']:
         df_sp500_index = pd.read_csv(f_sp500_index, converters={'code': str}, encoding="utf-8")
         arr.append('df_sp500_index')
 
@@ -989,6 +1089,9 @@ def generate_result_csv(full_combination=False, debug=False):
         df_dow_index = pd.read_csv(f_dow_index, converters={'code': str}, encoding="utf-8")
         arr.append('df_dow_index')
 
+    ##################################################
+    # AG: df filter then arr append
+    ##################################################
     if stock_global in ['AG']:
         if 'df_pv_break' in locals():  # it has already been added to arr, do not arr.append again.
             logging.info("filte df_pv_break")
@@ -1143,47 +1246,46 @@ def generate_result_csv(full_combination=False, debug=False):
             df_concept_top = finlib.Finlib().df_filter(df_concept_top)
             arr.append('df_concept_top')
 
-    ####################
-    ##
-    ##
-    ##
+    ##################################################
+    # AG: refine df
+    ##################################################
+    if stock_global in ['AG']:
+        #insert (merged) df_ann, df_pv_no_filter, df_pv_db_buy_filter into the order_tracking_stock.
+        #df_ann = refine_df(df_ann,has_db_record=False, force_pass=True)
+        if 'df_ann' in locals():
+            if stock_global in ['AG']:
+                logging.info("will refine_df df_ann announcement")
+                #df_ann = refine_df(df_ann,has_db_record=False, force_pass=True, force_pass_open_reason='announcement')  #because the df_ann doesn't have duplicate on 'code' column
+                #df_ann = refine_df(df_ann,has_db_record=False, force_pass=True, force_pass_open_reason='announcement')  #because the df_ann doesn't have duplicate on 'code' column
+                df_ann = refine_df(df_ann, has_db_record=False, force_pass=True, force_pass_open_reason='announcement', insert_buy_record_to_db=False,
+                                   debug=debug)  #because the df_ann doesn't have duplicate on 'code' column
 
-    #insert (merged) df_ann, df_pv_no_filter, df_pv_db_buy_filter into the order_tracking_stock.
-    #df_ann = refine_df(df_ann,has_db_record=False, force_pass=True)
-    if 'df_ann' in locals():
-        if stock_global in ['AG']:
-            logging.info("will refine_df df_ann announcement")
-            #df_ann = refine_df(df_ann,has_db_record=False, force_pass=True, force_pass_open_reason='announcement')  #because the df_ann doesn't have duplicate on 'code' column
-            #df_ann = refine_df(df_ann,has_db_record=False, force_pass=True, force_pass_open_reason='announcement')  #because the df_ann doesn't have duplicate on 'code' column
-            df_ann = refine_df(df_ann, has_db_record=False, force_pass=True, force_pass_open_reason='announcement', insert_buy_record_to_db=False,
-                               debug=debug)  #because the df_ann doesn't have duplicate on 'code' column
+        if 'df_pv_no_filter' in locals():
+            if stock_global in ['AG']:
+                logging.info("will refine_df df_pv_no_filter")
+                #df_pv_no_filter = refine_df(df_pv_no_filter,has_db_record=False)  #ryan comment to debug
+                df_pv_no_filter = refine_df(df_pv_no_filter, has_db_record=False, force_pass=True, insert_buy_record_to_db=False, debug=debug)
+                #refine_df(df_pv_no_filter,has_db_record=False) <<<<< LAEGE RESULT 9000
+                logging.info("Len df_pv_no_filter " + str(len_df_pv_no_filter_0) + " => " + str(df_pv_no_filter.__len__()))
 
-    if 'df_pv_no_filter' in locals():
-        if stock_global in ['AG']:
-            logging.info("will refine_df df_pv_no_filter")
-            #df_pv_no_filter = refine_df(df_pv_no_filter,has_db_record=False)  #ryan comment to debug
-            df_pv_no_filter = refine_df(df_pv_no_filter, has_db_record=False, force_pass=True, insert_buy_record_to_db=False, debug=debug)
-            #refine_df(df_pv_no_filter,has_db_record=False) <<<<< LAEGE RESULT 9000
-            logging.info("Len df_pv_no_filter " + str(len_df_pv_no_filter_0) + " => " + str(df_pv_no_filter.__len__()))
+            #if stock_global in ['MG','US','CN']:
+            else:
+                logging.info("will refine_df df_pv_no_filter")
+                df_pv_no_filter = refine_df(df_pv_no_filter, has_db_record=False, force_pass=True, insert_buy_record_to_db=False, debug=debug)
+                logging.info("Len df_pv_no_filter " + str(len_df_pv_no_filter_0) + " => " + str(df_pv_no_filter.__len__()))
 
-        #if stock_global in ['MG','US','CN']:
-        else:
-            logging.info("will refine_df df_pv_no_filter")
-            df_pv_no_filter = refine_df(df_pv_no_filter, has_db_record=False, force_pass=True, insert_buy_record_to_db=False, debug=debug)
-            logging.info("Len df_pv_no_filter " + str(len_df_pv_no_filter_0) + " => " + str(df_pv_no_filter.__len__()))
+        if 'df_pv_db_buy_filter' in locals():
+            if stock_global in ['AG']:
+                logging.info("will refine_df df_pv_db_buy_filter")
+                #df_pv_db_buy_filter = refine_df(df_pv_db_buy_filter,has_db_record=True)
+                #df_pv_db_buy_filter = refine_df(df_pv_db_buy_filter,has_db_record=False) #ryan debug
+                df_pv_db_buy_filter = refine_df(df_pv_db_buy_filter, has_db_record=False, force_pass=True, insert_buy_record_to_db=False, debug=debug)
+                logging.info("Len df_pv_db_buy_filter " + str(len_df_pv_db_buy_filter_0) + " => " + str(df_pv_db_buy_filter.__len__()))
 
-    if 'df_pv_db_buy_filter' in locals():
-        if stock_global in ['AG']:
-            logging.info("will refine_df df_pv_db_buy_filter")
-            #df_pv_db_buy_filter = refine_df(df_pv_db_buy_filter,has_db_record=True)
-            #df_pv_db_buy_filter = refine_df(df_pv_db_buy_filter,has_db_record=False) #ryan debug
-            df_pv_db_buy_filter = refine_df(df_pv_db_buy_filter, has_db_record=False, force_pass=True, insert_buy_record_to_db=False, debug=debug)
-            logging.info("Len df_pv_db_buy_filter " + str(len_df_pv_db_buy_filter_0) + " => " + str(df_pv_db_buy_filter.__len__()))
-
-        else:
-            logging.info("will refine_df df_pv_db_buy_filter")
-            df_pv_db_buy_filter = refine_df(df_pv_no_filter, has_db_record=False, force_pass=True, insert_buy_record_to_db=False, debug=debug)
-            logging.info("Len df_pv_db_buy_filter " + str(len_df_pv_db_buy_filter_0) + " => " + str(df_pv_db_buy_filter.__len__()))
+            else:
+                logging.info("will refine_df df_pv_db_buy_filter")
+                df_pv_db_buy_filter = refine_df(df_pv_no_filter, has_db_record=False, force_pass=True, insert_buy_record_to_db=False, debug=debug)
+                logging.info("Len df_pv_db_buy_filter " + str(len_df_pv_db_buy_filter_0) + " => " + str(df_pv_db_buy_filter.__len__()))
 
     ####################
     todayS = datetime.today().strftime('%Y-%m-%d')
@@ -1257,6 +1359,11 @@ def generate_result_csv(full_combination=False, debug=False):
         if 'df_concept_top' in locals(): print(df_concept_top.head(2))
     ### Ryan debug end
 
+
+
+    ################################################
+    # Df properties defination.
+    ################################################
     df_dict = {}
 
     df_dict["df_reduced_quarter_year"] = {"term": "LONG TERM", "price": "NA"}
@@ -1313,6 +1420,19 @@ def generate_result_csv(full_combination=False, debug=False):
     df_dict["df_sp400_index"] = {"term": "LONG TERM", "price": "NA"}
     df_dict["df_nasdqa100_index"] = {"term": "LONG TERM", "price": "NA"}
     df_dict["df_dow_index"] = {"term": "LONG TERM", "price": "NA"}
+
+    df_dict["df_fib_ag"] = {"term": "NA", "price": "NA"}
+    df_dict["df_fib_ag_index_selected"] = {"term": "NA", "price": "NA"}
+    df_dict["df_fib_ag_selected"] = {"term": "NA", "price": "NA"}
+    df_dict["df_fib_us_index_selected"] = {"term": "NA", "price": "NA"}
+    df_dict["df_key_points_us_selected"] = {"term": "NA", "price": "NA"}
+    df_dict["df_pv_no_filter_us_selected"] = {"term": "NA", "price": "NA"}
+    df_dict["df_fib_us_selected"] = {"term": "NA", "price": "NA"}
+    df_dict["df_key_points_hk_selected"] = {"term": "NA", "price": "NA"}
+    df_dict["df_pv_no_filter_hk_selected"] = {"term": "NA", "price": "NA"}
+    df_dict["df_fib_hk_selected"] = {"term": "NA", "price": "NA"}
+
+
 
     if (stock_global in ['AG']) and (not full_combination):  #for AG
 
@@ -1607,6 +1727,7 @@ def main():
                       help="combine all the df from 2 to 12, Total df 24. Using with -x AG,  Report size could be 6GB ")
 
     parser.add_option("-d", "--debug", action="store_true", default=False, dest="debug", help="skip refine_df sub, ")
+    parser.add_option("--select", action="store_true", default=False, dest="select", help="Analyze selected stocks only")
 
     parser.add_option("--action", dest="action", help="[generate_report|analyze_report] ")
 
@@ -1616,8 +1737,12 @@ def main():
     full_combination = options.full_combination
     debug = options.debug
     action = options.action
+    select = options.select
 
-    if stock_global is None:
+    if select:
+        logging.info("select flag is set, stock_global flag will be ignored.")
+
+    if (not select) and (stock_global is None):
         logging.info("-x --stock_global is None, check help for available options, program exit")
         exit(0)
 
@@ -1626,7 +1751,7 @@ def main():
         exit(0)
 
     if action == 'generate_report':
-        generate_result_csv(full_combination=full_combination, debug=debug)
+        generate_result_csv(full_combination=full_combination, select=select, debug=debug)
     elif action == 'analyze_report':
         ana_result()
 

@@ -542,7 +542,7 @@ python t_fibonacci.py --begin_date "20180101"  --min_sample=500 -x AG
 
 
 ##############################
-# fibonacci indicator
+# concept top
 # input: /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/market/pro_concept.csv
 # output: /home/ryan/DATA/result/concept_top.csv
 ###############################

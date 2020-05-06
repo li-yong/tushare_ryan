@@ -15,6 +15,11 @@ cd   /home/ryan/repo/trading/tushare_ryan
 #python t_daily_get_key_points.py  -x CH  --calc_today  #fast. output: /home/ryan/DATA/result/key_points_CH_today.csv
 #python t_daily_get_key_points.py  -x CH  --today_selection #fast. output: /home/ryan/DATA/result/key_points_CH_today_selected.csv
 
+# /home/ryan/DATA/result/selected/ag_index_fib.csv
+python t_fibonacci.py --begin_date "20180101"  --min_sample=500 -x AG_INDEX --selected
+
+# /home/ryan/DATA/result/selected/ag_fib.csv
+python t_fibonacci.py --begin_date "20180101"  --min_sample=500 -x AG --selected
 
 
 #python t_daily_get_key_points.py  -x MG  --calc_base
@@ -54,8 +59,9 @@ python t_fibonacci.py --begin_date "20180101"  --min_sample=500 -x US_INDEX --se
 python t_fibonacci.py --begin_date "20180101"  --min_sample=500 -x HK --selected
 
 
+python t_summary.py  --select  --action=generate_report
 
-python t_summary.py -x HK --action generate_report
+#python t_summary.py -x HK --action generate_report
 
 #this is local run
 #python t_daily_pattern_Hit_Price_Volume.py --bool_calc_std_mean --bool_perc_std_mean --bool_pv_hit -m 7 -x MG
