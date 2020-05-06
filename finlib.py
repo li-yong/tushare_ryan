@@ -11,6 +11,7 @@ import os.path
 import pandas as pd
 import time
 import numpy as np
+import tabulate
 
 # import matplotlib.pyplot as plt
 # from pandas.plotting import register_matplotlib_converters
@@ -3839,7 +3840,8 @@ class Finlib:
                                  'vol', 'amount'
                              ],
                              converters={'code': str},  encoding="utf-8")
-        elif dir == base_dir+"/US_INDEX":
+
+        elif dir in [base_dir+"/US_INDEX", base_dir+"/stooq/US"]:
             #dow.csv  sp500.csv
 
             if str(data_csv_fp).count("dow"):
@@ -3864,6 +3866,8 @@ class Finlib:
 
         return(rtn_df)
 
+    def pprint(self, df):
+        print(tabulate.tabulate(df, headers='keys', tablefmt='psql'))
 
     def get_stock_configuration(self,selected,stock_global):
         rtn = {

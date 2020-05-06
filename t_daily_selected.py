@@ -32,11 +32,69 @@ global debug_global
 global force_run_global
 global myToken
 
+import urllib3
+import requests
+import pathlib
 
 
 
+def stooq_download(code,mkt, days=1):
+    code = code.lower()
+    mkt = mkt.lower()
 
-#rst = finlib.Finlib().load_select()
+
+
+    dir_o = "/home/ryan/DATA/DAY_Global/stooq"+"/"+mkt.upper()
+    csv_o = dir_o+"/"+code.upper()+".csv"
+    if not os.path.isdir(dir_o):
+        pathlib.Path(dir_o).mkdir(parents=True, exist_ok=True)
+
+    if finlib.Finlib().is_cached(csv_o, day=days):
+        logging.info("file is updated in "+str(days)+ " days. not fetch again. "+csv_o)
+        return
+
+    url_head = 'https://stooq.com/q/d/l/?s='
+    url_tail = '&i=d'
+    if code=="dow" and mkt == "us_index":
+        url = url_head+"^dji"+url_tail
+    elif code=="sp500" and mkt == "us_index":
+        url = url_head + "^spx" + url_tail
+    else:
+        url = url_head+code+"."+mkt+url_tail
+    req = requests.get(url)
+    url_content = req.content
+    csv_file = open(csv_o, 'wb')
+    csv_file.write(url_content)
+    csv_file.close()
+    logging.info("fetched to "+csv_o)
+
+    df = pd.read_csv(csv_o,
+                         skiprows=1,
+                         names=[
+                             'date', 'open', 'high',
+                             'low', 'close', 'volume']
+                         , encoding="utf-8")
+    df = pd.DataFrame([code] * df.__len__(), columns=['code']).join(df)
+
+    df.to_csv(csv_o, encoding='UTF-8', index=False)
+    logging.info("formatted, csv length "+str(df.__len__()))
+    finlib.Finlib().pprint(df.iloc[-1:])
+    pass
+
+
+rst = finlib.Finlib().load_select()
+i = 0
+for mkt in ['US', 'US_INDEX']:
+    stock_list=rst[mkt]
+    for index, row in stock_list.iterrows():
+        i += 1
+        name, code = row['name'], row['code']
+        logging.info(str(i) + " of " + str(stock_list.__len__()) + " fetching stooq "+code+" "+name)
+        stooq_download(code=code, mkt=mkt)
+        pass
+
+exit(0)
+
 
 select_csv = "/home/ryan/tushare_ryan/select.yml"
 

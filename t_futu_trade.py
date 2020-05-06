@@ -8,12 +8,15 @@ import sys
 import re
 import pandas as pd
 import time
+import tabulate
 
 #Depends on futu demon
 #Step1: /home/ryan/FutuOpenD_1.03_Ubuntu16.04/FutuOpenD &
 #Step2:  python3a $0
 # /usr/bin/python3a: symbolic link to /hdd2/anaconda3/bin/python3
 
+def pprint(df):
+    print(tabulate.tabulate(df, headers='keys', tablefmt='psql'))
 
 def buy_limit(quote_ctx,
               trd_ctx,
@@ -60,18 +63,33 @@ def buy_limit(quote_ctx,
 if __name__ == '__main__':
 
     #init
-    ip = '127.0.0.1'
+    #ip = '127.0.0.1'
+    ip = "haha_data_source"
+    ip = "192.168.199.242"
     port = 11111
     pwd_unlock = '731024'
-    #code = "US.AAPL"
+    code = "US.AAPL"
+    code_list = ["US.AAPL","HK.00700"]
+    code_list = ["SH.600519","HK.00700"]
     #code = "HK.00700"
     #code = "HK.03337"
     drop_threshold = 0.19  #buy at 19% drop
     order_type = ft.OrderType.NORMAL
     trd_env = ft.TrdEnv.SIMULATE
 
-    #prepare
+    #prepareprint(
     quote_ctx = ft.OpenQuoteContext(host=ip, port=port)
+    (rc1, df1) = quote_ctx.get_market_snapshot(code_list=code_list)
+    pprint(df1)
+
+    (rc1, df1) = quote_ctx.get_market_snapshot(['SH.600000', 'HK.00700'])
+    pprint(df1)
+
+    (rc2, df2) = quote_ctx.get_multiple_history_kline(['HK.00700'], '2017-06-20', '2017-06-25', ft.KLType.K_DAY, ft.AuType.QFQ)
+    (rc3, df3) = quote_ctx.get_multiple_history_kline(codelist=code_list, start=None, end=None, ktype=ft.KLType.K_DAY, autype=ft.AuType.QFQ)
+    quote_ctx.close()
+
+
     trd_ctx_hk = ft.OpenHKTradeContext(host=ip, port=port)
     trd_ctx_us = ft.OpenUSTradeContext(host=ip, port=port)
 
