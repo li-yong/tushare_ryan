@@ -27,9 +27,7 @@ import logging
 
 from optparse import OptionParser
 
-logging.basicConfig(format='%(asctime)s %(message)s',
-                    datefmt='%m_%d %H:%M:%S',
-                    level=logging.DEBUG)
+logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m_%d %H:%M:%S', level=logging.DEBUG)
 
 
 def _diff(d1, d2):
@@ -103,21 +101,12 @@ def w_shape(csv_f, period):
 
     df_rtn = pd.DataFrame()
 
-    df = pd.read_csv(csv_f,
-                     converters={'code': str},
-                     header=None,
-                     skiprows=1,
-                     names=[
-                         'code', 'date', 'open', 'high', 'low', 'close',
-                         'volume', 'amount', 'tnv'
-                     ])
+    df = pd.read_csv(csv_f, converters={'code': str}, header=None, skiprows=1, names=['code', 'date', 'open', 'high', 'low', 'close', 'volume', 'amount', 'tnv'])
 
     if period == "M":
-        df_period = finlib.Finlib().daily_to_monthly_bar(
-            df_daily=df)['df_monthly']
+        df_period = finlib.Finlib().daily_to_monthly_bar(df_daily=df)['df_monthly']
     elif period == "W":
-        df_period = finlib.Finlib().daily_to_monthly_bar(
-            df_daily=df)['df_weekly']
+        df_period = finlib.Finlib().daily_to_monthly_bar(df_daily=df)['df_weekly']
     elif period == "D":
         df['date'] = pd.to_datetime(df['date'], format="%Y-%m-%d")
         df_period = df
@@ -154,8 +143,7 @@ def _w_shape(df):
         return (rtn)
 
     this_code = df.iloc[0]['code']  #'SH603999'
-    this_date = df.iloc[-1]['date'].strftime(
-        "%Y-%m-%d")  #monthly period, end date of the month.
+    this_date = df.iloc[-1]['date'].strftime("%Y-%m-%d")  #monthly period, end date of the month.
     this_reason = ''
     this_strength = 0
     this_action = ''
@@ -186,8 +174,7 @@ def _w_shape(df):
             if stage == 'null':
                 p0 = r1.close
                 d0 = r1.date.strftime("%Y-%m-%d")
-                logging.info("init s0" + ", middle point:" + str(r1.date) +
-                             " " + str(r1.close))
+                logging.info("init s0" + ", middle point:" + str(r1.date) + " " + str(r1.close))
                 stage = "s0"
                 continue
 
@@ -212,32 +199,28 @@ def _w_shape(df):
                 break
 
             if stage in ["s1"]:
-                logging.info("spot p2 in " + stage + ", middle point:" +
-                             str(r2.date) + " " + str(r2.close))
+                logging.info("spot p2 in " + stage + ", middle point:" + str(r2.date) + " " + str(r2.close))
                 p2 = r2.close
                 d2 = r2.date.strftime("%Y-%m-%d")
                 stage = "s2"
                 continue
 
             if stage in ["s3"]:
-                logging.info("spot p4 in " + stage + ", middle point:" +
-                             str(r2.date) + " " + str(r2.close))
+                logging.info("spot p4 in " + stage + ", middle point:" + str(r2.date) + " " + str(r2.close))
                 p4 = r2.close
                 d4 = r2.date.strftime("%Y-%m-%d")
                 stage = "s4"
                 continue
 
             if stage in ["s5"]:
-                logging.info("spot p6 in " + stage + ", middle point:" +
-                             str(r2.date) + " " + str(r2.close))
+                logging.info("spot p6 in " + stage + ", middle point:" + str(r2.date) + " " + str(r2.close))
                 p6 = r2.close
                 d6 = r2.date.strftime("%Y-%m-%d")
                 stage = "s6"
                 continue
 
             if stage in ["s7"]:
-                logging.info("spot p8 in " + stage + ", middle point:" +
-                             str(r2.date) + " " + str(r2.close))
+                logging.info("spot p8 in " + stage + ", middle point:" + str(r2.date) + " " + str(r2.close))
                 p8 = r2.close
                 d8 = r2.date.strftime("%Y-%m-%d")
                 stage = "s8"
@@ -250,16 +233,14 @@ def _w_shape(df):
                 break
 
             if stage in ["s0"]:
-                logging.info("spot p1 in " + stage + ", middle point:" +
-                             str(r2.date) + " " + str(r2.close))
+                logging.info("spot p1 in " + stage + ", middle point:" + str(r2.date) + " " + str(r2.close))
                 stage = "s1"
                 p1 = r2.close
                 d1 = r2.date.strftime("%Y-%m-%d")
                 continue
 
             if stage in ["s2"]:
-                logging.info("spot p3 in " + stage + ", middle point:" +
-                             str(r2.date) + " " + str(r2.close))
+                logging.info("spot p3 in " + stage + ", middle point:" + str(r2.date) + " " + str(r2.close))
                 p3 = r2.close
                 d3 = r2.date.strftime("%Y-%m-%d")
                 stage = "s3"
@@ -271,8 +252,7 @@ def _w_shape(df):
                     break
 
             if stage in ["s4"]:
-                logging.info("spot p5 in " + stage + ", middle point:" +
-                             str(r2.date) + " " + str(r2.close))
+                logging.info("spot p5 in " + stage + ", middle point:" + str(r2.date) + " " + str(r2.close))
                 stage = "s5"
                 p5 = r2.close
                 d5 = r2.date.strftime("%Y-%m-%d")
@@ -283,8 +263,7 @@ def _w_shape(df):
                     break
 
             if stage in ["s6"]:
-                logging.info("spot p7 in " + stage + ", middle point:" +
-                             str(r2.date) + " " + str(r2.close))
+                logging.info("spot p7 in " + stage + ", middle point:" + str(r2.date) + " " + str(r2.close))
                 p7 = r2.close
                 d7 = r2.date.strftime("%Y-%m-%d")
                 stage = "s7"
@@ -331,8 +310,7 @@ def _w_shape_del(df):
         return (rtn)
 
     this_code = df.iloc[0]['code']  #'SH603999'
-    this_date = df.iloc[-1]['date'].strftime(
-        "%Y-%m-%d")  #monthly period, end date of the month.
+    this_date = df.iloc[-1]['date'].strftime("%Y-%m-%d")  #monthly period, end date of the month.
     this_reason = ''
     this_strength = 0
     this_action = ''
@@ -388,8 +366,7 @@ def _w_shape_del(df):
             if stage == 'null':
                 p0 = r2.close
                 d0 = r2.date.strftime("%Y-%m-%d")
-                logging.info("init s0" + ", middle point:" + str(r2.date) +
-                             " " + str(r2.close))
+                logging.info("init s0" + ", middle point:" + str(r2.date) + " " + str(r2.close))
                 stage = "s0"
                 continue
 
@@ -414,32 +391,28 @@ def _w_shape_del(df):
                 break
 
             if stage in ["s1"]:
-                logging.info("spot p2 in " + stage + ", middle point:" +
-                             str(r2.date) + " " + str(r2.close))
+                logging.info("spot p2 in " + stage + ", middle point:" + str(r2.date) + " " + str(r2.close))
                 p2 = r2.close
                 d2 = r2.date.strftime("%Y-%m-%d")
                 stage = "s2"
                 continue
 
             if stage in ["s3"]:
-                logging.info("spot p4 in " + stage + ", middle point:" +
-                             str(r2.date) + " " + str(r2.close))
+                logging.info("spot p4 in " + stage + ", middle point:" + str(r2.date) + " " + str(r2.close))
                 p4 = r2.close
                 d4 = r2.date.strftime("%Y-%m-%d")
                 stage = "s4"
                 continue
 
             if stage in ["s5"]:
-                logging.info("spot p6 in " + stage + ", middle point:" +
-                             str(r2.date) + " " + str(r2.close))
+                logging.info("spot p6 in " + stage + ", middle point:" + str(r2.date) + " " + str(r2.close))
                 p6 = r2.close
                 d6 = r2.date.strftime("%Y-%m-%d")
                 stage = "s6"
                 continue
 
             if stage in ["s7"]:
-                logging.info("spot p8 in " + stage + ", middle point:" +
-                             str(r2.date) + " " + str(r2.close))
+                logging.info("spot p8 in " + stage + ", middle point:" + str(r2.date) + " " + str(r2.close))
                 p8 = r2.close
                 d8 = r2.date.strftime("%Y-%m-%d")
                 stage = "s8"
@@ -452,16 +425,14 @@ def _w_shape_del(df):
                 break
 
             if stage in ["s0"]:
-                logging.info("spot p1 in " + stage + ", middle point:" +
-                             str(r2.date) + " " + str(r2.close))
+                logging.info("spot p1 in " + stage + ", middle point:" + str(r2.date) + " " + str(r2.close))
                 stage = "s1"
                 p1 = r2.close
                 d1 = r2.date.strftime("%Y-%m-%d")
                 continue
 
             if stage in ["s2"]:
-                logging.info("spot p3 in " + stage + ", middle point:" +
-                             str(r2.date) + " " + str(r2.close))
+                logging.info("spot p3 in " + stage + ", middle point:" + str(r2.date) + " " + str(r2.close))
                 p3 = r2.close
                 d3 = r2.date.strftime("%Y-%m-%d")
                 stage = "s3"
@@ -473,8 +444,7 @@ def _w_shape_del(df):
                     break
 
             if stage in ["s4"]:
-                logging.info("spot p5 in " + stage + ", middle point:" +
-                             str(r2.date) + " " + str(r2.close))
+                logging.info("spot p5 in " + stage + ", middle point:" + str(r2.date) + " " + str(r2.close))
                 stage = "s5"
                 p5 = r2.close
                 d5 = r2.date.strftime("%Y-%m-%d")
@@ -485,8 +455,7 @@ def _w_shape_del(df):
                     break
 
             if stage in ["s6"]:
-                logging.info("spot p7 in " + stage + ", middle point:" +
-                             str(r2.date) + " " + str(r2.close))
+                logging.info("spot p7 in " + stage + ", middle point:" + str(r2.date) + " " + str(r2.close))
                 p7 = r2.close
                 d7 = r2.date.strftime("%Y-%m-%d")
                 stage = "s7"
@@ -522,24 +491,11 @@ def main():
 
     parser = OptionParser()
 
-    parser.add_option("--indicator",
-                      type="str",
-                      dest="indicator_f",
-                      default=None,
-                      help="indicator, one of [KDJ|MACD]")
+    parser.add_option("--indicator", type="str", dest="indicator_f", default=None, help="indicator, one of [KDJ|MACD]")
 
-    parser.add_option("--period",
-                      type="str",
-                      dest="period_f",
-                      default=None,
-                      help="period, one of [M|W|D]")
+    parser.add_option("--period", type="str", dest="period_f", default=None, help="period, one of [M|W|D]")
 
-    parser.add_option("-a",
-                      "--analyze",
-                      action="store_true",
-                      dest="analyze_f",
-                      default=False,
-                      help="analyze based on [MACD|KDJ] M|W|D result.")
+    parser.add_option("-a", "--analyze", action="store_true", dest="analyze_f", default=False, help="analyze based on [MACD|KDJ] M|W|D result.")
 
     (options, args) = parser.parse_args()
 

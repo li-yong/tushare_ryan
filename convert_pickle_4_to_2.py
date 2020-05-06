@@ -8,11 +8,7 @@ from optparse import OptionParser
 
 parser = OptionParser()
 
-parser.add_option("-p",
-                  "--pickle_file",
-                  dest="pickle_file",
-                  type="str",
-                  help="pickle file to be converted from protcol 4 to 2")
+parser.add_option("-p", "--pickle_file", dest="pickle_file", type="str", help="pickle file to be converted from protcol 4 to 2")
 
 (options, args) = parser.parse_args()
 

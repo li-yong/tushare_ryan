@@ -32,8 +32,7 @@ def check_fibo(df):
     plt.axhline(y=r['p61'])
     plt.axhline(y=r['p100'])
 
-    print("code " + df.iloc[0]['code'] + ", hit " + str(r['hit']) +
-          ", price " + str(r['pri_cur']) + ", percent " + str(r['per_cur']))
+    print("code " + df.iloc[0]['code'] + ", hit " + str(r['hit']) + ", price " + str(r['pri_cur']) + ", percent " + str(r['per_cur']))
 
     if r['hit']:
         plt.show()
@@ -55,12 +54,10 @@ def check_weekly_buysell_strategy(df):
         if y < 2019 or y > 2020:
             continue
 
-        weekDays = ("Monday", "Tuesday", "Wednesday", "Thursday", "Friday",
-                    "Saturday", "Sunday")
+        weekDays = ("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
 
         if d.weekday() == 0:  # Monday is 0 and Sunday is 6.
-            print("Buy at " + weekDays[d.weekday()] + " close. " + str(d) +
-                  ", " + str(c) + ", cap " + str(cap))
+            print("Buy at " + weekDays[d.weekday()] + " close. " + str(d) + ", " + str(c) + ", cap " + str(cap))
             stock_num = round(cap / c, 5)
             x_axis.append(d)
             y_axis.append(cap)
@@ -69,8 +66,7 @@ def check_weekly_buysell_strategy(df):
 
             cap = stock_num * o
             stock_num = 0
-            print("sell at " + weekDays[d.weekday()] + " close, " + str(d) +
-                  ", " + str(c) + ", cap " + str(cap))
+            print("sell at " + weekDays[d.weekday()] + " close, " + str(d) + ", " + str(c) + ", cap " + str(cap))
             x_axis.append(d)
             y_axis.append(cap)
 
@@ -101,20 +97,14 @@ def main():
 
     parser = OptionParser()
 
-    parser.add_option("-f",
-                      "--fetch_index",
-                      action="store_true",
-                      dest="fetch_index_f",
-                      default=False,
-                      help="fetch SH000001")
+    parser.add_option("-f", "--fetch_index", action="store_true", dest="fetch_index_f", default=False, help="fetch SH000001")
 
-    parser.add_option(
-        "-v",
-        "--verify_weekly_buy_sel_strategy",
-        action="store_true",
-        dest="verify_weekly_buy_sel_strategy_f",
-        default=False,
-        help="verify_weekly_buy_sel_strategy, buy on Mon, sell on Thu/Fri")
+    parser.add_option("-v",
+                      "--verify_weekly_buy_sel_strategy",
+                      action="store_true",
+                      dest="verify_weekly_buy_sel_strategy_f",
+                      default=False,
+                      help="verify_weekly_buy_sel_strategy, buy on Mon, sell on Thu/Fri")
 
     (options, args) = parser.parse_args()
     fetch_index_f = options.fetch_index_f
@@ -128,59 +118,35 @@ def main():
 
     if options.fetch_index_f:
         ts_code = '000001.SH'  #上证指数
-        fetch_index(myToken,
-                    ts_code=ts_code,
-                    csv_file=csv_dir + "/" + ts_code + ".csv")
+        fetch_index(myToken, ts_code=ts_code, csv_file=csv_dir + "/" + ts_code + ".csv")
 
         ts_code = '000300.SH'  #沪深300
-        fetch_index(myToken,
-                    ts_code=ts_code,
-                    csv_file=csv_dir + "/" + ts_code + ".csv")
+        fetch_index(myToken, ts_code=ts_code, csv_file=csv_dir + "/" + ts_code + ".csv")
 
         ts_code = '000905.SH'  #中证500
-        fetch_index(myToken,
-                    ts_code=ts_code,
-                    csv_file=csv_dir + "/" + ts_code + ".csv")
+        fetch_index(myToken, ts_code=ts_code, csv_file=csv_dir + "/" + ts_code + ".csv")
 
         ts_code = '399001.SH'  #深圳成指
-        fetch_index(myToken,
-                    ts_code=ts_code,
-                    csv_file=csv_dir + "/" + ts_code + ".csv")
+        fetch_index(myToken, ts_code=ts_code, csv_file=csv_dir + "/" + ts_code + ".csv")
 
         ts_code = '399005.SH'  #中小板指
-        fetch_index(myToken,
-                    ts_code=ts_code,
-                    csv_file=csv_dir + "/" + ts_code + ".csv")
+        fetch_index(myToken, ts_code=ts_code, csv_file=csv_dir + "/" + ts_code + ".csv")
 
         ts_code = '399006.SH'  #创业板指
-        fetch_index(myToken,
-                    ts_code=ts_code,
-                    csv_file=csv_dir + "/" + ts_code + ".csv")
+        fetch_index(myToken, ts_code=ts_code, csv_file=csv_dir + "/" + ts_code + ".csv")
 
         ts_code = '399016.SH'  #深圳创新
-        fetch_index(myToken,
-                    ts_code=ts_code,
-                    csv_file=csv_dir + "/" + ts_code + ".csv")
+        fetch_index(myToken, ts_code=ts_code, csv_file=csv_dir + "/" + ts_code + ".csv")
 
         ts_code = '399300.SH'  #沪深300
-        fetch_index(myToken,
-                    ts_code=ts_code,
-                    csv_file=csv_dir + "/" + ts_code + ".csv")
+        fetch_index(myToken, ts_code=ts_code, csv_file=csv_dir + "/" + ts_code + ".csv")
 
     if options.verify_weekly_buy_sel_strategy_f:
 
-        df = pd.read_csv(csv_file,
-                         skiprows=1,
-                         header=None,
-                         names=[
-                             'code', 'date', 'close', 'open', 'high', 'low',
-                             'pre_close', 'change', 'pct_chg', 'vol', 'amount'
-                         ],
-                         converters={'code': str})
+        df = pd.read_csv(csv_file, skiprows=1, header=None, names=['code', 'date', 'close', 'open', 'high', 'low', 'pre_close', 'change', 'pct_chg', 'vol', 'amount'], converters={'code': str})
 
         # date int to datetime
-        df['date'] = df['date'].apply(
-            lambda _d: datetime.datetime.strptime(str(_d), '%Y%m%d'))
+        df['date'] = df['date'].apply(lambda _d: datetime.datetime.strptime(str(_d), '%Y%m%d'))
 
         check_weekly_buysell_strategy(df)
 

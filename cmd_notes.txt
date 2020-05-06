@@ -1,5 +1,6 @@
+
 for i in {46..1}; do X=`date -d "-$i day" '+%Y-%m-%d'`; python t_daily_update_csv_from_tushare_.py -a -e $X;  done
 
 for i in `ls`; do A="$(cut -d'.' -f1 <<< $i)"; echo $A.csv; mv $i $A.csv;   done
 
-
+yapf del.py  --style='{based_on_style: pep8, column_limit:200, SPLIT_PENALTY_AFTER_OPENING_BRACKET}'

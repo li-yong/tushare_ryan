@@ -19,9 +19,7 @@ import sys
 import tushare.util.conns as ts_cs
 import finlib
 import logging
-logging.basicConfig(format='%(asctime)s %(message)s',
-                    datefmt='%m_%d %H:%M:%S',
-                    level=logging.DEBUG)
+logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m_%d %H:%M:%S', level=logging.DEBUG)
 
 #this script comparing a stock's data in history, to get the lower PE/PB/ROE in the history (cheap & high grow rate) stock.
 
@@ -38,8 +36,7 @@ def select_from_result():
     df_result = df_result[df_result['roe'] > 15]
 
     df_result.to_csv(output_csv, encoding='UTF-8', index=False)
-    print("\nPE/PB/ROE self percent result saved to " + output_csv + " len " +
-          str(df_result.__len__()))
+    print("\nPE/PB/ROE self percent result saved to " + output_csv + " len " + str(df_result.__len__()))
 
 
 ######
@@ -56,8 +53,7 @@ def get_indicator_history():
 
     stock_list = finlib.Finlib().get_A_stock_instrment()  #600519
     #stock_list = finlib.Finlib().add_market_to_code(stock_list, dot_f=False, tspro_format=False) #SH600519
-    stock_list = finlib.Finlib().add_market_to_code(
-        stock_list, dot_f=True, tspro_format=True)  #600519.SH
+    stock_list = finlib.Finlib().add_market_to_code(stock_list, dot_f=True, tspro_format=True)  #600519.SH
 
     #stock_list = stock_list[stock_list['code']=='SH600519'] #ryan debug
 
@@ -165,8 +161,7 @@ def get_indicator_history():
         pass
 
     df_result.to_csv(output_csv, encoding='UTF-8', index=False)
-    print("\nPE/PB/ROE self percent result saved to " + output_csv + " len " +
-          str(df_result.__len__()))
+    print("\nPE/PB/ROE self percent result saved to " + output_csv + " len " + str(df_result.__len__()))
 
 
 def main():

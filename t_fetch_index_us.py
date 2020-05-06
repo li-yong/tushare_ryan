@@ -11,9 +11,7 @@ from bs4 import BeautifulSoup
 from finsymbols.symbol_helper import *
 
 import logging
-logging.basicConfig(format='%(asctime)s %(message)s',
-                    datefmt='%m_%d %H:%M:%S',
-                    level=logging.DEBUG)
+logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m_%d %H:%M:%S', level=logging.DEBUG)
 
 logging.info("\n")
 logging.info("SCRIPT STARTING " + " ".join(sys.argv))
@@ -72,8 +70,7 @@ os._exit(0)
 logging.info("getting nasdaq")
 nasdaq = finsymbols.get_nasdaq_symbols()
 logging.info("dumpping nasdaq")
-pickle.dump(nasdaq, open("/home/ryan/DATA/pickle/INDEX_US/nasdaq.pickle",
-                         "wb"))
+pickle.dump(nasdaq, open("/home/ryan/DATA/pickle/INDEX_US/nasdaq.pickle", "wb"))
 
 logging.info("getting amex")
 amex = finsymbols.get_amex_symbols()

@@ -18,9 +18,7 @@ import pickle
 import sys
 
 import logging
-logging.basicConfig(format='%(asctime)s %(message)s',
-                    datefmt='%m_%d %H:%M:%S',
-                    level=logging.DEBUG)
+logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m_%d %H:%M:%S', level=logging.DEBUG)
 
 global force_run_global
 
@@ -151,44 +149,32 @@ def fetch_secDailyIndicator(debug=False, force_fetch=False):
         logging.info(csv_f + " ")
         sys.stdout.flush()
 
-        if (not force_run_global) and finlib.Finlib().is_cached(
-                csv_f, day=3) and (not force_fetch):
-            logging.info("ignore because csv_f was updated within 3 days, " +
-                         csv_f)
+        if (not force_run_global) and finlib.Finlib().is_cached(csv_f, day=3) and (not force_fetch):
+            logging.info("ignore because csv_f was updated within 3 days, " + csv_f)
             continue
 
         #todayS = datetime.today().strftime('%Y%m%d')
         todayS = finlib.Finlib().get_last_trading_day()
 
-        todayS = datetime.strptime(todayS, '%Y-%m-%d').strftime(
-            '%Y%m%d')  #last trading day. eg. 20181202-->20181130
+        todayS = datetime.strptime(todayS, '%Y-%m-%d').strftime('%Y%m%d')  #last trading day. eg. 20181202-->20181130
 
         df_tmp = pd.DataFrame()  #base of the csv
 
-        if (not os.path.isfile(csv_f)) or (os.stat(csv_f).st_size <=
-                                           200):  #200 bytes
+        if (not os.path.isfile(csv_f)) or (os.stat(csv_f).st_size <= 200):  #200 bytes
             logging.info("file not exist or empty file, full fetch " + csv_f)
             start_date_req = default_start_date
         else:
             ############ delta update start
             default_date_d = datetime.strptime(default_start_date, '%Y%m%d')
 
-            df_tmp = pd.read_csv(csv_f,
-                                 converters={
-                                     'code': str,
-                                     'trade_date': str
-                                 })
+            df_tmp = pd.read_csv(csv_f, converters={'code': str, 'trade_date': str})
             last_row = df_tmp[-1:]
             last_date = str(last_row['trade_date'].values[0])
             next_date = datetime.strptime(last_date, '%Y%m%d') + timedelta(1)
-            a_week_before_date = datetime.strptime(todayS,
-                                                   '%Y%m%d') - timedelta(20)
+            a_week_before_date = datetime.strptime(todayS, '%Y%m%d') - timedelta(20)
 
             if next_date.strftime('%Y%m%d') > todayS:
-                logging.info("file " + csv_f +
-                             " already updated, not fetching again. " +
-                             str(i_cnt) + " of " + str(total_len) +
-                             ". updated to " + last_date)
+                logging.info("file " + csv_f + " already updated, not fetching again. " + str(i_cnt) + " of " + str(total_len) + ". updated to " + last_date)
                 i_cnt += 1
 
                 continue
@@ -196,11 +182,8 @@ def fetch_secDailyIndicator(debug=False, force_fetch=False):
             # last date in csv is 7 days ago, most likely the source is not update, so skip this csv.
             # logging.info("Next "+next_date.strftime('%Y-%m-%d'))
             # logging.info("a week before "+ a_week_before_date.strftime('%Y-%m-%d'))
-            if next_date.strftime('%Y%m%d') < a_week_before_date.strftime(
-                    '%Y%m%d'):
-                logging.info("file too old to updated, not fetching. " +
-                             str(i_cnt) + " of " + str(total_len) +
-                             ". updated to " + last_date)
+            if next_date.strftime('%Y%m%d') < a_week_before_date.strftime('%Y%m%d'):
+                logging.info("file too old to updated, not fetching. " + str(i_cnt) + " of " + str(total_len) + ". updated to " + last_date)
                 #i_cnt += 1
                 #continue
 
@@ -212,11 +195,9 @@ def fetch_secDailyIndicator(debug=False, force_fetch=False):
 
             ############
 
-        name = df_code_name_map[df_code_name_map['code'] ==
-                                code]['name'].values[0]
+        name = df_code_name_map[df_code_name_map['code'] == code]['name'].values[0]
         symbol = finlib.Finlib().append_market_to_code_single_dot(code)
-        logging.info(code + " " + name + " " + symbol + " " + str(i_cnt) +
-                     " of " + str(total_len) + ". ")
+        logging.info(code + " " + name + " " + symbol + " " + str(i_cnt) + " of " + str(total_len) + ". ")
         sys.stdout.flush()
         i_cnt += 1
 
@@ -258,8 +239,7 @@ def fetch_secDailyIndicator(debug=False, force_fetch=False):
             view="lb.secDailyIndicator",
             fields=
             'symbol,trade_date,total_mv, float_mv, pb,pb_new, pe,pe_ttm,ps,ps_ttm,turnoverratio, freeturnover, total_share, float_share, free_share, pcf_ocf,pcf_ocfttm,pcf_ncf,profit_ttm,profit_lyr,pcf_ncfttm,net_assets,close,price_div_dps,cash_flows_oper_act_ttm,cash_flows_oper_act_lyr,operrev_ttm,operrev_lyr,limit_status',
-            filter='symbol=' + symbol + '&start_date=' + start_date_req +
-            '&end_date=' + todayS)
+            filter='symbol=' + symbol + '&start_date=' + start_date_req + '&end_date=' + todayS)
 
         if (msg == '0,'):
             logging.info(" len fetched " + str(df.__len__()) + " ")
@@ -274,11 +254,8 @@ def fetch_secDailyIndicator(debug=False, force_fetch=False):
             #        'float_mv', 'net_assets', 'pcf_ncf', 'pcf_ncfttm', 'pcf_ocf', 'pcf_ocfttm']
 
             cols = [
-                'code', 'name', 'trade_date', 'close', 'symbol', 'ps',
-                'ps_ttm', 'pe', 'pe_ttm', 'pb', 'price_div_dps', 'float_mv',
-                'net_assets', 'pcf_ncf', 'pcf_ncfttm', 'pcf_ocf', 'pcf_ocfttm',
-                'float_share', 'free_share', 'limit_status', 'total_mv',
-                'total_share'
+                'code', 'name', 'trade_date', 'close', 'symbol', 'ps', 'ps_ttm', 'pe', 'pe_ttm', 'pb', 'price_div_dps', 'float_mv', 'net_assets', 'pcf_ncf', 'pcf_ncfttm', 'pcf_ocf', 'pcf_ocfttm',
+                'float_share', 'free_share', 'limit_status', 'total_mv', 'total_share'
             ]
 
             # the actual return not match the document.
@@ -297,8 +274,7 @@ def fetch_secDailyIndicator(debug=False, force_fetch=False):
 
             df_result.to_csv(csv_f, encoding='UTF-8', index=False)
             #logging.info("saved, len " + str(df_result.__len__()))
-            logging.info(__file__ + ": " + "saved, " + csv_f + " , Len " +
-                         str(df_result.__len__()))
+            logging.info(__file__ + ": " + "saved, " + csv_f + " , Len " + str(df_result.__len__()))
 
         else:
             logging.info("query secDailyIndicator failed, msg " + msg)
@@ -407,10 +383,8 @@ def fetch_cashFlow(debug=False, force_fetch=False):
 
 def calc_quartly_report():
 
-    if (not force_run_global) and finlib.Finlib().is_cached(
-            j_quartly_report_csv, day=5):
-        logging.info("skip file, it been updated in 5 day. " +
-                     j_quartly_report_csv)
+    if (not force_run_global) and finlib.Finlib().is_cached(j_quartly_report_csv, day=5):
+        logging.info("skip file, it been updated in 5 day. " + j_quartly_report_csv)
         return
 
     base_dir = "/home/ryan/DATA/DAY_JAQS"
@@ -419,8 +393,7 @@ def calc_quartly_report():
     total_len = df_code_name_map.__len__()
 
     i_cnt = 1
-    j_df_q_r = pd.DataFrame(
-    )  #jaqs quarterly report.    #j_df_q_r = j_df_q_r.assign(year_quarter=pd.Series([0] * df.__len__()) #insert a column.not as useful as col.insert
+    j_df_q_r = pd.DataFrame()  #jaqs quarterly report.    #j_df_q_r = j_df_q_r.assign(year_quarter=pd.Series([0] * df.__len__()) #insert a column.not as useful as col.insert
     this_len = last_len = 0
 
     for code in list(df_code_name_map['code']):
@@ -442,8 +415,7 @@ def calc_quartly_report():
         csv_f = base_dir + "/" + market + code + ".csv"
 
         if not os.path.isfile(csv_f):
-            logging.info("not found source file to calc quartly report " +
-                         csv_f)
+            logging.info("not found source file to calc quartly report " + csv_f)
             continue
 
         df = pd.read_csv(csv_f, converters={'code': str})
@@ -473,48 +445,31 @@ def calc_quartly_report():
 
                 query = "trade_date >= " + q_start + " and trade_date <= " + q_end + " and code=='" + code + "'"
                 #logging.info(query)
-                year_quarter = str(year) + "_" + str(
-                    quarter
-                )  #format compliance with /DATA/result/fundamental.csv
+                year_quarter = str(year) + "_" + str(quarter)  #format compliance with /DATA/result/fundamental.csv
 
                 df_q = df.query(query)
                 #logging.info("date len "+str(df_q.__len__()))
 
                 if df_q.__len__() > 0:
-                    df_tmp.iloc[0, df_tmp.columns.
-                                get_loc('close')] = df_q['close'].mean()
-                    df_tmp.iloc[0, df_tmp.columns.
-                                get_loc('ps')] = df_q['ps'].mean()
-                    df_tmp.iloc[0, df_tmp.columns.
-                                get_loc('ps_ttm')] = df_q['ps_ttm'].mean()
-                    df_tmp.iloc[0, df_tmp.columns.
-                                get_loc('pe')] = df_q['pe'].mean()
-                    df_tmp.iloc[0, df_tmp.columns.
-                                get_loc('pe_ttm')] = df_q['pe_ttm'].mean()
-                    df_tmp.iloc[0, df_tmp.columns.
-                                get_loc('pb')] = df_q['pb'].mean()
-                    df_tmp.iloc[0, df_tmp.columns.get_loc(
-                        'price_div_dps')] = df_q['price_div_dps'].mean()
-                    df_tmp.iloc[0, df_tmp.columns.
-                                get_loc('float_mv')] = df_q['float_mv'].mean()
-                    df_tmp.iloc[0, df_tmp.columns.get_loc(
-                        'net_assets')] = df_q['net_assets'].mean()
-                    df_tmp.iloc[0, df_tmp.columns.
-                                get_loc('pcf_ncf')] = df_q['pcf_ncf'].mean()
-                    df_tmp.iloc[0, df_tmp.columns.get_loc(
-                        'pcf_ncfttm')] = df_q['pcf_ncfttm'].mean()
-                    df_tmp.iloc[0, df_tmp.columns.
-                                get_loc('pcf_ocf')] = df_q['pcf_ocf'].mean()
-                    df_tmp.iloc[0, df_tmp.columns.get_loc(
-                        'pcf_ocfttm')] = df_q['pcf_ocfttm'].mean()
+                    df_tmp.iloc[0, df_tmp.columns.get_loc('close')] = df_q['close'].mean()
+                    df_tmp.iloc[0, df_tmp.columns.get_loc('ps')] = df_q['ps'].mean()
+                    df_tmp.iloc[0, df_tmp.columns.get_loc('ps_ttm')] = df_q['ps_ttm'].mean()
+                    df_tmp.iloc[0, df_tmp.columns.get_loc('pe')] = df_q['pe'].mean()
+                    df_tmp.iloc[0, df_tmp.columns.get_loc('pe_ttm')] = df_q['pe_ttm'].mean()
+                    df_tmp.iloc[0, df_tmp.columns.get_loc('pb')] = df_q['pb'].mean()
+                    df_tmp.iloc[0, df_tmp.columns.get_loc('price_div_dps')] = df_q['price_div_dps'].mean()
+                    df_tmp.iloc[0, df_tmp.columns.get_loc('float_mv')] = df_q['float_mv'].mean()
+                    df_tmp.iloc[0, df_tmp.columns.get_loc('net_assets')] = df_q['net_assets'].mean()
+                    df_tmp.iloc[0, df_tmp.columns.get_loc('pcf_ncf')] = df_q['pcf_ncf'].mean()
+                    df_tmp.iloc[0, df_tmp.columns.get_loc('pcf_ncfttm')] = df_q['pcf_ncfttm'].mean()
+                    df_tmp.iloc[0, df_tmp.columns.get_loc('pcf_ocf')] = df_q['pcf_ocf'].mean()
+                    df_tmp.iloc[0, df_tmp.columns.get_loc('pcf_ocfttm')] = df_q['pcf_ocfttm'].mean()
 
                     #not all the fields in doc actually returns
-                    df_tmp.iloc[0, df_tmp.columns.
-                                get_loc('total_mv')] = df_q['total_mv'].mean()
+                    df_tmp.iloc[0, df_tmp.columns.get_loc('total_mv')] = df_q['total_mv'].mean()
                     #df_tmp.iloc[0, df_tmp.columns.get_loc('turnoverratio')] = df_q['turnoverratio'].mean()
                     #df_tmp.iloc[0, df_tmp.columns.get_loc('freeturnover')] = df_q['freeturnover'].mean()
-                    df_tmp.iloc[0, df_tmp.columns.get_loc(
-                        'total_share')] = df_q['total_share'].mean()
+                    df_tmp.iloc[0, df_tmp.columns.get_loc('total_share')] = df_q['total_share'].mean()
                     #df_tmp.iloc[0, df_tmp.columns.get_loc('float_share')] = df_q['float_share'].mean()
                     #df_tmp.iloc[0, df_tmp.columns.get_loc('free_share')] = df_q['free_share'].mean()
                     #df_tmp.iloc[0, df_tmp.columns.get_loc('profit_ttm')] = df_q['profit_ttm'].mean()
@@ -528,14 +483,10 @@ def calc_quartly_report():
                     #df_tmp.iloc[0, df_tmp.columns.get_loc('limit_status')] = df_q['limit_status'].mean()
                     #df_tmp.iloc[0, df_tmp.columns.get_loc('pb_new')] = df_q['pb_new'].mean()
 
-                    df_tmp.iloc[0, df_tmp.columns.get_loc('year_quarter'
-                                                          )] = year_quarter
-                    df_tmp.iloc[0, df_tmp.columns.
-                                get_loc('code')] = df_q.iloc[0]['code']
-                    df_tmp.iloc[0, df_tmp.columns.
-                                get_loc('name')] = df_q.iloc[0]['name']
-                    df_tmp.iloc[0, df_tmp.columns.
-                                get_loc('symbol')] = df_q.iloc[0]['symbol']
+                    df_tmp.iloc[0, df_tmp.columns.get_loc('year_quarter')] = year_quarter
+                    df_tmp.iloc[0, df_tmp.columns.get_loc('code')] = df_q.iloc[0]['code']
+                    df_tmp.iloc[0, df_tmp.columns.get_loc('name')] = df_q.iloc[0]['name']
+                    df_tmp.iloc[0, df_tmp.columns.get_loc('symbol')] = df_q.iloc[0]['symbol']
 
                     j_df_q_r = j_df_q_r.append(df_tmp)
                     this_len = j_df_q_r.__len__()
@@ -555,18 +506,12 @@ def calc_quartly_report():
         #j_df_q_r.to_csv(j_quartly_report_csv, encoding='UTF-8', index=False)  # save first,  memory error on reset_index().drop.
         #logging.info(code +' saved, '+j_quartly_report_csv)
 
-    cols = [
-        'year_quarter', 'code', 'name', 'close', 'symbol', 'ps', 'ps_ttm',
-        'pe', 'pe_ttm', 'pb', 'price_div_dps', 'float_mv', 'net_assets',
-        'pcf_ncf', 'pcf_ncfttm', 'pcf_ocf', 'pcf_ocfttm'
-    ]  #remove 'Unnamed: 0'
+    cols = ['year_quarter', 'code', 'name', 'close', 'symbol', 'ps', 'ps_ttm', 'pe', 'pe_ttm', 'pb', 'price_div_dps', 'float_mv', 'net_assets', 'pcf_ncf', 'pcf_ncfttm', 'pcf_ocf',
+            'pcf_ocfttm']  #remove 'Unnamed: 0'
     j_df_q_r = j_df_q_r[cols]
-    j_df_q_r.reset_index().drop('index', axis=1).to_csv(j_quartly_report_csv,
-                                                        encoding='UTF-8',
-                                                        index=False)
+    j_df_q_r.reset_index().drop('index', axis=1).to_csv(j_quartly_report_csv, encoding='UTF-8', index=False)
 
-    logging.info(__file__ + ": " + "quartly report saved to " +
-                 j_quartly_report_csv)
+    logging.info(__file__ + ": " + "quartly report saved to " + j_quartly_report_csv)
     return ()
 
 
@@ -578,48 +523,20 @@ def main():
     logging.info("SCRIPT STARTING " + " ".join(sys.argv))
     parser = OptionParser()
 
-    parser.add_option(
-        "-f",
-        "--fetch_data_all",
-        action="store_true",
-        dest="fetch_all",
-        default=False,
-        help=
-        "fetch all the quarterly fundatation history data. saved to /home/ryan/DATA/DAY_JAQS"
-    )
+    parser.add_option("-f", "--fetch_data_all", action="store_true", dest="fetch_all", default=False, help="fetch all the quarterly fundatation history data. saved to /home/ryan/DATA/DAY_JAQS")
 
-    parser.add_option("-o",
-                      "--force_fetch_data",
+    parser.add_option("-o", "--force_fetch_data", action="store_true", dest="force_fetch_data", default=False, help="always fetch, even if file age < 3 days.")
+
+    parser.add_option("-q",
+                      "--calc_quartly_report",
                       action="store_true",
-                      dest="force_fetch_data",
+                      dest="calc_quartly_report",
                       default=False,
-                      help="always fetch, even if file age < 3 days.")
+                      help="calc quartly mean data from the daily. (close price BuFuQuan.) Report saved to " + j_quartly_report_csv)
 
-    parser.add_option(
-        "-q",
-        "--calc_quartly_report",
-        action="store_true",
-        dest="calc_quartly_report",
-        default=False,
-        help=
-        "calc quartly mean data from the daily. (close price BuFuQuan.) Report saved to "
-        + j_quartly_report_csv)
+    parser.add_option("-d", "--debug", action="store_true", dest="debug", default=False, help="use debug, instrument_A.csv.debug, when -f")
 
-    parser.add_option("-d",
-                      "--debug",
-                      action="store_true",
-                      dest="debug",
-                      default=False,
-                      help="use debug, instrument_A.csv.debug, when -f")
-
-    parser.add_option(
-        "--force_run",
-        action="store_true",
-        dest="force_run_f",
-        default=False,
-        help=
-        "force fetch, force generate file, even when file exist or just updated"
-    )
+    parser.add_option("--force_run", action="store_true", dest="force_run_f", default=False, help="force fetch, force generate file, even when file exist or just updated")
 
     (options, args) = parser.parse_args()
     fetch_all_f = options.fetch_all

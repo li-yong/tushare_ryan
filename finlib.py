@@ -31,9 +31,7 @@ import glob
 
 import logging
 import yaml
-logging.basicConfig(format='%(asctime)s %(message)s',
-                    datefmt='%m_%d %H:%M:%S',
-                    level=logging.DEBUG)
+logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m_%d %H:%M:%S', level=logging.DEBUG)
 
 import warnings
 
@@ -68,8 +66,7 @@ class Account:
 
 class Finlib:
     def load_all_jaqs(self):
-        logging.info(
-            "load df basic requires lots of memory, > 1G will be consumed.")
+        logging.info("load df basic requires lots of memory, > 1G will be consumed.")
         csv = "/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/basic.csv"  # file 1.1G, lots of memory to loading >5G
         csv = "/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/basic_quarterly.csv"  #
 
@@ -130,9 +127,7 @@ class Finlib:
 
         output_pickle = "/home/ryan/DATA/result/jaqs/ts_all.pickle"
 
-        logging.info(
-            "consolidate ts_pro to a df requires lots of memory, > 500M will be consumed."
-        )
+        logging.info("consolidate ts_pro to a df requires lots of memory, > 500M will be consumed.")
 
         path = "/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/merged"
 
@@ -149,26 +144,17 @@ class Finlib:
             exit()
 
         allFiles = glob.glob(path + "/*.csv")
-        logging.info(
-            "load_all_ts_pro, reading files, 500M memory will be consumed, be paticent..."
-        )
+        logging.info("load_all_ts_pro, reading files, 500M memory will be consumed, be paticent...")
 
         df_all_ts_pro = pd.DataFrame()
 
         for f in allFiles:
             logging.info("reading " + f)
-            df_tmp = pd.read_csv(f,
-                                 converters={
-                                     'end_date': str,
-                                     'audit_agency': str,
-                                     'audit_result': str,
-                                     'audit_sign': str
-                                 })
+            df_tmp = pd.read_csv(f, converters={'end_date': str, 'audit_agency': str, 'audit_result': str, 'audit_sign': str})
             df_all_ts_pro = pd.concat([df_all_ts_pro, df_tmp], sort=False)
 
         # df_all_ts_pro = pd.concat((pd.read_csv(f, converters={'end_date':str}) for f in allFiles), sort=False) #faster but no debug ablity
-        logging.info("generate df_all_ts_pro which concatted from " + path +
-                     "/*.csv has done.")
+        logging.info("generate df_all_ts_pro which concatted from " + path + "/*.csv has done.")
 
         logging.info("saving df_all_ts_pro to " + output_pickle)
         df_all_ts_pro.to_pickle(output_pickle)
@@ -222,28 +208,21 @@ class Finlib:
         df_basic = pd.DataFrame()
 
         if not os.path.isfile(csv_basic):
-            logging.info("Getting Basic, ts.get_stock_basics of " +
-                         todayS)  # 获取沪深上市公司基本情况
+            logging.info("Getting Basic, ts.get_stock_basics of " + todayS)  # 获取沪深上市公司基本情况
             try:
                 df_basic = ts.get_stock_basics()
                 df_basic = df_basic.reset_index()
-                df_basic.code = df_basic.code.astype(
-                    str)  # convert the code from numpy.int to string.
-                df_basic.reset_index().to_csv(csv_basic,
-                                              encoding='UTF-8',
-                                              index=False)
+                df_basic.code = df_basic.code.astype(str)  # convert the code from numpy.int to string.
+                df_basic.reset_index().to_csv(csv_basic, encoding='UTF-8', index=False)
             except:
                 logging.info("exception in get_today_stock_basic()" + str(e))
             finally:
                 if sys.exc_info() == (None, None, None):
                     pass  # no exception
                 else:
-                    logging.info(
-                        str(traceback.print_exception(
-                            *sys.exc_info())).encode('utf8'))  # python3
+                    logging.info(str(traceback.print_exception(*sys.exc_info())).encode('utf8'))  # python3
                     # logging.info(unicode(traceback.print_exception(*sys.exc_info())).encode('utf8')) #python2
-                    logging.info(sys.exc_value.message
-                                 )  # print the human readable unincode
+                    logging.info(sys.exc_value.message)  # print the human readable unincode
                     sys.exc_clear()
         else:
             # logging.info("\nLoading Basic")
@@ -273,8 +252,7 @@ class Finlib:
         df_basic = df_basic[df_basic['npr'] > 0]
         # logging.info("after npr>0, df_basic.__len__() is " + str(df_basic.__len__()))
 
-        df_basic = self.add_market_to_code(
-            df=df_basic)  # the code must in format 'SH600xxx' etc
+        df_basic = self.add_market_to_code(df=df_basic)  # the code must in format 'SH600xxx' etc
 
         # a= pd.merge(df_basic,df, on='code',how='inner')
         # logging.info(str(a.__len__()))
@@ -284,8 +262,7 @@ class Finlib:
         d = df_basic['code'].tolist()
         df = df[df['code'].isin(d)]
 
-        logging.info("after filter(timetomarket>360, esp>0, npr>0), df len " +
-                     str(df.__len__()))
+        logging.info("after filter(timetomarket>360, esp>0, npr>0), df len " + str(df.__len__()))
 
         return df
 
@@ -295,17 +272,13 @@ class Finlib:
                 timeToMarket = str(df_basic.iloc[i]['timeToMarket'])
 
                 if pd.isnull(timeToMarket):
-                    logging.info("code " + code + " timetomarket is " +
-                                 str(timeToMarket))
+                    logging.info("code " + code + " timetomarket is " + str(timeToMarket))
                     continue
                 elif timeToMarket == '0':
-                    logging.info("code " + code + " timetomarket is " +
-                                 str(timeToMarket))
+                    logging.info("code " + code + " timetomarket is " + str(timeToMarket))
                     continue
-                elif datetime.strptime(timeToMarket, '%Y%m%d') + timedelta(
-                        360) > datetime.now():
-                    logging.info("the stock " + str(code) +
-                                 " is less than 1 year, " + str(timeToMarket))
+                elif datetime.strptime(timeToMarket, '%Y%m%d') + timedelta(360) > datetime.now():
+                    logging.info("the stock " + str(code) + " is less than 1 year, " + str(timeToMarket))
                     pass
 
     def get_year_month_quarter(self, year=None, month=None):
@@ -320,8 +293,7 @@ class Finlib:
         tmp = self._get_quarter(month)
         quarter = tmp['quarter']
         ann_date = tmp['ann_date']
-        ann_date = str(
-            year) + ann_date  # 20180331, 20180630, 20180930, 20181231
+        ann_date = str(year) + ann_date  # 20180331, 20180630, 20180930, 20181231
 
         # get full period list
         full_period_list = []
@@ -374,80 +346,41 @@ class Finlib:
 
         # get previous 1Q ann_date
         day_1q_before = datetime.strptime(ann_date, '%Y%m%d') - timedelta(95)
-        day_2q_before = datetime.strptime(ann_date, '%Y%m%d') - timedelta(
-            95 * 2)
-        day_3q_before = datetime.strptime(ann_date, '%Y%m%d') - timedelta(
-            95 * 3)
-        day_4q_before = datetime.strptime(ann_date, '%Y%m%d') - timedelta(
-            95 * 4)
-        day_5q_before = datetime.strptime(ann_date, '%Y%m%d') - timedelta(
-            95 * 5)
-        day_6q_before = datetime.strptime(ann_date, '%Y%m%d') - timedelta(
-            95 * 6)
-        day_7q_before = datetime.strptime(ann_date, '%Y%m%d') - timedelta(
-            95 * 7)
-        day_8q_before = datetime.strptime(ann_date, '%Y%m%d') - timedelta(
-            95 * 8)
+        day_2q_before = datetime.strptime(ann_date, '%Y%m%d') - timedelta(95 * 2)
+        day_3q_before = datetime.strptime(ann_date, '%Y%m%d') - timedelta(95 * 3)
+        day_4q_before = datetime.strptime(ann_date, '%Y%m%d') - timedelta(95 * 4)
+        day_5q_before = datetime.strptime(ann_date, '%Y%m%d') - timedelta(95 * 5)
+        day_6q_before = datetime.strptime(ann_date, '%Y%m%d') - timedelta(95 * 6)
+        day_7q_before = datetime.strptime(ann_date, '%Y%m%d') - timedelta(95 * 7)
+        day_8q_before = datetime.strptime(ann_date, '%Y%m%d') - timedelta(95 * 8)
 
-        day_1y_before = datetime.strptime(ann_date, '%Y%m%d') - timedelta(
-            366 * 1)
-        day_2y_before = datetime.strptime(ann_date, '%Y%m%d') - timedelta(
-            366 * 2)
-        day_3y_before = datetime.strptime(ann_date, '%Y%m%d') - timedelta(
-            366 * 3)
-        day_4y_before = datetime.strptime(ann_date, '%Y%m%d') - timedelta(
-            366 * 4)
-        day_5y_before = datetime.strptime(ann_date, '%Y%m%d') - timedelta(
-            366 * 5)
-        day_6y_before = datetime.strptime(ann_date, '%Y%m%d') - timedelta(
-            366 * 6)
-        day_7y_before = datetime.strptime(ann_date, '%Y%m%d') - timedelta(
-            366 * 7)
-        day_8y_before = datetime.strptime(ann_date, '%Y%m%d') - timedelta(
-            366 * 8)
-        day_9y_before = datetime.strptime(ann_date, '%Y%m%d') - timedelta(
-            366 * 9)
-        day_10y_before = datetime.strptime(ann_date, '%Y%m%d') - timedelta(
-            366 * 10)
+        day_1y_before = datetime.strptime(ann_date, '%Y%m%d') - timedelta(366 * 1)
+        day_2y_before = datetime.strptime(ann_date, '%Y%m%d') - timedelta(366 * 2)
+        day_3y_before = datetime.strptime(ann_date, '%Y%m%d') - timedelta(366 * 3)
+        day_4y_before = datetime.strptime(ann_date, '%Y%m%d') - timedelta(366 * 4)
+        day_5y_before = datetime.strptime(ann_date, '%Y%m%d') - timedelta(366 * 5)
+        day_6y_before = datetime.strptime(ann_date, '%Y%m%d') - timedelta(366 * 6)
+        day_7y_before = datetime.strptime(ann_date, '%Y%m%d') - timedelta(366 * 7)
+        day_8y_before = datetime.strptime(ann_date, '%Y%m%d') - timedelta(366 * 8)
+        day_9y_before = datetime.strptime(ann_date, '%Y%m%d') - timedelta(366 * 9)
+        day_10y_before = datetime.strptime(ann_date, '%Y%m%d') - timedelta(366 * 10)
 
         # ann_date_1q_before
-        ann_date_1q_before = str(
-            day_1q_before.strftime('%Y')) + self._get_quarter(
-                day_1q_before.strftime('%m'))['ann_date']
-        ann_date_2q_before = str(
-            day_2q_before.strftime('%Y')) + self._get_quarter(
-                day_2q_before.strftime('%m'))['ann_date']
-        ann_date_3q_before = str(
-            day_3q_before.strftime('%Y')) + self._get_quarter(
-                day_3q_before.strftime('%m'))['ann_date']
-        ann_date_4q_before = str(
-            day_4q_before.strftime('%Y')) + self._get_quarter(
-                day_4q_before.strftime('%m'))['ann_date']
-        ann_date_5q_before = str(
-            day_5q_before.strftime('%Y')) + self._get_quarter(
-                day_5q_before.strftime('%m'))['ann_date']
-        ann_date_6q_before = str(
-            day_6q_before.strftime('%Y')) + self._get_quarter(
-                day_6q_before.strftime('%m'))['ann_date']
-        ann_date_7q_before = str(
-            day_7q_before.strftime('%Y')) + self._get_quarter(
-                day_7q_before.strftime('%m'))['ann_date']
-        ann_date_8q_before = str(
-            day_8q_before.strftime('%Y')) + self._get_quarter(
-                day_8q_before.strftime('%m'))['ann_date']
+        ann_date_1q_before = str(day_1q_before.strftime('%Y')) + self._get_quarter(day_1q_before.strftime('%m'))['ann_date']
+        ann_date_2q_before = str(day_2q_before.strftime('%Y')) + self._get_quarter(day_2q_before.strftime('%m'))['ann_date']
+        ann_date_3q_before = str(day_3q_before.strftime('%Y')) + self._get_quarter(day_3q_before.strftime('%m'))['ann_date']
+        ann_date_4q_before = str(day_4q_before.strftime('%Y')) + self._get_quarter(day_4q_before.strftime('%m'))['ann_date']
+        ann_date_5q_before = str(day_5q_before.strftime('%Y')) + self._get_quarter(day_5q_before.strftime('%m'))['ann_date']
+        ann_date_6q_before = str(day_6q_before.strftime('%Y')) + self._get_quarter(day_6q_before.strftime('%m'))['ann_date']
+        ann_date_7q_before = str(day_7q_before.strftime('%Y')) + self._get_quarter(day_7q_before.strftime('%m'))['ann_date']
+        ann_date_8q_before = str(day_8q_before.strftime('%Y')) + self._get_quarter(day_8q_before.strftime('%m'))['ann_date']
 
-        dict_rtn = {
-            "year": year,
-            "month": month,
-            "quarter": quarter,
-            'ann_date': ann_date
-        }
+        dict_rtn = {"year": year, "month": month, "quarter": quarter, 'ann_date': ann_date}
 
         dict_rtn['full_period_list'] = full_period_list
         dict_rtn['stable_report_perid'] = stable_report_perid
         dict_rtn['full_period_list_yearly'] = full_period_list_yearly
-        dict_rtn[
-            'fetch_most_recent_report_perid'] = fetch_most_recent_report_perid
+        dict_rtn['fetch_most_recent_report_perid'] = fetch_most_recent_report_perid
 
         dict_rtn['ann_date_1q_before'] = ann_date_1q_before
         dict_rtn['ann_date_2q_before'] = ann_date_2q_before
@@ -500,10 +433,7 @@ class Finlib:
             last_quarter_year = year - 1
             last_quarter = 4
 
-        dict_rtn['last_quarter'] = {
-            'year': last_quarter_year,
-            'quarter': last_quarter
-        }
+        dict_rtn['last_quarter'] = {'year': last_quarter_year, 'quarter': last_quarter}
 
         return (dict_rtn)
 
@@ -551,13 +481,7 @@ class Finlib:
         price = 10**10  # change price to a huge number, so will never buy this.
         price_csv = "/home/ryan/DATA/DAY_Global/AG/" + code_m + ".csv"
         if os.path.isfile(price_csv):
-            pd_tmp = pd.read_csv(price_csv,
-                                 converters={'code': str},
-                                 header=None,
-                                 names=[
-                                     'code', 'date', 'o', 'h', 'l', 'c', 'vol',
-                                     'amnt', 'tnv'
-                                 ])
+            pd_tmp = pd.read_csv(price_csv, converters={'code': str}, header=None, names=['code', 'date', 'o', 'h', 'l', 'c', 'vol', 'amnt', 'tnv'])
 
             if pd_tmp.__len__() == 0:
                 logging.info("Fatal error, file is empty " + price_csv)
@@ -568,8 +492,7 @@ class Finlib:
                 df_the_day = pd_tmp[pd_tmp['date'] <= date]
                 if df_the_day.__len__() > 0:
                     actual_date = df_the_day.iloc[-1:]['date'].values[0]
-                    actual_price = df_the_day.iloc[-1:]['c'].values[
-                        0]  # '11.8231'
+                    actual_price = df_the_day.iloc[-1:]['c'].values[0]  # '11.8231'
 
                     if actual_date != date:
                         # logging.info("request "+code_m+" "+date+", return "+actual_date)
@@ -582,8 +505,7 @@ class Finlib:
 
             price = float(price)
         else:
-            logging.info('FETAL ERROR, cannot get price, no such file ' +
-                         price_csv)
+            logging.info('FETAL ERROR, cannot get price, no such file ' + price_csv)
             # exit(1)
 
         return price
@@ -622,8 +544,7 @@ class Finlib:
         else:
             logging.info("fetching market")
             df_market = ts_stock_trading.get_markets(xapi)
-            df_market.to_csv(market_csv, encoding='UTF-8',
-                             index=False)  # len 48
+            df_market.to_csv(market_csv, encoding='UTF-8', index=False)  # len 48
             logging.info("market saved to " + market_csv)
 
         return df_market
@@ -636,18 +557,14 @@ class Finlib:
             api = ts_cs.api()  # no errors
             con_succ = True
         except:
-            logging.info(
-                "except when getting ts_cs.xapi()"
-            )  # AttributeError: 'TdxExHq_API' object has no attribute 'get_security_list'
+            logging.info("except when getting ts_cs.xapi()")  # AttributeError: 'TdxExHq_API' object has no attribute 'get_security_list'
 
         if con_succ == False:
             try:
                 api = ts_cs.xapi()
                 con_succ = True
             except:
-                logging.info(
-                    "except when getting ts_cs.xapi_x()"
-                )  # AttributeError: 'TdxExHq_API' object has no attribute 'get_security_list'
+                logging.info("except when getting ts_cs.xapi_x()")  # AttributeError: 'TdxExHq_API' object has no attribute 'get_security_list'
 
         if con_succ == False:
             try:
@@ -669,10 +586,8 @@ class Finlib:
         else:
             # df_security = ts.get_security(api) # NOT FOUND 6000xxx in the map
             logging.info("fetching security")
-            df_security = ts_stock_trading.get_security(
-                api)  # ryan: add 2018 04 21
-            df_security.to_csv(security_csv, encoding='UTF-8',
-                               index=False)  # len 7644
+            df_security = ts_stock_trading.get_security(api)  # ryan: add 2018 04 21
+            df_security.to_csv(security_csv, encoding='UTF-8', index=False)  # len 7644
             logging.info("security saved to " + security_csv)
 
         return df_security
@@ -709,33 +624,24 @@ class Finlib:
         #    os.remove(instrument_csv)
 
         if (not force_update) and self.is_cached(instrument_csv, 1):
-            df_instrument = pd.read_csv(instrument_csv,
-                                        converters={'code': str})
+            df_instrument = pd.read_csv(instrument_csv, converters={'code': str})
         else:
             logging.info("fetching instrument")
             df_instrument = ts_stock_trading.get_instrument(xapi)
-            df_instrument.to_csv(instrument_csv, encoding='UTF-8',
-                                 index=False)  # len 7644
+            df_instrument.to_csv(instrument_csv, encoding='UTF-8', index=False)  # len 7644
             logging.info("instrument saved to " + instrument_csv)
 
         return df_instrument
 
-    def _DEL_get_jaqs_field(
-            self, ts_code, date=None
-    ):  # date: YYYYMMDD, code:600519, read from ~/DATA/DAY_JAQS/SH600519.csv
+    def _DEL_get_jaqs_field(self, ts_code, date=None):  # date: YYYYMMDD, code:600519, read from ~/DATA/DAY_JAQS/SH600519.csv
         # date : None, then return the latest record.
 
         code_in_number_only = re.match("(\d{6})\.(.*)", ts_code).group(1)
         market = re.match("(\d{6})\.(.*)", ts_code).group(2)
 
-        self.append_market_to_code_single_dot(
-            code=code_in_number_only)  # '600519.SH'
-        codeInFmtMktCode = self.add_market_to_code_single(
-            code=code_in_number_only)  # 'SH600519'
-        self.add_market_to_code(df=pd.DataFrame({'code': code_in_number_only},
-                                                index=[0]),
-                                dot_f=True,
-                                tspro_format=True)  # 0  600519.SH
+        self.append_market_to_code_single_dot(code=code_in_number_only)  # '600519.SH'
+        codeInFmtMktCode = self.add_market_to_code_single(code=code_in_number_only)  # 'SH600519'
+        self.add_market_to_code(df=pd.DataFrame({'code': code_in_number_only}, index=[0]), dot_f=True, tspro_format=True)  # 0  600519.SH
 
         f = "/home/ryan/DATA/DAY_JAQS/" + codeInFmtMktCode + '.csv'
         if not os.path.exists(f):
@@ -752,8 +658,7 @@ class Finlib:
             df = df[df['trade_date'] == date]
 
             if df.__len__() == 0:
-                logging.info('code ' + ts_code + ' has no record at date ' +
-                             date + ". Use latest known date.")
+                logging.info('code ' + ts_code + ' has no record at date ' + date + ". Use latest known date.")
                 df = df.tail(1)
             elif df.__len__() > 0:
                 df = df.head(1)  # if multiple records, only use the 1st one.
@@ -769,16 +674,10 @@ class Finlib:
 
     def renew_jaqs_api(self):
         api = DataApi(addr='tcp://data.quantos.org:8910')
-        api.login(
-            "13651887669",
-            "eyJhbGciOiJIUzI1NiJ9.eyJjcmVhdGVfdGltZSI6IjE1NTE1Mzg0NTQyNjgiLCJpc3MiOiJhdXRoMCIsImlkIjoiMTM2NTE4ODc2NjkifQ.MT6sg03zcLJprsx4NjsCbNqfIX0aYfycTyLZ4BsTh3c"
-        )
+        api.login("13651887669", "eyJhbGciOiJIUzI1NiJ9.eyJjcmVhdGVfdGltZSI6IjE1NTE1Mzg0NTQyNjgiLCJpc3MiOiJhdXRoMCIsImlkIjoiMTM2NTE4ODc2NjkifQ.MT6sg03zcLJprsx4NjsCbNqfIX0aYfycTyLZ4BsTh3c")
         return api
 
-    def get_A_stock_instrment(self,
-                              today_df=None,
-                              debug=False,
-                              force_update=False):  # return 3515 records
+    def get_A_stock_instrment(self, today_df=None, debug=False, force_update=False):  # return 3515 records
 
         df = pd.DataFrame()
 
@@ -896,16 +795,12 @@ class Finlib:
 
     def remove_df_columns(self, df, col_name_regex):
         # col_name_regex example: "name_.*"
-        new_cols_list = [
-            i for i in list(df.columns) if not re.match(col_name_regex, i)
-        ]
+        new_cols_list = [i for i in list(df.columns) if not re.match(col_name_regex, i)]
         return (df[new_cols_list])
 
     def change_df_columns_order(self, df, col_list_to_head):
         # col_list_to_head example: ['code', 'name', 'year_quarter']
-        new_cols_list = [
-            i for i in list(df.columns) if not i in col_list_to_head
-        ]
+        new_cols_list = [i for i in list(df.columns) if not i in col_list_to_head]
         new_cols_list = col_list_to_head + new_cols_list
         return (df[new_cols_list])
 
@@ -919,9 +814,7 @@ class Finlib:
             f = os.path.abspath(f)
             print("loading " + f)
             # df = pd.read_csv(f, converters={i: str for i in range(1000)} )
-            df = pd.read_csv(
-                f, converters={i: str
-                               for i in ['ts_code', 'trade_date']})
+            df = pd.read_csv(f, converters={i: str for i in ['ts_code', 'trade_date']})
             df_result = df_result.append(df)
 
         return (df_result)
@@ -940,8 +833,7 @@ class Finlib:
         for index, row in df.iterrows():
             code = row['code']
 
-            dcode = re.match('(\d{6})\.(.*)',
-                             code).group(1)  # group(1):600000,
+            dcode = re.match('(\d{6})\.(.*)', code).group(1)  # group(1):600000,
             mkt = re.match('(\d{6})\.(.*)', code).group(2)  # group(2):SH
 
             df.at[index, 'code'] = mkt + dcode
@@ -954,7 +846,7 @@ class Finlib:
     #
     # todayS = datetime.strptime(todayS, '%Y-%m-%d').strftime('%Y%m%d') #last trading day. eg. 20181202-->20181130
 
-    def get_last_trading_day(self, date=None,debug=True):
+    def get_last_trading_day(self, date=None, debug=True):
 
         if date is None:
 
@@ -999,8 +891,7 @@ class Finlib:
 
         if a.at[tdy_idx, "is_open"] == 0:
             if debug:
-                logging.info("Today " + todayS +
-                         " is not a trading day, checking previous days")
+                logging.info("Today " + todayS + " is not a trading day, checking previous days")
             tdy_idx = a[a['cal_date'] == int(todayS)].index.values[0]
             for i in range(tdy_idx, 0, -1):
                 if a.at[i, "is_open"] == 1:
@@ -1046,24 +937,19 @@ class Finlib:
 
             # A market trading time, (21.30 to 4:00) new data not generated. so give yesterday's.
             if hour < 4 or hour > 21:  # in markets
-                last_trading_day_us = datetime.strptime(
-                    todayS, '%Y-%m-%d') - timedelta(2)
+                last_trading_day_us = datetime.strptime(todayS, '%Y-%m-%d') - timedelta(2)
                 last_trading_day_us = last_trading_day_us.strftime('%Y-%m-%d')
             else:  # (4.01 -- 23.59) not in market
-                last_trading_day_us = datetime.strptime(
-                    todayS, '%Y-%m-%d') - timedelta(1)
+                last_trading_day_us = datetime.strptime(todayS, '%Y-%m-%d') - timedelta(1)
                 last_trading_day_us = last_trading_day_us.strftime('%Y-%m-%d')
 
         return last_trading_day_us
 
     def get_ag_trading_day(self):
         csvf = "/home/ryan/DATA/pickle/trading_day_2020.csv"
-        df_trade_cal = ts.pro_api().trade_cal(exchange='SSE',
-                                              start_date='19980101',
-                                              end_date='20201231')
+        df_trade_cal = ts.pro_api().trade_cal(exchange='SSE', start_date='19980101', end_date='20201231')
         df_trade_cal.to_csv(csvf, encoding='UTF-8', index=False)
-        logging.info(__file__ + ": " + "trade_cal saved to " + csvf +
-                     " , len " + str(df_trade_cal.__len__()))
+        logging.info(__file__ + ": " + "trade_cal saved to " + csvf + " , len " + str(df_trade_cal.__len__()))
         return df_trade_cal
 
     ### calculate Tecnical indicator for given df.
@@ -1074,15 +960,7 @@ class Finlib:
     #
     # Return:
     #
-    def calc(self,
-             max_exam_day,
-             opt,
-             df,
-             df_52_week,
-             outputF,
-             outputF_today,
-             exam_date,
-             live_trading=False):
+    def calc(self, max_exam_day, opt, df, df_52_week, outputF, outputF_today, exam_date, live_trading=False):
         try:
             debug = opt['debug']
             forex = opt['forex']
@@ -1141,8 +1019,7 @@ class Finlib:
             bool_p_correl_div = opt['bool_p_correl_div']
             bool_p_linearreg_div = opt['bool_p_linearreg_div']
             bool_p_linearregangle_div = opt['bool_p_linearregangle_div']
-            bool_p_linearregintercept_div = opt[
-                'bool_p_linearregintercept_div']
+            bool_p_linearregintercept_div = opt['bool_p_linearregintercept_div']
             bool_p_linearregslope_div = opt['bool_p_linearregslope_div']
             bool_p_stddev_div = opt['bool_p_stddev_div']
             bool_p_tsf_div = opt['bool_p_tsf_div']
@@ -1164,17 +1041,12 @@ class Finlib:
             bool_p_dema_div = opt['bool_p_dema_div']
             bool_p_bbands_div = opt['bool_p_bbands_div']
 
-            df_result = pd.DataFrame(columns=('date', 'code', 'op', 'op_rsn',
-                                              'op_strength',
-                                              'close_p'))  # today's hit
+            df_result = pd.DataFrame(columns=('date', 'code', 'op', 'op_rsn', 'op_strength', 'close_p'))  # today's hit
             i_result = 0
 
-            df = pd.DataFrame(['na'] * df.__len__(),
-                              columns=['op']).join(df)  #
-            df = pd.DataFrame(['pv_ignore'] * df.__len__(),
-                              columns=['op_rsn']).join(df)  #
-            df = pd.DataFrame([''] * df.__len__(),
-                              columns=['op_strength']).join(df)  #
+            df = pd.DataFrame(['na'] * df.__len__(), columns=['op']).join(df)  #
+            df = pd.DataFrame(['pv_ignore'] * df.__len__(), columns=['op_rsn']).join(df)  #
+            df = pd.DataFrame([''] * df.__len__(), columns=['op_strength']).join(df)  #
             code = str(df.iloc[1, df.columns.get_loc('code')])
 
             date = df.iloc[:, df.columns.get_loc('date')]
@@ -1186,10 +1058,8 @@ class Finlib:
             # amnt=df.iloc[:,df.columns.get_loc('amnt')]  #amount
             # tnv=df.iloc[:,df.columns.get_loc('tnv')]  #turnoverratio
 
-            if df[-1:]['c'].values[0] == 0 or df[-1:]['o'].values[
-                    0] == 0 or df[-1:]['vol'].values[0] == 0:
-                logging.info(
-                    "ignore as the close price/open price/volume is 0")
+            if df[-1:]['c'].values[0] == 0 or df[-1:]['o'].values[0] == 0 or df[-1:]['vol'].values[0] == 0:
+                logging.info("ignore as the close price/open price/volume is 0")
                 return (df, df_result)
 
             last_record_time = datetime.now()
@@ -1200,50 +1070,41 @@ class Finlib:
 
                 time_loop_1 = datetime.now()
                 # if debug:
-                logging.info(
-                    str(time_loop_1) + " " + code + " loop 1(std,mean) start ")
+                logging.info(str(time_loop_1) + " " + code + " loop 1(std,mean) start ")
                 last_record_time = time_loop_1
 
                 # new_value_df = pd.DataFrame([0]*df.__len__(),columns=['c_mean_10D']) #
                 # df = new_value_df.join(df)  #
 
                 # 期望找到价格变化不大
-                new_value_df = pd.DataFrame([0] * df.__len__(),
-                                            columns=['std_15D_c'])  #
+                new_value_df = pd.DataFrame([0] * df.__len__(), columns=['std_15D_c'])  #
                 df = new_value_df.join(df)  #
 
                 # 期望找到成交量变化不大
-                new_value_df = pd.DataFrame([0] * df.__len__(),
-                                            columns=['std_15D_vol'])  #
+                new_value_df = pd.DataFrame([0] * df.__len__(), columns=['std_15D_vol'])  #
                 df = new_value_df.join(df)  #
 
                 # close price percent score in all times, 期望找到 价格在底部
-                new_value_df = pd.DataFrame([0] * df.__len__(),
-                                            columns=['perc_c'])
+                new_value_df = pd.DataFrame([0] * df.__len__(), columns=['perc_c'])
                 df = new_value_df.join(df)  # the inserted column on the head
 
                 # 期望找到成交量在底部
-                new_value_df = pd.DataFrame([0] * df.__len__(),
-                                            columns=['perc_vol'])  #
+                new_value_df = pd.DataFrame([0] * df.__len__(), columns=['perc_vol'])  #
                 df = new_value_df.join(df)  #
 
                 # price break sigma
-                new_value_df = pd.DataFrame([0] * df.__len__(),
-                                            columns=['c_brk_sig'])
+                new_value_df = pd.DataFrame([0] * df.__len__(), columns=['c_brk_sig'])
                 df = df.join(new_value_df)
-                new_value_df = pd.DataFrame([0] * df.__len__(),
-                                            columns=['vol_brk_sig'])
+                new_value_df = pd.DataFrame([0] * df.__len__(), columns=['vol_brk_sig'])
                 df = df.join(new_value_df)
 
                 # new_value_df = pd.DataFrame([''] * df.__len__(), columns=['op_strength']);
                 # df = df.join(new_value_df)
 
-                new_value_df = pd.DataFrame([0] * df.__len__(),
-                                            columns=['c_mean_15D'])
+                new_value_df = pd.DataFrame([0] * df.__len__(), columns=['c_mean_15D'])
                 df = new_value_df.join(df)  # the inserted column on the head
 
-                new_value_df = pd.DataFrame([0] * df.__len__(),
-                                            columns=['vol_mean_15D'])
+                new_value_df = pd.DataFrame([0] * df.__len__(), columns=['vol_mean_15D'])
                 df = new_value_df.join(df)  # the inserted column on the head
 
                 # pre_days = 220  # ryan modified from 21 to 220, using a year range for comparation
@@ -1274,22 +1135,16 @@ class Finlib:
                     # the decision is going to be executed on today's close price at the next day's market opening.
 
                     # today close at the position of the previous (15 days <-- include today)
-                    perc_c = stats.percentileofscore(c_prev,
-                                                     df.iloc[i - 1]['c']) / 100
-                    perc_vol = stats.percentileofscore(
-                        vol_prev, df.iloc[i - 1]['vol']) / 100
+                    perc_c = stats.percentileofscore(c_prev, df.iloc[i - 1]['c']) / 100
+                    perc_vol = stats.percentileofscore(vol_prev, df.iloc[i - 1]['vol']) / 100
 
-                    df.iloc[i - 1, df.columns.get_loc('perc_c')] = round(
-                        perc_c, 1)  # 0,0.1, 0.2...1
-                    df.iloc[i - 1, df.columns.get_loc('perc_vol')] = round(
-                        perc_vol, 1)
+                    df.iloc[i - 1, df.columns.get_loc('perc_c')] = round(perc_c, 1)  # 0,0.1, 0.2...1
+                    df.iloc[i - 1, df.columns.get_loc('perc_vol')] = round(perc_vol, 1)
 
                     c_mean_15D = c_prev.mean()
                     vol_mean_15D = vol_prev.mean()
-                    df.iloc[i - 1, df.columns.get_loc('c_mean_15D')] = round(
-                        c_mean_15D, 1)  # 0,0.1, 0.2...1
-                    df.iloc[i - 1, df.columns.get_loc('vol_mean_15D')] = round(
-                        vol_mean_15D, 1)
+                    df.iloc[i - 1, df.columns.get_loc('c_mean_15D')] = round(c_mean_15D, 1)  # 0,0.1, 0.2...1
+                    df.iloc[i - 1, df.columns.get_loc('vol_mean_15D')] = round(vol_mean_15D, 1)
 
                     std_15D_c = c_prev.std()
                     if np.isnan(std_15D_c): std_15D_c = 0
@@ -1297,32 +1152,23 @@ class Finlib:
                     std_15D_vol = vol_prev.std()
                     if np.isnan(std_15D_vol): std_15D_vol = 0
 
-                    df.iloc[i - 1, df.columns.get_loc('std_15D_c')] = round(
-                        std_15D_c, 2)
-                    df.iloc[i - 1, df.columns.get_loc('std_15D_vol')] = round(
-                        std_15D_vol, 0)
+                    df.iloc[i - 1, df.columns.get_loc('std_15D_c')] = round(std_15D_c, 2)
+                    df.iloc[i - 1, df.columns.get_loc('std_15D_vol')] = round(std_15D_vol, 0)
 
                     if std_15D_c == 0:
                         df.iloc[i - 1, df.columns.get_loc('c_brk_sig')] = 0
                     else:
-                        df.iloc[i -
-                                1, df.columns.get_loc('c_brk_sig')] = round(
-                                    (df.iloc[i - 1]['c'] - c_mean_15D) * 1.0 /
-                                    std_15D_c, 1)
+                        df.iloc[i - 1, df.columns.get_loc('c_brk_sig')] = round((df.iloc[i - 1]['c'] - c_mean_15D) * 1.0 / std_15D_c, 1)
 
                     if std_15D_vol == 0:
                         df.iloc[i - 1, df.columns.get_loc('vol_brk_sig')] = 0
                     else:
-                        df.iloc[i -
-                                1, df.columns.get_loc('vol_brk_sig')] = round(
-                                    (df.iloc[i - 1]['vol'] - vol_mean_15D) *
-                                    1.0 / std_15D_vol, 1)
+                        df.iloc[i - 1, df.columns.get_loc('vol_brk_sig')] = round((df.iloc[i - 1]['vol'] - vol_mean_15D) * 1.0 / std_15D_vol, 1)
 
                     strength = abs(df.iloc[i - 1, df.columns.get_loc('vol_brk_sig')]) + \
                                abs(df.iloc[i - 1, df.columns.get_loc('c_brk_sig')])
 
-                    df.iloc[i - 1, df.columns.get_loc('op_strength')] += str(
-                        strength)
+                    df.iloc[i - 1, df.columns.get_loc('op_strength')] += str(strength)
 
                     # this is in for loop 1
 
@@ -1333,18 +1179,13 @@ class Finlib:
             if bool_perc_std_mean:
                 time_loop_2 = datetime.now()
                 # if debug:
-                logging.info(
-                    str(time_loop_2) + " " + code +
-                    " loop 2(perc score in loop1) started. Last loop took " +
-                    str(time_loop_2 - last_record_time))
+                logging.info(str(time_loop_2) + " " + code + " loop 2(perc score in loop1) started. Last loop took " + str(time_loop_2 - last_record_time))
                 last_record_time = time_loop_2
 
-                new_value_df = pd.DataFrame([0] * df.__len__(),
-                                            columns=['perc_std_15D_c'])  #
+                new_value_df = pd.DataFrame([0] * df.__len__(), columns=['perc_std_15D_c'])  #
                 df = new_value_df.join(df)  #
 
-                new_value_df = pd.DataFrame([0] * df.__len__(),
-                                            columns=['perc_std_15D_vol'])  #
+                new_value_df = pd.DataFrame([0] * df.__len__(), columns=['perc_std_15D_vol'])  #
                 df = new_value_df.join(df)  #
 
                 #pre_days =   # ryan modified from 21 to 220, using year range for comparation
@@ -1358,14 +1199,8 @@ class Finlib:
                     #    #start_day = 0
                     #    continue
 
-                    df.iloc[i, df.columns.get_loc('perc_std_15D_c')] = round(
-                        stats.percentileofscore(
-                            df.iloc[(i - 253):i]['std_15D_c'],
-                            df.iloc[i]['std_15D_c']) / 100, 1)
-                    df.iloc[i, df.columns.get_loc('perc_std_15D_vol')] = round(
-                        stats.percentileofscore(
-                            df.iloc[(i - 253):i]['std_15D_vol'],
-                            df.iloc[i]['std_15D_vol']) / 100, 1)
+                    df.iloc[i, df.columns.get_loc('perc_std_15D_c')] = round(stats.percentileofscore(df.iloc[(i - 253):i]['std_15D_c'], df.iloc[i]['std_15D_c']) / 100, 1)
+                    df.iloc[i, df.columns.get_loc('perc_std_15D_vol')] = round(stats.percentileofscore(df.iloc[(i - 253):i]['std_15D_vol'], df.iloc[i]['std_15D_vol']) / 100, 1)
 
             ###############################
             # loop #2.5, the most dropp and most up stock
@@ -1374,59 +1209,36 @@ class Finlib:
             if bool_pv_hit:
                 time_loop_2_5 = datetime.now()
                 # if debug:
-                logging.info(
-                    str(time_loop_2_5) + " " + code +
-                    " loop 2.5 (most price change) started. Last loop took " +
-                    str(time_loop_2_5 - last_record_time))
+                logging.info(str(time_loop_2_5) + " " + code + " loop 2.5 (most price change) started. Last loop took " + str(time_loop_2_5 - last_record_time))
                 last_record_time = time_loop_2_5
 
-                df_loop_2_5 = df_52_week[int(df_52_week.__len__() /
-                                             2):]  #half year
+                df_loop_2_5 = df_52_week[int(df_52_week.__len__() / 2):]  #half year
                 # df_loop_2_5 = df_52_week[-30:]  # ryan, debug, 30 day, more chance to be hitted.
 
                 df_loop_2_5 = df_loop_2_5.reset_index().drop('index', axis=1)
 
-                new_value_df = pd.DataFrame([0] * df_loop_2_5.__len__(),
-                                            columns=[
-                                                'price_change_perc'
-                                            ])  # today_close - yesterday_close
+                new_value_df = pd.DataFrame([0] * df_loop_2_5.__len__(), columns=['price_change_perc'])  # today_close - yesterday_close
                 df_loop_2_5 = new_value_df.join(df_loop_2_5)  #
 
                 closeP = str(df_loop_2_5[-1:]['c'].values[0])
 
-                for i in range(df_loop_2_5.__len__() - max_exam_day,
-                               df_loop_2_5.__len__()):
+                for i in range(df_loop_2_5.__len__() - max_exam_day, df_loop_2_5.__len__()):
                     yesterday_close = df_loop_2_5.iloc[i - 1]['c']
 
                     today_close = df_loop_2_5.iloc[i]['c']
 
-                    delta_perc = (today_close - yesterday_close
-                                  ) * 1.0 / yesterday_close * 100
+                    delta_perc = (today_close - yesterday_close) * 1.0 / yesterday_close * 100
                     delta_perc = round(delta_perc, 2)
 
-                    df_loop_2_5.iloc[i,
-                                     df_loop_2_5.columns.
-                                     get_loc('price_change_perc')] = delta_perc
+                    df_loop_2_5.iloc[i, df_loop_2_5.columns.get_loc('price_change_perc')] = delta_perc
 
-                if df_loop_2_5['price_change_perc'].max(
-                ) == df_loop_2_5['price_change_perc'][-1:].values[0]:
-                    logging.info("code " + str(code) +
-                                 " hit the max daily increase in last " +
-                                 str(df_loop_2_5.__len__()) + " days")
-                    df_result.loc[i_result] = [
-                        df_loop_2_5['date'][-1:].values[0], code, 'S',
-                        code + "_max_daily_increase", 1, closeP
-                    ]
+                if df_loop_2_5['price_change_perc'].max() == df_loop_2_5['price_change_perc'][-1:].values[0]:
+                    logging.info("code " + str(code) + " hit the max daily increase in last " + str(df_loop_2_5.__len__()) + " days")
+                    df_result.loc[i_result] = [df_loop_2_5['date'][-1:].values[0], code, 'S', code + "_max_daily_increase", 1, closeP]
                     i_result += 1
-                elif df_loop_2_5['price_change_perc'].min(
-                ) == df_loop_2_5['price_change_perc'][-1:].values[0]:
-                    logging.info("code " + str(code) +
-                                 " hit the max daily decrease in last " +
-                                 str(df_loop_2_5.__len__()) + " days")
-                    df_result.loc[i_result] = [
-                        df_loop_2_5['date'][-1:].values[0], code, 'B',
-                        code + "_max_daily_decrease", 1, closeP
-                    ]
+                elif df_loop_2_5['price_change_perc'].min() == df_loop_2_5['price_change_perc'][-1:].values[0]:
+                    logging.info("code " + str(code) + " hit the max daily decrease in last " + str(df_loop_2_5.__len__()) + " days")
+                    df_result.loc[i_result] = [df_loop_2_5['date'][-1:].values[0], code, 'B', code + "_max_daily_decrease", 1, closeP]
                     i_result += 1
 
                 # check price gap between yesterdy_close and today_open
@@ -1441,31 +1253,17 @@ class Finlib:
                 yesterday_close = df_loop_2_5.iloc[-2:-1]['c'].values[0]
 
                 # if yesterday_close > 0 and (today_open < yesterday_close) and (today_open > today_close) : #and (round(today_open,1) == round(today_high,1))
-                if yesterday_close > 0 and (today_open < yesterday_close) and (
-                        yesterday_close > today_close) and (
-                            today_high < yesterday_close
-                        ):  # and (round(today_open,1) == round(today_high,1))
+                if yesterday_close > 0 and (today_open < yesterday_close) and (yesterday_close > today_close) and (today_high < yesterday_close):  # and (round(today_open,1) == round(today_high,1))
                     logging.info("code " + str(code) + " hit decrease gap ")
-                    op_strength = round((yesterday_close - today_open) *
-                                        100.0 / yesterday_close, 2)
-                    df_result.loc[i_result] = [
-                        df_loop_2_5['date'][-1:].values[0], code, 'B',
-                        code + "_decrease_gap", op_strength, closeP
-                    ]
+                    op_strength = round((yesterday_close - today_open) * 100.0 / yesterday_close, 2)
+                    df_result.loc[i_result] = [df_loop_2_5['date'][-1:].values[0], code, 'B', code + "_decrease_gap", op_strength, closeP]
                     i_result += 1
 
                 # if yesterday_close > 0 and (today_open > yesterday_close) and (today_open < today_close): #and (today_open == today_high)
-                if yesterday_close > 0 and (today_open > yesterday_close) and (
-                        yesterday_close < today_close) and (
-                            today_low >
-                            yesterday_close):  # and (today_open == today_high)
+                if yesterday_close > 0 and (today_open > yesterday_close) and (yesterday_close < today_close) and (today_low > yesterday_close):  # and (today_open == today_high)
                     logging.info("code " + str(code) + " hit increase gap ")
-                    op_strength = round((today_open - yesterday_close) *
-                                        100.0 / yesterday_close, 2)
-                    df_result.loc[i_result] = [
-                        df_loop_2_5['date'][-1:].values[0], code, 'S',
-                        code + "_increase_gap", op_strength, closeP
-                    ]
+                    op_strength = round((today_open - yesterday_close) * 100.0 / yesterday_close, 2)
+                    df_result.loc[i_result] = [df_loop_2_5['date'][-1:].values[0], code, 'S', code + "_increase_gap", op_strength, closeP]
                     i_result += 1
 
             ###############################
@@ -1476,10 +1274,7 @@ class Finlib:
 
                 time_loop_3 = datetime.now()
                 # if debug:
-                logging.info(
-                    str(time_loop_3) + " " + code +
-                    " loop 3(talib ptn) started. Last loop took " +
-                    str(time_loop_3 - last_record_time))
+                logging.info(str(time_loop_3) + " " + code + " loop 3(talib ptn) started. Last loop took " + str(time_loop_3 - last_record_time))
                 last_record_time = time_loop_3
 
                 pattern = talib.get_function_groups()['Pattern Recognition']
@@ -1490,9 +1285,7 @@ class Finlib:
                     p_cnt += 1
 
                     if debug and p_cnt > 300:
-                        logging.info(
-                            "in debug mode, break talib pattern after 300 times running."
-                        )
+                        logging.info("in debug mode, break talib pattern after 300 times running.")
                         break
 
                     cmd = "talib." + p + "(o.values, h.values, l.values, c.values)"
@@ -1503,8 +1296,7 @@ class Finlib:
                     if live_trading:
                         start_rec = tmp.__len__()
 
-                    for j in range(tmp.__len__() + 1 - max_exam_day,
-                                   tmp.__len__() + 1):
+                    for j in range(tmp.__len__() + 1 - max_exam_day, tmp.__len__() + 1):
                         # if debug:
                         #    print "loop #3. ptn " + str(p) + ". ptnCnt: "+ str(p_cnt) + ' of ' + str(pattern.__len__())+". bt record on ptn:"+ str(j)+' of '+ str(tmp.__len__() + 1)
 
@@ -1519,37 +1311,21 @@ class Finlib:
                             # print "talib buy op, ptn "+p
 
                             df.iloc[j - 1, df.columns.get_loc('op')] += ";B"
-                            df.iloc[j - 1, df.columns.get_loc(
-                                'op_rsn')] += ";" + str(code) + "_B_talib_" + p
-                            df.iloc[j - 1,
-                                    df.columns.get_loc(
-                                        'op_strength'
-                                    )] += ",1"  # talib strength always be 0.1
+                            df.iloc[j - 1, df.columns.get_loc('op_rsn')] += ";" + str(code) + "_B_talib_" + p
+                            df.iloc[j - 1, df.columns.get_loc('op_strength')] += ",1"  # talib strength always be 0.1
 
-                            if exam_date == df.iloc[
-                                    j - 1, df.columns.get_loc('date')]:
-                                df_result.loc[i_result] = [
-                                    date, code, 'B', code + "_B_talib_" + p, 1,
-                                    closeP
-                                ]
+                            if exam_date == df.iloc[j - 1, df.columns.get_loc('date')]:
+                                df_result.loc[i_result] = [date, code, 'B', code + "_B_talib_" + p, 1, closeP]
                                 i_result += 1
 
                         elif tmp[j - 1] < 0:  # -100
                             # print "talib sell op, ptn "+p
                             df.iloc[j - 1, df.columns.get_loc('op')] += ";S"
-                            df.iloc[j - 1, df.columns.get_loc(
-                                'op_rsn')] += ";" + str(code) + "_S_talib_" + p
-                            df.iloc[j - 1,
-                                    df.columns.get_loc(
-                                        'op_strength'
-                                    )] += ",-1"  # talib strength always be 0.1
+                            df.iloc[j - 1, df.columns.get_loc('op_rsn')] += ";" + str(code) + "_S_talib_" + p
+                            df.iloc[j - 1, df.columns.get_loc('op_strength')] += ",-1"  # talib strength always be 0.1
 
-                            if exam_date == df.iloc[
-                                    j - 1, df.columns.get_loc('date')]:
-                                df_result.loc[i_result] = [
-                                    date, code, 'S', code + "_S_talib_" + p, 1,
-                                    closeP
-                                ]
+                            if exam_date == df.iloc[j - 1, df.columns.get_loc('date')]:
+                                df_result.loc[i_result] = [date, code, 'S', code + "_S_talib_" + p, 1, closeP]
                                 i_result += 1
 
             ###############################
@@ -1559,10 +1335,7 @@ class Finlib:
             if bool_pv_hit:  # share same switch with pv_hit
                 time_loop_3_5 = datetime.now()
                 # if debug:
-                logging.info(
-                    str(time_loop_3_5) + " " + code +
-                    " loop 3.5(52 weeks price analyze) started. Last loop took "
-                    + str(time_loop_3_5 - last_record_time))
+                logging.info(str(time_loop_3_5) + " " + code + " loop 3.5(52 weeks price analyze) started. Last loop took " + str(time_loop_3_5 - last_record_time))
                 last_record_time = time_loop_3_5
 
                 exam_date_in_df = df_52_week.iloc[-1].date
@@ -1576,13 +1349,9 @@ class Finlib:
                 df_last_row = df_52_week[-1:]
 
                 # 52week price
-                if (df_last_row['c'].values[0] - min_close_df['c']
-                    ) < 0.02 * min_close_df['c']:  # 2% near the lowest price
+                if (df_last_row['c'].values[0] - min_close_df['c']) < 0.02 * min_close_df['c']:  # 2% near the lowest price
                     date_min_c = min_close_df['date']
-                    time_delta = datetime.strptime(
-                        df_last_row['date'].values[0],
-                        '%Y-%m-%d') - datetime.strptime(
-                            date_min_c, '%Y-%m-%d')
+                    time_delta = datetime.strptime(df_last_row['date'].values[0], '%Y-%m-%d') - datetime.strptime(date_min_c, '%Y-%m-%d')
                     time_delta = time_delta.days
 
                     if time_delta >= 0:
@@ -1593,21 +1362,13 @@ class Finlib:
                                      date_min_c + "," + str(min_close_df['c']) + "), " + \
                                      str(time_delta) + " days ago")
 
-                        df_result.loc[i_result] = [
-                            df_last_row['date'].values[0], code, 'B',
-                            code + "_B_pvbreak_lp_year", time_delta,
-                            df_last_row['c'].values[0]
-                        ]
+                        df_result.loc[i_result] = [df_last_row['date'].values[0], code, 'B', code + "_B_pvbreak_lp_year", time_delta, df_last_row['c'].values[0]]
                         i_result += 1
 
-                if (max_close_df['c'] - df_last_row['c'].values[0]
-                    ) < 0.02 * max_close_df['c']:  # 2% near the highest price
+                if (max_close_df['c'] - df_last_row['c'].values[0]) < 0.02 * max_close_df['c']:  # 2% near the highest price
                     # if tmp_a/max_close_df['c']  > 0.9: #90% near the highest price
                     date_max_c = max_close_df['date']
-                    time_delta = datetime.strptime(
-                        df_last_row['date'].values[0],
-                        '%Y-%m-%d') - datetime.strptime(
-                            date_max_c, '%Y-%m-%d')
+                    time_delta = datetime.strptime(df_last_row['date'].values[0], '%Y-%m-%d') - datetime.strptime(date_max_c, '%Y-%m-%d')
                     time_delta = time_delta.days
 
                     if time_delta >= 0:
@@ -1618,11 +1379,7 @@ class Finlib:
                                      date_max_c + "," + str(max_close_df['c']) + "), " + \
                                      str(time_delta) + " days ago")
 
-                        df_result.loc[i_result] = [
-                            df_last_row['date'].values[0], code, 'S',
-                            code + "_S_pvbreak_hp_year", time_delta,
-                            df_last_row['c'].values[0]
-                        ]
+                        df_result.loc[i_result] = [df_last_row['date'].values[0], code, 'S', code + "_S_pvbreak_hp_year", time_delta, df_last_row['c'].values[0]]
                         i_result += 1
 
                 # 52week volume
@@ -1630,13 +1387,9 @@ class Finlib:
                 min_vol_df = df_52_week.loc[df_52_week['vol'].idxmin()]
 
                 # if tmp_c < 0.1: #10% near the lowest vol
-                if (df_last_row['vol'].values[0] - min_vol_df['vol']
-                    ) < 0.03 * min_vol_df['vol']:  # 3% near the lowest vol
+                if (df_last_row['vol'].values[0] - min_vol_df['vol']) < 0.03 * min_vol_df['vol']:  # 3% near the lowest vol
                     date_min_v = min_vol_df['date']
-                    time_delta = datetime.strptime(
-                        df_last_row['date'].values[0],
-                        '%Y-%m-%d') - datetime.strptime(
-                            date_min_v, '%Y-%m-%d')
+                    time_delta = datetime.strptime(df_last_row['date'].values[0], '%Y-%m-%d') - datetime.strptime(date_min_v, '%Y-%m-%d')
                     time_delta = time_delta.days
 
                     if time_delta > 0:
@@ -1647,20 +1400,13 @@ class Finlib:
                                      date_min_v + "," + str(min_vol_df['vol']) + "), " + \
                                      str(time_delta)) + " days ago"
 
-                        df_result.loc[i_result] = [
-                            date, code, 'B', code + "_B_pvbreak_lv_year",
-                            time_delta, df_last_row['c'].values[0]
-                        ]
+                        df_result.loc[i_result] = [date, code, 'B', code + "_B_pvbreak_lv_year", time_delta, df_last_row['c'].values[0]]
                         i_result += 1
 
                 # if tmp_a/max_vol_df['vol'] > 0.9: #90% near the highest vol
-                if (max_vol_df['vol'] - df_last_row['vol'].values[0]
-                    ) < 0.03 * max_vol_df['vol']:
+                if (max_vol_df['vol'] - df_last_row['vol'].values[0]) < 0.03 * max_vol_df['vol']:
                     date_max_v = max_vol_df['date']
-                    time_delta = datetime.strptime(
-                        df_last_row['date'].values[0],
-                        '%Y-%m-%d') - datetime.strptime(
-                            date_max_v, '%Y-%m-%d')
+                    time_delta = datetime.strptime(df_last_row['date'].values[0], '%Y-%m-%d') - datetime.strptime(date_max_v, '%Y-%m-%d')
                     time_delta = time_delta.days
 
                     if time_delta > 0:
@@ -1671,10 +1417,7 @@ class Finlib:
                                      date_max_v + "," + str(max_vol_df['vol']) + "), " + \
                                      str(time_delta)) + " days ago"
 
-                        df_result.loc[i_result] = [
-                            date, code, 'S', code + "_S_pvbreak_hv_year",
-                            time_delta, df_last_row['c'].values[0]
-                        ]
+                        df_result.loc[i_result] = [date, code, 'S', code + "_S_pvbreak_hv_year", time_delta, df_last_row['c'].values[0]]
                         i_result += 1
 
             ###############################
@@ -1684,10 +1427,7 @@ class Finlib:
             if bool_pv_hit:
                 time_loop_4 = datetime.now()
                 # if debug:
-                logging.info(
-                    str(time_loop_4) + " " + code +
-                    " loop 4(PV Analyze) started. Last loop took " +
-                    str(time_loop_4 - last_record_time))
+                logging.info(str(time_loop_4) + " " + code + " loop 4(PV Analyze) started. Last loop took " + str(time_loop_4 - last_record_time))
                 last_record_time = time_loop_4
 
                 pre_days = 7  # Decide today's P/V status, based on last 5 days' the P/V position.
@@ -1697,14 +1437,10 @@ class Finlib:
                 if live_trading:
                     start_rec = df.__len__()
 
-                df = pd.DataFrame([''] * df.__len__(),
-                                  columns=['vol_pos']).join(df)  #
-                df = pd.DataFrame([''] * df.__len__(),
-                                  columns=['5D_vol_vlt']).join(df)  #
-                df = pd.DataFrame([''] * df.__len__(),
-                                  columns=['c_pos']).join(df)  #
-                df = pd.DataFrame([''] * df.__len__(),
-                                  columns=['5D_c_vlt']).join(df)  #
+                df = pd.DataFrame([''] * df.__len__(), columns=['vol_pos']).join(df)  #
+                df = pd.DataFrame([''] * df.__len__(), columns=['5D_vol_vlt']).join(df)  #
+                df = pd.DataFrame([''] * df.__len__(), columns=['c_pos']).join(df)  #
+                df = pd.DataFrame([''] * df.__len__(), columns=['5D_c_vlt']).join(df)  #
 
                 for i in range(df.__len__() - pre_days, df.__len__() + 1):
                     # if debug:
@@ -1744,10 +1480,8 @@ class Finlib:
                     this_sell_num = 0
 
                     if op_list.__len__() > 0:
-                        idx_pre_op = op_list.index[
-                            -1]  # index of latest operation in previous
-                        val_pre_op = op_pre[
-                            idx_pre_op]  # value of latest op, in 'B0','S0','pB', 'B1','S1' etc.
+                        idx_pre_op = op_list.index[-1]  # index of latest operation in previous
+                        val_pre_op = op_pre[idx_pre_op]  # value of latest op, in 'B0','S0','pB', 'B1','S1' etc.
                         # print "matched previous op "+val_pre_op
 
                     op_match = re.match("([B|S])(\d+)", val_pre_op)
@@ -1779,14 +1513,10 @@ class Finlib:
                         elif i2 >= 0.85:
                             cnt_vol_vlt_high += 1
 
-                    if (cnt_vol_vlt_low >= threhold) and (
-                            cnt_vol_vlt_high < 1):  # more than 3 out of 5
-                        df.iloc[i - 1, df.columns.get_loc('5D_vol_vlt'
-                                                          )] = 'v_vlt_l'
-                    elif (cnt_vol_vlt_high >= threhold) and (cnt_vol_vlt_low <
-                                                             1):
-                        df.iloc[i - 1, df.columns.get_loc('5D_vol_vlt'
-                                                          )] = 'v_vlt_h'
+                    if (cnt_vol_vlt_low >= threhold) and (cnt_vol_vlt_high < 1):  # more than 3 out of 5
+                        df.iloc[i - 1, df.columns.get_loc('5D_vol_vlt')] = 'v_vlt_l'
+                    elif (cnt_vol_vlt_high >= threhold) and (cnt_vol_vlt_low < 1):
+                        df.iloc[i - 1, df.columns.get_loc('5D_vol_vlt')] = 'v_vlt_h'
 
                     # vol
                     for i2 in vol_prev:
@@ -1795,14 +1525,10 @@ class Finlib:
                         elif i2 >= 0.85:
                             cnt_vol_pos_high += 1
 
-                    if (cnt_vol_pos_low >= threhold) and (
-                            cnt_vol_pos_high < 1):  # more than 3 out of 5
-                        df.iloc[i -
-                                1, df.columns.get_loc('vol_pos')] = "v_pos_l"
-                    elif (cnt_vol_pos_high >= threhold) and (cnt_vol_pos_low <
-                                                             1):
-                        df.iloc[i -
-                                1, df.columns.get_loc('vol_pos')] = "v_pos_h"
+                    if (cnt_vol_pos_low >= threhold) and (cnt_vol_pos_high < 1):  # more than 3 out of 5
+                        df.iloc[i - 1, df.columns.get_loc('vol_pos')] = "v_pos_l"
+                    elif (cnt_vol_pos_high >= threhold) and (cnt_vol_pos_low < 1):
+                        df.iloc[i - 1, df.columns.get_loc('vol_pos')] = "v_pos_h"
 
                     # close std
                     for i2 in c_std_prev:
@@ -1811,14 +1537,10 @@ class Finlib:
                         elif i2 >= 0.85:
                             cnt_c_vlt_high += 1
 
-                    if (cnt_c_vlt_low >= threhold) and (
-                            cnt_c_vlt_high <
-                            1):  # more than 3 out of 5. No vlt_high
-                        df.iloc[i -
-                                1, df.columns.get_loc('5D_c_vlt')] = 'c_vlt_l'
+                    if (cnt_c_vlt_low >= threhold) and (cnt_c_vlt_high < 1):  # more than 3 out of 5. No vlt_high
+                        df.iloc[i - 1, df.columns.get_loc('5D_c_vlt')] = 'c_vlt_l'
                     elif (cnt_c_vlt_high >= threhold) and (cnt_c_vlt_low < 1):
-                        df.iloc[i -
-                                1, df.columns.get_loc('5D_c_vlt')] = 'c_vlt_h'
+                        df.iloc[i - 1, df.columns.get_loc('5D_c_vlt')] = 'c_vlt_h'
 
                     # close
                     for i2 in c_prev:
@@ -1827,8 +1549,7 @@ class Finlib:
                         elif i2 >= 0.85:
                             cnt_c_pos_high += 1
 
-                    if (cnt_c_pos_low >= threhold) and (
-                            cnt_c_pos_high < 1):  # more than 3 out of 5
+                    if (cnt_c_pos_low >= threhold) and (cnt_c_pos_high < 1):  # more than 3 out of 5
                         df.iloc[i - 1, df.columns.get_loc('c_pos')] = "c_pos_l"
                     elif (cnt_c_pos_high >= threhold) and (cnt_c_pos_low < 1):
                         df.iloc[i - 1, df.columns.get_loc('c_pos')] = "c_pos_h"
@@ -1847,20 +1568,16 @@ class Finlib:
                     # exit(1)
 
                     time = str(df.iloc[i - 1, df.columns.get_loc('date')])
-                    close_p = str(df.iloc[i -
-                                          1, df.columns.get_loc('c')]
-                                  )  # suppose close(today) == open(next_day)
+                    close_p = str(df.iloc[i - 1, df.columns.get_loc('c')])  # suppose close(today) == open(next_day)
 
                     vol_pos = df.iloc[i - 1, df.columns.get_loc('vol_pos')]
                     vol_vlt = df.iloc[i - 1, df.columns.get_loc('5D_vol_vlt')]
                     c_pos = df.iloc[i - 1, df.columns.get_loc('c_pos')]
                     c_vlt = df.iloc[i - 1, df.columns.get_loc('5D_c_vlt')]
 
-                    vol_break = df.iloc[i - 1,
-                                        df.columns.get_loc('vol_brk_sig')]
+                    vol_break = df.iloc[i - 1, df.columns.get_loc('vol_brk_sig')]
                     c_break = df.iloc[i - 1, df.columns.get_loc('c_brk_sig')]
-                    op_strength = df.iloc[i - 1,
-                                          df.columns.get_loc('op_strength')]
+                    op_strength = df.iloc[i - 1, df.columns.get_loc('op_strength')]
 
                     if forex:  # forex doesn't have vol data. otherwise forex will never hit the ptn
                         vol_vlt = 'v_vlt_l'
@@ -1868,98 +1585,69 @@ class Finlib:
                         vol_break = 2
 
                     # Buy 1, 成交量在低位或者不变，并且价格在低位或者不变，并且成交量或者价格突破
-                    if (((vol_vlt == 'v_vlt_l') or (vol_pos == 'v_pos_l'))
-                            and (c_pos == 'c_pos_l')
+                    if (((vol_vlt == 'v_vlt_l') or (vol_pos == 'v_pos_l')) and (c_pos == 'c_pos_l')
                             # and (( c_vlt == 'c_vlt_l') or (c_pos == 'c_pos_l'))
                             # and (not c_pos == 'c_pos_h')
-                            and ((vol_break >= 1.5) or (c_break >= 1.5) or
-                                 (vol_break <= -1.5) or (c_break <= -1.5))):
+                            and ((vol_break >= 1.5) or (c_break >= 1.5) or (vol_break <= -1.5) or (c_break <= -1.5))):
                         reason = code + "_B_pvbreak_lp_lv_v_or_c_up_or_dn_brk"  # price low, vol low, vol/c up/down break
-                        df.iloc[i - 1, df.columns.
-                                get_loc('op')] += ';B' + str(this_buy_num)
-                        df.iloc[i - 1, df.columns.get_loc('op_rsn'
-                                                          )] += ";" + reason
+                        df.iloc[i - 1, df.columns.get_loc('op')] += ';B' + str(this_buy_num)
+                        df.iloc[i - 1, df.columns.get_loc('op_rsn')] += ";" + reason
                         # logging.info("Buy "+str(this_buy_num)+ " "+code+" "+time+" "+ close_p+" "+reason)
                         if exam_date == time:
-                            df_result.loc[i_result] = [
-                                time, code, 'B', reason, op_strength, close_p
-                            ]
+                            df_result.loc[i_result] = [time, code, 'B', reason, op_strength, close_p]
                             i_result += 1
 
                     # Buy 2. 无量上涨. 价格底部, 成交量不变或者低，价格突破 <--- Buy
-                    if (((vol_vlt == 'v_vlt_l') or (vol_pos == 'v_pos_l'))
-                            and (c_pos == 'c_pos_l')
+                    if (((vol_vlt == 'v_vlt_l') or (vol_pos == 'v_pos_l')) and (c_pos == 'c_pos_l')
                             # and (( c_vlt == 'c_vlt_l') or (c_pos == 'c_pos_l'))
                             # and (not c_pos == 'c_pos_h')
                             and (c_break >= 1)):
                         reason = code + "_B_pvbreak_lp_lv_p_up_brk"  # price low, vol low, price up break.
-                        df.iloc[i - 1, df.columns.
-                                get_loc('op')] += ';B' + str(this_buy_num)
-                        df.iloc[i - 1, df.columns.get_loc('op_rsn'
-                                                          )] += ";" + reason
+                        df.iloc[i - 1, df.columns.get_loc('op')] += ';B' + str(this_buy_num)
+                        df.iloc[i - 1, df.columns.get_loc('op_rsn')] += ";" + reason
                         # logging.info("Buy "+str(this_buy_num)+ " " + code + " " + time + " " + close_p + " " + reason)
                         if exam_date == time:
-                            df_result.loc[i_result] = [
-                                time, code, 'B', reason, op_strength, close_p
-                            ]
+                            df_result.loc[i_result] = [time, code, 'B', reason, op_strength, close_p]
                             i_result += 1
 
                     # Buy 3 价格底部，成交量突破上涨 <-- 之前是跌的 初期buy
                     if ((c_pos == 'c_pos_l') and (vol_break >= 1.4)):
                         reason = code + "_B_pvbreak_lp_v_up_brk"  # price low, vol up break
-                        df.iloc[i - 1, df.columns.
-                                get_loc('op')] += ';B' + str(this_buy_num)
-                        df.iloc[i - 1, df.columns.get_loc('op_rsn'
-                                                          )] += ";" + reason
+                        df.iloc[i - 1, df.columns.get_loc('op')] += ';B' + str(this_buy_num)
+                        df.iloc[i - 1, df.columns.get_loc('op_rsn')] += ";" + reason
                         # logging.info("Buy "+str(this_buy_num)+ " " + code + " " + time + " " + close_p + " " + reason)
                         if exam_date == time:
-                            df_result.loc[i_result] = [
-                                time, code, 'B', reason, op_strength, close_p
-                            ]
+                            df_result.loc[i_result] = [time, code, 'B', reason, op_strength, close_p]
                             i_result += 1
 
                     # Sell 1 价格顶部，成绩量突破上涨 <--  之前是涨的 末期sell
                     if (((c_pos == 'c_pos_h')) and (vol_break >= 1.5)):
                         reason = code + "_S_pvbreak_hp_v_up_brk"  # high price, vol up break
-                        df.iloc[i - 1, df.columns.
-                                get_loc('op')] += ';S' + str(this_sell_num)
-                        df.iloc[i - 1, df.columns.get_loc('op_rsn'
-                                                          )] += ";" + reason
+                        df.iloc[i - 1, df.columns.get_loc('op')] += ';S' + str(this_sell_num)
+                        df.iloc[i - 1, df.columns.get_loc('op_rsn')] += ";" + reason
                         # logging.info("Sell "+str(this_sell_num) + " "+ code + " " + time + " " + close_p + " " + reason)
                         if exam_date == time:
-                            df_result.loc[i_result] = [
-                                time, code, 'S', reason, op_strength, close_p
-                            ]
+                            df_result.loc[i_result] = [time, code, 'S', reason, op_strength, close_p]
                             i_result += 1
 
                     # Sell 2, 放量下跌 <---- 之前是涨的， Sell
-                    if ((c_pos == 'c_pos_h') and (c_break <= -1)
-                            and (vol_break > 1)):
+                    if ((c_pos == 'c_pos_h') and (c_break <= -1) and (vol_break > 1)):
                         reason = code + "_S_pvbreak_hp_p_dn_brk_v_up_brk"  # price high, price down break, vol up break.
-                        df.iloc[i - 1, df.columns.
-                                get_loc('op')] += ';S' + str(this_sell_num)
-                        df.iloc[i - 1, df.columns.get_loc('op_rsn'
-                                                          )] += ";" + reason
+                        df.iloc[i - 1, df.columns.get_loc('op')] += ';S' + str(this_sell_num)
+                        df.iloc[i - 1, df.columns.get_loc('op_rsn')] += ";" + reason
                         # logging.info("Sell " +str(this_sell_num)+ " "+ code + " " + time + " " + close_p + " " + reason)
                         if exam_date == time:
-                            df_result.loc[i_result] = [
-                                time, code, 'S', reason, op_strength, close_p
-                            ]
+                            df_result.loc[i_result] = [time, code, 'S', reason, op_strength, close_p]
                             i_result += 1
 
                     # Potential Buy 2, 放量下跌 <---- 之前是跌的，Buy， 右侧交易
-                    if ((c_pos == 'c_pos_l') and (c_break <= -1)
-                            and (vol_break > 1)):
+                    if ((c_pos == 'c_pos_l') and (c_break <= -1) and (vol_break > 1)):
                         reason = code + "_B_pvbreak_lp_p_dn_brk_v_up_brk"  # price low, price down break, vol up break
-                        df.iloc[i - 1, df.columns.
-                                get_loc('op')] += ';B' + str(this_buy_num)
-                        df.iloc[i - 1, df.columns.get_loc('op_rsn'
-                                                          )] += ";" + reason
+                        df.iloc[i - 1, df.columns.get_loc('op')] += ';B' + str(this_buy_num)
+                        df.iloc[i - 1, df.columns.get_loc('op_rsn')] += ";" + reason
                         # logging.info("B "+str(this_buy_num)+ " " + code + " " + time + " " + close_p + " " + reason)
                         if exam_date == time:
-                            df_result.loc[i_result] = [
-                                time, code, 'B', reason, op_strength, close_p
-                            ]
+                            df_result.loc[i_result] = [time, code, 'B', reason, op_strength, close_p]
                             i_result += 1
         except:
             traceback.print_exception(*sys.exc_info())
@@ -2022,9 +1710,7 @@ class Finlib:
                   ):
 
             if debug and p_cnt > 300:
-                logging.info(
-                    "in debug mode, break talib indicator div after 300 times running."
-                )
+                logging.info("in debug mode, break talib indicator div after 300 times running.")
                 break
 
             if (b == 'bool_p_mfi_div' and eval(b) == True):
@@ -2274,9 +1960,7 @@ class Finlib:
         df_result = df_result.drop_duplicates().reset_index()
         if i_result > 0:  # Today (Exam_day) has B/S signal
             df_result.to_csv(outputF_today, index=False)
-            logging.info(
-                str(datetime.now()) + " Save " + code + " " + exam_date +
-                ",  B/S signal to " + outputF_today)
+            logging.info(str(datetime.now()) + " Save " + code + " " + exam_date + ",  B/S signal to " + outputF_today)
         else:
             logging.info((code + " " + exam_date + ", no B/S signal."))
 
@@ -2319,9 +2003,7 @@ class Finlib:
 
         df = df[final_cols]
         df.to_csv(outputF, encoding='UTF-8', index=False)
-        logging.info(
-            str(datetime.now()) + " save to file " +
-            outputF)  # 'outputF': "/home/ryan/DATA/tmp/pv/AG/" + file,
+        logging.info(str(datetime.now()) + " save to file " + outputF)  # 'outputF': "/home/ryan/DATA/tmp/pv/AG/" + file,
         return (df, df_result)
 
         # if debug:
@@ -2373,30 +2055,22 @@ class Finlib:
             use_shared_eval = True
             if True:
                 if target == 'mfi':
-                    cmd = "talib." + target.upper(
-                    ) + "(high, low, close, volume, timeperiod=target_period)"
+                    cmd = "talib." + target.upper() + "(high, low, close, volume, timeperiod=target_period)"
                 elif target == 'rsi':
-                    cmd = "talib." + target.upper(
-                    ) + "(close, timeperiod=target_period)"
+                    cmd = "talib." + target.upper() + "(close, timeperiod=target_period)"
                 elif target == 'natr':
-                    cmd = "talib." + target.upper(
-                    ) + "(high, low, close, timeperiod=target_period)"
+                    cmd = "talib." + target.upper() + "(high, low, close, timeperiod=target_period)"
                 elif target == 'tema':
-                    cmd = "talib." + target.upper(
-                    ) + "(close, timeperiod=target_period)"
+                    cmd = "talib." + target.upper() + "(close, timeperiod=target_period)"
                 elif target == 'trima':
-                    cmd = "talib." + target.upper(
-                    ) + "(close, timeperiod=target_period)"
+                    cmd = "talib." + target.upper() + "(close, timeperiod=target_period)"
 
                 elif target == 'adx':
-                    cmd = "talib." + target.upper(
-                    ) + "(high, low, close, timeperiod=14)"
+                    cmd = "talib." + target.upper() + "(high, low, close, timeperiod=14)"
                 elif target == 'adxr':
-                    cmd = "talib." + target.upper(
-                    ) + "(high, low, close, timeperiod=14)"
+                    cmd = "talib." + target.upper() + "(high, low, close, timeperiod=14)"
                 elif target == 'apo':
-                    cmd = "talib." + target.upper(
-                    ) + "(close, fastperiod=12, slowperiod=26, matype=0)"
+                    cmd = "talib." + target.upper() + "(close, fastperiod=12, slowperiod=26, matype=0)"
                 elif target == 'aroon':
                     cmd = "talib.AROON(high, low, timeperiod=14)"
                     aroondown, aroonup = eval(cmd)
@@ -2404,19 +2078,15 @@ class Finlib:
                     use_shared_eval = False
 
                 elif target == 'aroonosc':
-                    cmd = "talib." + target.upper(
-                    ) + "(high, low, timeperiod=14)"
+                    cmd = "talib." + target.upper() + "(high, low, timeperiod=14)"
                 elif target == 'bop':
-                    cmd = "talib." + target.upper(
-                    ) + "(open, high, low, close)"
+                    cmd = "talib." + target.upper() + "(open, high, low, close)"
                 elif target == 'cci':
-                    cmd = "talib." + target.upper(
-                    ) + "(high, low, close, timeperiod=14)"
+                    cmd = "talib." + target.upper() + "(high, low, close, timeperiod=14)"
                 elif target == 'cmo':
                     cmd = "talib." + target.upper() + "(close, timeperiod=14)"
                 elif target == 'dx':
-                    cmd = "talib." + target.upper(
-                    ) + "(high, low, close, timeperiod=14)"
+                    cmd = "talib." + target.upper() + "(high, low, close, timeperiod=14)"
                 elif target == 'minusdi':
                     cmd = "talib.MINUS_DI(high, low, close, timeperiod=14)"
                 elif target == 'minusdm':
@@ -2428,8 +2098,7 @@ class Finlib:
                 elif target == 'plusdm':
                     cmd = "talib.PLUS_DM(high, low, timeperiod=14)"
                 elif target == 'ppo':
-                    cmd = "talib." + target.upper(
-                    ) + "(close, fastperiod=12, slowperiod=26, matype=0)"
+                    cmd = "talib." + target.upper() + "(close, fastperiod=12, slowperiod=26, matype=0)"
                 elif target == 'roc':
                     cmd = "talib." + target.upper() + "(close, timeperiod=10)"
                 elif target == 'rocp':
@@ -2441,11 +2110,9 @@ class Finlib:
                 elif target == 'trix':
                     cmd = "talib." + target.upper() + "(close, timeperiod=30)"
                 elif target == 'ultosc':
-                    cmd = "talib." + target.upper(
-                    ) + "(high, low, close, timeperiod1=7, timeperiod2=14, timeperiod3=28)"
+                    cmd = "talib." + target.upper() + "(high, low, close, timeperiod1=7, timeperiod2=14, timeperiod3=28)"
                 elif target == 'willr':
-                    cmd = "talib." + target.upper(
-                    ) + "(high, low, close, timeperiod=14)"
+                    cmd = "talib." + target.upper() + "(high, low, close, timeperiod=14)"
 
                 elif target == 'macd':
                     cmd = "talib.MACD(close, fastperiod=12, slowperiod=26, signalperiod=9)"
@@ -2466,19 +2133,16 @@ class Finlib:
                     use_shared_eval = False
 
                 elif target == 'ad':
-                    cmd = "talib." + target.upper(
-                    ) + "(high, low, close, volume)"
+                    cmd = "talib." + target.upper() + "(high, low, close, volume)"
 
                 elif target == 'adosc':
-                    cmd = "talib." + target.upper(
-                    ) + "(high, low, close, volume, fastperiod=3, slowperiod=10)"
+                    cmd = "talib." + target.upper() + "(high, low, close, volume, fastperiod=3, slowperiod=10)"
 
                 elif target == 'obv':
                     cmd = "talib." + target.upper() + "(close, volume)"
 
                 elif target == 'avgprice':
-                    cmd = "talib." + target.upper(
-                    ) + "(open, high, low, close)"
+                    cmd = "talib." + target.upper() + "(open, high, low, close)"
 
                 elif target == 'medprice':
                     cmd = "talib." + target.upper() + "(high, low)"
@@ -2505,12 +2169,10 @@ class Finlib:
                     cmd = "talib." + target.upper() + "(close)"
 
                 elif target == 'beta':
-                    cmd = "talib." + target.upper(
-                    ) + "(high, low, timeperiod=5)"
+                    cmd = "talib." + target.upper() + "(high, low, timeperiod=5)"
 
                 elif target == 'correl':
-                    cmd = "talib." + target.upper(
-                    ) + "(high, low, timeperiod=30)"
+                    cmd = "talib." + target.upper() + "(high, low, timeperiod=30)"
 
                 elif target == 'linearreg':
                     cmd = "talib." + target.upper() + "(close, timeperiod=14)"
@@ -2525,22 +2187,19 @@ class Finlib:
                     cmd = "talib." + target.upper() + "(close, timeperiod=14)"
 
                 elif target == 'stddev':
-                    cmd = "talib." + target.upper(
-                    ) + "(close, timeperiod=5, nbdev=1)"
+                    cmd = "talib." + target.upper() + "(close, timeperiod=5, nbdev=1)"
 
                 elif target == 'tsf':
                     cmd = "talib." + target.upper() + "(close, timeperiod=14)"
 
                 elif target == 'var':
-                    cmd = "talib." + target.upper(
-                    ) + "(close, timeperiod=5, nbdev=1)"
+                    cmd = "talib." + target.upper() + "(close, timeperiod=5, nbdev=1)"
 
                 elif target == 'wma':
                     cmd = "talib." + target.upper() + "(close, timeperiod=30)"
 
                 elif target == 't3':
-                    cmd = "talib." + target.upper(
-                    ) + "(close, timeperiod=5, vfactor=0)"
+                    cmd = "talib." + target.upper() + "(close, timeperiod=5, vfactor=0)"
 
                 elif target == 'sma':
                     cmd = "talib." + target.upper() + "(close, timeperiod=30)"
@@ -2550,12 +2209,10 @@ class Finlib:
                     ) + "(high, low, startvalue=0, offsetonreverse=0, accelerationinitlong=0, accelerationlong=0, accelerationmaxlong=0, accelerationinitshort=0, accelerationshort=0, accelerationmaxshort=0)"
 
                 elif target == 'sar':
-                    cmd = "talib." + target.upper(
-                    ) + "(high, low, acceleration=0, maximum=0)"
+                    cmd = "talib." + target.upper() + "(high, low, acceleration=0, maximum=0)"
 
                 elif target == 'midprice':
-                    cmd = "talib." + target.upper(
-                    ) + "(high, low, timeperiod=14)"
+                    cmd = "talib." + target.upper() + "(high, low, timeperiod=14)"
 
                 elif target == 'midpoint':
                     cmd = "talib." + target.upper() + "(close, timeperiod=14)"
@@ -2579,8 +2236,7 @@ class Finlib:
                     use_shared_eval = False
 
                 elif target == 'ma':
-                    cmd = "talib." + target.upper(
-                    ) + "(close, timeperiod=30, matype=0)"
+                    cmd = "talib." + target.upper() + "(close, timeperiod=30, matype=0)"
 
                 elif target == 'kama':
                     cmd = "talib." + target.upper() + "(close, timeperiod=30)"
@@ -2595,8 +2251,7 @@ class Finlib:
                     cmd = "talib." + target.upper() + "(close, timeperiod=30)"
 
                 elif target == 'bbands':
-                    cmd = "talib." + target.upper(
-                    ) + "(close, timeperiod=5, nbdevup=2, nbdevdn=2, matype=0)"
+                    cmd = "talib." + target.upper() + "(close, timeperiod=5, nbdevup=2, nbdevdn=2, matype=0)"
                     upperband, middleband, lowerband = eval(cmd)
                     target_n_days = middleband
                     use_shared_eval = False
@@ -2616,8 +2271,7 @@ class Finlib:
             # target_n_days = talib.MFI(high, low, close, volume, timeperiod=target_period)
 
             target_n_days = np.array(target_n_days)
-            target_n_days_no_nan = target_n_days[np.logical_not(
-                np.isnan(target_n_days))]  # remove nan
+            target_n_days_no_nan = target_n_days[np.logical_not(np.isnan(target_n_days))]  # remove nan
 
             if target_n_days_no_nan.__len__() < 1:
                 # if debug:
@@ -2630,10 +2284,8 @@ class Finlib:
                 # logging.info(str(target_n_days[-1]))
                 continue
 
-            close_max = target_max_close = close_min = target_min_close = close[
-                0]
-            target_max = target_min = close_max_target = close_min_target = target_n_days[
-                0]
+            close_max = target_max_close = close_min = target_min_close = close[0]
+            target_max = target_min = close_max_target = close_min_target = target_n_days[0]
 
             time = ds_n_days['date'][-1:].values[0]
             close_p = ds_n_days['c'][-1:].values[0]
@@ -2652,84 +2304,63 @@ class Finlib:
                 #    logging.info(str(target_n_days[j]))
                 #    continue
 
-                if np.isnan(
-                        target_n_days[j]
-                ):  # math.isnan give exception: TypeError: only length-1 arrays can be converted to Python scalars
+                if np.isnan(target_n_days[j]):  # math.isnan give exception: TypeError: only length-1 arrays can be converted to Python scalars
                     continue
 
                 if close[j] >= close_max:
                     close_max = close[j]  # max close
-                    close_max_target = target_n_days[
-                        j]  # rsi value of the day_max_close
+                    close_max_target = target_n_days[j]  # rsi value of the day_max_close
 
                 if close[j] <= close_min:
                     close_min = close[j]
                     close_min_target = target_n_days[j]
 
                 if target_n_days[j] >= target_max:
-                    target_max = target_n_days[
-                        j]  # max rtarget_n_dayssi value, real
-                    target_max_close = close[
-                        j]  # close value of the day_rsi_max
+                    target_max = target_n_days[j]  # max rtarget_n_dayssi value, real
+                    target_max_close = close[j]  # close value of the day_rsi_max
 
                 if target_n_days[j] <= target_min:
                     target_min = target_n_days[j]
                     target_min_close = close[j]
 
-            if (close[-1] >= close_max) and (
-                (target_n_days[-1] - 0.99 * target_max) <
-                    0):  # close_max_target == target_n_days[-1]
+            if (close[-1] >= close_max) and ((target_n_days[-1] - 0.99 * target_max) < 0):  # close_max_target == target_n_days[-1]
                 if target_max_close == 0 or target_max == 0:
-                    logging.info(
-                        "target_max_close or target_max is zero.  Avoid the div by zero error."
-                    )
+                    logging.info("target_max_close or target_max is zero.  Avoid the div by zero error.")
                     continue
                 expected_target = target_max * close_max * 1.0 / target_max_close  # should be great then actual mfi
-                op_strength = (expected_target -
-                               target_n_days[-1]) * 1.0 / target_max
+                op_strength = (expected_target - target_n_days[-1]) * 1.0 / target_max
 
                 reason = code + "_S_" + target + "_div"  #
 
                 df.iloc[i - 1, df.columns.get_loc('op')] += ";S"
                 df.iloc[i - 1, df.columns.get_loc('op_rsn')] += ";" + reason
-                df.iloc[i - 1, df.columns.get_loc('op_strength')] += "," + str(
-                    op_strength)  #
+                df.iloc[i - 1, df.columns.get_loc('op_strength')] += "," + str(op_strength)  #
                 # logging.info("code: " + str(code) + " Date:" + time \
                 #      + " Sell Sig on "+ target +"_"+  str(target_period) + " divergence")
 
                 if exam_date == time:
-                    df_result.loc[i_result] = [
-                        time, code, 'S', reason, op_strength, close_p
-                    ]
+                    df_result.loc[i_result] = [time, code, 'S', reason, op_strength, close_p]
                     i_result += 1
 
-            elif (close[-1] <=
-                  close_min) and (target_n_days[-1] - 1.01 * target_min) > 0:
+            elif (close[-1] <= close_min) and (target_n_days[-1] - 1.01 * target_min) > 0:
 
                 if target_min_close == 0 or target_min == 0:
-                    logging.info(
-                        "target_min_close or target_min is zero.  Avoid the div by zero error."
-                    )
+                    logging.info("target_min_close or target_min is zero.  Avoid the div by zero error.")
                     continue
 
-                expected_target = target_min * close[
-                    -1] * 1.0 / target_min_close  # should higher than today actual mfi
-                op_strength = (target_n_days[-1] -
-                               expected_target) * 1.0 / target_min
+                expected_target = target_min * close[-1] * 1.0 / target_min_close  # should higher than today actual mfi
+                op_strength = (target_n_days[-1] - expected_target) * 1.0 / target_min
                 reason = code + "_B_" + target + "_div"  #
 
                 df.iloc[i - 1, df.columns.get_loc('op')] += ";B"
                 df.iloc[i - 1, df.columns.get_loc('op_rsn')] += ";" + reason
-                df.iloc[i - 1, df.columns.get_loc('op_strength'
-                                                  )] += "," + str(op_strength)
+                df.iloc[i - 1, df.columns.get_loc('op_strength')] += "," + str(op_strength)
 
                 # logging.info("code: " + str(code) + " Date:" + time \
                 #      + " Buy Sig on "+target+"_" + str(target_period) + " divergence")
 
                 if exam_date == time:
-                    df_result.loc[i_result] = [
-                        time, code, 'B', reason, op_strength, close_p
-                    ]
+                    df_result.loc[i_result] = [time, code, 'B', reason, op_strength, close_p]
                     i_result += 1
 
             else:
@@ -2739,8 +2370,7 @@ class Finlib:
 
         return (df_result, i_result, df)
 
-    def create_or_update_ptn_perf_db_record(self, df, dict, code, day_cnt,
-                                            cursor, cnx, db_tbl):
+    def create_or_update_ptn_perf_db_record(self, df, dict, code, day_cnt, cursor, cnx, db_tbl):
 
         for ptn_code in list(dict.keys()):
             ptn_dict = re.match("(.*)_(.*)", ptn_code).group(1)
@@ -2761,12 +2391,9 @@ class Finlib:
             # else:
             #    tbl="pattern_perf"
 
-            select_ptn_perf = ("SELECT * FROM `" + db_tbl +
-                               "` WHERE pattern=\'" + ptn_dict + "\'")
+            select_ptn_perf = ("SELECT * FROM `" + db_tbl + "` WHERE pattern=\'" + ptn_dict + "\'")
             logging.info("select_ptn_perf " + select_ptn_perf)
-            cursor.execute(
-                select_ptn_perf
-            )  # mysql.connector.errors.InterfaceError: 2013: Lost connection to MySQL server during query
+            cursor.execute(select_ptn_perf)  # mysql.connector.errors.InterfaceError: 2013: Lost connection to MySQL server during query
             record = cursor.fetchall()
 
             if (record.__len__() == 0):
@@ -2800,20 +2427,14 @@ class Finlib:
                                          %s,%s,%s,%s,%s,%s,%s,%s,%s, \
                                          %s,%s,%s,%s,%s,%s,%s,%s,%s, \
                                          %s,%s,%s,%s,%s,%s,%s,%s,%s, \
-                                         %s,%s,%s,%s,%s,%s,%s,%s,%s)"                                                                     )
+                                         %s,%s,%s,%s,%s,%s,%s,%s,%s)"                                                                                                                                          )
 
-                tm_list = [
-                    '1', '2', '3', '5', '7', '10', '15', '20', '30', '60',
-                    '120', '240'
-                ]  # RYAN RESUME
+                tm_list = ['1', '2', '3', '5', '7', '10', '15', '20', '30', '60', '120', '240']  # RYAN RESUME
                 tm_data_sql = []
                 for tm in tm_list:
                     tm = str(tm)
 
-                    for j in [
-                            '_mean', '_median', '_min', '_max', '_variance',
-                            '_skewness', '_kurtosis', '_upcnt', '_dncnt'
-                    ]:
+                    for j in ['_mean', '_median', '_min', '_max', '_variance', '_skewness', '_kurtosis', '_upcnt', '_dncnt']:
                         cmd = 'dict[ptn_code][\'' + tm + j + '\']'
                         a = eval(cmd)
 
@@ -2861,23 +2482,12 @@ class Finlib:
                 if h_sell_signal_cnt is None:
                     h_sell_signal_cnt = 0
 
-                logging.info("update(merge) record, " + db_tbl + ", " +
-                             h_pattern)
+                logging.info("update(merge) record, " + db_tbl + ", " + h_pattern)
 
                 # if('XAUUSD_B_talib_CDLSEPARATINGLINES' == h_pattern):#debug
                 #    pass
 
-                st_dict = {
-                    '_mean': 'mea',
-                    '_median': "med",
-                    '_min': 'min',
-                    '_max': 'max',
-                    '_variance': 'var',
-                    '_skewness': 'skw',
-                    '_kurtosis': 'kur',
-                    '_upcnt': 'uc',
-                    '_dncnt': 'dc'
-                }
+                st_dict = {'_mean': 'mea', '_median': "med", '_min': 'min', '_max': 'max', '_variance': 'var', '_skewness': 'skw', '_kurtosis': 'kur', '_upcnt': 'uc', '_dncnt': 'dc'}
 
                 update_ptn_perf = (
                     "UPDATE `" + db_tbl + "`  "
@@ -2914,19 +2524,13 @@ class Finlib:
                     data_ptn_perf['date_e'] = h_date_e
 
                 data_ptn_perf['trading_days'] = day_cnt + h_trading_days
-                data_ptn_perf['buy_signal_cnt'] = h_buy_signal_cnt + dict[
-                    ptn_code]["buy_signal_cnt"]
-                data_ptn_perf['sell_signal_cnt'] = h_sell_signal_cnt + dict[
-                    ptn_code]["sell_signal_cnt"]
+                data_ptn_perf['buy_signal_cnt'] = h_buy_signal_cnt + dict[ptn_code]["buy_signal_cnt"]
+                data_ptn_perf['sell_signal_cnt'] = h_sell_signal_cnt + dict[ptn_code]["sell_signal_cnt"]
 
-                new_ptn_hit_cnt = dict[ptn_code]["buy_signal_cnt"] + dict[
-                    ptn_code]["sell_signal_cnt"]
+                new_ptn_hit_cnt = dict[ptn_code]["buy_signal_cnt"] + dict[ptn_code]["sell_signal_cnt"]
                 his_ptn_hit_cnt = h_buy_signal_cnt + h_sell_signal_cnt
 
-                tm_list = [
-                    '1', '2', '3', '5', '7', '10', '15', '20', '30', '60',
-                    '120', '240'
-                ]  # RYAN RESUME
+                tm_list = ['1', '2', '3', '5', '7', '10', '15', '20', '30', '60', '120', '240']  # RYAN RESUME
                 tm_data_sql = []
                 for tm in tm_list:
                     tm = str(tm)
@@ -2935,12 +2539,10 @@ class Finlib:
                     his_uc = eval('h_' + tm + st_dict['_upcnt'])
                     this_uc = eval('dict[ptn_code][\'' + tm + '_upcnt' + '\']')
 
-                    if str(his_uc) == 'nan' or str(his_uc) == '' or (his_uc is
-                                                                     None):
+                    if str(his_uc) == 'nan' or str(his_uc) == '' or (his_uc is None):
                         his_uc = 0
 
-                    if str(this_uc) == 'nan' or str(this_uc) == '' or (
-                            this_uc is None):
+                    if str(this_uc) == 'nan' or str(this_uc) == '' or (this_uc is None):
                         this_uc = 0
 
                     data_ptn_perf[tm + st_dict['_upcnt']] = his_uc + this_uc
@@ -2949,21 +2551,16 @@ class Finlib:
                     his_dc = eval('h_' + tm + st_dict['_dncnt'])
                     this_dc = eval('dict[ptn_code][\'' + tm + '_dncnt' + '\']')
 
-                    if str(his_dc) == 'nan' or str(his_dc) == '' or (his_dc is
-                                                                     None):
+                    if str(his_dc) == 'nan' or str(his_dc) == '' or (his_dc is None):
                         his_dc = 0
 
-                    if str(this_dc) == 'nan' or str(this_dc) == '' or (
-                            this_dc is None):
+                    if str(this_dc) == 'nan' or str(this_dc) == '' or (this_dc is None):
                         this_dc = 0
 
                     data_ptn_perf[tm + st_dict['_dncnt']] = his_dc + this_dc
 
                     # for j in ['_mean', '_median', '_min', '_max', '_variance', '_skewness', '_kurtosis', '_upcnt','_dncnt']:
-                    for j in [
-                            '_mean', '_median', '_min', '_max', '_variance',
-                            '_skewness', '_kurtosis'
-                    ]:
+                    for j in ['_mean', '_median', '_min', '_max', '_variance', '_skewness', '_kurtosis']:
                         cmd = 'dict[ptn_code][\'' + tm + j + '\']'
 
                         a = eval(cmd)
@@ -2971,18 +2568,14 @@ class Finlib:
                         if str(a) == 'nan' or str(a) == '':
                             a = 0
 
-                        history_value = eval('h_' + tm +
-                                             st_dict[j])  # 'h_1mea'
+                        history_value = eval('h_' + tm + st_dict[j])  # 'h_1mea'
 
                         try:
-                            avg_value = (a * new_ptn_hit_cnt + history_value *
-                                         his_ptn_hit_cnt) * 1.0 / (
-                                             new_ptn_hit_cnt + his_ptn_hit_cnt)
+                            avg_value = (a * new_ptn_hit_cnt + history_value * his_ptn_hit_cnt) * 1.0 / (new_ptn_hit_cnt + his_ptn_hit_cnt)
                         except:
                             logging.info(sys.exc_info()[0])
 
-                        data_ptn_perf[tm + st_dict[
-                            j]] = avg_value  # data_ptn_perf['1mea']=0.00018
+                        data_ptn_perf[tm + st_dict[j]] = avg_value  # data_ptn_perf['1mea']=0.00018
 
                         # tm_data_sql.append(a)
                         # a= str(eval(cmd))
@@ -3024,16 +2617,10 @@ class Finlib:
             allFiles = glob.glob(root_dir + "/*." + file_ext)
 
             for f in allFiles:
-                self._file_verify(f,
-                                  day=day,
-                                  hide_pass=hide_pass,
-                                  print_len=print_len)
+                self._file_verify(f, day=day, hide_pass=hide_pass, print_len=print_len)
 
         else:
-            self._file_verify(file_path,
-                              day=day,
-                              hide_pass=hide_pass,
-                              print_len=print_len)
+            self._file_verify(file_path, day=day, hide_pass=hide_pass, print_len=print_len)
 
     def _file_verify(self, file_path, day=3, hide_pass=False, print_len=True):
         # print(". "+file_path)
@@ -3047,9 +2634,7 @@ class Finlib:
         if print_len and re.match(".*\.csv", file_path):
 
             try:
-                flen = str(
-                    pd.read_csv(file_path, encoding="utf-8",
-                                dtype=str).__len__())
+                flen = str(pd.read_csv(file_path, encoding="utf-8", dtype=str).__len__())
             except:
                 print("exception when reading : " + file_path)
                 print(sys.exc_info())
@@ -3058,14 +2643,11 @@ class Finlib:
 
         string_expected_not_update_or_not = ""
 
-        rem = re.match(".*_(\d{4}_\d)\.csv",
-                       file_path)  # fundamental_peg_2018_4.csv
+        rem = re.match(".*_(\d{4}_\d)\.csv", file_path)  # fundamental_peg_2018_4.csv
         if rem:
             file_content_date = rem.group(1)
-            year = self.get_report_publish_status()[
-                'completed_quarter_year']  # '2018
-            quarter = self.get_report_publish_status()[
-                'completed_quarter_number']  # '3'
+            year = self.get_report_publish_status()['completed_quarter_year']  # '2018
+            quarter = self.get_report_publish_status()['completed_quarter_number']  # '3'
 
             if (file_content_date < year + "_" + quarter):
                 # don't expect the file updated in 3 days
@@ -3078,8 +2660,7 @@ class Finlib:
         if rem:
             file_content_date = rem.group(1)
             # d = self.get_report_publish_status()['completed_year_rpt_date']
-            d = self.get_year_month_quarter(
-            )['fetch_most_recent_report_perid'][0]
+            d = self.get_year_month_quarter()['fetch_most_recent_report_perid'][0]
 
             if (file_content_date < d):
                 # don't expect the file updated in 3 days
@@ -3097,8 +2678,7 @@ class Finlib:
             if hide_pass and string_expected_not_update_or_not == " expected":
                 pass
             else:
-                print("exist T, update F" + string_expected_not_update_or_not +
-                      ", len " + flen + " " + file_path)
+                print("exist T, update F" + string_expected_not_update_or_not + ", len " + flen + " " + file_path)
 
             return ({"exist": True, "update": False})
         else:
@@ -3175,8 +2755,7 @@ class Finlib:
             rtn['completed_half_year_rpt_date'] = str(last_year) + "0630"
             rtn['completed_quarter_date'] = str(last_year) + "0930"
 
-            rtn['completed_quarter_year'] = str(
-                last_year)  # using by t_daily_fundamentals.py
+            rtn['completed_quarter_year'] = str(last_year)  # using by t_daily_fundamentals.py
             rtn['completed_quarter_number'] = "3"
 
             lst.append(tmp['ann_date_1y_before'])
@@ -3202,11 +2781,10 @@ class Finlib:
             rtn['completed_half_year_rpt_date'] = str(last_year) + "0630"
             rtn['completed_quarter_date'] = str(this_year) + "0331"
 
-            rtn['completed_quarter_year'] = str(
-                last_year)  # using by t_daily_fundamentals.py
+            rtn['completed_quarter_year'] = str(last_year)  # using by t_daily_fundamentals.py
             rtn['completed_quarter_number'] = "4"
 
-        elif  m == 5 or m == 6:
+        elif m == 5 or m == 6:
             rtn['year_report'] = 'published'
             rtn['quarter_1_report'] = 'published'
             rtn['half_year_report'] = 'not_start'
@@ -3216,8 +2794,7 @@ class Finlib:
             rtn['completed_half_year_rpt_date'] = str(last_year) + "0630"
             rtn['completed_quarter_date'] = str(this_year) + "0331"
 
-            rtn['completed_quarter_year'] = str(
-                this_year)  # using by t_daily_fundamentals.py
+            rtn['completed_quarter_year'] = str(this_year)  # using by t_daily_fundamentals.py
             rtn['completed_quarter_number'] = "1"
             #rtn['process_fund_or_not'] = False #alway fetch
 
@@ -3238,15 +2815,13 @@ class Finlib:
             if m == 7:
                 rtn['completed_half_year_rpt_date'] = str(last_year) + "0630"
                 rtn['completed_quarter_date'] = str(this_year) + "0331"
-                rtn['completed_quarter_year'] = str(
-                    this_year)  # using by t_daily_fundamentals.py
+                rtn['completed_quarter_year'] = str(this_year)  # using by t_daily_fundamentals.py
                 rtn['completed_quarter_number'] = "1"
 
             elif m == 8:
                 rtn['completed_half_year_rpt_date'] = str(this_year) + "0630"
                 rtn['completed_quarter_date'] = str(this_year) + "0630"
-                rtn['completed_quarter_year'] = str(
-                    this_year)  # using by t_daily_fundamentals.py
+                rtn['completed_quarter_year'] = str(this_year)  # using by t_daily_fundamentals.py
                 rtn['completed_quarter_number'] = "2"  # even not all stocks have Q2 report this time.
 
         elif m == 9:
@@ -3261,12 +2836,9 @@ class Finlib:
             rtn['completed_half_year_rpt_date'] = str(this_year) + "0630"
             rtn['completed_quarter_date'] = str(this_year) + "0630"
 
-            rtn['completed_quarter_year'] = str(
-                this_year)  # using by t_daily_fundamentals.py
+            rtn['completed_quarter_year'] = str(this_year)  # using by t_daily_fundamentals.py
             rtn['completed_quarter_number'] = "2"
             #rtn['process_fund_or_not'] = False  # always fetch.
-
-
 
         elif m == 10:
             # 第三季报在十月份  每年10月1日——10月31日
@@ -3280,8 +2852,7 @@ class Finlib:
             rtn['completed_year_rpt_date'] = str(last_year) + "1231"
             rtn['completed_half_year_rpt_date'] = str(this_year) + "0630"
             rtn['completed_quarter_date'] = str(this_year) + "0630"
-            rtn['completed_quarter_year'] = str(
-                this_year)  # using by t_daily_fundamentals.py
+            rtn['completed_quarter_year'] = str(this_year)  # using by t_daily_fundamentals.py
             rtn['completed_quarter_number'] = "2"
 
         elif m == 11 or m == 12:
@@ -3295,8 +2866,7 @@ class Finlib:
             rtn['completed_year_rpt_date'] = str(last_year) + "1231"
             rtn['completed_half_year_rpt_date'] = str(this_year) + "0630"
             rtn['completed_quarter_date'] = str(this_year) + "0930"
-            rtn['completed_quarter_year'] = str(
-                this_year)  # using by t_daily_fundamentals.py
+            rtn['completed_quarter_year'] = str(this_year)  # using by t_daily_fundamentals.py
             rtn['completed_quarter_number'] = "3"
             #rtn['process_fund_or_not'] = False #aways fetch
 
@@ -3310,7 +2880,7 @@ class Finlib:
         if (os.path.isfile(csv)) and os.stat(csv).st_size >= 10:  # > 10 bytes
             df = pd.read_csv(csv, encoding="utf-8")
         else:
-            logging.error("no such file "+csv)
+            logging.error("no such file " + csv)
             exit()
         return (df)
 
@@ -3320,15 +2890,13 @@ class Finlib:
 
         df_init_len = df.__len__()
 
-        stable_report_perid = self.get_year_month_quarter(
-        )['stable_report_perid']
+        stable_report_perid = self.get_year_month_quarter()['stable_report_perid']
 
         f = "/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/report/step1/rpt_" + stable_report_perid + ".csv"
 
         df_garbage = pd.read_csv(f, converters={'end_date': str})
         df_garbage = df_garbage[['stopProcess', 'ts_code', 'name', 'end_date']]
-        df_garbage = df_garbage[df_garbage['stopProcess'] ==
-                                1].reset_index().drop('index', axis=1)
+        df_garbage = df_garbage[df_garbage['stopProcess'] == 1].reset_index().drop('index', axis=1)
 
         garbage_cnt = df_garbage.__len__()
 
@@ -3354,9 +2922,7 @@ class Finlib:
 
         df = df.reset_index().drop('index', axis=1)
         df_after_len = df.__len__()
-        logging.info(
-            str(df_init_len) + '->' + str(df_after_len) + ". removed " +
-            str(df_init_len - df_after_len) + " garbage stocks.")
+        logging.info(str(df_init_len) + '->' + str(df_after_len) + ". removed " + str(df_init_len - df_after_len) + " garbage stocks.")
         return (df)
 
     # convert daily df to monthly df with resample/reshape
@@ -3439,7 +3005,7 @@ class Finlib:
 
         return (df)
 
-    def regular_df_date_to_ymd(self,df):
+    def regular_df_date_to_ymd(self, df):
         if 'date' not in df.columns:
             logging.fatal("no cloumn date in df")
             exit(0)
@@ -3450,10 +3016,10 @@ class Finlib:
         elif str(df['date'].iloc[0]).count("-") == 0:
             df['date'] = df['date'].apply(lambda _d: str(_d))
         else:
-            logging.fatal("unknown date format "+str(df['date'].iloc[0]))
+            logging.fatal("unknown date format " + str(df['date'].iloc[0]))
             exit(0)
 
-        return(df)
+        return (df)
 
     def zzz_kdj(self, csv_f, market='AG'):
         # https://raw.githubusercontent.com/Abhay64/KDJ-Indicator/master/KDJ_Indicator.py
@@ -3465,14 +3031,7 @@ class Finlib:
         if market == 'AG':
             # df = pd.read_csv('/home/ryan/DATA/DAY_Global/AG/SH600519.csv', converters={'code': str}, header=None, skiprows=1,
             #                          names=['code', 'date', 'o', 'h', 'l', 'c', 'vol', 'amnt', 'tnv'])
-            df = pd.read_csv(csv_f,
-                             converters={'code': str},
-                             header=None,
-                             skiprows=1,
-                             names=[
-                                 'code', 'date', 'o', 'h', 'l', 'c', 'vol',
-                                 'amnt', 'tnv'
-                             ])
+            df = pd.read_csv(csv_f, converters={'code': str}, header=None, skiprows=1, names=['code', 'date', 'o', 'h', 'l', 'c', 'vol', 'amnt', 'tnv'])
         else:
             pass
         '''
@@ -3530,8 +3089,7 @@ class Finlib:
         # KDJ (K line, D line, J line)
         Kvalue = []
         for x in range(kperiods, array_close.size):
-            k = ((array_close[x] - array_lowest[x - kperiods]) * 100 /
-                 (array_highest[x - kperiods] - array_lowest[x - kperiods]))
+            k = ((array_close[x] - array_lowest[x - kperiods]) * 100 / (array_highest[x - kperiods] - array_lowest[x - kperiods]))
             Kvalue.append(k)
         # print(len(Kvalue))
         # print(Kvalue)
@@ -3572,17 +3130,13 @@ class Finlib:
 
     def price_hit_cnt(self, df, price, cri_hit=0.01):
 
-        h_cnt = df.loc[(df['high'] <= (1 + cri_hit) * price)
-                       & (df['high'] >= (1 - cri_hit) * price)].__len__()
+        h_cnt = df.loc[(df['high'] <= (1 + cri_hit) * price) & (df['high'] >= (1 - cri_hit) * price)].__len__()
 
-        l_cnt = df.loc[(df['low'] <= (1 + cri_hit) * price)
-                       & (df['low'] >= (1 - cri_hit) * price)].__len__()
+        l_cnt = df.loc[(df['low'] <= (1 + cri_hit) * price) & (df['low'] >= (1 - cri_hit) * price)].__len__()
 
-        o_cnt = df.loc[(df['open'] <= (1 + cri_hit) * price)
-                       & (df['open'] >= (1 - cri_hit) * price)].__len__()
+        o_cnt = df.loc[(df['open'] <= (1 + cri_hit) * price) & (df['open'] >= (1 - cri_hit) * price)].__len__()
 
-        c_cnt = df.loc[(df['close'] <= (1 + cri_hit) * price)
-                       & (df['close'] >= (1 - cri_hit) * price)].__len__()
+        c_cnt = df.loc[(df['close'] <= (1 + cri_hit) * price) & (df['close'] >= (1 - cri_hit) * price)].__len__()
 
         # debug. The low,open,high will not show on the plot
         # print(df.loc[(df['close'] <= (1+cri_hit) * price) & ( df['close'] >= (1-cri_hit) * price) ])
@@ -3688,12 +3242,9 @@ class Finlib:
         rtn = {
             "hit": hit,  # True of False
             "closest": closest,  # closest taget Fibocinno number
-            "current_hit_cnt":
-            current_hit_cnt,  # how many times this price was hit by OHLC.
+            "current_hit_cnt": current_hit_cnt,  # how many times this price was hit by OHLC.
             "pri_cur": cur_price,
-            "per_cur": round(
-                cur_percent, 2
-            ),  # current percent in Fibo, if hit, 0 < per_cur -closet  < cri_percent
+            "per_cur": round(cur_percent, 2),  # current percent in Fibo, if hit, 0 < per_cur -closet  < cri_percent
             "p_max": max,
             "p_min": min,
             "date_max": np.max(x_axis),
@@ -3725,7 +3276,7 @@ class Finlib:
         return (rtn)
 
     def get_stock_data_info(self, market, code):
-        rtn = {'valid':False, 'updated':False, 'csv':None}
+        rtn = {'valid': False, 'updated': False, 'csv': None}
         code = str(code)
 
         data_base = '/home/ryan/DATA/DAY_Global'
@@ -3734,12 +3285,11 @@ class Finlib:
 
         date_col_name = 'date'
 
-
         if market == 'CN':
             data_csv = data_base + "/AG/" + code + ".csv"
-        elif market=="CN_INDEX":
+        elif market == "CN_INDEX":
             data_csv = data_base + "/AG_INDEX/" + code + ".csv"
-            date_col_name='trade_date' #19901219
+            date_col_name = 'trade_date'  #19901219
         elif market == 'US':
             data_csv = data_base + "/" + market + "/" + code + ".csv"
             date_col_name = 'datetime'
@@ -3750,18 +3300,18 @@ class Finlib:
             last_trading_day = self.get_last_trading_day_us()
         elif market == 'HK':
             data_csv = data_base + "/HK/" + code + ".csv"
-            date_col_name='datetime'
+            date_col_name = 'datetime'
 
         if not os.path.isfile(data_csv):
             logging.warning("warn: data file doesn't exist. " + data_csv)
-            return(rtn)
+            return (rtn)
         else:
-            rtn['exist']=True
-            rtn['csv']=data_csv
+            rtn['exist'] = True
+            rtn['csv'] = data_csv
 
         if market == 'CN':
             date_col_name = 'date'
-            df = pd.read_csv(data_csv,  names=['code', date_col_name, 'o', 'h', 'l', 'c', 'vol', 'amt', 'exchage_rate'])
+            df = pd.read_csv(data_csv, names=['code', date_col_name, 'o', 'h', 'l', 'c', 'vol', 'amt', 'exchage_rate'])
         else:
             df = pd.read_csv(data_csv)
 
@@ -3773,13 +3323,10 @@ class Finlib:
         if last_day_in_csv == last_trading_day_Ymd:
             rtn['updated'] = True
         else:
-            logging.warning("out-of-date, expected date "
-                            +str(last_trading_day_Y_m_d)+". date in csv "
-                            +str(last_day_in_csv)+" "+data_csv)
+            logging.warning("out-of-date, expected date " + str(last_trading_day_Y_m_d) + ". date in csv " + str(last_day_in_csv) + " " + data_csv)
 
         pass
-        return(rtn)
-
+        return (rtn)
 
     '''
     rst['CN_INDEX']
@@ -3799,25 +3346,24 @@ class Finlib:
             file.close()
 
         for market in cfg.keys():
-            rst[market]=pd.DataFrame(columns=['code','name'])
+            rst[market] = pd.DataFrame(columns=['code', 'name'])
 
             for code_name_dict in cfg[market]:
                 for code in code_name_dict.keys():
-                    rst[market] = rst[market].append({'code':code, 'name':code_name_dict[code]},ignore_index =True)
-        return(rst)
-
+                    rst[market] = rst[market].append({'code': code, 'name': code_name_dict[code]}, ignore_index=True)
+        return (rst)
 
     #convert YYYY-MM-DD to YYYYMMDD
-    def regular_date_to_ymd(self,dateStr):
+    def regular_date_to_ymd(self, dateStr):
         if (dateStr.count("-") == 2):
             dateStr = datetime.strptime(dateStr, '%Y-%m-%d').strftime('%Y%m%d')
-        elif(dateStr.count("-") != 0):
-            logging.fatal("unknow date format, "+str(dateStr))
+        elif (dateStr.count("-") != 0):
+            logging.fatal("unknow date format, " + str(dateStr))
             exit(0)
-        return(dateStr)
+        return (dateStr)
 
     #regular df to format: code, name, open,high,low,close,volume
-    def regular_read_csv_to_stdard_df(self,data_csv):
+    def regular_read_csv_to_stdard_df(self, data_csv):
         base_dir = "/home/ryan/DATA/DAY_Global"
         data_csv = str(data_csv)
         rtn_df = pd.DataFrame()
@@ -3826,38 +3372,27 @@ class Finlib:
         dir = os.path.dirname(data_csv_fp)
 
         if not os.path.isfile(data_csv_fp):
-            logging.fatal("file not exist. "+data_csv_fp)
+            logging.fatal("file not exist. " + data_csv_fp)
             exit(0)
 
-
-        if dir == base_dir+"/AG":
-            rtn_df = pd.read_csv(data_csv_fp,
-                             converters={'code': str},
-                             header=None,
-                             skiprows=1,
-                             names=[
-                                 'code', 'date', 'open', 'high', 'low', 'close',
-                                 'volume', 'amount', 'tnv'
-                             ])
-        elif dir in [base_dir+"/stooq/US_INDEX", base_dir+"/stooq/US"]:
+        if dir == base_dir + "/AG":
+            rtn_df = pd.read_csv(data_csv_fp, converters={'code': str}, header=None, skiprows=1, names=['code', 'date', 'open', 'high', 'low', 'close', 'volume', 'amount', 'tnv'])
+        elif dir in [base_dir + "/stooq/US_INDEX", base_dir + "/stooq/US"]:
             #DOW.csv  SP500.csv, AAPL.csv
-            rtn_df = pd.read_csv(data_csv_fp,converters={'code': str}, encoding="utf-8")
-        elif dir == base_dir+"/US":
-            rtn_df = pd.read_csv(data_csv_fp,converters={'code': str}, encoding="utf-8")
-        elif dir == base_dir+"/HK":
-            rtn_df = pd.read_csv(data_csv_fp, converters={'code': str},encoding="utf-8")
-        elif dir == base_dir+"/AG_INDEX":
+            rtn_df = pd.read_csv(data_csv_fp, converters={'code': str}, encoding="utf-8")
+        elif dir == base_dir + "/US":
+            rtn_df = pd.read_csv(data_csv_fp, converters={'code': str}, encoding="utf-8")
+        elif dir == base_dir + "/HK":
+            rtn_df = pd.read_csv(data_csv_fp, converters={'code': str}, encoding="utf-8")
+        elif dir == base_dir + "/AG_INDEX":
             rtn_df = pd.read_csv(data_csv_fp,
-                             skiprows=1,
-                             header=None,
-                             names=[
-                                 'code', 'date', 'close', 'open', 'high',
-                                 'low', 'pre_close', 'change', 'pct_chg',
-                                 'vol', 'amount'
-                             ],
-                             converters={'code': str},  encoding="utf-8")
+                                 skiprows=1,
+                                 header=None,
+                                 names=['code', 'date', 'close', 'open', 'high', 'low', 'pre_close', 'change', 'pct_chg', 'vol', 'amount'],
+                                 converters={'code': str},
+                                 encoding="utf-8")
         else:
-            logging.fatal("unknown path file "+data_csv_fp)
+            logging.fatal("unknown path file " + data_csv_fp)
             exit(0)
 
         rtn_df = self.regular_column_names(rtn_df)
@@ -3865,16 +3400,16 @@ class Finlib:
 
         rtn_df['code'] = rtn_df['code'].apply(lambda _d: str(_d).upper())
 
-        return(rtn_df)
+        return (rtn_df)
 
     def pprint(self, df):
         print(tabulate.tabulate(df, headers='keys', tablefmt='psql'))
 
-    def get_stock_configuration(self,selected,stock_global):
+    def get_stock_configuration(self, selected, stock_global):
         rtn = {
-            "stock_list":None,
-            "csv_dir":None,
-            "out_dir":None,
+            "stock_list": None,
+            "csv_dir": None,
+            "out_dir": None,
         }
 
         if selected:
@@ -3886,7 +3421,7 @@ class Finlib:
                 csv_dir = "/home/ryan/DATA/DAY_Global/AG_INDEX"
                 stock_list = selected_stocks['CN_INDEX']
             elif stock_global == 'US_INDEX':
-                csv_dir = "/home/ryan/DATA/DAY_Global/US_INDEX"
+                csv_dir = "/home/ryan/DATA/DAY_Global/stooq/US_INDEX"
                 stock_list = selected_stocks['US_INDEX']
             elif stock_global == "HK_INDEX":
                 csv_dir = "/home/ryan/DATA/DAY_Global/HK_INDEX"
@@ -3900,7 +3435,7 @@ class Finlib:
                 csv_dir = "/home/ryan/DATA/DAY_Global/HK"
                 stock_list = selected_stocks['HK']
             elif stock_global == 'US':
-                csv_dir = "/home/ryan/DATA/DAY_Global/US"
+                csv_dir = "/home/ryan/DATA/DAY_Global/stooq/US"
                 stock_list = selected_stocks['US']
         else:  # selected == False
             if stock_global == 'AG':
@@ -3918,23 +3453,22 @@ class Finlib:
                 csv_dir = "/home/ryan/DATA/DAY_Global/US"
                 out_dir = "/home/ryan/DATA/result/us"
                 df_instrument = self.get_instrument()
-                stock_list = df_instrument.query("market==74 and category==13").reset_index().drop('index',axis=1)  # 11278
-            elif stock_global == 'MG': #41,11,美股知名公司,MG
+                stock_list = df_instrument.query("market==74 and category==13").reset_index().drop('index', axis=1)  # 11278
+            elif stock_global == 'MG':  #41,11,美股知名公司,MG
                 csv_dir = "/home/ryan/DATA/DAY_Global/MG"
                 out_dir = "/home/ryan/DATA/result/mg"
                 df_instrument = self.get_instrument()
-                stock_list = df_instrument.query("market==41 and category==11").reset_index().drop('index',axis=1)  # 289
-            elif stock_global == 'CH': #40,11,中国概念股,CH
+                stock_list = df_instrument.query("market==41 and category==11").reset_index().drop('index', axis=1)  # 289
+            elif stock_global == 'CH':  #40,11,中国概念股,CH
                 csv_dir = "/home/ryan/DATA/DAY_Global/CH"
                 out_dir = "/home/ryan/DATA/result/ch"
                 df_instrument = self.get_instrument()
-                stock_list = df_instrument.query("market==40 and category==11").reset_index().drop('index',axis=1)  # 78
+                stock_list = df_instrument.query("market==40 and category==11").reset_index().drop('index', axis=1)  # 78
 
         rtn = {
-            "stock_list":stock_list,
-            "csv_dir":csv_dir,
-            "out_dir":out_dir,
+            "stock_list": stock_list,
+            "csv_dir": csv_dir,
+            "out_dir": out_dir,
         }
 
-
-        return(rtn)
+        return (rtn)

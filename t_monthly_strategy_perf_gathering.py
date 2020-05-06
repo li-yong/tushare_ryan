@@ -25,9 +25,7 @@ from scipy import stats
 import sys
 
 import logging
-logging.basicConfig(format='%(asctime)s %(message)s',
-                    datefmt='%m_%d %H:%M:%S',
-                    level=logging.DEBUG)
+logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m_%d %H:%M:%S', level=logging.DEBUG)
 
 #This script read the csv files came from 't_daily_pattern_Hit_price_Volume.py (debug=false, max_exam_day = 220000)
 #     Then calculate the performance of each straegy, include price change % after 2days, 5, 10, 20, 60, 120
@@ -44,46 +42,23 @@ logging.basicConfig(format='%(asctime)s %(message)s',
 
 parser = OptionParser()
 
-parser.add_option(
-    "-s",
-    "--single_process",
-    action="store_true",
-    dest="single_process",
-    default=False,
-    help="using single process, otherwise using multiple process")
+parser.add_option("-s", "--single_process", action="store_true", dest="single_process", default=False, help="using single process, otherwise using multiple process")
 
-parser.add_option("-d",
-                  "--debug",
-                  action="store_true",
-                  dest="debug",
-                  default=False,
-                  help="debug enabled, use in development purpose")
+parser.add_option("-d", "--debug", action="store_true", dest="debug", default=False, help="debug enabled, use in development purpose")
 
-parser.add_option(
-    "-t",
-    "--truncate_tbl",
-    action="store_true",
-    dest="truncate_tbl",
-    default=False,
-    help="trucate db table pattern_perf_(debug/forex) before insert.")
+parser.add_option("-t", "--truncate_tbl", action="store_true", dest="truncate_tbl", default=False, help="trucate db table pattern_perf_(debug/forex) before insert.")
 
-parser.add_option("-n",
-                  "--skip_backup_before_execute",
-                  action="store_true",
-                  dest="skip_backup_before_execute",
-                  default=False,
-                  help="Skip backup table before execute")
+parser.add_option("-n", "--skip_backup_before_execute", action="store_true", dest="skip_backup_before_execute", default=False, help="Skip backup table before execute")
 
 #parser.add_option("-l", "--to_table", dest="to_table", default='zzz_pattern_perf_debug',
 #                  help="save to DB table.")
 
-parser.add_option(
-    "-b",
-    "--db_tbl",
-    dest="db_tbl",
-    default='zzz_pattern_perf_debug',
-    type="str",
-    help="insert to which table in DB, default is zzz_pattern_perf_debug.\n \
+parser.add_option("-b",
+                  "--db_tbl",
+                  dest="db_tbl",
+                  default='zzz_pattern_perf_debug',
+                  type="str",
+                  help="insert to which table in DB, default is zzz_pattern_perf_debug.\n \
                    pattern_perf_forex, pattern_perf ")
 
 (options, args) = parser.parse_args()
@@ -102,11 +77,8 @@ filestamp = time.strftime('%Y-%m-%d-%I:%M')
 
 if not skip_backup_before_execute:
     print("backing up db table: " + db_tbl)
-    os.popen("mysqldump -u %s -p%s -h %s  -e --opt -c %s %s| gzip -c > %s.gz" %
-             (user, password, host, database, db_tbl,
-              database + "_" + db_tbl + "_" + filestamp))
-    print("table %s backup to %s " %
-          (db_tbl, database + "_" + db_tbl + "_" + filestamp + ".gz"))
+    os.popen("mysqldump -u %s -p%s -h %s  -e --opt -c %s %s| gzip -c > %s.gz" % (user, password, host, database, db_tbl, database + "_" + db_tbl + "_" + filestamp))
+    print("table %s backup to %s " % (db_tbl, database + "_" + db_tbl + "_" + filestamp + ".gz"))
 else:
     print("skip databasae table backup, " + db_tbl)
 
@@ -125,20 +97,15 @@ toal_run = 0
 def updatePtnPerf(i, c, op, df, ptn, code):
     global dict
 
-    code_in_ptn = re.match('(.*)(_[s|b]_)(.*)', ptn,
-                           re.IGNORECASE).group(1)  # EUR_USD_S_talib_xxx
-    b_or_s_in_ptn = re.match('(.*)(_[s|b]_)(.*)', ptn,
-                             re.IGNORECASE).group(2)  # EUR_USD_S_talib_xxx
-    ptn_in_ptn = re.match('(.*)(_[s|b]_)(.*)', ptn,
-                          re.IGNORECASE).group(3)  # EUR_USD_S_talib_xxx
+    code_in_ptn = re.match('(.*)(_[s|b]_)(.*)', ptn, re.IGNORECASE).group(1)  # EUR_USD_S_talib_xxx
+    b_or_s_in_ptn = re.match('(.*)(_[s|b]_)(.*)', ptn, re.IGNORECASE).group(2)  # EUR_USD_S_talib_xxx
+    ptn_in_ptn = re.match('(.*)(_[s|b]_)(.*)', ptn, re.IGNORECASE).group(3)  # EUR_USD_S_talib_xxx
 
     code_in_ptn = re.sub("_", '', code_in_ptn)
 
     ptn = code_in_ptn + b_or_s_in_ptn + ptn_in_ptn  # it is not EURUSD_S_talib_xxx
 
-    tm_list = [
-        '1', '2', '3', '5', '7', '10', '15', '20', '30', '60', '120', '240'
-    ]
+    tm_list = ['1', '2', '3', '5', '7', '10', '15', '20', '30', '60', '120', '240']
 
     for tm in tm_list:  #time window, of the csv input file.
         tm = str(tm)
@@ -174,9 +141,7 @@ def updatePtnPerf(i, c, op, df, ptn, code):
     if re.match("S", op, re.IGNORECASE):
         dict[ptn + "_" + code]["sell_signal_cnt"] += 1
 
-    tm_list = [
-        '1', '2', '3', '5', '7', '10', '15', '20', '30', '60', '120', '240'
-    ]
+    tm_list = ['1', '2', '3', '5', '7', '10', '15', '20', '30', '60', '120', '240']
 
     for tm in tm_list:  #time window, of the csv input file.
         tm = str(tm)
@@ -194,22 +159,14 @@ def updatePtnPerf(i, c, op, df, ptn, code):
             dict[ptn + "_" + code][tm + "_median"] = 0
         else:
             b = stats.describe(a)
-            dict[ptn + "_" + code][tm + "_nobs"] = round(
-                b.nobs, 8)  #2_nobs -> 2nob.  var name --> db column name
-            dict[ptn + "_" + code][tm + "_min"] = round(b.minmax[0],
-                                                        8)  #2_min ->2min
-            dict[ptn + "_" + code][tm + "_max"] = round(b.minmax[1],
-                                                        8)  #2_max ->2max
-            dict[ptn + "_" + code][tm + "_mean"] = round(b.mean,
-                                                         8)  #2_mean ->2mea
-            dict[ptn + "_" + code][tm + "_variance"] = round(
-                b.variance, 8)  #2_variance --> 2var
-            dict[ptn + "_" + code][tm + "_skewness"] = round(
-                b.skewness, 8)  #2_skewness --> 2ske
-            dict[ptn + "_" + code][tm + "_kurtosis"] = round(
-                b.kurtosis, 8)  #2_kurtosis --> 2kur
-            dict[ptn + "_" + code][tm + "_median"] = round(
-                np.median(np.array(a)), 8)  #2_median --> 2_med
+            dict[ptn + "_" + code][tm + "_nobs"] = round(b.nobs, 8)  #2_nobs -> 2nob.  var name --> db column name
+            dict[ptn + "_" + code][tm + "_min"] = round(b.minmax[0], 8)  #2_min ->2min
+            dict[ptn + "_" + code][tm + "_max"] = round(b.minmax[1], 8)  #2_max ->2max
+            dict[ptn + "_" + code][tm + "_mean"] = round(b.mean, 8)  #2_mean ->2mea
+            dict[ptn + "_" + code][tm + "_variance"] = round(b.variance, 8)  #2_variance --> 2var
+            dict[ptn + "_" + code][tm + "_skewness"] = round(b.skewness, 8)  #2_skewness --> 2ske
+            dict[ptn + "_" + code][tm + "_kurtosis"] = round(b.kurtosis, 8)  #2_kurtosis --> 2kur
+            dict[ptn + "_" + code][tm + "_median"] = round(np.median(np.array(a)), 8)  #2_median --> 2_med
 
 
 def backtest(array):
@@ -219,8 +176,7 @@ def backtest(array):
     global progress_run
     progress_run += 1
 
-    print("Work on file " + inputF + " " + str(progress_run) + "/" +
-          str(toal_run))
+    print("Work on file " + inputF + " " + str(progress_run) + "/" + str(toal_run))
 
     #df = pd.read_csv(inputF, skiprows=1, header=None, names=['date','code','op','op_rsn','op_strength', 'c'])
     df = pd.read_csv(inputF)
@@ -245,9 +201,7 @@ def backtest(array):
     avg_lost = 0
 
     code = df.iloc[0, df.columns.get_loc('code')]
-    code = re.sub(
-        "_", '', code
-    )  #change EUR_USD to EURUSD. TODO, need change it from the oanda get source.
+    code = re.sub("_", '', code)  #change EUR_USD to EURUSD. TODO, need change it from the oanda get source.
 
     # init all the pattern dict
     for i in range(df.__len__()):
@@ -266,25 +220,17 @@ def backtest(array):
                 elif ptn == 'pv_ignore':
                     continue
 
-                code_in_ptn = re.match('(.*)(_[s|b]_)(.*)', ptn,
-                                       re.IGNORECASE).group(1)  #'EURUSD'
-                b_or_s_in_ptn = re.match('(.*)(_[s|b]_)(.*)', ptn,
-                                         re.IGNORECASE).group(2)  #'_B_'
-                ptn_in_ptn = re.match('(.*)(_[s|b]_)(.*)', ptn,
-                                      re.IGNORECASE).group(
-                                          3)  #talib_CDLBELTHOLD
+                code_in_ptn = re.match('(.*)(_[s|b]_)(.*)', ptn, re.IGNORECASE).group(1)  #'EURUSD'
+                b_or_s_in_ptn = re.match('(.*)(_[s|b]_)(.*)', ptn, re.IGNORECASE).group(2)  #'_B_'
+                ptn_in_ptn = re.match('(.*)(_[s|b]_)(.*)', ptn, re.IGNORECASE).group(3)  #talib_CDLBELTHOLD
 
                 code_in_ptn = re.sub("_", '', code_in_ptn)
 
                 ptn = code_in_ptn + b_or_s_in_ptn + ptn_in_ptn  # EURUSD_S_talib_xxx.  e.g, 'EURUSD_B_talib_CDLBELTHOLD'
 
-                dict[ptn + "_" + code] = {
-                }  #dict['EURUSD_B_talib_CDLBELTHOLD_EURUSD']
+                dict[ptn + "_" + code] = {}  #dict['EURUSD_B_talib_CDLBELTHOLD_EURUSD']
 
-                tm_list = [
-                    '1', '2', '3', '5', '7', '10', '15', '20', '30', '60',
-                    '120', '240'
-                ]
+                tm_list = ['1', '2', '3', '5', '7', '10', '15', '20', '30', '60', '120', '240']
                 for tm in tm_list:
                     tm = str(tm)
                     dict[ptn + "_" + code]["c_" + tm + "_arr"] = []  #c_2_arr
@@ -329,18 +275,14 @@ def backtest(array):
     code = df.iloc[0, df.columns.get_loc('code')]
     code = re.sub("_", '', code)
 
-    cnx = mysql.connector.connect(user='root',
-                                  password='admin888.@_@',
-                                  host='127.0.0.1',
-                                  database='ryan_stock_db')
+    cnx = mysql.connector.connect(user='root', password='admin888.@_@', host='127.0.0.1', database='ryan_stock_db')
 
     cnx.set_converter_class(finlib.NumpyMySQLConverter)
 
     cursor = cnx.cursor()
 
     #update/create new records in dict into db.
-    finlib.Finlib().create_or_update_ptn_perf_db_record(
-        df, dict, code, day_cnt, cursor, cnx, db_tbl)
+    finlib.Finlib().create_or_update_ptn_perf_db_record(df, dict, code, day_cnt, cursor, cnx, db_tbl)
 
     cursor.close()
     cnx.close()
@@ -355,10 +297,7 @@ if __name__ == '__main__':
         sql = "TRUNCATE TABLE " + db_tbl
         print(sql)
 
-        cnx = mysql.connector.connect(user='root',
-                                      password='admin888.@_@',
-                                      host='127.0.0.1',
-                                      database='ryan_stock_db')
+        cnx = mysql.connector.connect(user='root', password='admin888.@_@', host='127.0.0.1', database='ryan_stock_db')
 
         cnx.set_converter_class(finlib.NumpyMySQLConverter)
 

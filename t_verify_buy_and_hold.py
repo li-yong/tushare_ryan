@@ -25,12 +25,7 @@ trade_cost = 0.005  #buy lost and sell lost, paid to the exchange each way.
 
 def calc_daily_incease(input_csv, bv_csv):
 
-    df = pd.read_csv(
-        input_csv,
-        skiprows=1,
-        converters={'code': str},
-        header=None,
-        names=['code', 'date', 'o', 'h', 'l', 'c', 'vol', 'amnt', 'tnv'])
+    df = pd.read_csv(input_csv, skiprows=1, converters={'code': str}, header=None, names=['code', 'date', 'o', 'h', 'l', 'c', 'vol', 'amnt', 'tnv'])
 
     df = df[df['c'] > 0]
 
@@ -50,8 +45,7 @@ def calc_daily_incease(input_csv, bv_csv):
         increase = 100 * (this_row['c'] - last_row['c']) / last_row['c']
         increase = round(increase, 8)
         df.iloc[i, df.columns.get_loc('increase')] = increase
-        print("increase of the day " + str(this_row['date']) + " " +
-              str(increase))
+        print("increase of the day " + str(this_row['date']) + " " + str(increase))
         pass
 
     df.to_csv(bv_csv, encoding='UTF-8', index=False)
@@ -60,13 +54,7 @@ def calc_daily_incease(input_csv, bv_csv):
     return (df)
 
 
-def verify(bv_csv,
-           op,
-           start_date=None,
-           end_date=None,
-           top_N=5,
-           days_after_signal_to_buy=1,
-           buy_and_hold_days=10):
+def verify(bv_csv, op, start_date=None, end_date=None, top_N=5, days_after_signal_to_buy=1, buy_and_hold_days=10):
     # days_after_signal_to_buy and buy_and_hold_days is used with catch*, not miss*.
     # e.g. with op CATCH_MAX_DECREASE, Buy after day of a big drop, then hold two week and sell.
 
@@ -77,17 +65,7 @@ def verify(bv_csv,
     stock_count = 0.0
 
     if os.path.isfile(bv_csv):
-        df = pd.read_csv(bv_csv,
-                         skiprows=1,
-                         converters={
-                             'c': float,
-                             'date': str
-                         },
-                         header=None,
-                         names=[
-                             'increase', 'code', 'date', 'o', 'h', 'l', 'c',
-                             'vol', 'amt', 'tnv'
-                         ])
+        df = pd.read_csv(bv_csv, skiprows=1, converters={'c': float, 'date': str}, header=None, names=['increase', 'code', 'date', 'o', 'h', 'l', 'c', 'vol', 'amt', 'tnv'])
     else:
         print('skip the verify of a stock, file not exist ' + bv_csv)
         return (None, None, None, None, None)
@@ -120,19 +98,13 @@ def verify(bv_csv,
     df_sorted = df_sorted[df_sorted['c'] > 0]
 
     df_top_n_increase = df_sorted[:top_N]
-    df_top_n_increase = df_top_n_increase.sort_values('date',
-                                                      ascending=True,
-                                                      inplace=False)
+    df_top_n_increase = df_top_n_increase.sort_values('date', ascending=True, inplace=False)
 
     df_top_n_decrease = df_sorted[0 - top_N:]
-    df_top_n_decrease = df_top_n_decrease.sort_values('date',
-                                                      ascending=True,
-                                                      inplace=False)
+    df_top_n_decrease = df_top_n_decrease.sort_values('date', ascending=True, inplace=False)
 
     df_top_n_indecrease = df_top_n_increase.append(df_top_n_decrease)
-    df_top_n_indecrease = df_top_n_indecrease.sort_values('date',
-                                                          ascending=True,
-                                                          inplace=False)
+    df_top_n_indecrease = df_top_n_indecrease.sort_values('date', ascending=True, inplace=False)
 
     ######################
     # MISS Max Increase
@@ -149,9 +121,7 @@ def verify(bv_csv,
             if index_in_df + 1 < df.__len__():  #not the latest row.
                 the_df_aft = df.iloc[index_in_df + 1]
 
-            sys.stdout.write(the_df['code'] + " " + the_df['date'] + " " +
-                             str(round(the_df['c'], 2)) + " IndayIncrease: " +
-                             str(round(the_df['increase'], 2)) + ".  ")
+            sys.stdout.write(the_df['code'] + " " + the_df['date'] + " " + str(round(the_df['c'], 2)) + " IndayIncrease: " + str(round(the_df['increase'], 2)) + ".  ")
 
             #sell at the_df_pre
             if stock_count > 0:
@@ -160,18 +130,14 @@ def verify(bv_csv,
                 stock_count = 0.0
                 profit = (balance - balance_init) / balance_init
                 profit = round(profit, 2)
-                sys.stdout.write("sell at " + str(the_df_pre['date']) + " " +
-                                 str(the_df_pre['c']) + ". profit " +
-                                 str(profit) + ". ")
+                sys.stdout.write("sell at " + str(the_df_pre['date']) + " " + str(the_df_pre['c']) + ". profit " + str(profit) + ". ")
 
-            if balance > 0 and index_in_df + 1 < df.__len__(
-            ):  #not the latest row.
+            if balance > 0 and index_in_df + 1 < df.__len__():  #not the latest row.
                 #buy at the_df_aft
                 balance = balance * (1 - trade_cost)
                 stock_count = balance / the_df_aft['c']
                 balance = 0.0
-                print("Buy at " + the_df_aft['date'] + " " +
-                      str(the_df_aft['c']))
+                print("Buy at " + the_df_aft['date'] + " " + str(the_df_aft['c']))
 
     elif op == "MISS_MAX_DECREASE":
         ######################
@@ -188,9 +154,7 @@ def verify(bv_csv,
             if index_in_df + 1 < df.__len__():  #not the latest row.
                 the_df_aft = df.iloc[index_in_df + 1]
 
-            sys.stdout.write(the_df['code'] + " " + the_df['date'] + " " +
-                             str(round(the_df['c'], 2)) + " IndayIncrease: " +
-                             str(round(the_df['increase'], 2)) + ".  ")
+            sys.stdout.write(the_df['code'] + " " + the_df['date'] + " " + str(round(the_df['c'], 2)) + " IndayIncrease: " + str(round(the_df['increase'], 2)) + ".  ")
 
             #sell at the_df_pre
             if stock_count > 0:
@@ -199,18 +163,14 @@ def verify(bv_csv,
                 stock_count = 0.0
                 profit = (balance - balance_init) / balance_init
                 profit = round(profit, 2)
-                sys.stdout.write("sell at " + str(the_df_pre['date']) + " " +
-                                 str(the_df_pre['c']) + ". profit " +
-                                 str(profit) + ". ")
+                sys.stdout.write("sell at " + str(the_df_pre['date']) + " " + str(the_df_pre['c']) + ". profit " + str(profit) + ". ")
 
-            if balance > 0 and index_in_df + 1 < df.__len__(
-            ):  #not the latest row.
+            if balance > 0 and index_in_df + 1 < df.__len__():  #not the latest row.
                 #buy at the_df_aft
                 balance = balance * (1 - trade_cost)
                 stock_count = balance / the_df_aft['c']
                 balance = 0.0
-                print("Buy at " + the_df_aft['date'] + " " +
-                      str(the_df_aft['c']))
+                print("Buy at " + the_df_aft['date'] + " " + str(the_df_aft['c']))
 
     elif op == "MISS_MAX_INDECREASE":
         ######################
@@ -227,9 +187,7 @@ def verify(bv_csv,
             if index_in_df + 1 < df.__len__():  #not the latest row.
                 the_df_aft = df.iloc[index_in_df + 1]
 
-            sys.stdout.write(the_df['code'] + " " + the_df['date'] + " " +
-                             str(round(the_df['c'], 2)) + " IndayIncrease: " +
-                             str(round(the_df['increase'], 2)) + ".  ")
+            sys.stdout.write(the_df['code'] + " " + the_df['date'] + " " + str(round(the_df['c'], 2)) + " IndayIncrease: " + str(round(the_df['increase'], 2)) + ".  ")
 
             #sell at the_df_pre
             if stock_count > 0:
@@ -238,18 +196,14 @@ def verify(bv_csv,
                 stock_count = 0.0
                 profit = (balance - balance_init) / balance_init
                 profit = round(profit, 2)
-                sys.stdout.write("sell at " + str(the_df_pre['date']) + " " +
-                                 str(the_df_pre['c']) + ". profit " +
-                                 str(profit) + ". ")
+                sys.stdout.write("sell at " + str(the_df_pre['date']) + " " + str(the_df_pre['c']) + ". profit " + str(profit) + ". ")
 
-            if balance > 0 and index_in_df + 1 < df.__len__(
-            ):  #not the latest row.
+            if balance > 0 and index_in_df + 1 < df.__len__():  #not the latest row.
                 #buy at the_df_aft
                 balance = balance * (1 - trade_cost)
                 stock_count = balance / the_df_aft['c']
                 balance = 0.0
-                print("Buy at " + the_df_aft['date'] + " " +
-                      str(the_df_aft['c']))
+                print("Buy at " + the_df_aft['date'] + " " + str(the_df_aft['c']))
 
     elif op == "CATCH_MAX_INCREASE":
         ######################
@@ -269,30 +223,24 @@ def verify(bv_csv,
                 #the_df_aft = df.iloc[index_in_df + 1 ]
                 the_df_aft = df.iloc[index_in_df + buy_and_hold_days]
 
-            sys.stdout.write(the_df['code'] + " " + the_df['date'] + " " +
-                             str(round(the_df['c'], 2)) + " IndayIncrease: " +
-                             str(round(the_df['increase'], 2)) + ".  ")
+            sys.stdout.write(the_df['code'] + " " + the_df['date'] + " " + str(round(the_df['c'], 2)) + " IndayIncrease: " + str(round(the_df['increase'], 2)) + ".  ")
 
             #Buy at the_df_pre
             if balance > 0:
-                sys.stdout.write("buy at " + str(the_df_pre['date']) + " " +
-                                 str(the_df_pre['c']) + ". ")
+                sys.stdout.write("buy at " + str(the_df_pre['date']) + " " + str(the_df_pre['c']) + ". ")
                 balance = balance * (1 - trade_cost)
                 stock_count = balance / the_df_pre['c']
                 balance = 0
 
             #Sell at the df_aft
-            if stock_count > 0 and index_in_df + 1 < df.__len__(
-            ):  #not the latest row.
+            if stock_count > 0 and index_in_df + 1 < df.__len__():  #not the latest row.
                 balance = stock_count * the_df_aft['c']  # using o or c?
                 balance = balance * (1 - trade_cost)
                 stock_count = 0.0
                 profit = (balance - balance_init) / balance_init
                 profit = round(profit, 2)
 
-                sys.stdout.write("sell at " + str(the_df_aft['date']) + " " +
-                                 str(the_df_aft['c']) + ". profit " +
-                                 str(profit) + ".\n")
+                sys.stdout.write("sell at " + str(the_df_aft['date']) + " " + str(the_df_aft['c']) + ". profit " + str(profit) + ".\n")
 
     elif op == "CATCH_MAX_DECREASE":
         ######################
@@ -306,37 +254,30 @@ def verify(bv_csv,
             the_df = df.iloc[index_in_df]
 
             #the_df_pre = df.iloc[index_in_df - 1]
-            the_df_pre = df.iloc[index_in_df +
-                                 days_after_signal_to_buy]  #DEBUG
+            the_df_pre = df.iloc[index_in_df + days_after_signal_to_buy]  #DEBUG
 
             if index_in_df + 1 < df.__len__():  # not the latest row.
                 #the_df_aft = df.iloc[index_in_df + 1]
                 the_df_aft = df.iloc[index_in_df + buy_and_hold_days]  #DEBUG
 
-            sys.stdout.write(the_df['code'] + " " + the_df['date'] + " " +
-                             str(round(the_df['c'], 2)) + " IndayIncrease: " +
-                             str(round(the_df['increase'], 2)) + ".  ")
+            sys.stdout.write(the_df['code'] + " " + the_df['date'] + " " + str(round(the_df['c'], 2)) + " IndayIncrease: " + str(round(the_df['increase'], 2)) + ".  ")
 
             # Buy at the_df_pre
             if balance > 0:
-                sys.stdout.write("buy at " + str(the_df_pre['date']) + " " +
-                                 str(the_df_pre['c']) + ". ")
+                sys.stdout.write("buy at " + str(the_df_pre['date']) + " " + str(the_df_pre['c']) + ". ")
                 balance = balance * (1 - trade_cost)
                 stock_count = balance / the_df_pre['c']
                 balance = 0
 
             # Sell at the df_aft
-            if stock_count > 0 and index_in_df + 1 < df.__len__(
-            ):  # not the latest row.
+            if stock_count > 0 and index_in_df + 1 < df.__len__():  # not the latest row.
                 balance = stock_count * the_df_aft['c']  # using o or c?
                 balance = balance * (1 - trade_cost)
                 stock_count = 0.0
                 profit = (balance - balance_init) / balance_init
                 profit = round(profit, 2)
 
-                sys.stdout.write("sell at " + str(the_df_aft['date']) + " " +
-                                 str(the_df_aft['c']) + ". profit " +
-                                 str(profit) + ".\n")
+                sys.stdout.write("sell at " + str(the_df_aft['date']) + " " + str(the_df_aft['c']) + ". profit " + str(profit) + ".\n")
 
     if op in ["MISS_MAX_INCREASE", "MISS_MAX_DECREASE "]:
         #sell at the last day
@@ -347,10 +288,7 @@ def verify(bv_csv,
         stock_count = 0.0
         profit = (balance - balance_init) / balance_init
         profit = round(profit, 2)
-        sys.stdout.write(code + " Result: sell at " +
-                         str(df[-1:]['date'].values[0]) + " " +
-                         str(df[-1:]['c'].values[0]) + ". profit " +
-                         str(profit) + ". ")
+        sys.stdout.write(code + " Result: sell at " + str(df[-1:]['date'].values[0]) + " " + str(df[-1:]['c'].values[0]) + ". profit " + str(profit) + ". ")
 
     #profit alway hold
     stock_count = (balance_init * (1 - trade_cost)) / df[:1]['c'].values[0]
@@ -358,8 +296,7 @@ def verify(bv_csv,
     balance = balance * (1 - trade_cost)
     bhf_profit = (balance - balance_init) / balance_init
     bhf_profit = round(bhf_profit, 2)
-    print("While Buy and Hold profit " + str(df[:1]['date'].values[0]) +
-          " to " + str(df[-1:]['date'].values[0]) + " " + str(bhf_profit))
+    print("While Buy and Hold profit " + str(df[:1]['date'].values[0]) + " to " + str(df[-1:]['date'].values[0]) + " " + str(bhf_profit))
 
     return (code, start_date, end_date, profit, bhf_profit)
 
@@ -385,60 +322,21 @@ def verify(bv_csv,
 def main():
     parser = OptionParser()
 
-    parser.add_option("-d",
-                      "--debug",
-                      action="store_true",
-                      dest="debug",
-                      default=False,
-                      help="debug mode")
+    parser.add_option("-d", "--debug", action="store_true", dest="debug", default=False, help="debug mode")
 
-    parser.add_option("-t",
-                      "--top_N",
-                      dest="top_n",
-                      default=5,
-                      type="int",
-                      help="N of most in/decrease of days")
+    parser.add_option("-t", "--top_N", dest="top_n", default=5, type="int", help="N of most in/decrease of days")
 
-    parser.add_option("-b",
-                      "--base_dir",
-                      dest="base_dir",
-                      type="str",
-                      help="dir contains daily bar csvs to be parsed")
+    parser.add_option("-b", "--base_dir", dest="base_dir", type="str", help="dir contains daily bar csvs to be parsed")
 
-    parser.add_option("-s",
-                      "--start_date",
-                      dest="start_date",
-                      type="str",
-                      help="Optional. Verify start date. In format YYYY-MM-DD")
+    parser.add_option("-s", "--start_date", dest="start_date", type="str", help="Optional. Verify start date. In format YYYY-MM-DD")
 
-    parser.add_option("-e",
-                      "--end_date",
-                      dest="end_date",
-                      type="str",
-                      help="Optional. Verify end date")
+    parser.add_option("-e", "--end_date", dest="end_date", type="str", help="Optional. Verify end date")
 
-    parser.add_option("-p",
-                      "--days_after_signal_to_buy",
-                      dest="days_after_signal_to_buy",
-                      type="int",
-                      default=1,
-                      help="Optional. Using with CATCH operation.")
+    parser.add_option("-p", "--days_after_signal_to_buy", dest="days_after_signal_to_buy", type="int", default=1, help="Optional. Using with CATCH operation.")
 
-    parser.add_option("-q",
-                      "--buy_and_hold_days",
-                      dest="buy_and_hold_days",
-                      type="int",
-                      default=10,
-                      help="Optional. Using with CATCH operation.")
+    parser.add_option("-q", "--buy_and_hold_days", dest="buy_and_hold_days", type="int", default=10, help="Optional. Using with CATCH operation.")
 
-    parser.add_option(
-        "-o",
-        "--operation",
-        dest="operation",
-        type="str",
-        help=
-        "MISS_MAX_INCREASE|MISS_MAX_DECREASE|MISS_MAX_INDECREASE|CATCH_MAX_INCREASE|CATCH_MAX_DECREASE"
-    )
+    parser.add_option("-o", "--operation", dest="operation", type="str", help="MISS_MAX_INCREASE|MISS_MAX_DECREASE|MISS_MAX_INDECREASE|CATCH_MAX_INCREASE|CATCH_MAX_DECREASE")
 
     (options, args) = parser.parse_args()
     debug = options.debug
@@ -462,8 +360,7 @@ def main():
 
     files_path = os.listdir(base_dir_f)
 
-    df_result = pd.DataFrame(
-        columns=['code', 'strategy', 'start', 'end', 'prof', 'B_H_p'])
+    df_result = pd.DataFrame(columns=['code', 'strategy', 'start', 'end', 'prof', 'B_H_p'])
     i = 0
 
     for f in files_path:
@@ -480,23 +377,19 @@ def main():
         if not os.path.isfile(bv_csv):
             df = calc_daily_incease(input_csv=files_abs_path, bv_csv=bv_csv)
 
-        (code, start_date, end_date, profit, bhf_profit) = verify(
-            bv_csv=bv_csv,
-            op=operation_f,
-            start_date=start_date_f,
-            end_date=end_date_f,
-            days_after_signal_to_buy=days_after_signal_to_buy_f,
-            buy_and_hold_days=buy_and_hold_days_f,
-            top_N=top_n_f)
+        (code, start_date, end_date, profit, bhf_profit) = verify(bv_csv=bv_csv,
+                                                                  op=operation_f,
+                                                                  start_date=start_date_f,
+                                                                  end_date=end_date_f,
+                                                                  days_after_signal_to_buy=days_after_signal_to_buy_f,
+                                                                  buy_and_hold_days=buy_and_hold_days_f,
+                                                                  top_N=top_n_f)
 
         if code is not None:
-            df_result.loc[i] = [
-                code, operation_f, start_date, end_date, profit, bhf_profit
-            ]
+            df_result.loc[i] = [code, operation_f, start_date, end_date, profit, bhf_profit]
             i += 1
 
-    result_csv = "~/DATA/result/b_a_h_verify_" + operation_f + "_" + str(
-        top_n_f) + ".csv"
+    result_csv = "~/DATA/result/b_a_h_verify_" + operation_f + "_" + str(top_n_f) + ".csv"
     df_result.to_csv(result_csv, encoding='UTF-8', index=False)
     print("result saved to " + result_csv)
     print('script completed')

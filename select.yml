@@ -41,6 +41,6 @@ CN_INDEX:
     - 000300.SH: 沪深300
     - 000905.SH: 中证500
 US_INDEX:
-    - sp500: sp500 
-    - dow: dow
+    - SP500: sp500
+    - DOW: dow
 

@@ -21,34 +21,18 @@ import finlib
 from optparse import OptionParser
 
 import logging
-logging.basicConfig(format='%(asctime)s %(message)s',
-                    datefmt='%m_%d %H:%M:%S',
-                    level=logging.DEBUG)
+logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m_%d %H:%M:%S', level=logging.DEBUG)
 
 logging.info("\n")
 logging.info("SCRIPT STARTING " + " ".join(sys.argv))
 
 parser = OptionParser()
 
-parser.add_option(
-    "-x",
-    "--stock_global",
-    dest="stock_global",
-    help=
-    "[CH(US)|KG(HK)|KH(HK)|MG(US)|US(US)|AG(AG)|dev(debug)], source is /home/ryan/DATA/DAY_global/xx/"
-)
+parser.add_option("-x", "--stock_global", dest="stock_global", help="[CH(US)|KG(HK)|KH(HK)|MG(US)|US(US)|AG(AG)|dev(debug)], source is /home/ryan/DATA/DAY_global/xx/")
 
-parser.add_option(
-    "--selected",
-    action="store_true",
-    dest="selected",
-    default=False,
-    help=
-    "only check stocks defined in /home/ryan/tushare_ryan/select.yml"
-)
+parser.add_option("--selected", action="store_true", dest="selected", default=False, help="only check stocks defined in /home/ryan/tushare_ryan/select.yml")
 
 (options, args) = parser.parse_args()
-
 
 selected = options.selected
 stock_global = options.stock_global
@@ -82,9 +66,7 @@ def get_hk_us(df, cons, start_date, appendix, todayS):
         name = df.iloc[i]['name']
         #cons = ts.get_apis()  #<<<<< renew connection every time
 
-        sys.stdout.write(
-            str(i) + "/" + str(df.__len__()) + " get " + str(code) + " " +
-            str(name) + ". " + appendix + ". ")  #print without newline
+        sys.stdout.write(str(i) + "/" + str(df.__len__()) + " get " + str(code) + " " + str(name) + ". " + appendix + ". ")  #print without newline
         #a_csv = '/home/ryan/DATA/DAY_Global/' + str(code) + '.' + appendix  # WUBA.CH
         #a_csv = '/home/ryan/DATA/DAY_Global/' + appendix + '/' + str(code) + '.' + appendix  # DATA/DAY_Global/CH/WUBA.CH
         a_csv = '/home/ryan/DATA/DAY_Global/' + appendix + '/' + str(code) + '.csv'  # DATA/DAY_Global/CH/WUBA.CH
@@ -106,7 +88,7 @@ def get_hk_us(df, cons, start_date, appendix, todayS):
                 continue
 
         if finlib.Finlib().is_cached(a_csv):
-            logging.info("file has been updated in a day, not fetch again. "+a_csv)
+            logging.info("file has been updated in a day, not fetch again. " + a_csv)
             continue
 
         if os.path.isfile(a_csv):
@@ -115,84 +97,56 @@ def get_hk_us(df, cons, start_date, appendix, todayS):
                 logging.info("empty file, skip. " + a_csv)
                 continue
 
-            df_tmp = pd.read_csv(a_csv,
-                                 converters={
-                                     'code': str,
-                                     'datetime': str
-                                 })
+            df_tmp = pd.read_csv(a_csv, converters={'code': str, 'datetime': str})
             last_row = df_tmp[-1:]
             last_date = last_row['datetime'].values[0]
 
             if last_date == '':
                 continue
 
-            next_date = datetime.datetime.strptime(
-                str(last_date), '%Y-%m-%d') + datetime.timedelta(1)
-            a_week_before_date = datetime.datetime.strptime(
-                todayS, '%Y-%m-%d') - datetime.timedelta(60)
+            next_date = datetime.datetime.strptime(str(last_date), '%Y-%m-%d') + datetime.timedelta(1)
+            a_week_before_date = datetime.datetime.strptime(todayS, '%Y-%m-%d') - datetime.timedelta(60)
 
             #if next_date > datetime.datetime.today():
             if next_date.strftime('%Y-%m-%d') > todayS:
-                logging.info("file already updated, not fetching again. " +
-                             a_csv + ". updated to " + last_date)
+                logging.info("file already updated, not fetching again. " + a_csv + ". updated to " + last_date)
                 continue
 
             #last date in csv is 7 days ago, most likely the source is not update, so skip this csv.
             #logging.info("Next "+next_date.strftime('%Y-%m-%d'))
             #logging.info("a week before "+ a_week_before_date.strftime('%Y-%m-%d'))
-            if next_date.strftime('%Y-%m-%d') < a_week_before_date.strftime(
-                    '%Y-%m-%d'):
-                logging.info("file too old to updated, not fetching. " +
-                             a_csv + ". updated to " + last_date)
+            if next_date.strftime('%Y-%m-%d') < a_week_before_date.strftime('%Y-%m-%d'):
+                logging.info("file too old to updated, not fetching. " + a_csv + ". updated to " + last_date)
                 #continue
 
             if next_date > default_date_d:  #csv already have data
                 start_date_req = next_date.strftime('%Y-%m-%d')
-                sys.stdout.write("append exist csv from " + start_date_req +
-                                 ". ")
+                sys.stdout.write("append exist csv from " + start_date_req + ". ")
             else:
-                sys.stdout.write("will do a full update, since " +
-                                 start_date_req + ". ")
+                sys.stdout.write("will do a full update, since " + start_date_req + ". ")
 
         try:
             exc_info = sys.exc_info()
             print("code " + str(code))
-            a_stock_df = ts.bar(code,
-                                conn=cons,
-                                asset='X',
-                                adj='qfq',
-                                start_date=start_date_req,
-                                end_date='')
+            a_stock_df = ts.bar(code, conn=cons, asset='X', adj='qfq', start_date=start_date_req, end_date='')
             if str(a_stock_df) != 'None':
-                logging.info("fetched df len "+str(a_stock_df.__len__()))
+                logging.info("fetched df len " + str(a_stock_df.__len__()))
 
             #time.sleep(2)
 
             if str(a_stock_df) == 'None':
-                sys.stdout.write("ts.bar return None. retry " + str(code) +
-                                 ". 1st. ")
+                sys.stdout.write("ts.bar return None. retry " + str(code) + ". 1st. ")
                 ts.close_apis(cons)
                 time.sleep(a_wait_time)
                 cons = ts.get_apis()
-                a_stock_df = ts.bar(code,
-                                    conn=cons,
-                                    asset='X',
-                                    adj='qfq',
-                                    start_date=start_date_req,
-                                    end_date='')
+                a_stock_df = ts.bar(code, conn=cons, asset='X', adj='qfq', start_date=start_date_req, end_date='')
         except:
-            logging.info(
-                "\tcaught exception when getting data, try to renew cons")
+            logging.info("\tcaught exception when getting data, try to renew cons")
             ts.close_apis(cons)
             time.sleep(a_wait_time)
 
             cons = ts.get_apis()
-            a_stock_df = ts.bar(code,
-                                conn=cons,
-                                asset='X',
-                                adj='qfq',
-                                start_date=start_date_req,
-                                end_date='')
+            a_stock_df = ts.bar(code, conn=cons, asset='X', adj='qfq', start_date=start_date_req, end_date='')
         finally:
             if exc_info == (None, None, None):
                 pass  # no exception
@@ -201,34 +155,27 @@ def get_hk_us(df, cons, start_date, appendix, todayS):
             del exc_info
 
         if str(a_stock_df) == 'None':
-            logging.info("ts.bar return None for code. Retry exhausted. " +
-                         str(code))
+            logging.info("ts.bar return None for code. Retry exhausted. " + str(code))
             continue
 
     #At this stage, a_stock_df should be valid.
 
         try:
             exc_info = sys.exc_info()
-            a_stock_df = a_stock_df.reindex(
-                index=a_stock_df.index[::-1])  #revert
+            a_stock_df = a_stock_df.reindex(index=a_stock_df.index[::-1])  #revert
 
             a_stock_df = a_stock_df.reset_index()
 
             sys.stdout.write(" len " + str(a_stock_df.__len__()) + ". ")
 
-            df_name = pd.DataFrame([name] * a_stock_df.__len__(),
-                                   columns=['name'])
-            df_short_name = pd.DataFrame([appendix] * a_stock_df.__len__(),
-                                         columns=['short_name'])
+            df_name = pd.DataFrame([name] * a_stock_df.__len__(), columns=['name'])
+            df_short_name = pd.DataFrame([appendix] * a_stock_df.__len__(), columns=['short_name'])
             a_stock_df = a_stock_df.join(df_name)  #append column
             a_stock_df = a_stock_df.join(df_short_name)  #append column
 
             #logging.info(a_stock_df.head(2)) #debug.
 
-            cols = [
-                'code', 'datetime', 'open', 'high', 'low', 'close', 'vol',
-                'name'
-            ]
+            cols = ['code', 'datetime', 'open', 'high', 'low', 'close', 'vol', 'name']
             a_stock_df = a_stock_df[cols]  #re-arrange adjust columns
 
             a_stock_df['open'] = a_stock_df['open'].round(2)
@@ -237,6 +184,7 @@ def get_hk_us(df, cons, start_date, appendix, todayS):
             a_stock_df['close'] = a_stock_df['close'].round(2)
             a_stock_df['vol'] = a_stock_df['vol'].round(2)
             a_stock_df['datetime'] = a_stock_df['datetime'].astype('str')
+            a_stock_df.rename(columns={"datetime": "date"}, inplace=True)
 
             a_stock_df = df_tmp.append(a_stock_df, ignore_index=True)
 
@@ -252,6 +200,7 @@ def get_hk_us(df, cons, start_date, appendix, todayS):
             del exc_info
 
         pass
+
 
 #instrument.csv
 #/home/ryan/DATA/pickle/market.csv

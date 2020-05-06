@@ -73,8 +73,7 @@ def draw_sin(t, cycle, start, start_year, k=0, a=1):
     '''
     t = np.arange(0, t, 0.01)
     a = np.log(cycle)
-    rtn = abs(a * np.sin(np.pi / (2**(np.log2(cycle * 2) - 1)) * t - np.pi *
-                         ((start - start_year) % cycle) / cycle)) + k
+    rtn = abs(a * np.sin(np.pi / (2**(np.log2(cycle * 2) - 1)) * t - np.pi * ((start - start_year) % cycle) / cycle)) + k
     return (rtn)
 
 

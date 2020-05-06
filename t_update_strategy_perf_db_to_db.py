@@ -27,48 +27,25 @@ from scipy import stats
 
 parser = OptionParser()
 
-parser.add_option("-d",
-                  "--debug",
-                  action="store_true",
-                  dest="debug",
-                  default=False,
-                  help="debug enabled, use in development purpose")
+parser.add_option("-d", "--debug", action="store_true", dest="debug", default=False, help="debug enabled, use in development purpose")
 
-parser.add_option("--source_host",
-                  dest="source_host",
-                  default='10.32.191.66',
+parser.add_option("--source_host", dest="source_host", default='10.32.191.66', type="str", help="source host,  default '10.32.191.66'")
+
+parser.add_option("--source_table",
+                  dest="source_table",
+                  default='zzz_pattern_perf_debug',
                   type="str",
-                  help="source host,  default '10.32.191.66'")
+                  help="source db table, default zzz_pattern_perf_debug, other options: pattern_perf_forex, pattern_perf ")
 
-parser.add_option(
-    "--source_table",
-    dest="source_table",
-    default='zzz_pattern_perf_debug',
-    type="str",
-    help=
-    "source db table, default zzz_pattern_perf_debug, other options: pattern_perf_forex, pattern_perf "
-)
+parser.add_option("--dest_host", dest="dest_host", default='127.0.0.1', type="str", help="destination host, default 127.0.0.1")
 
-parser.add_option("--dest_host",
-                  dest="dest_host",
-                  default='127.0.0.1',
+parser.add_option("--dest_table",
+                  dest="dest_table",
+                  default='zzz_pattern_perf_debug',
                   type="str",
-                  help="destination host, default 127.0.0.1")
+                  help="destination db table,  default zzz_pattern_perf_debug, other options: pattern_perf_forex, pattern_perf ")
 
-parser.add_option(
-    "--dest_table",
-    dest="dest_table",
-    default='zzz_pattern_perf_debug',
-    type="str",
-    help=
-    "destination db table,  default zzz_pattern_perf_debug, other options: pattern_perf_forex, pattern_perf "
-)
-
-parser.add_option("--skip_backup_before_execute",
-                  action="store_true",
-                  dest="skip_backup_before_execute",
-                  default=False,
-                  help="Skip backup table before execute, default=False")
+parser.add_option("--skip_backup_before_execute", action="store_true", dest="skip_backup_before_execute", default=False, help="Skip backup table before execute, default=False")
 
 #parser.add_option("-b", "--db_tbl", dest="db_tbl",default='zzz_pattern_perf_debug', type="str",
 #                  help="insert to which table in DB, default is zzz_pattern_perf_debug.\n \
@@ -105,26 +82,18 @@ sqldump = database + "_" + dest_table + "_" + filestamp
 
 if not skip_backup_before_execute:
     print("backing up table: " + dest_table + "@" + dest_host)
-    os.popen("mysqldump -u %s -p%s -h %s  -e --opt -c %s %s| gzip -c > %s.gz" %
-             (user, password, dest_host, database, dest_table, sqldump))
-    print("table %s at %s backuped to %s " %
-          (dest_table, dest_host, sqldump + ".gz"))
+    os.popen("mysqldump -u %s -p%s -h %s  -e --opt -c %s %s| gzip -c > %s.gz" % (user, password, dest_host, database, dest_table, sqldump))
+    print("table %s at %s backuped to %s " % (dest_table, dest_host, sqldump + ".gz"))
 else:
     print("skip databasae table backup, " + dest_table + "@" + dest_host)
 
-cnx_src = mysql.connector.connect(user='root',
-                                  password='admin888.@_@',
-                                  host=source_host,
-                                  database='ryan_stock_db')
+cnx_src = mysql.connector.connect(user='root', password='admin888.@_@', host=source_host, database='ryan_stock_db')
 
 cnx_src.set_converter_class(finlib.NumpyMySQLConverter)
 
 cursor_src = cnx_src.cursor()
 
-cnx_dst = mysql.connector.connect(user='root',
-                                  password='admin888.@_@',
-                                  host=dest_host,
-                                  database='ryan_stock_db')
+cnx_dst = mysql.connector.connect(user='root', password='admin888.@_@', host=dest_host, database='ryan_stock_db')
 
 cnx_dst.set_converter_class(finlib.NumpyMySQLConverter)
 
@@ -414,8 +383,7 @@ for i in range(record.__len__()):
         }
 
     #update/create new records in dict into db.
-    finlib.Finlib().create_or_update_ptn_perf_db_record(
-        df, dict, code, day_cnt, cursor_dst, cnx_dst, dest_table)
+    finlib.Finlib().create_or_update_ptn_perf_db_record(df, dict, code, day_cnt, cursor_dst, cnx_dst, dest_table)
 
 print("Completed.")
 os._exit(0)

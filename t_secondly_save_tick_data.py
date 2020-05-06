@@ -94,9 +94,7 @@ while True:
         df_tmp = ts.get_realtime_quotes(record_code[start:end])
         df = df.append(df_tmp)
 
-    print(
-        str(i) + ", " + df[-1:]['date'].values[0] + " " +
-        df[-1:]['time'].values[0] + ", df len:" + str(df.__len__()))
+    print(str(i) + ", " + df[-1:]['date'].values[0] + " " + df[-1:]['time'].values[0] + ", df len:" + str(df.__len__()))
 
     if i % 10 == 0:  #save to disk every 10*5 seconds
         df.to_pickle(dump + "." + str(file_num))

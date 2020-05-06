@@ -21,26 +21,41 @@ cd   /home/ryan/repo/trading/tushare_ryan
 #python t_daily_get_key_points.py  -x MG  --calc_today
 #python t_daily_get_key_points.py  -x MG  --today_selection
 
-#output: /home/ryan/DATA/result/key_points_us.csv
+#output: /home/ryan/DATA/result/selected/key_points_us.csv
 python t_daily_get_key_points.py  -x US  --selected --calc_base
 
-#output: /home/ryan/DATA/result/key_points_us_today.csv
+#output: /home/ryan/DATA/result/selected/key_points_us_today.csv
 python t_daily_get_key_points.py  -x US  --selected --calc_today
 
-#/home/ryan/DATA/result/key_points_us_today_selected.csv
+#/home/ryan/DATA/result/selected/key_points_us_today_selected.csv
 python t_daily_get_key_points.py  -x US  --selected --today_selection
 
+#/home/ryan/DATA/result/selected/key_points_hk.csv
 python t_daily_get_key_points.py  -x HK  --selected --calc_base
-python t_daily_get_key_points.py  -x HK  --selected --calc_today
-python t_daily_get_key_points.py  -x HK  --selected --today_selection
 
+#/home/ryan/DATA/result/selected/key_points_hk_today.csv
+python t_daily_get_key_points.py  -x HK  --selected --calc_today
+
+python t_daily_get_key_points.py  -x HK  --selected --today_selection
 
 #/home/ryan/DATA/result/selected/talib_and_pv_no_db_filter_us.csv
 python t_daily_pattern_Hit_Price_Volume.py --bool_calc_std_mean --bool_perc_std_mean --bool_pv_hit -m 7 -x US --selected
 
 #/home/ryan/DATA/result/selected/talib_and_pv_no_db_filter_hk.csv
 python t_daily_pattern_Hit_Price_Volume.py --bool_calc_std_mean --bool_perc_std_mean --bool_pv_hit -m 7 -x HK --selected
+
+#/home/ryan/DATA/result/selected/us_fib.csv
+python t_fibonacci.py --begin_date "20180101"  --min_sample=500 -x US --selected
+
+#/home/ryan/DATA/result/selected/us_index_fib.csv
+python t_fibonacci.py --begin_date "20180101"  --min_sample=500 -x US_INDEX --selected
+
+#/home/ryan/DATA/result/selected/hk_fib.csv
+python t_fibonacci.py --begin_date "20180101"  --min_sample=500 -x HK --selected
+
+
+
 python t_summary.py -x HK --action generate_report
 
 #this is local run
-python t_daily_pattern_Hit_Price_Volume.py --bool_calc_std_mean --bool_perc_std_mean --bool_pv_hit -m 7 -x MG
+#python t_daily_pattern_Hit_Price_Volume.py --bool_calc_std_mean --bool_perc_std_mean --bool_pv_hit -m 7 -x MG

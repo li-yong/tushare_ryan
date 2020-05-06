@@ -113,8 +113,7 @@ def backtest(array):
                 if (stockCount <= 0):
                     # Buy(acountWealth)
                     stockCount = acountWealth / c
-                    acountWealth -= (stockCount *
-                                     c) * 0.0003  # handle fee of buy
+                    acountWealth -= (stockCount * c) * 0.0003  # handle fee of buy
                     actW.append(acountWealth)
                     acountWealth_last = acountWealth
                     print("brought code " +code+","+ str(stockCount) + ", amount " + str(acountWealth) + " ," \
@@ -145,18 +144,12 @@ def backtest(array):
                     stockCount = 0
                     actW.append(acountWealth)
 
-                    if (acountWealth - acountWealth_init > 0) and (
-                        ((acountWealth - acountWealth_init) * 100 /
-                         acountWealth_init) > max_win):
-                        max_win = ((acountWealth - acountWealth_init) * 100 /
-                                   acountWealth_init)
+                    if (acountWealth - acountWealth_init > 0) and (((acountWealth - acountWealth_init) * 100 / acountWealth_init) > max_win):
+                        max_win = ((acountWealth - acountWealth_init) * 100 / acountWealth_init)
                         print("max_win:" + str(max_win))
 
-                    if (acountWealth - acountWealth_init < 0) and (
-                        ((acountWealth - acountWealth_init) * 100 /
-                         acountWealth_init) < max_draw):
-                        max_draw = ((acountWealth - acountWealth_init) * 100 /
-                                    acountWealth_init)
+                    if (acountWealth - acountWealth_init < 0) and (((acountWealth - acountWealth_init) * 100 / acountWealth_init) < max_draw):
+                        max_draw = ((acountWealth - acountWealth_init) * 100 / acountWealth_init)
                         print("max_draw:" + str(max_draw))
 
                     if acountWealth > acountWealth_last:
@@ -189,21 +182,17 @@ def backtest(array):
 
     # update to DB
 
-    cnx = mysql.connector.connect(user='root',
-                                  password='admin888.@_@',
-                                  host='127.0.0.1',
-                                  database='ryan_stock_db')
+    cnx = mysql.connector.connect(user='root', password='admin888.@_@', host='127.0.0.1', database='ryan_stock_db')
 
     cnx.set_converter_class(finlib.NumpyMySQLConverter)
 
     cursor = cnx.cursor()
 
-    add_s_p_perf = (
-        "INSERT INTO stock_pattern_overview "
-        "(ID, stockID, pattern, date_s, date_e, trading_days, buy_signal_cnt, sell_signal_cnt, \
+    add_s_p_perf = ("INSERT INTO stock_pattern_overview "
+                    "(ID, stockID, pattern, date_s, date_e, trading_days, buy_signal_cnt, sell_signal_cnt, \
                     buy_cnt, sell_cnt, win_cnt, \
                     lose_cnt, max_win, max_draw, increase_percent, no_op_in) "
-        "VALUES (%s, %s, %s, %s, %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)")
+                    "VALUES (%s, %s, %s, %s, %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)")
 
     data_s_p_perf = ('', code, "PATTEN_TODO", df['date'][0:1].values[0], df['date'][-1:].values[0], \
                      day_cnt, b_sig_cnt, s_sig_cnt, \

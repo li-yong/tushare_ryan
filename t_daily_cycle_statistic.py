@@ -29,9 +29,7 @@ import logging
 
 from optparse import OptionParser
 
-logging.basicConfig(format='%(asctime)s %(message)s',
-                    datefmt='%m_%d %H:%M:%S',
-                    level=logging.DEBUG)
+logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m_%d %H:%M:%S', level=logging.DEBUG)
 
 
 def _macd(csv_f, period):
@@ -56,14 +54,7 @@ def _macd(csv_f, period):
 
     #csv_f = '/home/ryan/DATA/DAY_Global/AG/SH600519.csv' #ryan debug
 
-    df = pd.read_csv(csv_f,
-                     converters={'code': str},
-                     header=None,
-                     skiprows=1,
-                     names=[
-                         'code', 'date', 'open', 'high', 'low', 'close',
-                         'volume', 'amount', 'tnv'
-                     ])
+    df = pd.read_csv(csv_f, converters={'code': str}, header=None, skiprows=1, names=['code', 'date', 'open', 'high', 'low', 'close', 'volume', 'amount', 'tnv'])
 
     if df.__len__() < 100:
         logging.info('file less than 100 records. ' + csv_f)
@@ -81,11 +72,9 @@ def _macd(csv_f, period):
     df = df[-1000:]  #last 4 years.
 
     if period == "M":
-        df_period = finlib.Finlib().daily_to_monthly_bar(
-            df_daily=df)['df_monthly']
+        df_period = finlib.Finlib().daily_to_monthly_bar(df_daily=df)['df_monthly']
     elif period == "W":
-        df_period = finlib.Finlib().daily_to_monthly_bar(
-            df_daily=df)['df_weekly']
+        df_period = finlib.Finlib().daily_to_monthly_bar(df_daily=df)['df_weekly']
     elif period == "D":
         df['date'] = pd.to_datetime(df['date'], format="%Y-%m-%d")
         df_period = df
@@ -98,19 +87,13 @@ def _macd(csv_f, period):
     MACD Histogram: 2*(MACD - Signal Line)
     '''
     stock = stockstats.StockDataFrame.retype(df_period)
-    df_macd = stock[['macd', 'macds', 'macdh'
-                     ]]  #macds: # MACD signal line, macdh: # MACD histogram
+    df_macd = stock[['macd', 'macds', 'macdh']]  #macds: # MACD signal line, macdh: # MACD histogram
     df_macd.rename(columns={
         "macd": "DIF_main",
         "macds": "DEA_signal",
         "macdh": "MACD_histogram",
-    },
-                   inplace=True)
-    df_macd = df_macd.round({
-        'DIF_main': 1,
-        'DEA_signal': 1,
-        'MACD_histogram': 1
-    })
+    }, inplace=True)
+    df_macd = df_macd.round({'DIF_main': 1, 'DEA_signal': 1, 'MACD_histogram': 1})
 
     #print(tabulate.tabulate(df_macd[-2:], headers='keys', tablefmt='psql'))
 
@@ -190,9 +173,7 @@ def macd(period):
     df_rtn = pd.DataFrame()
 
     stock_list = finlib.Finlib().get_A_stock_instrment()
-    stock_list = finlib.Finlib().add_market_to_code(stock_list,
-                                                    dot_f=False,
-                                                    tspro_format=False)
+    stock_list = finlib.Finlib().add_market_to_code(stock_list, dot_f=False, tspro_format=False)
 
     #stock_list = stock_list.head(10) #debug
 
@@ -213,13 +194,10 @@ def macd(period):
         print("MACD no qualified stock found.")
     else:
         df_rtn = pd.merge(df_rtn, stock_list, how='inner', on='code')
-        df_rtn = df_rtn[[
-            'code', 'name', 'date', 'action', 'reason', 'strength'
-        ]]
+        df_rtn = df_rtn[['code', 'name', 'date', 'action', 'reason', 'strength']]
         df_rtn.to_csv(output_csv, encoding='UTF-8', index=False)
 
-        logging.info("MACD selection saved to " + output_csv + " . len " +
-                     str(df_rtn.__len__()))
+        logging.info("MACD selection saved to " + output_csv + " . len " + str(df_rtn.__len__()))
 
 
 def calculate(indicator, period):
@@ -242,24 +220,11 @@ def main():
 
     parser = OptionParser()
 
-    parser.add_option("--indicator",
-                      type="str",
-                      dest="indicator_f",
-                      default=None,
-                      help="indicator, one of [KDJ|MACD]")
+    parser.add_option("--indicator", type="str", dest="indicator_f", default=None, help="indicator, one of [KDJ|MACD]")
 
-    parser.add_option("--period",
-                      type="str",
-                      dest="period_f",
-                      default=None,
-                      help="period, one of [M|W|D]")
+    parser.add_option("--period", type="str", dest="period_f", default=None, help="period, one of [M|W|D]")
 
-    parser.add_option("-a",
-                      "--analyze",
-                      action="store_true",
-                      dest="analyze_f",
-                      default=False,
-                      help="analyze based on [MACD|KDJ] M|W|D result.")
+    parser.add_option("-a", "--analyze", action="store_true", dest="analyze_f", default=False, help="analyze based on [MACD|KDJ] M|W|D result.")
 
     (options, args) = parser.parse_args()
 

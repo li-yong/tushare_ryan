@@ -30,13 +30,7 @@ logging.getLogger('matplotlib.font_manager').disabled = True
 # ---- Read , test
 
 
-def check_fibo(df,
-               code,
-               name,
-               begin_date='20180101',
-               show_fig_f=False,
-               save_fig_f=False,
-               min_sample=500):
+def check_fibo(df, code, name, begin_date='20180101', show_fig_f=False, save_fig_f=False, min_sample=500):
 
     rtn_dict = {}
 
@@ -45,8 +39,7 @@ def check_fibo(df,
 
     #print(df.__len__())
 
-    df = df[df['close'] >= 0.1].reset_index().drop(
-        'index', axis=1)  #some csv close price is 0.0 or 0
+    df = df[df['close'] >= 0.1].reset_index().drop('index', axis=1)  #some csv close price is 0.0 or 0
     #print(df.__len__())
 
     if df.__len__() < min_sample:
@@ -94,40 +87,17 @@ def check_fibo(df,
         plt.ylabel("Price")
 
         style = dict(size=15, color='black')
-        ax.text(x_axis[-1], r['p00'],
-                "0% " + str(r['p00']) + " hit " + str(r['p00_cnt']['sum_cnt']),
-                **style)
-        ax.text(
-            x_axis[-1], r['p23'],
-            "23.6% " + str(r['p23']) + " hit " + str(r['p23_cnt']['sum_cnt']),
-            **style)
-        ax.text(
-            x_axis[-1], r['p38'],
-            "38.2% " + str(r['p38']) + " hit " + str(r['p38_cnt']['sum_cnt']),
-            **style)
-        ax.text(
-            x_axis[-1], r['p50'],
-            "50% " + str(r['p50']) + " hit " + str(r['p50_cnt']['sum_cnt']),
-            **style)
-        ax.text(
-            x_axis[-1], r['p61'],
-            "61.8% " + str(r['p61']) + " hit " + str(r['p61_cnt']['sum_cnt']),
-            **style)
-        ax.text(
-            x_axis[-1], r['p100'],
-            "100% " + str(r['p100']) + " hit " + str(r['p100_cnt']['sum_cnt']),
-            **style)
+        ax.text(x_axis[-1], r['p00'], "0% " + str(r['p00']) + " hit " + str(r['p00_cnt']['sum_cnt']), **style)
+        ax.text(x_axis[-1], r['p23'], "23.6% " + str(r['p23']) + " hit " + str(r['p23_cnt']['sum_cnt']), **style)
+        ax.text(x_axis[-1], r['p38'], "38.2% " + str(r['p38']) + " hit " + str(r['p38_cnt']['sum_cnt']), **style)
+        ax.text(x_axis[-1], r['p50'], "50% " + str(r['p50']) + " hit " + str(r['p50_cnt']['sum_cnt']), **style)
+        ax.text(x_axis[-1], r['p61'], "61.8% " + str(r['p61']) + " hit " + str(r['p61_cnt']['sum_cnt']), **style)
+        ax.text(x_axis[-1], r['p100'], "100% " + str(r['p100']) + " hit " + str(r['p100_cnt']['sum_cnt']), **style)
 
         plt.title(the_day + "_" + code + " " + name + " " + str(y_axis[-1]))
 
         props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
-        ax.text(0.05,
-                0.95,
-                suggestion,
-                transform=ax.transAxes,
-                fontsize=14,
-                verticalalignment='top',
-                bbox=props)
+        ax.text(0.05, 0.95, suggestion, transform=ax.transAxes, fontsize=14, verticalalignment='top', bbox=props)
 
         if save_fig_f:
             fn = "/home/ryan/DATA/result/fib_plot/" + code + "_" + name + "_" + the_day + ".png"
@@ -164,63 +134,21 @@ def main():
 
     parser = OptionParser()
 
-    parser.add_option("-b",
-                      "--begin_date",
-                      type="string",
-                      action="store",
-                      dest="begin_date_f",
-                      default="2018-01-01",
-                      help="begin date to use Fibo")
+    parser.add_option("-b", "--begin_date", type="string", action="store", dest="begin_date_f", default="2018-01-01", help="begin date to use Fibo")
 
-    parser.add_option("--min_sample",
-                      type="int",
-                      action="store",
-                      dest="min_sample_f",
-                      default=500,
-                      help="minimal samples number of input to analysis")
+    parser.add_option("--min_sample", type="int", action="store", dest="min_sample_f", default=500, help="minimal samples number of input to analysis")
 
-    parser.add_option("-d",
-                      "--debug",
-                      action="store_true",
-                      dest="debug_f",
-                      default=False,
-                      help="debug ")
+    parser.add_option("-d", "--debug", action="store_true", dest="debug_f", default=False, help="debug ")
 
-    parser.add_option("--save_fig",
-                      action="store_true",
-                      dest="save_fig_f",
-                      default=False,
-                      help="save the matplot figure ")
+    parser.add_option("--save_fig", action="store_true", dest="save_fig_f", default=False, help="save the matplot figure ")
 
-    parser.add_option("--show_fig",
-                      action="store_true",
-                      dest="show_fig_f",
-                      default=False,
-                      help="display the matplot figure ")
+    parser.add_option("--show_fig", action="store_true", dest="show_fig_f", default=False, help="display the matplot figure ")
 
-    parser.add_option("--log_price",
-                      action="store_true",
-                      dest="log_price_f",
-                      default=False,
-                      help="log for y-axis price ")
+    parser.add_option("--log_price", action="store_true", dest="log_price_f", default=False, help="log for y-axis price ")
 
-    parser.add_option(
-        "-x",
-        "--stock_global",
-        dest="stock_global",
-        help=
-        "[CH(US)|KG(HK)|KH(HK)|MG(US)|US(US)|AG(AG)|dev(debug)], source is /home/ryan/DATA/DAY_global/xx/"
-    )
+    parser.add_option("-x", "--stock_global", dest="stock_global", help="[CH(US)|KG(HK)|KH(HK)|MG(US)|US(US)|AG(AG)|dev(debug)], source is /home/ryan/DATA/DAY_global/xx/")
 
-    parser.add_option(
-        "--selected",
-        action="store_true",
-        dest="selected",
-        default=False,
-        help=
-        "only check stocks defined in /home/ryan/tushare_ryan/select.yml"
-    )
-
+    parser.add_option("--selected", action="store_true", dest="selected", default=False, help="only check stocks defined in /home/ryan/tushare_ryan/select.yml")
 
     df_rtn = pd.DataFrame()
 
@@ -238,7 +166,7 @@ def main():
     out_dir = rst['out_dir']
     csv_dir = rst['csv_dir']
     stock_list = rst['stock_list']
-    out_f = out_dir+"/"+stock_global.lower()+"_fib.csv" #/home/ryan/DATA/result/selected/us_index_fib.csv
+    out_f = out_dir + "/" + stock_global.lower() + "_fib.csv"  #/home/ryan/DATA/result/selected/us_index_fib.csv
 
     if not os.path.isdir(out_dir):
         os.mkdir(out_dir)
@@ -254,7 +182,7 @@ def main():
         print(csv_f)
 
         if not os.path.isfile(csv_f):
-            logging.warning("file not exist. "+csv_f)
+            logging.warning("file not exist. " + csv_f)
             continue
 
         df = finlib.Finlib().regular_read_csv_to_stdard_df(csv_f)
@@ -273,12 +201,11 @@ def main():
             df['high'] = df['high'].apply(lambda _d: np.log(_d))
             df['low'] = df['low'].apply(lambda _d: np.log(_d))
 
-        rtn_dict_t = check_fibo(df, code, name, begin_date_f, show_fig_f,
-                                save_fig_f, min_sample_f)
+        rtn_dict_t = check_fibo(df, code, name, begin_date_f, show_fig_f, save_fig_f, min_sample_f)
         df_t = pd.DataFrame(data=rtn_dict_t, index=[0])
         #print(df_t)
         if not df_t.empty:
-            df_rtn = pd.concat([df_rtn, df_t],  sort=False).reset_index().drop('index',  axis=1)
+            df_rtn = pd.concat([df_rtn, df_t], sort=False).reset_index().drop('index', axis=1)
 
     df_rtn.to_csv(out_f, encoding='UTF-8', index=False)
     print(df_rtn)

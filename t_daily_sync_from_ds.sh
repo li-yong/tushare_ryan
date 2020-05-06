@@ -28,7 +28,7 @@ rsync -az /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/individ
 rsync -az   haha_data_source:/home/ryan/DATA/DAY_Global/AG/  /home/ryan/DATA/DAY_Global/AG/
 rsync -az   haha_data_source:/home/ryan/DATA/DAY_Global/AG_INDEX/  /home/ryan/DATA/DAY_Global/AG_INDEX/
 rsync -az   haha_data_source:/home/ryan/DATA/DAY_Global/US_INDEX/  /home/ryan/DATA/DAY_Global/US_INDEX/
-rsync -az   haha_data_source:/home/ryan/DATA/DAY_Global/HK_INDEX/  /home/ryan/DATA/DAY_Global/HK_INDEX/
+rsync -az   haha_data_source:/home/ryan/DATA/DAY_Global/HK/  /home/ryan/DATA/DAY_Global/HK/
 rsync -az   haha_data_source:/home/ryan/DATA/DAY_Global/AG_MoneyFlow/  /home/ryan/DATA/DAY_Global/AG_MoneyFlow/
 
 rsync -az   haha_data_source:/home/ryan/DATA/DAY_Global/stooq/US/  /home/ryan/DATA/DAY_Global/stooq/US/

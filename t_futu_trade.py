@@ -15,17 +15,12 @@ import tabulate
 #Step2:  python3a $0
 # /usr/bin/python3a: symbolic link to /hdd2/anaconda3/bin/python3
 
+
 def pprint(df):
     print(tabulate.tabulate(df, headers='keys', tablefmt='psql'))
 
-def buy_limit(quote_ctx,
-              trd_ctx,
-              df_stock_info,
-              code,
-              drop_threshold=0.19,
-              pwd_unlock='123456',
-              trd_env=ft.TrdEnv.SIMULATE,
-              time_sleep=4):
+
+def buy_limit(quote_ctx, trd_ctx, df_stock_info, code, drop_threshold=0.19, pwd_unlock='123456', trd_env=ft.TrdEnv.SIMULATE, time_sleep=4):
 
     ###
     #ret, data = quote_ctx.get_market_snapshot(code)
@@ -42,16 +37,9 @@ def buy_limit(quote_ctx,
     #    lot_size = 0
     #    price_to_order = 0
 
-    sys.stdout.write("Placing buying limit order, " + code + ", price: " +
-                     str(price_to_order) + ", lot: " + str(lot_size) +
-                     ", env: " + str(trd_env))
+    sys.stdout.write("Placing buying limit order, " + code + ", price: " + str(price_to_order) + ", lot: " + str(lot_size) + ", env: " + str(trd_env))
 
-    ret, order_table = trd_ctx.place_order(price=price_to_order,
-                                           qty=lot_size,
-                                           code=code,
-                                           trd_side=ft.TrdSide.BUY,
-                                           trd_env=trd_env,
-                                           order_type=order_type)
+    ret, order_table = trd_ctx.place_order(price=price_to_order, qty=lot_size, code=code, trd_side=ft.TrdSide.BUY, trd_env=trd_env, order_type=order_type)
 
     if ret == ft.RET_OK:
         print(". Done")
@@ -69,8 +57,8 @@ if __name__ == '__main__':
     port = 11111
     pwd_unlock = '731024'
     code = "US.AAPL"
-    code_list = ["US.AAPL","HK.00700"]
-    code_list = ["SH.600519","HK.00700"]
+    code_list = ["US.AAPL", "HK.00700"]
+    code_list = ["SH.600519", "HK.00700"]
     #code = "HK.00700"
     #code = "HK.03337"
     drop_threshold = 0.19  #buy at 19% drop
@@ -88,7 +76,6 @@ if __name__ == '__main__':
     (rc2, df2) = quote_ctx.get_multiple_history_kline(['HK.00700'], '2017-06-20', '2017-06-25', ft.KLType.K_DAY, ft.AuType.QFQ)
     (rc3, df3) = quote_ctx.get_multiple_history_kline(codelist=code_list, start=None, end=None, ktype=ft.KLType.K_DAY, autype=ft.AuType.QFQ)
     quote_ctx.close()
-
 
     trd_ctx_hk = ft.OpenHKTradeContext(host=ip, port=port)
     trd_ctx_us = ft.OpenUSTradeContext(host=ip, port=port)
@@ -122,8 +109,7 @@ if __name__ == '__main__':
         df_input = df_input.append(new_df, ignore_index=True)
 
     ### Buy according to df_input
-    ret, df_market_snapshot = quote_ctx.get_market_snapshot(
-        df_input['code'].tolist())
+    ret, df_market_snapshot = quote_ctx.get_market_snapshot(df_input['code'].tolist())
     if ret != ft.RET_OK:
         raise Exception('Failed to get_market_snapshot')
 
@@ -199,12 +185,10 @@ if __name__ == '__main__':
             df_order_list = df_order_list_us
 
         #order check
-        df = df_order_list[df_order_list['code'] == code].reset_index().drop(
-            'index', axis=1)
+        df = df_order_list[df_order_list['code'] == code].reset_index().drop('index', axis=1)
 
         if df.__len__() > 0:
-            print("already have the open order for " + code +
-                  " . Not making new order")
+            print("already have the open order for " + code + " . Not making new order")
             for i in range(df.__len__()):
                 stock_name = df.iloc[i]['stock_name']  # 安东油田服务
                 trd_side = df.iloc[i]['trd_side']  # BUY
@@ -212,21 +196,17 @@ if __name__ == '__main__':
                 price = df.iloc[i]['price']  # 1.11
                 qty = df.iloc[i]['qty']  # 2000
                 create_time = df.iloc[i]['create_time']  # 2018-09-16 06:53:10
-                updated_time = df.iloc[i][
-                    'updated_time']  # 2018-09-16 06:53:10
+                updated_time = df.iloc[i]['updated_time']  # 2018-09-16 06:53:10
                 dealt_qty = df.iloc[i]['dealt_qty']  # 0
                 dealt_avg_price = df.iloc[i]['dealt_avg_price']  # 0
-                print("\t" + stock_name + " " + str(qty) + " " +
-                      str(trd_side) + " " + str(price))
+                print("\t" + stock_name + " " + str(qty) + " " + str(trd_side) + " " + str(price))
             continue
 
         #postion check
-        df = df_position[df_position['code'] == code].reset_index().drop(
-            'index', axis=1)
+        df = df_position[df_position['code'] == code].reset_index().drop('index', axis=1)
 
         if df.__len__() > 0:
-            print("already have the open position for " + code +
-                  " . Not making new order")
+            print("already have the open position for " + code + " . Not making new order")
             for i in range(df.__len__()):
                 stock_name = df.iloc[i]['stock_name']  # 腾讯控股
                 qty = df.iloc[i]['qty']  # 100
@@ -235,19 +215,11 @@ if __name__ == '__main__':
                 nominal_price = df.iloc[i]['nominal_price']  # 330
                 position_side = df.iloc[i]['position_side']  # LONG
                 pl_ratio = df.iloc[i]['pl_ratio']  # -0.42245
-                print("\t" + stock_name + " " + str(qty) + " " +
-                      str(position_side) + " " + str(pl_ratio))
+                print("\t" + stock_name + " " + str(qty) + " " + str(position_side) + " " + str(pl_ratio))
             continue
 
         #place order
-        buy_limit(quote_ctx=quote_ctx,
-                  trd_ctx=trd_ctx,
-                  df_stock_info=df_stock_info,
-                  code=code,
-                  drop_threshold=drop_threshold,
-                  pwd_unlock=pwd_unlock,
-                  trd_env=trd_env,
-                  time_sleep=4)
+        buy_limit(quote_ctx=quote_ctx, trd_ctx=trd_ctx, df_stock_info=df_stock_info, code=code, drop_threshold=drop_threshold, pwd_unlock=pwd_unlock, trd_env=trd_env, time_sleep=4)
 
     #### clean up
     quote_ctx.close()

@@ -26,22 +26,14 @@ from optparse import OptionParser
 #The result can be a reference for next day's trading.
 
 import logging
-logging.basicConfig(format='%(asctime)s %(message)s',
-                    datefmt='%m_%d %H:%M:%S',
-                    level=logging.DEBUG)
+logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m_%d %H:%M:%S', level=logging.DEBUG)
 
 logging.info("\n")
 logging.info("SCRIPT STARTING " + " ".join(sys.argv))
 
 parser = OptionParser()
 
-parser.add_option(
-    "-e",
-    "--exam_date",
-    dest="exam_date",
-    help=
-    "exam_date, YYYY-MM-DD, no default value, missing will calc the nearest trading day, most time is today"
-)
+parser.add_option("-e", "--exam_date", dest="exam_date", help="exam_date, YYYY-MM-DD, no default value, missing will calc the nearest trading day, most time is today")
 
 (options, args) = parser.parse_args()
 
@@ -52,32 +44,20 @@ dir_base = '/home/ryan/DATA/announcement'
 if exam_date is None:
     #print("exam_date: " + exam_date)
     for look_ahead in range(7):
-        todaySl = datetime.strptime(finlib.Finlib().get_last_trading_day(),
-                                    '%Y%m%d').strftime('%Y-%m-%d')
-        exam_date = datetime.strptime(todaySl, '%Y-%m-%d') - timedelta(
-            look_ahead)  # suppose run the AG on next day morning.
+        todaySl = datetime.strptime(finlib.Finlib().get_last_trading_day(), '%Y%m%d').strftime('%Y-%m-%d')
+        exam_date = datetime.strptime(todaySl, '%Y-%m-%d') - timedelta(look_ahead)  # suppose run the AG on next day morning.
         exam_date = exam_date.strftime('%Y-%m-%d')
-        print("searching latest reg or sse file in local, checking " +
-              exam_date)
+        print("searching latest reg or sse file in local, checking " + exam_date)
 
-        file_reg = dir_base + '/reg/list/' + str(
-            datetime.strptime(exam_date,
-                              '%Y-%m-%d').year) + '/' + exam_date + '.csv'
-        file_sse = dir_base + '/sse/list/' + str(
-            datetime.strptime(exam_date,
-                              '%Y-%m-%d').year) + '/' + exam_date + '.csv'
+        file_reg = dir_base + '/reg/list/' + str(datetime.strptime(exam_date, '%Y-%m-%d').year) + '/' + exam_date + '.csv'
+        file_sse = dir_base + '/sse/list/' + str(datetime.strptime(exam_date, '%Y-%m-%d').year) + '/' + exam_date + '.csv'
 
         if os.path.isfile(file_reg) and os.path.isfile(file_sse):
-            print(
-                ("based on local file search, exam_date set to: " + exam_date))
+            print(("based on local file search, exam_date set to: " + exam_date))
             break
 else:
-    file_reg = dir_base + '/reg/list/' + str(
-        datetime.strptime(exam_date,
-                          '%Y-%m-%d').year) + '/' + exam_date + '.csv'
-    file_sse = dir_base + '/sse/list/' + str(
-        datetime.strptime(exam_date,
-                          '%Y-%m-%d').year) + '/' + exam_date + '.csv'
+    file_reg = dir_base + '/reg/list/' + str(datetime.strptime(exam_date, '%Y-%m-%d').year) + '/' + exam_date + '.csv'
+    file_sse = dir_base + '/sse/list/' + str(datetime.strptime(exam_date, '%Y-%m-%d').year) + '/' + exam_date + '.csv'
 
 #exam_date="2017-11-17"
 base_dir = '/home/ryan/DATA/result'
@@ -87,8 +67,7 @@ use_lastest_list_as_input = True  # The lower driver use this to control if it u
 #use_lastest_list_as_input = False # The lower driver use this to control if it use latest_list as input.
 
 #start main
-engine = create_engine(
-    'mysql://root:admin888.@_@@127.0.0.1/ryan_stock_db?charset=utf8')
+engine = create_engine('mysql://root:admin888.@_@@127.0.0.1/ryan_stock_db?charset=utf8')
 
 #display result setting
 #pd.set_option('display.height', 1000)
@@ -147,10 +126,7 @@ if df.__len__() <= 0:
 else:
     s = df['symbol'].dropna()
 
-df_result = pd.DataFrame(columns=[
-    'code', 'name', 'annc_cnt', 'P_SUM', 'N_SUM', 'op_rsn', 'op_strength',
-    'date', 'close_p', 'hit_ptn_cnt'
-])  #
+df_result = pd.DataFrame(columns=['code', 'name', 'annc_cnt', 'P_SUM', 'N_SUM', 'op_rsn', 'op_strength', 'date', 'close_p', 'hit_ptn_cnt'])  #
 
 for k in list(positive_kw.keys()):
     df_result[k] = pd.Series()
@@ -183,11 +159,7 @@ for i in range(df.__len__()):
     price_file = "/home/ryan/DATA/DAY_Global/AG/" + symbol_market + ".csv"
 
     if os.path.isfile(price_file):
-        tmp_df = pd.read_csv(
-            price_file,
-            skiprows=1,
-            header=None,
-            names=['code', 'date', 'o', 'h', 'l', 'c', 'vol', 'amnt', 'tnv'])
+        tmp_df = pd.read_csv(price_file, skiprows=1, header=None, names=['code', 'date', 'o', 'h', 'l', 'c', 'vol', 'amnt', 'tnv'])
         #last_day = tmp_df.loc[tmp_df['date'] == anday]  #or tmp_df[-2:-1]
         last_day_df = tmp_df[-1:]
         if tmp_df.__len__() <= 0:  # tmp_df has no header
@@ -200,8 +172,7 @@ for i in range(df.__len__()):
     if pd.isnull(df_result.at[symbol, 'annc_cnt']):
         df_result.at[symbol, 'annc_cnt'] = 0
 
-    for k in list(positive_kw.keys()) + list(
-            negative_kw.keys()) + ['P_SUM', 'N_SUM']:
+    for k in list(positive_kw.keys()) + list(negative_kw.keys()) + ['P_SUM', 'N_SUM']:
         #if symbol == '600438' and k=='P_SUM':
         #    print("600438: "+ str(df_result.get_value(symbol, k)))
 
@@ -216,14 +187,12 @@ for i in range(df.__len__()):
 
         if title.find(kw) >= 0:
 
-            print(symbol + " POSITIVE " + abbv + " match " + kw + ", " +
-                  title + ", " + anday)
+            print(symbol + " POSITIVE " + abbv + " match " + kw + ", " + title + ", " + anday)
             df_result.at[symbol, k] = df_result.at[symbol, k] + 1
 
             df_result.at[symbol, 'P_SUM'] = df_result.at[symbol, 'P_SUM'] + 1
 
-            df_result.at[symbol, 'op_rsn'] = 'Positive Announce cnt ' + str(
-                df_result.at[symbol, 'P_SUM'])
+            df_result.at[symbol, 'op_rsn'] = 'Positive Announce cnt ' + str(df_result.at[symbol, 'P_SUM'])
 
             df_result.at[symbol, 'op_strength'] = df_result.at[symbol, 'P_SUM']
 
@@ -237,8 +206,7 @@ for i in range(df.__len__()):
         kw = negative_kw[k]
 
         if title.find(kw) >= 0:
-            print(symbol + " NEGATIVE " + abbv + " match " + kw + ", " +
-                  title + ", " + anday)
+            print(symbol + " NEGATIVE " + abbv + " match " + kw + ", " + title + ", " + anday)
             df_result.at[symbol, k] = df_result.at[symbol, k] + 1
             df_result.at[symbol, 'N_SUM'] = df_result.at[symbol, 'N_SUM'] + 1
 

@@ -19,15 +19,12 @@ from optparse import OptionParser
 import sys
 
 import logging
-logging.basicConfig(format='%(asctime)s %(message)s',
-                    datefmt='%m_%d %H:%M:%S',
-                    level=logging.DEBUG)
+logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m_%d %H:%M:%S', level=logging.DEBUG)
 
 
 def update_holc(todayS_l, base_dir, pickle_only, add_miss):
     dump = "/home/ryan/DATA/pickle/daily_update_source/" + todayS_l + "ts_ud.pickle"
-    todayS_l = datetime.strptime(todayS_l, '%Y-%m-%d').strftime(
-        '%Y-%m-%d')  #ensure input todayS_l is in format yyyy-mm-dd
+    todayS_l = datetime.strptime(todayS_l, '%Y-%m-%d').strftime('%Y-%m-%d')  #ensure input todayS_l is in format yyyy-mm-dd
     todayS_s = datetime.strptime(todayS_l, '%Y-%m-%d').strftime('%Y%m%d')
 
     if not finlib.Finlib().is_a_trading_day_ag(dateS=todayS_s):
@@ -37,13 +34,10 @@ def update_holc(todayS_l, base_dir, pickle_only, add_miss):
     today_all = pd.DataFrame()
 
     if add_miss and os.path.isfile(dump):
-        logging.error(
-            "usage error, file dump exists, removing --add_miss to update csv(s). "
-            + dump)
+        logging.error("usage error, file dump exists, removing --add_miss to update csv(s). " + dump)
         exit(0)
 
-    pro = ts.pro_api(
-        token="4cc9a1cd78bf41e759dddf92c919cdede5664fa3f1204de572d8221b")
+    pro = ts.pro_api(token="4cc9a1cd78bf41e759dddf92c919cdede5664fa3f1204de572d8221b")
 
     if not os.path.isfile(dump):
         if add_miss:
@@ -109,14 +103,7 @@ def update_holc(todayS_l, base_dir, pickle_only, add_miss):
 
         if os.path.isfile(csv_f):
 
-            df_tmp = pd.read_csv(csv_f,
-                                 converters={'code': str},
-                                 skiprows=1,
-                                 header=None,
-                                 names=[
-                                     'code', 'date', 'o', 'h', 'l', 'c', 'vol',
-                                     'amnt', 'tnv'
-                                 ])
+            df_tmp = pd.read_csv(csv_f, converters={'code': str}, skiprows=1, header=None, names=['code', 'date', 'o', 'h', 'l', 'c', 'vol', 'amnt', 'tnv'])
 
             if df_tmp.__len__() == 0:
                 logging.info("empty file " + csv_f)
@@ -128,17 +115,14 @@ def update_holc(todayS_l, base_dir, pickle_only, add_miss):
             last_row = df_tmp[-1:]
 
             last_date = last_row['date'].values[0]
-            last_date = datetime.strptime(last_date,
-                                          '%Y-%m-%d').strftime('%Y%m%d')
+            last_date = datetime.strptime(last_date, '%Y-%m-%d').strftime('%Y%m%d')
             next_date = datetime.strptime(last_date, '%Y%m%d') + timedelta(1)
-            a_week_before_date = datetime.strptime(todayS_s,
-                                                   '%Y%m%d') - timedelta(7)
+            a_week_before_date = datetime.strptime(todayS_s, '%Y%m%d') - timedelta(7)
 
             # if next_date > datetime.datetime.today():
             #if next_date.strftime('%Y-%m-%d') > todayS:
             if next_date.strftime('%Y%m%d') > todayS_s:
-                logging.info("file already updated, not fetching again. " +
-                             csv_f + ". updated to " + last_date)
+                logging.info("file already updated, not fetching again. " + csv_f + ". updated to " + last_date)
                 continue
 
             #file exist, append.
@@ -157,35 +141,13 @@ def update_holc(todayS_l, base_dir, pickle_only, add_miss):
 def main():
     parser = OptionParser()
 
-    parser.add_option("-b",
-                      "--base_dir",
-                      dest="base_dir",
-                      default='/home/ryan/DATA/DAY_Global/AG',
-                      type="str",
-                      help="base_dir, default /home/ryan/DATA/DAY_Global/AG")
+    parser.add_option("-b", "--base_dir", dest="base_dir", default='/home/ryan/DATA/DAY_Global/AG', type="str", help="base_dir, default /home/ryan/DATA/DAY_Global/AG")
 
-    parser.add_option(
-        "-a",
-        "--add_miss",
-        action="store_true",
-        dest="add_miss",
-        default=False,
-        help="adding miss data. Use with -e/--exam_date to specify date")
+    parser.add_option("-a", "--add_miss", action="store_true", dest="add_miss", default=False, help="adding miss data. Use with -e/--exam_date to specify date")
 
-    parser.add_option("-p",
-                      "--pickle_only",
-                      action="store_true",
-                      dest="pickle_only",
-                      default=False,
-                      help="get today data, save to pickel, then exit")
+    parser.add_option("-p", "--pickle_only", action="store_true", dest="pickle_only", default=False, help="get today data, save to pickel, then exit")
 
-    parser.add_option(
-        "-e",
-        "--exam_date",
-        dest="exam_date",
-        help=
-        "exam_date, YYYY-MM--DD, no default value, missing will calc the nearest trading day, most time is today"
-    )
+    parser.add_option("-e", "--exam_date", dest="exam_date", help="exam_date, YYYY-MM--DD, no default value, missing will calc the nearest trading day, most time is today")
 
     (options, args) = parser.parse_args()
 
@@ -206,10 +168,7 @@ def main():
         logging.info("exam_date reset to: " + exam_date)
         dump = "/home/ryan/DATA/pickle/daily_update_source/" + exam_date + "ts_ud.pickle"
     elif ((not add_miss) and (not os.path.isfile(dump))):
-        logging.error(
-            "expecting --add_miss.  pickle file " + dump +
-            " does not exist, at this situation --exam_date without --add_miss fetchs wrong data from tushare for date which is the past."
-        )
+        logging.error("expecting --add_miss.  pickle file " + dump + " does not exist, at this situation --exam_date without --add_miss fetchs wrong data from tushare for date which is the past.")
         exit(0)
 
     if add_miss:

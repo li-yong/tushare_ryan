@@ -19,9 +19,7 @@ from optparse import OptionParser
 import sys
 import os
 import logging
-logging.basicConfig(format='%(asctime)s %(message)s',
-                    datefmt='%m_%d %H:%M:%S',
-                    level=logging.DEBUG)
+logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m_%d %H:%M:%S', level=logging.DEBUG)
 
 #from datetime import datetime, timedelta
 
@@ -39,8 +37,7 @@ quarter = the_latest_report_date['completed_quarter_number']  #int 3
 
 #dump_csv= "/home/ryan/DATA/result/today/fundamentals_"+todayS+".csv"  #Fund Ana based on Today data
 dump_csv_d = "/home/ryan/DATA/result/today/fundamentals.csv"  #Fund Ana based on Today data
-dump_csv_q = "/home/ryan/DATA/result/Fundamental_Quarter_Report_" + str(
-    year) + "_" + str(quarter) + ".csv"  #Fund Ana based on Quarter Report
+dump_csv_q = "/home/ryan/DATA/result/Fundamental_Quarter_Report_" + str(year) + "_" + str(quarter) + ".csv"  #Fund Ana based on Quarter Report
 
 #Fund Ana based on Quarter Report
 #soft link to --> Fundamental_Quarter_Report_2018_2.csv
@@ -61,24 +58,18 @@ def refine_hist_data(df=None, renew=False, debug=False):
     df_result = pd.DataFrame()
     refined_fundamental_merged_csv = "/home/ryan/DATA/result/fundamental.csv"
 
-    if finlib.Finlib().is_cached(refined_fundamental_merged_csv,
-                                 7) and (not force_run_global) and (not renew):
-        logging.info("file has already been updated in 7 days. " +
-                     refined_fundamental_merged_csv)
-        df_result = pandas.read_csv(refined_fundamental_merged_csv,
-                                    converters={'code': str})
+    if finlib.Finlib().is_cached(refined_fundamental_merged_csv, 7) and (not force_run_global) and (not renew):
+        logging.info("file has already been updated in 7 days. " + refined_fundamental_merged_csv)
+        df_result = pandas.read_csv(refined_fundamental_merged_csv, converters={'code': str})
         return (df_result)
 
     if os.path.isfile(refined_fundamental_merged_csv) and (not renew):
-        logging.info("loading refineded fund from " +
-                     refined_fundamental_merged_csv)
-        df_result = pandas.read_csv(refined_fundamental_merged_csv,
-                                    converters={'code': str})
+        logging.info("loading refineded fund from " + refined_fundamental_merged_csv)
+        df_result = pandas.read_csv(refined_fundamental_merged_csv, converters={'code': str})
         return (df_result)
 
     if df == None:
-        df = pd.read_csv("/home/ryan/DATA/tmp/fundamental_merged.csv",
-                         converters={'code': str})
+        df = pd.read_csv("/home/ryan/DATA/tmp/fundamental_merged.csv", converters={'code': str})
         logging.info("loading " + "/home/ryan/DATA/tmp/fundamental_merged.csv")
 
     df.fillna(0, inplace=True)
@@ -96,49 +87,35 @@ def refine_hist_data(df=None, renew=False, debug=False):
         df_a_stock = df[df['code'] == code].reset_index().drop('index', axis=1)
 
         for i in range(0, df_a_stock.__len__()):
-            if (df_a_stock.iloc[i]['eps'] == 0) and (
-                    df_a_stock.iloc[i]['eps_df_profit'] != 0):
+            if (df_a_stock.iloc[i]['eps'] == 0) and (df_a_stock.iloc[i]['eps_df_profit'] != 0):
                 df_a_stock.at[i, 'eps'] = df_a_stock.iloc[i]['eps_df_profit']
 
-            if (df_a_stock.iloc[i]['roe'] == 0) and (
-                    df_a_stock.iloc[i]['roe_df_profit'] != 0):
+            if (df_a_stock.iloc[i]['roe'] == 0) and (df_a_stock.iloc[i]['roe_df_profit'] != 0):
                 df_a_stock.at[i, 'roe'] = df_a_stock.iloc[i]['roe_df_profit']
 
-            if (df_a_stock.iloc[i]['eps_yoy'] == 0) and (
-                    df_a_stock.iloc[i]['epsg'] != 0):
+            if (df_a_stock.iloc[i]['eps_yoy'] == 0) and (df_a_stock.iloc[i]['epsg'] != 0):
                 df_a_stock.at[i, 'eps_yoy'] = df_a_stock.iloc[i]['epsg']
 
-            if (df_a_stock.iloc[i]['net_profits'] == 0) and (
-                    df_a_stock.iloc[i]['net_profits_df_profit'] != 0):
-                df_a_stock.at[i, 'net_profits'] = df_a_stock.iloc[i][
-                    'net_profits_df_profit'] * 100
+            if (df_a_stock.iloc[i]['net_profits'] == 0) and (df_a_stock.iloc[i]['net_profits_df_profit'] != 0):
+                df_a_stock.at[i, 'net_profits'] = df_a_stock.iloc[i]['net_profits_df_profit'] * 100
 
             for j in df_a_stock.columns:
 
-                if i == 0 and (pd.isnull(df_a_stock.iloc[0][j])
-                               or df_a_stock.iloc[0][j] == '--'):
+                if i == 0 and (pd.isnull(df_a_stock.iloc[0][j]) or df_a_stock.iloc[0][j] == '--'):
                     #logging.info("updating code "+code +" row "+ str(i) + " column " + j + " to 0")
                     df_a_stock.at[0, j] = 0
                 elif df_a_stock.iloc[i][j] == 0:
                     #logging.info("updating  code "+code+ " row "  +str(i)+" "+j + " to "+str(df_a_stock.iloc[i-1][j]))
-                    df_a_stock.at[i, j] = df_a_stock.iloc[i - 1][
-                        j]  #update with previous quarter data
+                    df_a_stock.at[i, j] = df_a_stock.iloc[i - 1][j]  #update with previous quarter data
 
         df_result = df_result.append(df_a_stock)
 
     df_result = df_result.reset_index().drop('index', axis=1)
-    df_result.code = df_result.code.astype(
-        str)  #convert the code from numpy.int to string.
-    df_result = finlib.Finlib().change_df_columns_order(
-        df_result,
-        col_list_to_head=['code', 'name', 'year_quarter', 'trade_date'])
-    df_result.to_csv(refined_fundamental_merged_csv,
-                     encoding='UTF-8',
-                     index=False)
+    df_result.code = df_result.code.astype(str)  #convert the code from numpy.int to string.
+    df_result = finlib.Finlib().change_df_columns_order(df_result, col_list_to_head=['code', 'name', 'year_quarter', 'trade_date'])
+    df_result.to_csv(refined_fundamental_merged_csv, encoding='UTF-8', index=False)
 
-    logging.info(__file__ + ": " + "fundamental_merged_csv saved to " +
-                 refined_fundamental_merged_csv + " , len " +
-                 str(df_result.__len__()))
+    logging.info(__file__ + ": " + "fundamental_merged_csv saved to " + refined_fundamental_merged_csv + " , len " + str(df_result.__len__()))
     return (df_result)
 
 
@@ -157,8 +134,7 @@ def _combine_all(year_end, quarter_end, debug=False):
 
         for q in range(1, 5):
             if str(y) == year_end and str(q) > quarter_end:
-                logging.info("request quarter is in future. year " + str(y) +
-                             " q " + str(q))
+                logging.info("request quarter is in future. year " + str(y) + " q " + str(q))
                 continue
 
             #get the df_pro_basic
@@ -181,67 +157,47 @@ def _combine_all(year_end, quarter_end, debug=False):
             merged_dir = "/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals/merged"
             if not os.path.isdir(merged_dir):
                 os.mkdir(merged_dir)
-            merged_quarter_csv = merged_dir + "/merged_all_" + str(y) + str(
-                file_date_calen) + ".csv"
+            merged_quarter_csv = merged_dir + "/merged_all_" + str(y) + str(file_date_calen) + ".csv"
 
             #if finlib.Finlib().is_cached(merged_quarter_csv, 2) and (not force_run_global):
             #    logging.info("file has already been updated in 1 days. " + merged_quarter_csv)
 
-            df_pro_basic_sub = df_pro_basic[df_pro_basic.trade_date.str.match(
-                str(y) + file_date)]
-            df_pro_basic_sub = finlib.Finlib().remove_market_from_tscode(
-                df_pro_basic_sub)
+            df_pro_basic_sub = df_pro_basic[df_pro_basic.trade_date.str.match(str(y) + file_date)]
+            df_pro_basic_sub = finlib.Finlib().remove_market_from_tscode(df_pro_basic_sub)
 
             y_q = str(y) + "_" + str(q)  #'2017-1'
             logging.info("y_q " + y_q)  #ryan debug
-            (df_report, df_profit, df_operation, df_growth, df_debtpaying,
-             df_cashflow) = fetch(y, q)
+            (df_report, df_profit, df_operation, df_growth, df_debtpaying, df_cashflow) = fetch(y, q)
 
             #df_the_quarter  = df_basic #removed this basic as it is always the newest
 
             #df_the_quarter  = df_report
             df_the_quarter = df_pro_basic_sub
 
-            for df_s in ('df_report', 'df_profit', 'df_operation', 'df_growth',
-                         'df_debtpaying', 'df_cashflow'):
+            for df_s in ('df_report', 'df_profit', 'df_operation', 'df_growth', 'df_debtpaying', 'df_cashflow'):
                 df = pd.DataFrame()  #empty it
                 logging.info("merging " + y_q + " " + df_s)
 
                 df = eval(df_s)
 
                 try:
-                    df_the_quarter = pd.merge(df_the_quarter,
-                                              df,
-                                              on='code',
-                                              how='outer',
-                                              suffixes=('', '_' + df_s))
+                    df_the_quarter = pd.merge(df_the_quarter, df, on='code', how='outer', suffixes=('', '_' + df_s))
                 except:
-                    logging.info('exception when merging ' + df_s + ', y ' +
-                                 str(y) + " q " + str(q))
+                    logging.info('exception when merging ' + df_s + ', y ' + str(y) + " q " + str(q))
                     continue
 
-            new_value_df = pd.DataFrame([y_q] * df_the_quarter.__len__(),
-                                        columns=['year_quarter'])
-            df_the_quarter = df_the_quarter.join(
-                new_value_df)  # inserted column at the tail
+            new_value_df = pd.DataFrame([y_q] * df_the_quarter.__len__(), columns=['year_quarter'])
+            df_the_quarter = df_the_quarter.join(new_value_df)  # inserted column at the tail
 
-            df_the_quarter = finlib.Finlib().remove_df_columns(
-                df_the_quarter,
-                "name_.*")  # remove dup name_*, e.g name_df_cashflow
-            df_the_quarter = finlib.Finlib().change_df_columns_order(
-                df_the_quarter, ['code', 'name', 'year_quarter', 'trade_date'])
+            df_the_quarter = finlib.Finlib().remove_df_columns(df_the_quarter, "name_.*")  # remove dup name_*, e.g name_df_cashflow
+            df_the_quarter = finlib.Finlib().change_df_columns_order(df_the_quarter, ['code', 'name', 'year_quarter', 'trade_date'])
             df_the_quarter = df_the_quarter.drop_duplicates()
             df_the_quarter.code = df_the_quarter.code.astype(str)
 
-            df_the_quarter.to_csv(merged_quarter_csv,
-                                  encoding='UTF-8',
-                                  index=False)
-            logging.info("fundamental quarterly merged csv saved, " +
-                         merged_quarter_csv + " len " +
-                         str(df_the_quarter.__len__()))
+            df_the_quarter.to_csv(merged_quarter_csv, encoding='UTF-8', index=False)
+            logging.info("fundamental quarterly merged csv saved, " + merged_quarter_csv + " len " + str(df_the_quarter.__len__()))
 
-            df_result = df_result.append(
-                df_the_quarter)  #append the merged quarter to the result
+            df_result = df_result.append(df_the_quarter)  #append the merged quarter to the result
             logging.info('merged result ' + str(df_result.__len__()))
 
     cols = [
@@ -292,14 +248,11 @@ def _combine_all(year_end, quarter_end, debug=False):
     ]
     #df_result = df_result[cols]  #ryan 20180519, keep all rows
 
-    df_result = finlib.Finlib().remove_df_columns(
-        df_result, "name_.*")  #remove dup name_*, e.g name_df_cashflow
-    df_result = finlib.Finlib().change_df_columns_order(
-        df_result, ['code', 'name', 'year_quarter'])
+    df_result = finlib.Finlib().remove_df_columns(df_result, "name_.*")  #remove dup name_*, e.g name_df_cashflow
+    df_result = finlib.Finlib().change_df_columns_order(df_result, ['code', 'name', 'year_quarter'])
 
     df_result = df_result.drop_duplicates()
-    df_result.code = df_result.code.astype(
-        str)  #convert the code from numpy.int to string.
+    df_result.code = df_result.code.astype(str)  #convert the code from numpy.int to string.
 
     #debug
     #df_result = df_result[df_result['code'] == '000651'].reset_index().drop('index', axis=1)
@@ -308,8 +261,7 @@ def _combine_all(year_end, quarter_end, debug=False):
         pass  #debug moved to refine_hist_data
 
     df_result.to_csv(fundamental_merged_csv, encoding='UTF-8', index=False)
-    logging.info(__file__ + ": " + "fundamental_merged_csv saved to " +
-                 fundamental_merged_csv + " , len " + str(df_result.__len__()))
+    logging.info(__file__ + ": " + "fundamental_merged_csv saved to " + fundamental_merged_csv + " , len " + str(df_result.__len__()))
 
     return (df_result)
 
@@ -323,8 +275,7 @@ def fetch_pickle():
         #df_sme.to_pickle(dump)
         #logging.info(__file__+": "+"SME saved to "+dump)
         df_sme.to_csv(csvf, encoding='UTF-8', index=False)
-        logging.info(__file__ + ": " + "SME saved to " + csvf + " , len " +
-                     str(df_sme.__len__()))
+        logging.info(__file__ + ": " + "SME saved to " + csvf + " , len " + str(df_sme.__len__()))
 
         #dump= "/home/ryan/DATA/pickle/gem.pickle"
         csvf = "/home/ryan/DATA/pickle/gem.csv"
@@ -333,8 +284,7 @@ def fetch_pickle():
         #df_gem.to_pickle(dump)
         #logging.info(__file__+": "+"gem saved to "+dump)
         df_gem.to_csv(csvf, encoding='UTF-8', index=False)
-        logging.info(__file__ + ": " + "df_gem saved to " + csvf + " , len " +
-                     str(df_gem.__len__()))
+        logging.info(__file__ + ": " + "df_gem saved to " + csvf + " , len " + str(df_gem.__len__()))
 
         #dump= "/home/ryan/DATA/pickle/sz50.pickle"
         csvf = "/home/ryan/DATA/pickle/sz50.csv"
@@ -343,8 +293,7 @@ def fetch_pickle():
         #df_sz50.to_pickle(dump)
         #logging.info(__file__+": "+"SZ50 saved to "+dump)
         df_sz50.to_csv(csvf, encoding='UTF-8', index=False)
-        logging.info(__file__ + ": " + "df_sz50 saved to " + csvf + " , len " +
-                     str(df_sz50.__len__()))
+        logging.info(__file__ + ": " + "df_sz50 saved to " + csvf + " , len " + str(df_sz50.__len__()))
 
         #dump= "/home/ryan/DATA/pickle/hs300.pickle"
         csvf = "/home/ryan/DATA/pickle/hs300.csv"
@@ -353,8 +302,7 @@ def fetch_pickle():
         #df_hs300.to_pickle(dump)
         #logging.info(__file__+": "+"HS300 saved to "+dump)
         df_hs300.to_csv(csvf, encoding='UTF-8', index=False)
-        logging.info(__file__ + ": " + "df_hs300 saved to " + csvf +
-                     " , len " + str(df_hs300.__len__()))
+        logging.info(__file__ + ": " + "df_hs300 saved to " + csvf + " , len " + str(df_hs300.__len__()))
 
         #dump= "/home/ryan/DATA/pickle/ZZ500.pickle"
         csvf = "/home/ryan/DATA/pickle/ZZ500.csv"
@@ -363,8 +311,7 @@ def fetch_pickle():
         #df_zz500.to_pickle(dump)
         #logging.info(__file__+": "+"ZZ500 saved to "+dump)
         df_zz500.to_csv(csvf, encoding='UTF-8', index=False)
-        logging.info(__file__ + ": " + "df_zz500 saved to " + csvf +
-                     " , len " + str(df_zz500.__len__()))
+        logging.info(__file__ + ": " + "df_zz500 saved to " + csvf + " , len " + str(df_zz500.__len__()))
 
         #dump = "/home/ryan/DATA/pickle/trading_day_2019.pickle"
         #csvf = "/home/ryan/DATA/pickle/trading_day_2019.csv"
@@ -377,51 +324,34 @@ def fetch_pickle():
         if sys.exc_info() == (None, None, None):
             pass  # no exception
         else:
-            logging.info(
-                unicode(
-                    traceback.print_exception(*sys.exc_info())).encode('utf8'))
-            logging.info(
-                sys.exc_value.message)  # print the human readable unincode
+            logging.info(unicode(traceback.print_exception(*sys.exc_info())).encode('utf8'))
+            logging.info(sys.exc_value.message)  # print the human readable unincode
             sys.exc_clear()
 
 
 def fetch(year, quarter, overwrite=False):
 
     #logging.info("fetching year "+str(year)+" quarter "+str(quarter))
-    fund_base = "/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals/" + str(
-        year)
+    fund_base = "/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals/" + str(year)
 
-    csv_report = fund_base + "/report_" + str(year) + "_" + str(
-        quarter) + ".csv"
-    csv_profit = fund_base + "/profit_" + str(year) + "_" + str(
-        quarter) + ".csv"
-    csv_operation = fund_base + "/operation_" + str(year) + "_" + str(
-        quarter) + ".csv"
-    csv_growth = fund_base + "/growth_" + str(year) + "_" + str(
-        quarter) + ".csv"
-    csv_debtpaying = fund_base + "/debtpaying_" + str(year) + "_" + str(
-        quarter) + ".csv"
-    csv_cashflow = fund_base + "/cashflow_" + str(year) + "_" + str(
-        quarter) + ".csv"
+    csv_report = fund_base + "/report_" + str(year) + "_" + str(quarter) + ".csv"
+    csv_profit = fund_base + "/profit_" + str(year) + "_" + str(quarter) + ".csv"
+    csv_operation = fund_base + "/operation_" + str(year) + "_" + str(quarter) + ".csv"
+    csv_growth = fund_base + "/growth_" + str(year) + "_" + str(quarter) + ".csv"
+    csv_debtpaying = fund_base + "/debtpaying_" + str(year) + "_" + str(quarter) + ".csv"
+    csv_cashflow = fund_base + "/cashflow_" + str(year) + "_" + str(quarter) + ".csv"
 
-    df_report = df_profit = df_operation = df_growth = df_debtpaying = df_cashflow = pd.DataFrame(
-    )
+    df_report = df_profit = df_operation = df_growth = df_debtpaying = df_cashflow = pd.DataFrame()
     if not os.path.exists(fund_base):
         os.makedirs(fund_base)
 
     if ((not os.path.isfile(csv_report)) or overwrite) and (year >= 2010):
-        logging.info("\nGetting Report, ts.get_report_data" + ". Y " +
-                     str(year) + ",Q " + str(quarter))  # 业绩报告（主表）
+        logging.info("\nGetting Report, ts.get_report_data" + ". Y " + str(year) + ",Q " + str(quarter))  # 业绩报告（主表）
         try:
             df_report = ts.get_report_data(year, quarter)
-            df_report.code = df_report.code.astype(
-                str)  # convert the code from numpy.int to string.
-            df_report.reset_index().drop('index',
-                                         axis=1).to_csv(csv_report,
-                                                        encoding='UTF-8',
-                                                        index=False)
-            logging.info(__file__ + ": " + "saved, " + csv_report + " , len " +
-                         str(df_report.__len__()))
+            df_report.code = df_report.code.astype(str)  # convert the code from numpy.int to string.
+            df_report.reset_index().drop('index', axis=1).to_csv(csv_report, encoding='UTF-8', index=False)
+            logging.info(__file__ + ": " + "saved, " + csv_report + " , len " + str(df_report.__len__()))
         except:
             logging.info(__file__ + ": " + "get exception " + csv_report)
     else:
@@ -433,18 +363,12 @@ def fetch(year, quarter, overwrite=False):
             logging.info(__file__ + ": " + "read exception " + csv_report)
 
     if ((not os.path.isfile(csv_profit)) or overwrite) and (year >= 2010):
-        logging.info("\nGetting Profit, ts.get_profit_data" + ". Y " +
-                     str(year) + ",Q " + str(quarter))  # 盈利能力
+        logging.info("\nGetting Profit, ts.get_profit_data" + ". Y " + str(year) + ",Q " + str(quarter))  # 盈利能力
         try:
             df_profit = ts.get_profit_data(year, quarter)
-            df_profit.code = df_profit.code.astype(
-                str)  # convert the code from numpy.int to string.
-            df_profit.reset_index().drop('index',
-                                         axis=1).to_csv(csv_profit,
-                                                        encoding='UTF-8',
-                                                        index=False)
-            logging.info(__file__ + ": " + "saved, " + csv_profit + " , len " +
-                         str(df_profit.__len__()))
+            df_profit.code = df_profit.code.astype(str)  # convert the code from numpy.int to string.
+            df_profit.reset_index().drop('index', axis=1).to_csv(csv_profit, encoding='UTF-8', index=False)
+            logging.info(__file__ + ": " + "saved, " + csv_profit + " , len " + str(df_profit.__len__()))
         except:
             logging.info(__file__ + ": " + "get exception " + csv_profit)
     else:
@@ -456,42 +380,29 @@ def fetch(year, quarter, overwrite=False):
             logging.info(__file__ + ": " + "read exception " + csv_profit)
 
     if ((not os.path.isfile(csv_operation)) or overwrite) and (year >= 2010):
-        logging.info("\nGetting Operation, ts.get_operation_data" + ". Y " +
-                     str(year) + ",Q " + str(quarter))  #营运能力
+        logging.info("\nGetting Operation, ts.get_operation_data" + ". Y " + str(year) + ",Q " + str(quarter))  #营运能力
         try:
             df_operation = ts.get_operation_data(year, quarter)
-            df_operation.code = df_operation.code.astype(
-                str)  # convert the code from numpy.int to string.
-            df_operation.reset_index().drop('index',
-                                            axis=1).to_csv(csv_operation,
-                                                           encoding='UTF-8',
-                                                           index=False)
-            logging.info(__file__ + ": " + "saved, " + csv_operation +
-                         " , len " + str(df_operation.__len__()))
+            df_operation.code = df_operation.code.astype(str)  # convert the code from numpy.int to string.
+            df_operation.reset_index().drop('index', axis=1).to_csv(csv_operation, encoding='UTF-8', index=False)
+            logging.info(__file__ + ": " + "saved, " + csv_operation + " , len " + str(df_operation.__len__()))
         except:
             logging.info(__file__ + ": " + "get exception " + csv_operation)
     else:
         #logging.info("Loading Operation"+". Y "+str(year)+ ",Q "+str(quarter))
         try:
-            df_operation = pandas.read_csv(csv_operation,
-                                           converters={'code': str})
+            df_operation = pandas.read_csv(csv_operation, converters={'code': str})
             logging.info(__file__ + ": " + "loading " + csv_operation)
         except:
             logging.info(__file__ + ": " + "read exception " + csv_operation)
 
     if ((not os.path.isfile(csv_growth)) or overwrite) and (year >= 2010):
-        logging.info("\nGetting Growth, ts.get_growth_data" + ". Y " +
-                     str(year) + ",Q " + str(quarter))  # 成长能力
+        logging.info("\nGetting Growth, ts.get_growth_data" + ". Y " + str(year) + ",Q " + str(quarter))  # 成长能力
         try:
             df_growth = ts.get_growth_data(year, quarter)
-            df_growth.code = df_growth.code.astype(
-                str)  # convert the code from numpy.int to string.
-            df_growth.reset_index().drop('index',
-                                         axis=1).to_csv(csv_growth,
-                                                        encoding='UTF-8',
-                                                        index=False)
-            logging.info(__file__ + ": " + "saved, " + csv_growth + " , len " +
-                         str(df_growth.__len__()))
+            df_growth.code = df_growth.code.astype(str)  # convert the code from numpy.int to string.
+            df_growth.reset_index().drop('index', axis=1).to_csv(csv_growth, encoding='UTF-8', index=False)
+            logging.info(__file__ + ": " + "saved, " + csv_growth + " , len " + str(df_growth.__len__()))
         except:
             logging.info(__file__ + ": " + "get exception " + csv_growth)
     else:
@@ -503,55 +414,40 @@ def fetch(year, quarter, overwrite=False):
             logging.info(__file__ + ": " + "read exception " + csv_growth)
 
     if ((not os.path.isfile(csv_debtpaying)) or overwrite) and (year >= 2010):
-        logging.info("\nGetting Debtpaying, ts.get_debtpaying_data" + ". Y " +
-                     str(year) + ",Q " + str(quarter))  # 偿债能力
+        logging.info("\nGetting Debtpaying, ts.get_debtpaying_data" + ". Y " + str(year) + ",Q " + str(quarter))  # 偿债能力
         try:
             df_debtpaying = ts.get_debtpaying_data(year, quarter)
-            df_debtpaying.code = df_debtpaying.code.astype(
-                str)  # convert the code from numpy.int to string.
-            df_debtpaying.reset_index().drop('index',
-                                             axis=1).to_csv(csv_debtpaying,
-                                                            encoding='UTF-8',
-                                                            index=False)
-            logging.info(__file__ + ": " + "saved, " + csv_debtpaying +
-                         " , len " + str(df_debtpaying.__len__()))
+            df_debtpaying.code = df_debtpaying.code.astype(str)  # convert the code from numpy.int to string.
+            df_debtpaying.reset_index().drop('index', axis=1).to_csv(csv_debtpaying, encoding='UTF-8', index=False)
+            logging.info(__file__ + ": " + "saved, " + csv_debtpaying + " , len " + str(df_debtpaying.__len__()))
         except:
             logging.info(__file__ + ": " + "get exception " + csv_debtpaying)
     else:
         #logging.info("Loading Debtpaying"+". Y "+str(year)+ ",Q "+str(quarter))
         try:
-            df_debtpaying = pandas.read_csv(csv_debtpaying,
-                                            converters={'code': str})
+            df_debtpaying = pandas.read_csv(csv_debtpaying, converters={'code': str})
             logging.info(__file__ + ": " + "loading " + csv_debtpaying)
         except:
             logging.info(__file__ + ": " + "read exception " + csv_debtpaying)
 
     if ((not os.path.isfile(csv_cashflow)) or overwrite) and (year >= 2010):
-        logging.info("\nGetting Cashflow, ts.get_cashflow_data" + ". Y " +
-                     str(year) + ",Q " + str(quarter))  # 现金流量
+        logging.info("\nGetting Cashflow, ts.get_cashflow_data" + ". Y " + str(year) + ",Q " + str(quarter))  # 现金流量
         try:
             df_cashflow = ts.get_cashflow_data(year, quarter)
-            df_cashflow.code = df_cashflow.code.astype(
-                str)  # convert the code from numpy.int to string.
-            df_cashflow.reset_index().drop('index',
-                                           axis=1).to_csv(csv_cashflow,
-                                                          encoding='UTF-8',
-                                                          index=False)
-            logging.info(__file__ + ": " + "saved, " + csv_cashflow +
-                         " , len " + str(df_cashflow.__len__()))
+            df_cashflow.code = df_cashflow.code.astype(str)  # convert the code from numpy.int to string.
+            df_cashflow.reset_index().drop('index', axis=1).to_csv(csv_cashflow, encoding='UTF-8', index=False)
+            logging.info(__file__ + ": " + "saved, " + csv_cashflow + " , len " + str(df_cashflow.__len__()))
         except:
             logging.info(__file__ + ": " + "get exception " + csv_cashflow)
     else:
         #logging.info("Loading Cashflow"+". Y "+str(year)+ ",Q "+str(quarter))
         try:
-            df_cashflow = pandas.read_csv(csv_cashflow,
-                                          converters={'code': str})
+            df_cashflow = pandas.read_csv(csv_cashflow, converters={'code': str})
             logging.info(__file__ + ": " + "loading " + csv_cashflow)
         except:
             logging.info(__file__ + ": " + "read exception " + csv_cashflow)
 
-    return (df_report, df_profit, df_operation, df_growth, df_debtpaying,
-            df_cashflow)
+    return (df_report, df_profit, df_operation, df_growth, df_debtpaying, df_cashflow)
 
     #===== Reference =====#
     #This implemented in t_fenghong.py
@@ -569,11 +465,8 @@ def fetch_all():
         return ()
     else:
         year_q = finlib.Finlib().get_year_month_quarter()
-        fetch(year_q['last_quarter']['year'],
-              year_q['last_quarter']['quarter'],
-              overwrite=True)  #Manually Change last Quarterly
-        fetch(year_q['year'], year_q['quarter'],
-              overwrite=True)  #Manually Change last Quarterly
+        fetch(year_q['last_quarter']['year'], year_q['last_quarter']['quarter'], overwrite=True)  #Manually Change last Quarterly
+        fetch(year_q['year'], year_q['quarter'], overwrite=True)  #Manually Change last Quarterly
 
 
 def quarterly_fundamental_any(df_basic, year_quarter, debug=False):
@@ -706,8 +599,7 @@ def quarterly_fundamental_any(df_basic, year_quarter, debug=False):
     if os.path.exists(file_pro_merged):
         df_pro_merged = pd.read_csv(file_pro_merged, converters={'code': str})
         logging.info(__file__ + ": " + "loading " + file_pro_merged)
-        df_pro_merged = finlib.Finlib().remove_market_from_tscode(
-            df_pro_merged)
+        df_pro_merged = finlib.Finlib().remove_market_from_tscode(df_pro_merged)
     else:
         logging.error("no such file, " + file_pro_merged)
         exit()
@@ -726,21 +618,9 @@ def quarterly_fundamental_any(df_basic, year_quarter, debug=False):
     df_basic = df_basic.reset_index().drop('index', axis=1)
 
     #df_q_r = pd.merge(df_basic,df_merged_quarterly, on='code', how='outer',suffixes=('','_others'))
-    df_q_r = pd.merge(df_merged,
-                      df_pro_merged,
-                      on='code',
-                      how='outer',
-                      suffixes=('', '_pro_merged'))
-    df_q_r = pd.merge(df_q_r,
-                      df_pro_basic,
-                      on='code',
-                      how='outer',
-                      suffixes=('', '_pro_basic'))
-    df_q_r = pd.merge(df_q_r,
-                      df_basic,
-                      on='code',
-                      how='outer',
-                      suffixes=('', '_basic'))
+    df_q_r = pd.merge(df_merged, df_pro_merged, on='code', how='outer', suffixes=('', '_pro_merged'))
+    df_q_r = pd.merge(df_q_r, df_pro_basic, on='code', how='outer', suffixes=('', '_pro_basic'))
+    df_q_r = pd.merge(df_q_r, df_basic, on='code', how='outer', suffixes=('', '_basic'))
     #df_q_r = df_merged_quarterly
 
     #df_q_r = pd.merge(df_q_r,df_merged, on='code', how='outer',suffixes=('','_pro_basic'))
@@ -763,8 +643,7 @@ def quarterly_fundamental_any(df_basic, year_quarter, debug=False):
     #print "saving df_q_r to "+df_q_r_csv
     #df_q_r.to_csv(df_q_r_csv, encoding='UTF-8')
 
-    logging.info("Fundamental Analysising Based on Quarter Report,  " + year +
-                 " " + quarter)
+    logging.info("Fundamental Analysising Based on Quarter Report,  " + year + " " + quarter)
 
     new_value_df = pd.DataFrame({
         #'code': df_q_r['code'],
@@ -904,38 +783,26 @@ def quarterly_fundamental_any(df_basic, year_quarter, debug=False):
         esp_perc = stats.percentileofscore(esp_all, esp) / 100
         bvps_perc = stats.percentileofscore(bvps_all, bvps) / 100
         #perundp_perc=stats.percentileofscore(perundp_all, perundp)/100
-        profit_perc = stats.percentileofscore(total_profit_all,
-                                              total_profit) / 100
+        profit_perc = stats.percentileofscore(total_profit_all, total_profit) / 100
         gpr_perc = stats.percentileofscore(gpr_all, gpr) / 100
         npr_perc = stats.percentileofscore(npr_all, npr) / 100
-        holders_perc = 1 - (stats.percentileofscore(holders_all, holders) /
-                            100)
-        net_profits_perc = stats.percentileofscore(net_profits_all,
-                                                   net_profits) / 100
-        business_income_perc = stats.percentileofscore(business_income_all,
-                                                       business_income) / 100
+        holders_perc = 1 - (stats.percentileofscore(holders_all, holders) / 100)
+        net_profits_perc = stats.percentileofscore(net_profits_all, net_profits) / 100
+        business_income_perc = stats.percentileofscore(business_income_all, business_income) / 100
         bips_perc = stats.percentileofscore(bips_all, bips) / 100
-        currentasset_turnover_perc = stats.percentileofscore(
-            currentasset_turnover_all, currentasset_turnover) / 100
+        currentasset_turnover_perc = stats.percentileofscore(currentasset_turnover_all, currentasset_turnover) / 100
         nav_perc = stats.percentileofscore(nav_all, nav) / 100
         targ_perc = stats.percentileofscore(targ_all, targ) / 100
-        rateofreturn_perc = stats.percentileofscore(rateofreturn_all,
-                                                    rateofreturn) / 100
-        cashflowratio_perc = stats.percentileofscore(cashflowratio_all,
-                                                     cashflowratio) / 100
-        esp_ratio_perc = stats.percentileofscore(esp_ratio_all,
-                                                 esp_ratio) / 100
-        totalAssets_perc = stats.percentileofscore(totalAssets_all,
-                                                   totalAssets) / 100
-        business_income_perc = stats.percentileofscore(business_income_all,
-                                                       business_income) / 100
-        net_profits_perc = stats.percentileofscore(net_profits_all,
-                                                   net_profits) / 100
+        rateofreturn_perc = stats.percentileofscore(rateofreturn_all, rateofreturn) / 100
+        cashflowratio_perc = stats.percentileofscore(cashflowratio_all, cashflowratio) / 100
+        esp_ratio_perc = stats.percentileofscore(esp_ratio_all, esp_ratio) / 100
+        totalAssets_perc = stats.percentileofscore(totalAssets_all, totalAssets) / 100
+        business_income_perc = stats.percentileofscore(business_income_all, business_income) / 100
+        net_profits_perc = stats.percentileofscore(net_profits_all, net_profits) / 100
 
         #df_q_r.iloc[i, df_q_r.columns.get_loc('esp_ratio')] = esp_ratio
 
-        df_q_r.iloc[i, df_q_r.columns.get_loc(
-            'esp_ratio_perc')] = esp_ratio_perc  #cannot determin at this time,
+        df_q_r.iloc[i, df_q_r.columns.get_loc('esp_ratio_perc')] = esp_ratio_perc  #cannot determin at this time,
         #  calc later after all records are clear
         #  Maybe we shouldnot have this, as esp_ratio is already in /RMB? Stocks can be compared in parellel.
 
@@ -943,12 +810,9 @@ def quarterly_fundamental_any(df_basic, year_quarter, debug=False):
         df_q_r.iloc[i, df_q_r.columns.get_loc('pe_perc')] = pe_perc
         df_q_r.iloc[i, df_q_r.columns.get_loc('pb_perc')] = pb_perc
         df_q_r.iloc[i, df_q_r.columns.get_loc('roe_perc')] = roe_perc
-        df_q_r.iloc[i, df_q_r.columns.get_loc('totalAssets_perc'
-                                              )] = totalAssets_perc
-        df_q_r.iloc[i, df_q_r.columns.get_loc('business_income_perc'
-                                              )] = business_income_perc
-        df_q_r.iloc[i, df_q_r.columns.get_loc('net_profits_perc'
-                                              )] = net_profits_perc
+        df_q_r.iloc[i, df_q_r.columns.get_loc('totalAssets_perc')] = totalAssets_perc
+        df_q_r.iloc[i, df_q_r.columns.get_loc('business_income_perc')] = business_income_perc
+        df_q_r.iloc[i, df_q_r.columns.get_loc('net_profits_perc')] = net_profits_perc
 
         critiria_not_meet = False
         critiria = ''
@@ -975,13 +839,8 @@ def quarterly_fundamental_any(df_basic, year_quarter, debug=False):
 
         if critiria_not_meet:
             result_value = 0
-            df_q_r.iloc[i,
-                        df_q_r.columns.get_loc('result_value_quarter_fundation'
-                                               )] = result_value
-            logging.info(
-                code + " " + critiria +
-                " indicator not meet the minimal critiria, mark overall score to 0 "
-            )
+            df_q_r.iloc[i, df_q_r.columns.get_loc('result_value_quarter_fundation')] = result_value
+            logging.info(code + " " + critiria + " indicator not meet the minimal critiria, mark overall score to 0 ")
             continue
 
 
@@ -995,9 +854,7 @@ def quarterly_fundamental_any(df_basic, year_quarter, debug=False):
         logging.info("code " + code + " result " + str(result_value))
 
         if not np.isnan(result_value):
-            df_q_r.iloc[i,
-                        df_q_r.columns.get_loc('result_value_quarter_fundation'
-                                               )] = result_value
+            df_q_r.iloc[i, df_q_r.columns.get_loc('result_value_quarter_fundation')] = result_value
 
     cols = [
         'year_quarter',
@@ -1068,16 +925,12 @@ def quarterly_fundamental_any(df_basic, year_quarter, debug=False):
     ]
 
     #df_q_r = df_q_r[cols]
-    df_q_r.sort_values('result_value_quarter_fundation',
-                       ascending=False,
-                       inplace=True)
+    df_q_r.sort_values('result_value_quarter_fundation', ascending=False, inplace=True)
     #df_q_r = df_q_r.DataFrame.reset_index().drop('index', axis=1) #RYAN:BUG?
     df_q_r = df_q_r.reset_index().drop('index', axis=1)
 
     df_q_r = finlib.Finlib().change_df_columns_order(df_q_r, [
-        'code', 'name', 'year_quarter', 'trade_date',
-        'result_value_quarter_fundation', 'business_income_perc', 'esp_perc',
-        'esp_ratio_perc', 'net_profits_perc', 'pb_perc', 'pe_perc', 'roe_perc',
+        'code', 'name', 'year_quarter', 'trade_date', 'result_value_quarter_fundation', 'business_income_perc', 'esp_perc', 'esp_ratio_perc', 'net_profits_perc', 'pb_perc', 'pe_perc', 'roe_perc',
         'totalAssets_perc', 'esp_ratio', 'peg_1', 'peg_4'
     ])
 
@@ -1088,13 +941,8 @@ def quarterly_fundamental_any(df_basic, year_quarter, debug=False):
 
     os.symlink(dump_csv_q, dump_csv_q_sym_link)
 
-    logging.info(
-        __file__ + ": " +
-        "Fundamental Analysising Based on Quarter Report, result saved to " +
-        dump_csv_q + " , len " + str(df_q_r.__len__()))
-    logging.info(__file__ + ": " + "symbol link created  " +
-                 dump_csv_q_sym_link + " -> " + dump_csv_q + " , len " +
-                 str(df_q_r.__len__()))
+    logging.info(__file__ + ": " + "Fundamental Analysising Based on Quarter Report, result saved to " + dump_csv_q + " , len " + str(df_q_r.__len__()))
+    logging.info(__file__ + ": " + "symbol link created  " + dump_csv_q_sym_link + " -> " + dump_csv_q + " , len " + str(df_q_r.__len__()))
 
 
 #this func run after calc_ps. seq calc_peg->calc_ps->this
@@ -1110,11 +958,7 @@ def _quarterly_fundamental_any_2(debug=False):
         logging.info("not found source file. " + dump_csv_q)
         exit(1)
 
-    cols_position = [
-        'score_sum', 'result_value_2', 'ps_perc', 'npr_perc',
-        'net_profits_perc', 'npr_mtp_profit', 'npr_mtp_profit_perc',
-        'peg_1_perc', 'peg_4_perc'
-    ]
+    cols_position = ['score_sum', 'result_value_2', 'ps_perc', 'npr_perc', 'net_profits_perc', 'npr_mtp_profit', 'npr_mtp_profit_perc', 'peg_1_perc', 'peg_4_perc']
 
     df_base_q = pd.read_csv(dump_csv_q, converters={'code': str})
     logging.info(__file__ + ": " + "loading " + dump_csv_q)
@@ -1123,33 +967,25 @@ def _quarterly_fundamental_any_2(debug=False):
 
     for co in cols_position:
         if co in base_cols_q:
-            df_base_q = df_base_q.drop(
-                co, axis=1)  #remove the co in base if already exists
+            df_base_q = df_base_q.drop(co, axis=1)  #remove the co in base if already exists
 
     if debug:
         df_base_q = df_base_q.query("industry=='家用电器'")
 
     new_value_df = pd.DataFrame({
-        'code':
-        df_base_q['code'],
-        'score_sum':
-        df_base_q['result_value_quarter_fundation'],
+        'code': df_base_q['code'],
+        'score_sum': df_base_q['result_value_quarter_fundation'],
         'result_value_2': [0] * df_base_q.__len__(),
         'ps_perc': [0] * df_base_q.__len__(),
         'npr_perc': [0] * df_base_q.__len__(),
         'net_profits_perc': [0] * df_base_q.__len__(),
         'npr_mtp_profit': [0] * df_base_q.__len__(),  #npr*net_profit
-        'npr_mtp_profit_perc':
-        [0] * df_base_q.__len__(),  #npr*net_profit percent
+        'npr_mtp_profit_perc': [0] * df_base_q.__len__(),  #npr*net_profit percent
         'peg_1_perc': [0] * df_base_q.__len__(),
         'peg_4_perc': [0] * df_base_q.__len__(),
     })
 
-    df_base_q = pd.merge(new_value_df,
-                         df_base_q,
-                         on='code',
-                         how='outer',
-                         suffixes=('', '_df_base_q'))
+    df_base_q = pd.merge(new_value_df, df_base_q, on='code', how='outer', suffixes=('', '_df_base_q'))
 
     df_base_q.drop_duplicates(inplace=True)
     df_base_q.fillna(0, inplace=True)
@@ -1158,8 +994,7 @@ def _quarterly_fundamental_any_2(debug=False):
     #update npr*net_profit
     for i in range(df_base_q.__len__()):
         tmp = df_base_q.iloc[i]['npr'] * df_base_q.iloc[i]['net_profits'] / 100
-        df_base_q.iloc[i, df_base_q.columns.get_loc('npr_mtp_profit')] = int(
-            tmp)
+        df_base_q.iloc[i, df_base_q.columns.get_loc('npr_mtp_profit')] = int(tmp)
 
         peg_1 = df_base_q.iloc[i]['peg_1']
         peg_4 = df_base_q.iloc[i]['peg_4']
@@ -1199,10 +1034,8 @@ def _quarterly_fundamental_any_2(debug=False):
 
         ps_perc = 1 - stats.percentileofscore(ps_all, ps) / 100
         npr_perc = stats.percentileofscore(npr_all, npr) / 100
-        net_profits_perc = stats.percentileofscore(net_profits_all,
-                                                   net_profits) / 100
-        npr_mtp_profit_perc = stats.percentileofscore(npr_mtp_profit_all,
-                                                      npr_mtp_profit) / 100
+        net_profits_perc = stats.percentileofscore(net_profits_all, net_profits) / 100
+        npr_mtp_profit_perc = stats.percentileofscore(npr_mtp_profit_all, npr_mtp_profit) / 100
 
         if peg_1 > 0:
             peg_1_perc = 1 - stats.percentileofscore(peg_1_all, peg_1) / 100
@@ -1216,10 +1049,8 @@ def _quarterly_fundamental_any_2(debug=False):
 
         df_base_q.iloc[i, df_base_q.columns.get_loc('ps_perc')] = ps_perc
         df_base_q.iloc[i, df_base_q.columns.get_loc('npr_perc')] = npr_perc
-        df_base_q.iloc[i, df_base_q.columns.get_loc('net_profits_perc'
-                                                    )] = net_profits_perc
-        df_base_q.iloc[i, df_base_q.columns.get_loc('npr_mtp_profit_perc'
-                                                    )] = npr_mtp_profit_perc
+        df_base_q.iloc[i, df_base_q.columns.get_loc('net_profits_perc')] = net_profits_perc
+        df_base_q.iloc[i, df_base_q.columns.get_loc('npr_mtp_profit_perc')] = npr_mtp_profit_perc
         df_base_q.iloc[i, df_base_q.columns.get_loc('peg_1_perc')] = peg_1_perc
         df_base_q.iloc[i, df_base_q.columns.get_loc('peg_4_perc')] = peg_4_perc
 
@@ -1244,12 +1075,8 @@ def _quarterly_fundamental_any_2(debug=False):
 
         if critiria_not_meet:
             result_value = 0
-            df_base_q.iloc[i, df_base_q.columns.get_loc('result_value_2'
-                                                        )] = result_value
-            logging.info(
-                str(code) + " " + str(name) + " " + critiria +
-                " indicator not meet the minimal critiria, mark result_value_2 score to 0 "
-            )
+            df_base_q.iloc[i, df_base_q.columns.get_loc('result_value_2')] = result_value
+            logging.info(str(code) + " " + str(name) + " " + critiria + " indicator not meet the minimal critiria, mark result_value_2 score to 0 ")
             continue
 
 
@@ -1263,10 +1090,8 @@ def _quarterly_fundamental_any_2(debug=False):
         logging.info("code " + code + " result " + str(result_value))
 
         if not np.isnan(result_value):
-            df_base_q.iloc[i, df_base_q.columns.get_loc('result_value_2'
-                                                        )] = result_value
-            df_base_q.iloc[i, df_base_q.columns.get_loc('score_sum'
-                                                        )] += result_value
+            df_base_q.iloc[i, df_base_q.columns.get_loc('result_value_2')] = result_value
+            df_base_q.iloc[i, df_base_q.columns.get_loc('score_sum')] += result_value
 
     df_base_q.sort_values('result_value_2', ascending=False, inplace=True)
     #df_q_r = df_q_r.DataFrame.reset_index().drop('index', axis=1) #RYAN:BUG?
@@ -1279,10 +1104,7 @@ def _quarterly_fundamental_any_2(debug=False):
     #    df_base_q.to_csv(dump_csv_q, encoding='UTF-8', index=True)
     #    logging.info("Run #2 Fundamental Analysising Based on Quarter Report, result saved to "+dump_csv_q)
     df_base_q.to_csv(dump_csv_q, encoding='UTF-8', index=True)
-    logging.info(
-        __file__ + ": " +
-        "Run #2 Fundamental Analysising Based on Quarter Report, result saved to "
-        + dump_csv_q + " , len " + str(df_base_q.__len__()))
+    logging.info(__file__ + ": " + "Run #2 Fundamental Analysising Based on Quarter Report, result saved to " + dump_csv_q + " , len " + str(df_base_q.__len__()))
 
 
 #this function need be run after _quaterly_fundamental_any_2
@@ -1305,17 +1127,14 @@ def industry_rank(quarterly_fundamental_csv=None):
     for industry in industries:
         df_a_ind = df[df['industry'] == industry]
         #df_a_ind = df_a_ind.sort_values('result_value_quarter_fundation')
-        df_a_ind = df_a_ind.sort_values(
-            'score_sum', ascending=False).reset_index().drop('index', axis=1)
-        df_a_ind = pd.DataFrame([df_a_ind.__len__()] * df_a_ind.__len__(),
-                                columns=['peers']).join(df_a_ind)
+        df_a_ind = df_a_ind.sort_values('score_sum', ascending=False).reset_index().drop('index', axis=1)
+        df_a_ind = pd.DataFrame([df_a_ind.__len__()] * df_a_ind.__len__(), columns=['peers']).join(df_a_ind)
 
         logging.info(industry + " len " + str(df_a_ind.__len__()))
         #max_row = df_a_ind.loc[df_a_ind['result_value_quarter_fundation'].idxmax()].copy()
         #max_row.set_value('peers', df_a_ind.__len__())
         #df_result = df_result.append(max_row)
-        df_result = df_result.append(
-            df_a_ind.head(3))  #top 3 player in the industry
+        df_result = df_result.append(df_a_ind.head(3))  #top 3 player in the industry
 
     cols = [
         'code',
@@ -1390,14 +1209,11 @@ def industry_rank(quarterly_fundamental_csv=None):
 
     df_result = df_result[cols]
     #df_result = df_result.sort_values('result_value_quarter_fundation', ascending=False, inplace=False)
-    df_result = df_result.sort_values('score_sum',
-                                      ascending=False,
-                                      inplace=False)
+    df_result = df_result.sort_values('score_sum', ascending=False, inplace=False)
     df_result = df_result.reset_index().drop('index', axis=1)
     df_result.to_csv(csv_industry_top, encoding='UTF-8', index=True)
 
-    logging.info(__file__ + ": " + "industry topest saved to " +
-                 csv_industry_top + " , len " + str(df_result.__len__()))
+    logging.info(__file__ + ": " + "industry topest saved to " + csv_industry_top + " , len " + str(df_result.__len__()))
     return (df_result)
 
 
@@ -1418,18 +1234,15 @@ def area_rank(quarterly_fundamental_csv=None):
     for area in areas:
         df_a_ind = df[df['area'] == area]
         #df_a_ind = df_a_ind.sort_values('result_value_quarter_fundation' )
-        df_a_ind = df_a_ind.sort_values(
-            'score_sum', ascending=False).reset_index().drop('index', axis=1)
-        df_a_ind = pd.DataFrame([df_a_ind.__len__()] * df_a_ind.__len__(),
-                                columns=['peers']).join(df_a_ind)
+        df_a_ind = df_a_ind.sort_values('score_sum', ascending=False).reset_index().drop('index', axis=1)
+        df_a_ind = pd.DataFrame([df_a_ind.__len__()] * df_a_ind.__len__(), columns=['peers']).join(df_a_ind)
 
         #
         logging.info(area + " len " + str(df_a_ind.__len__()))
         #max_row = df_a_ind.loc[df_a_ind['result_value_quarter_fundation'].idxmax()].copy()
         #max_row.set_value('peers', df_a_ind.__len__())
         #df_result = df_result.append(max_row)
-        df_result = df_result.append(
-            df_a_ind.head(3))  # top 3 player in the industry
+        df_result = df_result.append(df_a_ind.head(3))  # top 3 player in the industry
 
     cols = [
         'code',
@@ -1504,14 +1317,11 @@ def area_rank(quarterly_fundamental_csv=None):
 
     df_result = df_result[cols]
     #df_result = df_result.sort_values('result_value_quarter_fundation', ascending=False, inplace=False)
-    df_result = df_result.sort_values('score_sum',
-                                      ascending=False,
-                                      inplace=False)
+    df_result = df_result.sort_values('score_sum', ascending=False, inplace=False)
     df_result = df_result.reset_index().drop('index', axis=1)
     df_result.to_csv(csv_area_top, encoding='UTF-8', index=True)
 
-    logging.info(__file__ + ": " + "area topest saved to " + csv_area_top +
-                 " , len " + str(df_result.__len__()))
+    logging.info(__file__ + ": " + "area topest saved to " + csv_area_top + " , len " + str(df_result.__len__()))
     return (df_result)
 
 
@@ -1522,8 +1332,7 @@ def today_fundamental_any(todayS=None):
     #if pd.isnull(todayS):
     if True:
         for i in range(5):
-            todayS = (datetime.datetime.today() -
-                      datetime.timedelta(i)).strftime('%Y-%m-%d')
+            todayS = (datetime.datetime.today() - datetime.timedelta(i)).strftime('%Y-%m-%d')
             logging.info("checking input file required on date " + todayS)
 
             today_fund_csv = "/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals/daily/basic_" + todayS + ".csv"
@@ -1533,9 +1342,7 @@ def today_fundamental_any(todayS=None):
                 logging.info("dump_today exists on " + todayS)
 
                 if os.path.exists(today_fund_csv):
-                    logging.info(
-                        "based on availble dump_doay and today_fund_csv, todayS now is "
-                        + todayS)
+                    logging.info("based on availble dump_doay and today_fund_csv, todayS now is " + todayS)
                     break
 
     logging.info("Fundamental Analysising based on today data " + todayS)
@@ -1545,15 +1352,11 @@ def today_fundamental_any(todayS=None):
     #dump_today = "/home/ryan/DATA/pickle/daily_update_source/"+todayS+"ts_ud.pickle"
 
     if not os.path.isfile(today_fund_csv):
-        logging.info(
-            "csv_today file not exist, please run python t_daily_fundamentals.py  --fetch_data_all;. Abort."
-            + today_fund_csv)
+        logging.info("csv_today file not exist, please run python t_daily_fundamentals.py  --fetch_data_all;. Abort." + today_fund_csv)
         exit()
 
     if not os.path.isfile(dump_today):
-        logging.info(
-            "dump file not exist, please run t_daily_update_csv_from_tushare.py. Abort."
-            + dump_today)
+        logging.info("dump file not exist, please run t_daily_update_csv_from_tushare.py. Abort." + dump_today)
         exit()
 
     df_basic = today_all = pd.DataFrame()
@@ -1593,10 +1396,7 @@ def today_fundamental_any(todayS=None):
         'nmc',  #流通市值
     ]
 
-    today_all = pd.merge(today_all,
-                         df_basic,
-                         on='code',
-                         suffixes=('', '_df_basic'))
+    today_all = pd.merge(today_all, df_basic, on='code', suffixes=('', '_df_basic'))
     #today_all.drop('pe_df_basic',  axis=1, inplace=True)
     #today_all.drop('name_df_basic',  axis=1, inplace=True)
     #today_all.drop('area_df_basic',  axis=1, inplace=True)
@@ -1604,10 +1404,7 @@ def today_fundamental_any(todayS=None):
     #today_all.drop('industry_df_basic',  axis=1, inplace=True)
 
     #move cared column to head
-    today_all = pd.merge(today_all,
-                         df_q_r,
-                         on='code',
-                         suffixes=('', '_df_q_r'))
+    today_all = pd.merge(today_all, df_q_r, on='code', suffixes=('', '_df_q_r'))
     today_all.drop('name_df_q_r', axis=1, inplace=True)
     today_all.drop('esp_df_q_r', axis=1, inplace=True)
     today_all.drop('pe_df_q_r', axis=1, inplace=True)
@@ -1704,15 +1501,12 @@ def today_fundamental_any(todayS=None):
     #    fvalues_all=today_all['fvalues']
     #    turnover_all=today_all['turnover']
     amount_all = today_all['amount']
-    result_value_quarter_fundation_all = today_all[
-        'result_value_quarter_fundation']
+    result_value_quarter_fundation_all = today_all['result_value_quarter_fundation']
 
-    new_value_df = pd.DataFrame([0] * today_all.__len__(),
-                                columns=['result_value_today'])
+    new_value_df = pd.DataFrame([0] * today_all.__len__(), columns=['result_value_today'])
     today_all = new_value_df.join(today_all)  #the inserted colun on the head
 
-    new_value_df = pd.DataFrame([0] * today_all.__len__(),
-                                columns=['result_value_sum'])
+    new_value_df = pd.DataFrame([0] * today_all.__len__(), columns=['result_value_sum'])
     today_all = new_value_df.join(today_all)
 
     for i in range(0, today_all.__len__()):
@@ -1723,16 +1517,13 @@ def today_fundamental_any(todayS=None):
         #        fvalues = today_all.ix[i]['fvalues']
         #        turnover = today_all.ix[i]['turnover']
         amount = today_all.ix[i]['amount']
-        result_value_quarter_fundation = today_all.ix[i][
-            'result_value_quarter_fundation']
+        result_value_quarter_fundation = today_all.ix[i]['result_value_quarter_fundation']
 
         pe_perc = 1 - (stats.percentileofscore(pe_all, pe) / 100.0)
         #       fvalues_perc=1 - (stats.percentileofscore(fvalues_all, fvalues)/100.0)
         #       turnover_perc=stats.percentileofscore(turnover_all, turnover)/100.0
         amount_perc = stats.percentileofscore(amount_all, amount) / 100.0
-        result_value_quarter_fundation_perc = stats.percentileofscore(
-            result_value_quarter_fundation_all,
-            result_value_quarter_fundation) / 100.0
+        result_value_quarter_fundation_perc = stats.percentileofscore(result_value_quarter_fundation_all, result_value_quarter_fundation) / 100.0
 
         #RYAN: TODAY's VALUE CALCULATED HERE
         #result_value = fvalues_perc*fvalues_weight + \
@@ -1747,11 +1538,8 @@ def today_fundamental_any(todayS=None):
         #if ((pe == 0) or (fvalues == 0)  or (turnover == 0) or (amount == 0)):
         if ((pe == 0) or (amount == 0)):
             result_value = 0
-        today_all.iloc[i, today_all.columns.get_loc('result_value_today'
-                                                    )] = result_value
-        today_all.iloc[i, today_all.columns.get_loc(
-            'result_value_sum')] = result_value * 0.5 + today_all.ix[i][
-                'result_value_quarter_fundation'] * 0.5
+        today_all.iloc[i, today_all.columns.get_loc('result_value_today')] = result_value
+        today_all.iloc[i, today_all.columns.get_loc('result_value_sum')] = result_value * 0.5 + today_all.ix[i]['result_value_quarter_fundation'] * 0.5
 
         #df.set_value(i,'result_value', result_value)
         #df.loc[i]['result_value'] = result_value
@@ -1765,17 +1553,13 @@ def today_fundamental_any(todayS=None):
     #df.to_excel(dump_xlsx, encoding='UTF-8')
     today_all.sort_values('result_value_sum', ascending=False, inplace=True)
     today_all.to_csv(dump_csv_d, encoding='UTF-8', index=False)
-    logging.info(
-        __file__ + ": " +
-        "Fundamental Analysising based on Today data, result saved to " +
-        dump_csv_d + " , len " + str(today_all.__len__()))
+    logging.info(__file__ + ": " + "Fundamental Analysising based on Today data, result saved to " + dump_csv_d + " , len " + str(today_all.__len__()))
 
     if os.path.exists(dump_csv_d_sym_link):
         os.unlink(dump_csv_d_sym_link)
 
     os.symlink(dump_csv_d, dump_csv_d_sym_link)
-    logging.info(__file__ + ": " + "symbol link created  " +
-                 dump_csv_d_sym_link + " -> " + dump_csv_d)
+    logging.info(__file__ + ": " + "symbol link created  " + dump_csv_d_sym_link + " -> " + dump_csv_d)
 
 
 def zzz_peg_last_year(year, quarter, debug=False):
@@ -1792,31 +1576,23 @@ def zzz_peg_last_year(year, quarter, debug=False):
 
     query_1 = "year_quarter == '" + year_quarter + "'"
     query_2 = query_1 + "and roe > 15 and ((peg_1 > 0.0 and peg_1 < 0.5) and (peg_4 > 0.0 and peg_4 < 0.5))"
-    df_result_1 = df_base.query(query_1).sort_values(by='peg_1',
-                                                     ascending=True)
-    df_result_2 = df_base.query(query_2).sort_values(by='peg_1',
-                                                     ascending=True)
+    df_result_1 = df_base.query(query_1).sort_values(by='peg_1', ascending=True)
+    df_result_2 = df_base.query(query_2).sort_values(by='peg_1', ascending=True)
 
     df_result_1 = finlib.Finlib().remove_df_columns(df_result_1, "name_.*")
-    df_result_1 = finlib.Finlib().change_df_columns_order(
-        df_result_1, ['code', 'name', 'year_quarter', 'roe', 'peg_1', 'peg_4'])
+    df_result_1 = finlib.Finlib().change_df_columns_order(df_result_1, ['code', 'name', 'year_quarter', 'roe', 'peg_1', 'peg_4'])
     df_result_1 = df_result_1.drop_duplicates()
     df_result_1.code = df_result_1.code.astype(str)
 
     df_result_2 = finlib.Finlib().remove_df_columns(df_result_2, "name_.*")
-    df_result_2 = finlib.Finlib().change_df_columns_order(
-        df_result_2, ['code', 'name', 'year_quarter', 'roe', 'peg_1', 'peg_4'])
+    df_result_2 = finlib.Finlib().change_df_columns_order(df_result_2, ['code', 'name', 'year_quarter', 'roe', 'peg_1', 'peg_4'])
     df_result_2 = df_result_2.drop_duplicates()
     df_result_2.code = df_result_2.code.astype(str)
 
     df_result_1.to_csv(output_csv, encoding='UTF-8', index=False)
     df_result_2.to_csv(output_csv_2, encoding='UTF-8', index=False)
-    logging.info(__file__ + ": " + year_quarter +
-                 " fundmental peg result saved to " + output_csv + " , len " +
-                 str(df_result_1.__len__()))
-    logging.info(__file__ + ": " + year_quarter +
-                 " fundmental peg Selectd result saved to " + output_csv_2 +
-                 " , len " + str(df_result_2.__len__()))
+    logging.info(__file__ + ": " + year_quarter + " fundmental peg result saved to " + output_csv + " , len " + str(df_result_1.__len__()))
+    logging.info(__file__ + ": " + year_quarter + " fundmental peg Selectd result saved to " + output_csv_2 + " , len " + str(df_result_2.__len__()))
 
     sl_1 = "/home/ryan/DATA/result/latest_fundamental_peg.csv"
     if os.path.exists(sl_1):
@@ -1841,8 +1617,7 @@ def peg_last_year(year, quarter, debug=False):
     #fund_peg_csv = "/home/ryan/DATA/result/fundamental_peg.csv"
 
     fund_peg_csv = "/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals/merged/merged_all_"
-    fund_peg_csv += str(year) + finlib.Finlib().get_quarter_date(
-        quarter) + ".csv"
+    fund_peg_csv += str(year) + finlib.Finlib().get_quarter_date(quarter) + ".csv"
 
     if not os.path.isfile(fund_peg_csv):
         logging.info("not found source peg file to get eps " + fund_peg_csv)
@@ -1852,31 +1627,23 @@ def peg_last_year(year, quarter, debug=False):
 
     query_1 = "year_quarter == '" + year_quarter + "'"
     query_2 = query_1 + "and roe > 15 and ((peg_1 > 0.0 and peg_1 < 0.5) and (peg_4 > 0.0 and peg_4 < 0.5))"
-    df_result_1 = df_base.query(query_1).sort_values(by='peg_1',
-                                                     ascending=True)
-    df_result_2 = df_base.query(query_2).sort_values(by='peg_1',
-                                                     ascending=True)
+    df_result_1 = df_base.query(query_1).sort_values(by='peg_1', ascending=True)
+    df_result_2 = df_base.query(query_2).sort_values(by='peg_1', ascending=True)
 
     df_result_1 = finlib.Finlib().remove_df_columns(df_result_1, "name_.*")
-    df_result_1 = finlib.Finlib().change_df_columns_order(
-        df_result_1, ['code', 'name', 'year_quarter', 'roe', 'peg_1', 'peg_4'])
+    df_result_1 = finlib.Finlib().change_df_columns_order(df_result_1, ['code', 'name', 'year_quarter', 'roe', 'peg_1', 'peg_4'])
     df_result_1 = df_result_1.drop_duplicates()
     df_result_1.code = df_result_1.code.astype(str)
 
     df_result_2 = finlib.Finlib().remove_df_columns(df_result_2, "name_.*")
-    df_result_2 = finlib.Finlib().change_df_columns_order(
-        df_result_2, ['code', 'name', 'year_quarter', 'roe', 'peg_1', 'peg_4'])
+    df_result_2 = finlib.Finlib().change_df_columns_order(df_result_2, ['code', 'name', 'year_quarter', 'roe', 'peg_1', 'peg_4'])
     df_result_2 = df_result_2.drop_duplicates()
     df_result_2.code = df_result_2.code.astype(str)
 
     df_result_1.to_csv(output_csv, encoding='UTF-8', index=False)
     df_result_2.to_csv(output_csv_2, encoding='UTF-8', index=False)
-    logging.info(__file__ + ": " + year_quarter +
-                 " fundmental peg result saved to " + output_csv + " , len " +
-                 str(df_result_1.__len__()))
-    logging.info(__file__ + ": " + year_quarter +
-                 " fundmental peg Selectd result saved to " + output_csv_2 +
-                 " , len " + str(df_result_2.__len__()))
+    logging.info(__file__ + ": " + year_quarter + " fundmental peg result saved to " + output_csv + " , len " + str(df_result_1.__len__()))
+    logging.info(__file__ + ": " + year_quarter + " fundmental peg Selectd result saved to " + output_csv_2 + " , len " + str(df_result_2.__len__()))
 
     sl_1 = "/home/ryan/DATA/result/latest_fundamental_peg.csv"
     if os.path.exists(sl_1):
@@ -1908,8 +1675,7 @@ def calc_peg(debug=False):
         year_this = regex.group(1)
         month_this = regex.group(2)
 
-        t = finlib.Finlib().get_year_month_quarter(year=int(year_this),
-                                                   month=int(month_this))
+        t = finlib.Finlib().get_year_month_quarter(year=int(year_this), month=int(month_this))
 
         t_1q = t['ann_date_1q_before']
         t_4q = t['ann_date_4q_before']
@@ -1938,28 +1704,13 @@ def calc_peg(debug=False):
             print("skip, need -1Q file to calcuate peg " + merged_fund_f_1q)
             continue
 
-        df = pd.read_csv(merged_fund_f,
-                         converters={
-                             'code': str,
-                             'name': str,
-                             'year_quarter': str
-                         })
+        df = pd.read_csv(merged_fund_f, converters={'code': str, 'name': str, 'year_quarter': str})
         logging.info(__file__ + ": " + "loading " + merged_fund_f)
 
-        df_4q = pd.read_csv(merged_fund_f_4q,
-                            converters={
-                                'code': str,
-                                'name': str,
-                                'year_quarter': str
-                            })
+        df_4q = pd.read_csv(merged_fund_f_4q, converters={'code': str, 'name': str, 'year_quarter': str})
         logging.info(__file__ + ": " + "loading " + merged_fund_f_4q)
 
-        df_1q = pd.read_csv(merged_fund_f_1q,
-                            converters={
-                                'code': str,
-                                'name': str,
-                                'year_quarter': str
-                            })
+        df_1q = pd.read_csv(merged_fund_f_1q, converters={'code': str, 'name': str, 'year_quarter': str})
         logging.info(__file__ + ": " + "loading " + merged_fund_f_1q)
 
         df = df.fillna(0)
@@ -1990,9 +1741,7 @@ def calc_peg(debug=False):
             year_quarter = str(df.iloc[i]['year_quarter'])
             name = str(df.iloc[i]['name'])
 
-            logging.info(
-                str(i) + " of " + str(dflen) + " " + code + " " + name + " " +
-                year_quarter)
+            logging.info(str(i) + " of " + str(dflen) + " " + code + " " + name + " " + year_quarter)
 
             eps_this = df.iloc[i]['eps']
             eps_last_4 = 0
@@ -2049,18 +1798,10 @@ def calc_peg(debug=False):
 
         pass  #all codes in the year_quarter csv file has been updated. e.g /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals/merged/merged_all_20181231.csv
 
-        df = finlib.Finlib().change_df_columns_order(df=df,
-                                                     col_list_to_head=[
-                                                         'code', 'name',
-                                                         'year_quarter',
-                                                         'trade_date', 'peg_1',
-                                                         'peg_4', 'egr_1',
-                                                         'egr_4'
-                                                     ])
+        df = finlib.Finlib().change_df_columns_order(df=df, col_list_to_head=['code', 'name', 'year_quarter', 'trade_date', 'peg_1', 'peg_4', 'egr_1', 'egr_4'])
 
         df.to_csv(merged_fund_f, encoding='UTF-8', index=False)
-        logging.info(__file__ + ": " + "fundmental peg result saved to " +
-                     merged_fund_f + " , len " + str(df.__len__()))
+        logging.info(__file__ + ": " + "fundmental peg result saved to " + merged_fund_f + " , len " + str(df.__len__()))
 
     pass
 
@@ -2072,54 +1813,43 @@ def zzz_calc_peg(debug=False):
     fund_peg_csv = "/home/ryan/DATA/result/fundamental_peg.csv"
 
     if finlib.Finlib().is_cached(fund_peg_csv, 7) and (not force_run_global):
-        logging.info("target file updated in 7 days, not process. " +
-                     fund_peg_csv)
+        logging.info("target file updated in 7 days, not process. " + fund_peg_csv)
         exit(0)
 
     #j_quartly_report_csv = "/home/ryan/DATA/result/jaqs_quarterly_fundamental.csv" #get quartly price
 
     if not os.path.isfile(refined_fundamental_merged_csv):
-        logging.info("not found source file to get quartly eps " +
-                     refined_fundamental_merged_csv)
+        logging.info("not found source file to get quartly eps " + refined_fundamental_merged_csv)
         exit(1)
 
     #if not os.path.isfile(j_quartly_report_csv):
     #logging.info("not found source file to get quartly price "+j_quartly_report_csv)
     #exit(1)
 
-    df_base = pd.read_csv(refined_fundamental_merged_csv,
-                          converters={'code': str})
+    df_base = pd.read_csv(refined_fundamental_merged_csv, converters={'code': str})
     logging.info(__file__ + ": " + "loading " + refined_fundamental_merged_csv)
 
     #df_price=pd.read_csv(j_quartly_report_csv,converters={'code': str})
 
     df_price = finlib.Finlib().load_ts_pro_basic_quarterly()
 
-    df_base = df_base[df_base['year_quarter'] >= '2010_1'].reset_index(
-    )  #ryan, manual modify
+    df_base = df_base[df_base['year_quarter'] >= '2010_1'].reset_index()  #ryan, manual modify
     #df_price = df_price[df_price['trade_date']>='2017'].reset_index()
 
     if debug:  #ryan debug
-        df_base = df_base.query("code=='000651' and eps>0").reset_index().drop(
-            'index', axis=1)
+        df_base = df_base.query("code=='000651' and eps>0").reset_index().drop('index', axis=1)
 
     #egr:  earnings growth rate = 100 * ((EPS_this / EPS_last) - 1)  (=20% e.g.)
-    df_base = pd.DataFrame([0] * df_base.__len__(),
-                           columns=['egr_4']).join(df_base)
-    df_base = pd.DataFrame([0] * df_base.__len__(),
-                           columns=['egr_1']).join(df_base)
+    df_base = pd.DataFrame([0] * df_base.__len__(), columns=['egr_4']).join(df_base)
+    df_base = pd.DataFrame([0] * df_base.__len__(), columns=['egr_1']).join(df_base)
 
     #peg:  Price/egr
-    df_base = pd.DataFrame([0] * df_base.__len__(),
-                           columns=['peg_4']).join(df_base)
-    df_base = pd.DataFrame([0] * df_base.__len__(),
-                           columns=['peg_1']).join(df_base)
-    df_base = pd.DataFrame([0] * df_base.__len__(),
-                           columns=['ps']).join(df_base)
+    df_base = pd.DataFrame([0] * df_base.__len__(), columns=['peg_4']).join(df_base)
+    df_base = pd.DataFrame([0] * df_base.__len__(), columns=['peg_1']).join(df_base)
+    df_base = pd.DataFrame([0] * df_base.__len__(), columns=['ps']).join(df_base)
 
     #close: quartly mean
-    df_base = pd.DataFrame([0] * df_base.__len__(),
-                           columns=['close']).join(df_base)
+    df_base = pd.DataFrame([0] * df_base.__len__(), columns=['close']).join(df_base)
 
     #df_base = df_base.query("year_quarter >='201601'") #ryan debug
 
@@ -2144,13 +1874,11 @@ def zzz_calc_peg(debug=False):
             logging.info("eps_this <= 0")
             continue
 
-        df_base_sub = df_base[df_base.code == code].sort_values(
-            'year_quarter').reset_index().drop('index', axis=1)
+        df_base_sub = df_base[df_base.code == code].sort_values('year_quarter').reset_index().drop('index', axis=1)
         df_base_sub = df_base_sub[df_base_sub.year_quarter < year_quarter]
 
         if df_base_sub.__len__() < 4:
-            logging.info("no enough data, need at least 4 quarter entries " +
-                         code + " " + year_quarter)
+            logging.info("no enough data, need at least 4 quarter entries " + code + " " + year_quarter)
             continue
 
         logging.info("processing peg of " + year_quarter + " " + code)
@@ -2178,37 +1906,29 @@ def zzz_calc_peg(debug=False):
             huanbi_1q_quarter = str(int(quarter) - 1)
 
         #getting price of the quarter
-        df_price_query = df_price[df_price.trade_date.str.match(year +
-                                                                file_date)]
-        df_price_query = finlib.Finlib().remove_market_from_tscode(
-            df_price_query)
+        df_price_query = df_price[df_price.trade_date.str.match(year + file_date)]
+        df_price_query = finlib.Finlib().remove_market_from_tscode(df_price_query)
         df_price_query = df_price_query[df_price_query.code == code]
 
         if df_price_query.__len__() > 0:
             if (df_price_query.__len__() != 1):
-                logging.info(
-                    "some thing wrong, duplicate date on df_price_query ")
+                logging.info("some thing wrong, duplicate date on df_price_query ")
             #logging.info("found quartly price data, "+code+" "+year_quarter+" "+name)
             price_q = df_price_query['close'].values[0]
             ps = df_price_query['ps'].values[0]
-            df_base.iloc[i, df_base.columns.get_loc('close')] = round(
-                price_q, 2)
+            df_base.iloc[i, df_base.columns.get_loc('close')] = round(price_q, 2)
             df_base.iloc[i, df_base.columns.get_loc('ps')] = round(ps, 2)
 
         ## getting 4 quarter and 1q  before data.
-        df_code_4q = df_base_sub[df_base_sub.year_quarter == tongbi_4q_year +
-                                 "_" + tongbi_4q_quarter]
-        df_code_1q = df_base_sub[df_base_sub.year_quarter == huanbi_1q_year +
-                                 "_" + huanbi_1q_quarter]
+        df_code_4q = df_base_sub[df_base_sub.year_quarter == tongbi_4q_year + "_" + tongbi_4q_quarter]
+        df_code_1q = df_base_sub[df_base_sub.year_quarter == huanbi_1q_year + "_" + huanbi_1q_quarter]
 
         if df_code_4q.empty:
-            logging.info("no data for " + code + " " + tongbi_4q_year + "_" +
-                         tongbi_4q_quarter)
+            logging.info("no data for " + code + " " + tongbi_4q_year + "_" + tongbi_4q_quarter)
             continue
 
         if df_code_1q.empty:
-            logging.info("no data for " + code + " " + huanbi_1q_year + "_" +
-                         huanbi_1q_quarter)
+            logging.info("no data for " + code + " " + huanbi_1q_year + "_" + huanbi_1q_quarter)
             continue
 
         eps_last_4 = df_code_4q['eps'].values[0]
@@ -2242,8 +1962,7 @@ def zzz_calc_peg(debug=False):
         logging.info("peg_1 " + str(peg_1) + ", peg_4 " + str(peg_4))
 
     df_base.to_csv(fund_peg_csv, encoding='UTF-8', index=False)
-    logging.info(__file__ + ": " + "fundmental peg result saved to " +
-                 fund_peg_csv + " , len " + str(df_base.__len__()))
+    logging.info(__file__ + ": " + "fundmental peg result saved to " + fund_peg_csv + " , len " + str(df_base.__len__()))
     return ()
 
 
@@ -2255,24 +1974,18 @@ def calc_ps(debug=False):
     #fund_ps_csv = "/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals/merged/merged_all_20181231.csv"
 
     fund_ps_csv = "/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals/merged/merged_all_"
-    fund_ps_csv += str(year) + finlib.Finlib().get_quarter_date(
-        quarter) + ".csv"
+    fund_ps_csv += str(year) + finlib.Finlib().get_quarter_date(quarter) + ".csv"
 
     if not os.path.isfile(dump_csv_d):
-        logging.info(
-            "not found source file to get price to save (PS), aera, field etc. "
-            + dump_csv_d)
+        logging.info("not found source file to get price to save (PS), aera, field etc. " + dump_csv_d)
         exit(1)
 
     if not os.path.isfile(dump_csv_q):
-        logging.info(
-            "not found source file to get price to save (PS), aera, field etc. "
-            + dump_csv_q)
+        logging.info("not found source file to get price to save (PS), aera, field etc. " + dump_csv_q)
         exit(1)
 
     if not os.path.isfile(fund_ps_csv):
-        logging.info("not found source file to get price to save (PS), ps  " +
-                     fund_ps_csv)
+        logging.info("not found source file to get price to save (PS), ps  " + fund_ps_csv)
         exit(1)
 
     #logging.info("loading "+dump_csv_d)
@@ -2290,9 +2003,7 @@ def calc_ps(debug=False):
     df_ps = df_ps[df_ps['year_quarter'] == str(year) + "_" + str(quarter)]
 
     cols_position = [
-        'year_quarter', 'code', 'name', 'ps', 'pe', 'industry', 'area', 'npr',
-        'net_profits', 'peg_1', 'peg_4', 'egr_1', 'egr_4', 'roe', 'activity',
-        'avgturnover', 'strength', 'rateofreturn'
+        'year_quarter', 'code', 'name', 'ps', 'pe', 'industry', 'area', 'npr', 'net_profits', 'peg_1', 'peg_4', 'egr_1', 'egr_4', 'roe', 'activity', 'avgturnover', 'strength', 'rateofreturn'
     ]
 
     cols_ps = ['ps', 'peg_1', 'peg_4', 'egr_1', 'egr_4', 'year_quarter']
@@ -2302,8 +2013,7 @@ def calc_ps(debug=False):
     logging.info("preprocessing df_base_d and df_base_q")
     for co in ['ps', 'peg_1', 'peg_4', 'egr_1', 'egr_4']:
         if co in base_cols_d:
-            df_base_d = df_base_d.drop(
-                co, axis=1)  #remove the co in base if already exists
+            df_base_d = df_base_d.drop(co, axis=1)  #remove the co in base if already exists
 
         if co in base_cols_q:
             df_base_q = df_base_q.drop(co, axis=1)
@@ -2312,23 +2022,15 @@ def calc_ps(debug=False):
     df_ps = df_ps[cols_ps]
 
     if debug:  #ryan debug
-        df_base_d = df_base_d.query("code=='000651'").reset_index().drop(
-            'index', axis=1)
-        df_base_q = df_base_q.query("code=='000651'").reset_index().drop(
-            'index', axis=1)
-        df_ps = df_ps.query("code=='000651'").reset_index().drop('index',
-                                                                 axis=1)
+        df_base_d = df_base_d.query("code=='000651'").reset_index().drop('index', axis=1)
+        df_base_q = df_base_q.query("code=='000651'").reset_index().drop('index', axis=1)
+        df_ps = df_ps.query("code=='000651'").reset_index().drop('index', axis=1)
+
 
 # df_result_d = pd.merge(df_base_d, df_ps, on='code', suffixes=('', '_df_ps'))
-    df_result_d = pd.merge(df_base_d,
-                           df_ps,
-                           on=['code', 'year_quarter'],
-                           suffixes=('', '_df_ps'))
+    df_result_d = pd.merge(df_base_d, df_ps, on=['code', 'year_quarter'], suffixes=('', '_df_ps'))
     # df_result_q = pd.merge(df_base_q, df_ps, on='code', suffixes=('', '_df_ps'))
-    df_result_q = pd.merge(df_base_q,
-                           df_ps,
-                           on=['code', 'year_quarter'],
-                           suffixes=('', '_df_ps'))
+    df_result_q = pd.merge(df_base_q, df_ps, on=['code', 'year_quarter'], suffixes=('', '_df_ps'))
 
     if 'level_0' in df_result_d.columns.tolist():
         df_result_d = df_result_d.drop('level_0', axis=1)
@@ -2361,12 +2063,10 @@ def calc_ps(debug=False):
     df_result_q = df_result_q[cols_result_q]
 
     df_result_d.to_csv(dump_csv_d, encoding='UTF-8', index=False)
-    logging.info(__file__ + ": " + "fundmental ps, peg inserted into " +
-                 dump_csv_d + " , len " + str(df_result_d.__len__()))
+    logging.info(__file__ + ": " + "fundmental ps, peg inserted into " + dump_csv_d + " , len " + str(df_result_d.__len__()))
 
     df_result_q.to_csv(dump_csv_q, encoding='UTF-8', index=False)
-    logging.info(__file__ + ": " + "fundmental ps, peg inserted into " +
-                 dump_csv_q + " , len " + str(df_result_q.__len__()))
+    logging.info(__file__ + ": " + "fundmental ps, peg inserted into " + dump_csv_q + " , len " + str(df_result_q.__len__()))
     return ()
 
 
@@ -2391,121 +2091,37 @@ def main():
 
     parser = OptionParser()
 
-    parser.add_option("-f",
-                      "--fetch_data_all",
-                      action="store_true",
-                      dest="fetch_all_f",
-                      default=False,
-                      help="fetch all the quarterly fundatation history data")
+    parser.add_option("-f", "--fetch_data_all", action="store_true", dest="fetch_all_f", default=False, help="fetch all the quarterly fundatation history data")
 
-    parser.add_option("-p",
-                      "--process_hist_data",
-                      action="store_true",
-                      dest="process_hist_data",
-                      default=False,
-                      help="fill the missing data with previous data")
+    parser.add_option("-p", "--process_hist_data", action="store_true", dest="process_hist_data", default=False, help="fill the missing data with previous data")
 
-    parser.add_option("-q",
-                      "--exam_quarterly",
-                      action="store_true",
-                      dest="exam_quarterly",
-                      default=False,
-                      help="exam quarterly fundational score")
+    parser.add_option("-q", "--exam_quarterly", action="store_true", dest="exam_quarterly", default=False, help="exam quarterly fundational score")
 
-    parser.add_option("-d",
-                      "--exam_daily",
-                      action="store_true",
-                      dest="exam_daily",
-                      default=False,
-                      help="exam today fundational score")
+    parser.add_option("-d", "--exam_daily", action="store_true", dest="exam_daily", default=False, help="exam today fundational score")
 
-    parser.add_option("-a",
-                      "--area_rank_f",
-                      action="store_true",
-                      dest="area_rank_f",
-                      default=False,
-                      help="area_rank based on quarterly fundational score")
+    parser.add_option("-a", "--area_rank_f", action="store_true", dest="area_rank_f", default=False, help="area_rank based on quarterly fundational score")
 
-    parser.add_option(
-        "-i",
-        "--industry_rank_f",
-        action="store_true",
-        dest="industry_rank_f",
-        default=False,
-        help="industry_rank based on quarterly fundational score")
+    parser.add_option("-i", "--industry_rank_f", action="store_true", dest="industry_rank_f", default=False, help="industry_rank based on quarterly fundational score")
 
-    parser.add_option("-g",
-                      "--calc_peg",
-                      action="store_true",
-                      dest="calc_peg",
-                      default=False,
-                      help="calc PEG Ration. ")
+    parser.add_option("-g", "--calc_peg", action="store_true", dest="calc_peg", default=False, help="calc PEG Ration. ")
 
-    parser.add_option("-t",
-                      "--this_year_quarter",
-                      action="store_true",
-                      dest="this_year_quarter",
-                      default=False,
-                      help="filter out this year quarterly peg ")
+    parser.add_option("-t", "--this_year_quarter", action="store_true", dest="this_year_quarter", default=False, help="filter out this year quarterly peg ")
 
-    parser.add_option("-b",
-                      "--calc_ps",
-                      action="store_true",
-                      dest="calc_ps",
-                      default=False,
-                      help="calc price to sale (ps) data. ")
+    parser.add_option("-b", "--calc_ps", action="store_true", dest="calc_ps", default=False, help="calc price to sale (ps) data. ")
 
-    parser.add_option("-c",
-                      "--calc_fund_2",
-                      action="store_true",
-                      dest="calc_fund_2",
-                      default=False,
-                      help="calc fund 2nd time ")
+    parser.add_option("-c", "--calc_fund_2", action="store_true", dest="calc_fund_2", default=False, help="calc fund 2nd time ")
 
-    parser.add_option(
-        "-e",
-        "--debug",
-        action="store_true",
-        dest="debug",
-        default=False,
-        help="use debug, use instrument_A.csv.debug when -calc_preg only calc")
+    parser.add_option("-e", "--debug", action="store_true", dest="debug", default=False, help="use debug, use instrument_A.csv.debug when -calc_preg only calc")
 
-    parser.add_option("-m",
-                      "--update_get_market",
-                      action="store_true",
-                      dest="update_get_market_flag",
-                      default=False,
-                      help="update /home/ryan/DATA/pickle/market.csv")
+    parser.add_option("-m", "--update_get_market", action="store_true", dest="update_get_market_flag", default=False, help="update /home/ryan/DATA/pickle/market.csv")
 
-    parser.add_option("-n",
-                      "--update_get_instrument",
-                      action="store_true",
-                      dest="update_get_instrument_flag",
-                      default=False,
-                      help="update /home/ryan/DATA/pickle/instrument.csv")
+    parser.add_option("-n", "--update_get_instrument", action="store_true", dest="update_get_instrument_flag", default=False, help="update /home/ryan/DATA/pickle/instrument.csv")
 
-    parser.add_option("-s",
-                      "--update_get_security",
-                      action="store_true",
-                      dest="update_get_security_flag",
-                      default=False,
-                      help="update /home/ryan/DATA/pickle/security.csv")
+    parser.add_option("-s", "--update_get_security", action="store_true", dest="update_get_security_flag", default=False, help="update /home/ryan/DATA/pickle/security.csv")
 
-    parser.add_option("-o",
-                      "--update_get_A_stock_instrment",
-                      action="store_true",
-                      dest="update_get_A_stock_instrment_flag",
-                      default=False,
-                      help="update /home/ryan/DATA/pickle/instrument_A.csv")
+    parser.add_option("-o", "--update_get_A_stock_instrment", action="store_true", dest="update_get_A_stock_instrment_flag", default=False, help="update /home/ryan/DATA/pickle/instrument_A.csv")
 
-    parser.add_option(
-        "--force_run",
-        action="store_true",
-        dest="force_run_f",
-        default=False,
-        help=
-        "force fetch, force generate file, even when file exist or just updated"
-    )
+    parser.add_option("--force_run", action="store_true", dest="force_run_f", default=False, help="force fetch, force generate file, even when file exist or just updated")
 
     (options, args) = parser.parse_args()
     fetch_all_f = options.fetch_all_f
@@ -2538,8 +2154,7 @@ def main():
     logging.info("update_get_market: " + str(update_get_market))
     logging.info("update_get_security: " + str(update_get_security))
     logging.info("update_get_instrument: " + str(update_get_instrument))
-    logging.info("update_get_A_stock_instrment: " +
-                 str(update_get_A_stock_instrment))
+    logging.info("update_get_A_stock_instrment: " + str(update_get_A_stock_instrment))
     logging.info("debug: " + str(debug))
     logging.info("force_run_f: " + str(force_run_f))
 
@@ -2558,24 +2173,20 @@ def main():
         refine_hist_data(renew=True, debug=debug)
     elif exam_quarterly:
         # not fetching/calculating fundermental data at month 5,6,9, 11, 12
-        if not finlib.Finlib().get_report_publish_status(
-        )['process_fund_or_not']:
+        if not finlib.Finlib().get_report_publish_status()['process_fund_or_not']:
             print("not processing fundermental data at this month. ")
             #exit()
 
         df_basic = finlib.Finlib().get_today_stock_basic()
 
         all_hist = refine_hist_data(df=None, renew=False, debug=debug)
-        df_other_six = all_hist[all_hist['year_quarter'] == str(year) + "_" +
-                                str(quarter)]
+        df_other_six = all_hist[all_hist['year_quarter'] == str(year) + "_" + str(quarter)]
 
         #csv_jaqs_fund = "/home/ryan/DATA/result/jaqs_quarterly_fundamental.csv"
         #df_jaqs_fund= pandas.read_csv(csv_jaqs_fund, converters={'code': str})
 
         #quarterly_fundamental_any(df_basic, df_other_six, df_jaqs_fund, year_quarter=str(year)+"_"+str(quarter), debug=debug)
-        quarterly_fundamental_any(df_basic,
-                                  year_quarter=str(year) + "_" + str(quarter),
-                                  debug=debug)
+        quarterly_fundamental_any(df_basic, year_quarter=str(year) + "_" + str(quarter), debug=debug)
     elif exam_daily:
         add_miss = False
         #add_miss=True # debug, use when debug a sepcial day.
