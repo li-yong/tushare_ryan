@@ -25,8 +25,10 @@ python t_daily_get_us_index.py
 
 #################
 # update Index (dow, sp), get sp500/dow daily
-# output: /DATA/DAY_Global/US_INDEX/#dow.csv  sp500.csv
-bash -x t_get_dow_sp500.sh
+# output: /DATA/DAY_Global/stooq/S_INDEX/#dow.csv  sp500.csv
+#         /DATA/DAY_Global/stooq/US/*.csv
+python t_daily_update_csv_from_stooq.py
+
 
 #####################################
 #fetch daily us/hk stocks
@@ -35,5 +37,5 @@ bash -x t_get_dow_sp500.sh
 
 #python ~/tushare_ryan/t_fetch_us_hk_bar.py -x US; #very long list, 17000+ stocks
 python ~/tushare_ryan/t_fetch_us_hk_bar.py --selected -x US ;
-#python ~/tushare_ryan/t_fetch_us_hk_bar.py --selected -x HK ;
+python ~/tushare_ryan/t_fetch_us_hk_bar.py --selected -x HK ;
 echo "Done, daily US update completed."

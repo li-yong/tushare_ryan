@@ -3824,8 +3824,9 @@ class Finlib:
                                  'code', 'date', 'open', 'high', 'low', 'close',
                                  'volume', 'amount', 'tnv'
                              ])
-            #rtn_df = self.ts_code_to_code(rtn_df)
-
+        elif dir in [base_dir+"/stooq/US_INDEX", base_dir+"/stooq/US"]:
+            #DOW.csv  SP500.csv, AAPL.csv
+            rtn_df = pd.read_csv(data_csv_fp,converters={'code': str}, encoding="utf-8")
         elif dir == base_dir+"/US":
             rtn_df = pd.read_csv(data_csv_fp,converters={'code': str}, encoding="utf-8")
         elif dir == base_dir+"/HK":
@@ -3840,29 +3841,12 @@ class Finlib:
                                  'vol', 'amount'
                              ],
                              converters={'code': str},  encoding="utf-8")
-
-        elif dir in [base_dir+"/US_INDEX", base_dir+"/stooq/US"]:
-            #dow.csv  sp500.csv
-
-            if str(data_csv_fp).count("dow"):
-                code = "dow"
-            elif str(data_csv_fp).count("sp500"):
-                code = "sp500"
-
-            rtn_df = pd.read_csv(data_csv_fp,
-                                 skiprows=1,
-                                 names=[
-                                     'date', 'open', 'high',
-                                     'low', 'close', 'volume'  ]
-                                 , encoding="utf-8")
-            rtn_df = pd.DataFrame([code] * rtn_df.__len__(), columns=['code']).join(rtn_df)
         else:
             logging.fatal("unknown path file "+data_csv_fp)
             exit(0)
 
         rtn_df = self.regular_column_names(rtn_df)
         rtn_df = self.regular_df_date_to_ymd(rtn_df)
-
 
         return(rtn_df)
 
