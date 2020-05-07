@@ -1,6 +1,11 @@
 US:
     - AAPL: APPLE        
     - ZM: ZOOM
+    - BA: 波音
+    - BILL: Bill
+    - BTCmain: BTC
+    - PYPL: PayPal
+    - CLDR: Cloudera
     - BILI: 哔哩哔哩
     - AMZN: Amazon
     - MKC: McCormick
@@ -25,6 +30,19 @@ US:
     - DIS: Walt_Disney
     - SBUX: Starbucks
     - WB: Weibo
+    - AMD: AMD
+    - .VIX: 标普500波动率指数
+    - SNPS: 新思科技
+    - MSFT: Mircosoft
+    - QCOM: 高通
+    - YUMC: 百胜中国
+    - KHC: 卡夫亨氏
+    - GOOS: 加拿大鹅
+    - PINS: Pinterest
+    - DELL: DELL
+    - XLK: 高科技指数ETF-SPDR
+    - GOOG: Google
+    - DJR: 道琼斯股票房地产投资信托
 HK:
     - '03690': 美团点评
     - '00700': 腾讯控股
@@ -36,6 +54,11 @@ CN:
     - SH600036: 招商银行
     - SH601398: 工商银行
     - SZ000895: 双汇发展
+    - SH600276: 恒瑞医药
+    - SH600667: 太极实业
+    - SH600315: 上海家化
+    - SZ002223: 鱼跃医疗
+    - SZ000651: 格力电器
 CN_INDEX:
     - 000001.SH: 上证综指
     - 000300.SH: 沪深300
