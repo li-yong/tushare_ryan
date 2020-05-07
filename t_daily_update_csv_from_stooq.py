@@ -13,6 +13,7 @@ global myToken
 
 import requests
 import pathlib
+from optparse import OptionParser
 
 #This script download [US, US_INDEX] in selected yaml from stooq.com. Run daily.
 
@@ -25,7 +26,7 @@ import pathlib
 #logging.info("fetched to "+"csv.del")
 
 
-def stooq_download(code, mkt, days=1):
+def stooq_download(code, mkt, days=1,force_fetch=False):
     code = code.lower()
     mkt = mkt.lower()
 
@@ -34,7 +35,7 @@ def stooq_download(code, mkt, days=1):
     if not os.path.isdir(dir_o):
         pathlib.Path(dir_o).mkdir(parents=True, exist_ok=True)
 
-    if finlib.Finlib().is_cached(csv_o, day=days):
+    if finlib.Finlib().is_cached(csv_o, day=days) and (not force_fetch):
         logging.info("file is updated in " + str(days) + " days. not fetch again. " + csv_o)
         return
 
@@ -61,6 +62,11 @@ def stooq_download(code, mkt, days=1):
     finlib.Finlib().pprint(df.iloc[-1:])
     pass
 
+parser = OptionParser()
+parser.add_option("--force_fetch", action="store_true", dest="force_fetch", default=False, help="force fetch data")
+
+(options, args) = parser.parse_args()
+force_fetch = options.force_fetch
 
 rst = finlib.Finlib().load_select()
 
@@ -72,7 +78,7 @@ for mkt in ['US_INDEX', 'US']:
         i += 1
         name, code = row['name'], row['code']
         logging.info(str(i) + " of " + str(stock_list.__len__()) + " fetching stooq " + code + " " + name)
-        stooq_download(code=code, mkt=mkt)
+        stooq_download(code=code, mkt=mkt,force_fetch=force_fetch)
         pass
 
 logging.info("script completed. ")
