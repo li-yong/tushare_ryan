@@ -27,7 +27,7 @@
 # update Index (dow, sp), get sp500/dow daily. and update selected US stocks in yaml.
 # output: /DATA/DAY_Global/stooq/S_INDEX/#dow.csv  sp500.csv
 #         /DATA/DAY_Global/stooq/US/*.csv
-python t_daily_update_csv_from_stooq.py
+python t_daily_update_csv_from_stooq.py --force_fetch
 
 
 #####################################
