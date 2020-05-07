@@ -31,11 +31,13 @@ parser = OptionParser()
 parser.add_option("-x", "--stock_global", dest="stock_global", help="[CH(US)|KG(HK)|KH(HK)|MG(US)|US(US)|AG(AG)|dev(debug)], source is /home/ryan/DATA/DAY_global/xx/")
 
 parser.add_option("--selected", action="store_true", dest="selected", default=False, help="only check stocks defined in /home/ryan/tushare_ryan/select.yml")
+parser.add_option("--force_fetch", action="store_true", dest="force_fetch", default=False, help="force fetch data")
 
 (options, args) = parser.parse_args()
 
 selected = options.selected
 stock_global = options.stock_global
+force_fetch = options.force_fetch
 
 if (stock_global not in ['US', 'HK']):
     logging.fatal("stock_global only can be in [US, HK]")
@@ -45,7 +47,7 @@ if (stock_global not in ['US', 'HK']):
 # delete /home/ryan/DATA/pickle/instrument.csv to fetch again.
 
 
-def get_hk_us(df, cons, start_date, appendix, todayS):
+def get_hk_us(df, cons, start_date, appendix, todayS,force_fetch):
     default_date_d = datetime.datetime.strptime(start_date, '%Y-%m-%d')
 
     fast_fetch = True  #for full fetch
@@ -87,7 +89,7 @@ def get_hk_us(df, cons, start_date, appendix, todayS):
             if os.path.isfile(a_csv):
                 continue
 
-        if finlib.Finlib().is_cached(a_csv):
+        if finlib.Finlib().is_cached(a_csv) and (not force_fetch):
             logging.info("file has been updated in a day, not fetch again. " + a_csv)
             continue
 
@@ -221,7 +223,7 @@ csv_dir = rst['csv_dir']
 stock_list = rst['stock_list']
 
 todayS = datetime.datetime.today().strftime('%Y-%m-%d')
-get_hk_us(stock_list, cons, start_date, stock_global, todayS=todayS)
+get_hk_us(stock_list, cons, start_date, stock_global, todayS=todayS,force_fetch=force_fetch)
 
 logging.info('script completed')
 os._exit(0)
