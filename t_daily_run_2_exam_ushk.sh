@@ -6,6 +6,14 @@
 
 cd /home/ryan/tushare_ryan
 
+python /home/ryan/tushare_ryan/t_daily_update_csv_from_tushare_.py;
+python /home/ryan/tushare_ryan/t_get_index.py --fetch_index
+
+python t_daily_update_csv_from_stooq.py --force_fetch
+python ~/tushare_ryan/t_fetch_us_hk_bar.py --selected -x US  --force_fetch;
+python ~/tushare_ryan/t_fetch_us_hk_bar.py --selected -x HK  --force_fetch;
+
+
 ################################################
 #input:  /home/ryan/DATA/DAY_Global/CH|KG..|/
 #output:  /home/ryan/DATA/result/key_points_AG_today_selected.csv

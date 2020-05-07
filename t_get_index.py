@@ -8,9 +8,18 @@ import matplotlib.pyplot as plt
 import numpy as np
 import finlib
 from optparse import OptionParser
+import logging
+import sys
+logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m_%d %H:%M:%S', level=logging.DEBUG)
+
+logging.info("\n")
+logging.info("SCRIPT STARTING " + " ".join(sys.argv))
+
 
 from pandas.plotting import register_matplotlib_converters
 register_matplotlib_converters()
+
+
 
 # ---- Read , test
 
@@ -85,9 +94,9 @@ def fetch_index(myToken, ts_code, csv_file):
 
     if (df.__len__() > 0):
         df.to_csv(csv_file, index=False)
-        print("Index saved to " + csv_file + " ,len " + str(df.__len__()))
+        logging.info("Index saved to " + csv_file + " ,len " + str(df.__len__()))
     else:
-        print("df lengh is 0, did not save to " + csv_file)
+        logging.info("df lengh is 0, did not save to " + csv_file)
 
 
 def main():

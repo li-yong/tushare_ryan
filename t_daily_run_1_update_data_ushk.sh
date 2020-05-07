@@ -36,6 +36,6 @@ python t_daily_update_csv_from_stooq.py --force_fetch
 #         /DATA/DAY_Global/KH/*.csv
 
 #python ~/tushare_ryan/t_fetch_us_hk_bar.py -x US; #very long list, 17000+ stocks
-python ~/tushare_ryan/t_fetch_us_hk_bar.py --selected -x US ;
-python ~/tushare_ryan/t_fetch_us_hk_bar.py --selected -x HK ;
+python ~/tushare_ryan/t_fetch_us_hk_bar.py --selected -x US  --force_fetch;
+python ~/tushare_ryan/t_fetch_us_hk_bar.py --selected -x HK  --force_fetch;
 echo "Done, daily US update completed."
