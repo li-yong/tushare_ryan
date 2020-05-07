@@ -55,7 +55,7 @@ def check_fibo(df, code, name, begin_date='20180101', show_fig_f=False, save_fig
     y_axis = np.array(df['close'])
     x_axis = np.array(df['date'])
 
-    the_day = pd.to_datetime(x_axis[-1]).strftime("%Y-%m-%d")
+    the_day = pd.to_datetime(x_axis[-1]).strftime("%Y%m%d")
 
     #if not r['hit']:
     #    print("code " + code + ", name " + name
@@ -71,7 +71,9 @@ def check_fibo(df, code, name, begin_date='20180101', show_fig_f=False, save_fig
 
         suggestion = code + " " + name+" long at " + str( r['long_enter_price'])\
                       + ", tp " + str(r['long_take_profit_price'])\
-                      + ", sl " + str(r['long_stop_lost_price'])
+                      + ", sl " + str(r['long_stop_lost_price'])\
+                      + ", tpp " + str(r['long_take_profit_percent'])\
+                      + ", slp " + str(r['long_stop_lost_percent'])
 
         print("suggestion: " + suggestion)
 
@@ -118,6 +120,10 @@ def check_fibo(df, code, name, begin_date='20180101', show_fig_f=False, save_fig
         rtn_dict['long_in_p'] = r['long_enter_price']
         rtn_dict['long_tp_p'] = r['long_take_profit_price']
         rtn_dict['long_sl_p'] = r['long_stop_lost_price']
+
+        rtn_dict['long_take_profit_percent'] = r['long_take_profit_percent']
+        rtn_dict['long_stop_lost_percent'] = r['long_stop_lost_percent']
+
         rtn_dict['hit_sum'] = r['current_hit_cnt']['sum_cnt']
         rtn_dict['h_cnt'] = r['current_hit_cnt']['h_cnt']
         rtn_dict['l_cnt'] = r['current_hit_cnt']['l_cnt']

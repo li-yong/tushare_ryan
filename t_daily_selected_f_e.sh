@@ -55,11 +55,11 @@ if [ $fetch_or_exam == "EXAM" ]; then
 
 
     ############ US, US_INDEX, HK fib
-    #/home/ryan/DATA/result/selected/us_fib.csv
-    python t_fibonacci.py --begin_date "20180101"  --min_sample=500 -x US --selected
-
     #/home/ryan/DATA/result/selected/us_index_fib.csv
     python t_fibonacci.py --begin_date "20180101"  --min_sample=500 -x US_INDEX --selected
+
+    #/home/ryan/DATA/result/selected/us_fib.csv
+    python t_fibonacci.py --begin_date "20180101"  --min_sample=500 -x US --selected
 
     #/home/ryan/DATA/result/selected/hk_fib.csv
     python t_fibonacci.py --begin_date "20180101"  --min_sample=500 -x HK --selected

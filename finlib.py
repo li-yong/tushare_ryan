@@ -3271,6 +3271,8 @@ class Finlib:
             "long_take_profit_price": round(long_take_profit_price, 2),
             "long_stop_lost_price": round(long_stop_lost_price, 2),
             "one_percent_delta": round(delta, 2),
+            "long_take_profit_percent":round((long_take_profit_price - long_enter_price)*100/long_enter_price, 1),
+            "long_stop_lost_percent":round((long_stop_lost_price - long_enter_price)*100/long_enter_price, 1),
         }
 
         return (rtn)
