@@ -116,19 +116,23 @@ def check_fibo(df, code, name, begin_date='20180101', show_fig_f=False, save_fig
         rtn_dict['name'] = name
         rtn_dict['date'] = the_day
         rtn_dict['cur_price'] = r['pri_cur']
+        rtn_dict['p_max'] = r['p_max']
+        rtn_dict['p_min'] = r['p_min']
         rtn_dict['percent'] = r['per_cur']
+        rtn_dict['long_take_profit_percent'] = r['long_take_profit_percent']
+        rtn_dict['long_stop_lost_percent'] = r['long_stop_lost_percent']
         rtn_dict['long_in_p'] = r['long_enter_price']
         rtn_dict['long_tp_p'] = r['long_take_profit_price']
         rtn_dict['long_sl_p'] = r['long_stop_lost_price']
 
-        rtn_dict['long_take_profit_percent'] = r['long_take_profit_percent']
-        rtn_dict['long_stop_lost_percent'] = r['long_stop_lost_percent']
+
 
         rtn_dict['hit_sum'] = r['current_hit_cnt']['sum_cnt']
         rtn_dict['h_cnt'] = r['current_hit_cnt']['h_cnt']
         rtn_dict['l_cnt'] = r['current_hit_cnt']['l_cnt']
         rtn_dict['o_cnt'] = r['current_hit_cnt']['o_cnt']
         rtn_dict['c_cnt'] = r['current_hit_cnt']['c_cnt']
+
 
     return (rtn_dict)
 
@@ -156,7 +160,8 @@ def main():
 
     parser.add_option("--selected", action="store_true", dest="selected", default=False, help="only check stocks defined in /home/ryan/tushare_ryan/select.yml")
 
-    df_rtn = pd.DataFrame()
+    #df_rtn = pd.DataFrame()
+    df_rtn = pd.DataFrame(columns=["code", "name"])
 
     (options, args) = parser.parse_args()
     debug_f = options.debug_f
@@ -185,7 +190,7 @@ def main():
         name, code = row['name'], row['code']
 
         csv_f = csv_dir + "/" + code + ".csv"
-        print(csv_f)
+        logging.info(csv_f)
 
         if not os.path.isfile(csv_f):
             logging.warning("file not exist. " + csv_f)
@@ -212,6 +217,7 @@ def main():
         #print(df_t)
         if not df_t.empty:
             df_rtn = pd.concat([df_rtn, df_t], sort=False).reset_index().drop('index', axis=1)
+
 
     df_rtn.to_csv(out_f, encoding='UTF-8', index=False)
     print(df_rtn)

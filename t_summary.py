@@ -408,6 +408,15 @@ def combin_filter(df, post_combine=False, debug=False):
         'pre_date',
         'ann_date',
         'actual_date',
+        'long_take_profit_percent',
+        'long_stop_lost_percent',
+        'hit_sum',
+        'h_cnt',
+        'l_cnt',
+        'o_cnt',
+        'c_cnt',
+        'p_max',
+        'p_min',
     ]
 
     for col in df.columns:

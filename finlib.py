@@ -3010,6 +3010,9 @@ class Finlib:
             logging.fatal("no cloumn date in df")
             exit(0)
 
+        if df.__len__() == 0:
+            return()
+
         if str(df['date'].iloc[0]).count("-") == 2:
             df['date'] = df['date'].apply(lambda _d: datetime.strptime(str(_d), '%Y-%m-%d'))
             df['date'] = df['date'].apply(lambda _d: _d.strftime('%Y%m%d'))
@@ -3226,7 +3229,7 @@ class Finlib:
         elif d23 > 0 and d23 < cri_percent:
             closest = "23"
             current_hit_cnt = p23_cnt
-            #print("distance pased 23.6% less than " + str(round(d23, 0)))
+            #print("distance passed 23.6% less than " + str(round(d23, 0)))
             long_take_profit_price = p38 - (5 * delta)
             long_stop_lost_price = p23 - (5 * delta)
 
@@ -3397,10 +3400,11 @@ class Finlib:
             logging.fatal("unknown path file " + data_csv_fp)
             exit(0)
 
-        rtn_df = self.regular_column_names(rtn_df)
-        rtn_df = self.regular_df_date_to_ymd(rtn_df)
+        if rtn_df.__len__() > 0:
+            rtn_df = self.regular_column_names(rtn_df)
+            rtn_df = self.regular_df_date_to_ymd(rtn_df)
 
-        rtn_df['code'] = rtn_df['code'].apply(lambda _d: str(_d).upper())
+            rtn_df['code'] = rtn_df['code'].apply(lambda _d: str(_d).upper())
 
         return (rtn_df)
 
