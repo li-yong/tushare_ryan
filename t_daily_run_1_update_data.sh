@@ -183,8 +183,15 @@ python t_fenghong.py  --fetch_no_adj_data  --force_fetch_data
 
 
 #### Now update the HK stock ####
-echo "updating HK stock daily "
-python /home/ryan/tushare_ryan/t_fetch_us_hk_bar.py --fetch_hk;
-echo "HK daily update completed."
+echo "updating HK/US selected stock daily from tushare "
+python ~/tushare_ryan/t_fetch_us_hk_bar.py --selected -x HK  --force_fetch;
+python ~/tushare_ryan/t_fetch_us_hk_bar.py --selected -x US  --force_fetch;
+
+echo "updating HK/US all stocks daily from tushare "
+python ~/tushare_ryan/t_fetch_us_hk_bar.py -x HK;
+
+#14000 companies, and tushare no longer have updates since 2020/04/27
+#python ~/tushare_ryan/t_fetch_us_hk_bar.py -x US;
+echo "HK/US daily update completed."
 
 echo "done, script completed"
