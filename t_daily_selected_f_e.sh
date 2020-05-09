@@ -69,26 +69,26 @@ if [ $fetch_or_exam == "EXAM" ]; then
   #----------------- KP ---------------------------#
     ########## AG KP
     #output: /home/ryan/DATA/result/selected/key_points_ag.csv
-    python t_daily_get_key_points.py  -x AG  --selected --calc_base
+    python t_daily_get_key_points.py  -x AG  --selected --calc_base  --force
     #output: /home/ryan/DATA/result/selected/key_points_ag_today.csv
-    python t_daily_get_key_points.py  -x AG  --selected --calc_today
+    python t_daily_get_key_points.py  -x AG  --selected --calc_today  --force
     #/home/ryan/DATA/result/selected/key_points_ag_today_selected.csv
-    python t_daily_get_key_points.py  -x AG  --selected --today_selection
+    python t_daily_get_key_points.py  -x AG  --selected --today_selection  --force
 
     ########### US KP
     #output: /home/ryan/DATA/result/selected/key_points_us.csv
-    python t_daily_get_key_points.py  -x US  --selected --calc_base
+    python t_daily_get_key_points.py  -x US  --selected --calc_base --force
     #output: /home/ryan/DATA/result/selected/key_points_us_today.csv
-    python t_daily_get_key_points.py  -x US  --selected --calc_today
+    python t_daily_get_key_points.py  -x US  --selected --calc_today --force
     #/home/ryan/DATA/result/selected/key_points_us_today_selected.csv
-    python t_daily_get_key_points.py  -x US  --selected --today_selection
+    python t_daily_get_key_points.py  -x US  --selected --today_selection  --force
 
     ########### HK KP
     #/home/ryan/DATA/result/selected/key_points_hk.csv
-    python t_daily_get_key_points.py  -x HK  --selected --calc_base
+    python t_daily_get_key_points.py  -x HK  --selected --calc_base  --force
     #/home/ryan/DATA/result/selected/key_points_hk_today.csv
-    python t_daily_get_key_points.py  -x HK  --selected --calc_today
-    python t_daily_get_key_points.py  -x HK  --selected --today_selection
+    python t_daily_get_key_points.py  -x HK  --selected --calc_today  --force
+    python t_daily_get_key_points.py  -x HK  --selected --today_selection  --force
 
 
   #--------------- PV ---------------------------#
