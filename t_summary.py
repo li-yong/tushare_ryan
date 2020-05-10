@@ -530,7 +530,7 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
 
     #key_points_AG_today_selected.csv
     if not select:
-        f_support_resist_line_today = "/home/ryan/DATA/result/key_points_" + stock_global + "_today_selected.csv"
+        f_support_resist_line_today = "/home/ryan/DATA/result/key_points_" + str(stock_global).lower() + "_today_selected.csv"
 
     #disclosure_date in a week.
     f_disclosure_date_notify = "/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/latest/disclosure_date_notify.csv"
