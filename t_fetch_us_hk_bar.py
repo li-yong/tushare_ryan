@@ -137,7 +137,6 @@ def get_hk_us(df, cons, start_date, appendix, todayS,force_fetch):
             a_stock_df = ts.bar(code, conn=cons, asset='X', adj='qfq', start_date=start_date_req, end_date='')
             if str(a_stock_df) != 'None':
                 logging.info("fetched df len " + str(a_stock_df.__len__()))
-                finlib.Finlib().pprint(a_stock_df)
 
             #time.sleep(2)
             if str(a_stock_df) == 'None':
@@ -193,7 +192,7 @@ def get_hk_us(df, cons, start_date, appendix, todayS,force_fetch):
             a_stock_df.rename(columns={"datetime": "date"}, inplace=True)
 
             a_stock_df = df_tmp.append(a_stock_df, ignore_index=True)
-
+            finlib.Finlib().pprint(a_stock_df.iloc[-1:])
             a_stock_df.to_csv(a_csv, encoding='UTF-8', index=False)
             logging.info("saved " + a_csv)
         except:
