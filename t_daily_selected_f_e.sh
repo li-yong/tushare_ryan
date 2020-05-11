@@ -20,8 +20,8 @@ if [ $fetch_or_exam == "FETCH" ]; then
   python /home/ryan/tushare_ryan/t_daily_update_csv_from_tushare_.py;
   python /home/ryan/tushare_ryan/t_daily_get_ag_index_from_tushare.py --fetch_index;
 
-  python t_daily_update_csv_from_stooq.py;
-  python ~/tushare_ryan/t_fetch_us_hk_bar.py --selected -x HK  --force_fetch;
+  python /home/ryan/tushare_ryan/t_daily_update_csv_from_stooq.py;
+  python /home/ryan/tushare_ryan/t_fetch_us_hk_bar.py --selected -x HK  --force_fetch;
 
   #python t_daily_update_csv_from_stooq.py --force_fetch;
   #python ~/tushare_ryan/t_fetch_us_hk_bar.py --selected -x US  --force_fetch;

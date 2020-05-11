@@ -137,9 +137,9 @@ def get_hk_us(df, cons, start_date, appendix, todayS,force_fetch):
             a_stock_df = ts.bar(code, conn=cons, asset='X', adj='qfq', start_date=start_date_req, end_date='')
             if str(a_stock_df) != 'None':
                 logging.info("fetched df len " + str(a_stock_df.__len__()))
+                finlib.Finlib().pprint(a_stock_df)
 
             #time.sleep(2)
-
             if str(a_stock_df) == 'None':
                 sys.stdout.write("ts.bar return None. retry " + str(code) + ". 1st. ")
                 ts.close_apis(cons)
