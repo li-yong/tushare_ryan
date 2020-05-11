@@ -39,17 +39,17 @@ def verify_file_exist_update(hide_pass=True, print_len=True):
     #hide_pass = True
     #print_len = True  #slow
 
-    finlib.Finlib().file_verify("/home/ryan/DATA/result/fundamental_peg_2018_4.csv", day=3, hide_pass=hide_pass, print_len=print_len)
+    finlib.Finlib().file_verify("/home/ryan/DATA/result/fundamental_peg_2019_4.csv", day=3, hide_pass=hide_pass, print_len=print_len)
 
     print("====  " + base + " ====")
     #finlib.Finlib().file_verify(base+"/DAY_JAQS/*.csv", day=3, hide_pass=True, print_len=False)
-    finlib.Finlib().file_verify(base + "/DAY_No_Adj/*.csv", day=3, hide_pass=True, print_len=False)
-    finlib.Finlib().file_verify(base + "/DAY_Global/AG/*.csv", day=3, hide_pass=True, print_len=False)
-    finlib.Finlib().file_verify(base + "/DAY_Global/CH/*.csv", day=3, hide_pass=True, print_len=False)
-    finlib.Finlib().file_verify(base + "/DAY_Global/KG/*.csv", day=3, hide_pass=True, print_len=False)
-    finlib.Finlib().file_verify(base + "/DAY_Global/HK/*.csv", day=3, hide_pass=True, print_len=False)
-    finlib.Finlib().file_verify(base + "/DAY_Global/MG/*.csv", day=3, hide_pass=True, print_len=False)
-    finlib.Finlib().file_verify(base + "/DAY_Global/US/*.csv", day=3, hide_pass=True, print_len=False)
+    #finlib.Finlib().file_verify(base + "/DAY_No_Adj/*.csv", day=3, hide_pass=True, print_len=False)
+    #finlib.Finlib().file_verify(base + "/DAY_Global/AG/*.csv", day=3, hide_pass=True, print_len=False)
+    #finlib.Finlib().file_verify(base + "/DAY_Global/CH/*.csv", day=3, hide_pass=True, print_len=False)
+    #finlib.Finlib().file_verify(base + "/DAY_Global/KG/*.csv", day=3, hide_pass=True, print_len=False)
+    #finlib.Finlib().file_verify(base + "/DAY_Global/HK/*.csv", day=3, hide_pass=True, print_len=False)
+    #finlib.Finlib().file_verify(base + "/DAY_Global/MG/*.csv", day=3, hide_pass=True, print_len=False)
+    #finlib.Finlib().file_verify(base + "/DAY_Global/US/*.csv", day=3, hide_pass=True, print_len=False)
 
     print("====  " + base_rst + " ====")
     finlib.Finlib().file_verify(base_rst + "/pe_pb_rank.csv", day=3, hide_pass=hide_pass, print_len=print_len)
@@ -58,52 +58,36 @@ def verify_file_exist_update(hide_pass=True, print_len=True):
     finlib.Finlib().file_verify(base_rst + "/fenghong_profit_analysis.csv", day=3, hide_pass=hide_pass, print_len=print_len)
     finlib.Finlib().file_verify(base_rst + "/fenghong_score.csv", day=3, hide_pass=hide_pass, print_len=print_len)
     finlib.Finlib().file_verify(base_rst + "/fundamental.csv", day=3, hide_pass=hide_pass, print_len=print_len)
-    finlib.Finlib().file_verify(base_rst + "/Fundamental_Quarter_Report_2018_4.csv", day=3, hide_pass=hide_pass, print_len=print_len)
+    finlib.Finlib().file_verify(base_rst + "/Fundamental_Quarter_Report_2019_4.csv", day=3, hide_pass=hide_pass, print_len=print_len)
     finlib.Finlib().file_verify(base_rst + "/latest_fundamental_quarter.csv", day=3, hide_pass=hide_pass, print_len=print_len)
     finlib.Finlib().file_verify(base_rst + "/latest_fundamental_day.csv", day=3, hide_pass=hide_pass, print_len=print_len)
     finlib.Finlib().file_verify(base_rst + "/today/fundamentals.csv", day=3, hide_pass=hide_pass, print_len=print_len)
     finlib.Finlib().file_verify(base_rst + "/jaqs_quarterly_fundamental.csv", day=3, hide_pass=hide_pass, print_len=print_len)
     finlib.Finlib().file_verify(base_rst + "/fundamental.csv", day=3, hide_pass=hide_pass, print_len=print_len)
     finlib.Finlib().file_verify(base_rst + "/fundamental_peg.csv", day=3, hide_pass=hide_pass, print_len=print_len)
-    finlib.Finlib().file_verify(base_rst + "/fundamental_peg_2018_4.csv", day=3, hide_pass=hide_pass, print_len=print_len)
-    finlib.Finlib().file_verify(base_rst + "/fundamental_peg_2018_4_selected.csv", day=3, hide_pass=hide_pass, print_len=print_len)
+    finlib.Finlib().file_verify(base_rst + "/fundamental_peg_2019_4.csv", day=3, hide_pass=hide_pass, print_len=print_len)
+    finlib.Finlib().file_verify(base_rst + "/fundamental_peg_2019_4_selected.csv", day=3, hide_pass=hide_pass, print_len=print_len)
     finlib.Finlib().file_verify(base_rst + "/latest_fundamental_day.csv", day=3, hide_pass=hide_pass, print_len=print_len)
     finlib.Finlib().file_verify(base_rst + "/latest_fundamental_quarter.csv", day=3, hide_pass=hide_pass, print_len=print_len)
-    finlib.Finlib().file_verify(base_rst + "/Fundamental_Quarter_Report_2018_2.csv", day=3, hide_pass=hide_pass, print_len=print_len)
-    finlib.Finlib().file_verify(base_rst + "/Fundamental_Quarter_Report_2018_4.csv", day=3, hide_pass=hide_pass, print_len=print_len)
+    finlib.Finlib().file_verify(base_rst + "/Fundamental_Quarter_Report_2019_4.csv", day=3, hide_pass=hide_pass, print_len=print_len)
     finlib.Finlib().file_verify(base_rst + "/latest_fundamental_peg.csv", day=3, hide_pass=hide_pass, print_len=print_len)
-    finlib.Finlib().file_verify(base_rst + "/fundamental_peg_2018_4.csv", day=3, hide_pass=hide_pass, print_len=print_len)
+    finlib.Finlib().file_verify(base_rst + "/fundamental_peg_2019_4.csv", day=3, hide_pass=hide_pass, print_len=print_len)
     finlib.Finlib().file_verify(base_rst + "/industry_top.csv", day=3, hide_pass=hide_pass, print_len=print_len)
     finlib.Finlib().file_verify(base_rst + "/area_top.csv", day=3, hide_pass=hide_pass, print_len=print_len)
     finlib.Finlib().file_verify(base_rst + "/jaqs/jaqs_all.pickle", day=3, hide_pass=hide_pass, print_len=print_len)
     finlib.Finlib().file_verify(base_rst + "/jaqs/ts_all.pickle", day=3, hide_pass=hide_pass, print_len=print_len)
 
     print("====  " + base_fund_2 + " ====")
-    finlib.Finlib().file_verify(base_fund_2 + "/individual_per_stock/*.csv", day=3, hide_pass=hide_pass, print_len=print_len)
-    finlib.Finlib().file_verify(base_fund_2 + "/merged/*.csv", day=3, hide_pass=hide_pass, print_len=print_len)
-    finlib.Finlib().file_verify(base_fund_2 + "/source/*.csv", day=3, hide_pass=hide_pass, print_len=print_len)
+    #finlib.Finlib().file_verify(base_fund_2 + "/individual_per_stock/*.csv", day=3, hide_pass=hide_pass, print_len=print_len)
+    #finlib.Finlib().file_verify(base_fund_2 + "/merged/*.csv", day=3, hide_pass=hide_pass, print_len=print_len)
+    #finlib.Finlib().file_verify(base_fund_2 + "/source/*.csv", day=3, hide_pass=hide_pass, print_len=print_len)
 
-    #finlib.Finlib().file_verify(base_fund_2+"/source/fina_mainbz_sum.csv", day=3, hide_pass=hide_pass, print_len=print_len)
-    #finlib.Finlib().file_verify(base_fund_2+"/source/balancesheet.csv",day=3, hide_pass=hide_pass, print_len=print_len)
-    #finlib.Finlib().file_verify(base_fund_2+"/source/dividend.csv", day=3, hide_pass=hide_pass, print_len=print_len)
-    #finlib.Finlib().file_verify(base_fund_2+"/source/fina_audit.csv", day=3, hide_pass=hide_pass, print_len=print_len)
-    #finlib.Finlib().file_verify(base_fund_2+"/source/fina_mainbz.csv", day=3, hide_pass=hide_pass, print_len=print_len)
-    #finlib.Finlib().file_verify(base_fund_2+"/source/forecast.csv", day=3, hide_pass=hide_pass, print_len=print_len)
-    #finlib.Finlib().file_verify(base_fund_2+"/source/individual_per_stock/*.csv", day=3, hide_pass=True, print_len=False)
 
-    finlib.Finlib().file_verify(base_fund_2 + "/source/latest/*.csv", day=3, hide_pass=hide_pass, print_len=print_len)
+    #finlib.Finlib().file_verify(base_fund_2 + "/source/latest/*.csv", day=3, hide_pass=hide_pass, print_len=print_len)
 
-    #finlib.Finlib().file_verify(base_fund_2 + "/source/latest/fina_indicator.csv", day=3, hide_pass=hide_pass,print_len=print_len)
-    #finlib.Finlib().file_verify(base_fund_2+"/source/latest/disclosure_date_notify.csv", day=3, hide_pass=hide_pass, print_len=print_len)
-    #finlib.Finlib().file_verify(base_fund_2+"/source/latest/fina_mainbz_percent.csv", day=3, hide_pass=hide_pass, print_len=print_len)
+    #finlib.Finlib().file_verify(base_fund_2 + "/source/market/*.csv", day=3, hide_pass=hide_pass, print_len=print_len)
 
-    finlib.Finlib().file_verify(base_fund_2 + "/source/market/*.csv", day=3, hide_pass=hide_pass, print_len=print_len)
-    #finlib.Finlib().file_verify(base_fund_2+"/source/market/pro_basic.csv", day=3, hide_pass=hide_pass, print_len=print_len)
-    #finlib.Finlib().file_verify(base_fund_2+"/source/market/pro_concept.csv", day=3, hide_pass=hide_pass, print_len=print_len)
-    #finlib.Finlib().file_verify(base_fund_2+"/source/market/pro_repurchase.csv", day=3, hide_pass=hide_pass, print_len=print_len)
-
-    #finlib.Finlib().file_verify(base_fund_2 + "/source/individual/20181231/*.csv", day=3, hide_pass=hide_pass, print_len=False)
-    finlib.Finlib().file_verify(base_fund_2 + "/source/individual_per_stock/*.csv", day=3, hide_pass=hide_pass, print_len=False)
+    #finlib.Finlib().file_verify(base_fund_2 + "/source/individual_per_stock/*.csv", day=3, hide_pass=hide_pass, print_len=False)
 
     print("====  " + base_fund_2 + "/report ====")
     finlib.Finlib().file_verify(base_fund_2 + "/report/step1/*.csv", day=3, hide_pass=hide_pass, print_len=print_len)
@@ -135,47 +119,36 @@ def verify_price_utd():
     today_s_short = re.sub("-", "", finlib.Finlib().get_last_trading_day())  #20190306
 
     #######check basic
-    finlib.Finlib().file_verify(base_fund_2 + "/source/basic_daily/basic_" + today_s_short + ".csv", day=1, hide_pass=False, print_len=True)
+
+    csvf = base_fund_2 + "/source/basic_daily/basic_" + today_s_short + ".csv"
+    finlib.Finlib().file_verify(csvf, day=1, hide_pass=False, print_len=True)
 
     #######check ag
+    finlib.Finlib().pprint(pd.read_csv(csvf).iloc[-1:])
     if (not pd.isnull(today_p)) and (today_p != 10000000000):
         print("PASS. AG stock price is update to date. /home/ryan/DATA/DAY_Global/AG/SH600519.csv , " + today_s + " , " + str(today_p))
     else:
         print("FAIL. AG stock price is not update to date /home/ryan/DATA/DAY_Global/AG/SH600519.csv")
 
     #######check hk
-    df = pd.read_csv("/home/ryan/DATA/DAY_Global/KG/08001.KG")
-    if len(df[df["datetime"] == today_s]) == 1:
-        print("PASS. KG stock price is update to date. /home/ryan/DATA/DAY_Global/KG/08001.KG ")
+    csvf = "/home/ryan/DATA/DAY_Global/HK/00700.csv"
+    df = pd.read_csv(csvf)
+    finlib.Finlib().pprint(df.iloc[-1:])
+    if len(df[df["date"] == today_s]) == 1:
+        print("PASS. HK stock price is update to date." +csvf)
     else:
-        print("FAIL. KG stock price is not update to date. /home/ryan/DATA/DAY_Global/KG/08001.KG ")
+        print("FAIL. HK stock price is not update to date."+ csvf)
 
-    df = pd.read_csv("/home/ryan/DATA/DAY_Global/HK/00001.csv")
-    if len(df[df["datetime"] == today_s]) == 1:
-        print("PASS. HK stock price is update to date. /home/ryan/DATA/DAY_Global/HK/00001.csv ")
-    else:
-        print("FAIL. HK stock price is not update to date. /home/ryan/DATA/DAY_Global/HK/00001.csv ")
-
-    df = pd.read_csv("/home/ryan/DATA/DAY_Global/HK/00007.csv")
-    if len(df[df["datetime"] == today_s]) == 1:
-        print("PASS. HK stock price is update to date. /home/ryan/DATA/DAY_Global/HK/00007.csv ")
-    else:
-        print("FAIL. HK stock price is not update to date. /home/ryan/DATA/DAY_Global/HK/00007.csv")
 
     #######check us
     today_s_us = finlib.Finlib().get_last_trading_day_us()
 
     df = pd.read_csv("/home/ryan/DATA/DAY_Global/US/AAPL.csv")
-    if len(df[df["datetime"] == today_s_us]) == 1:
+    finlib.Finlib().pprint(df.iloc[-1:])
+    if len(df[df["date"] == today_s_us]) == 1:
         print("PASS. US stock price is update to date. /home/ryan/DATA/DAY_Global/US/AAPL.csv")
     else:
         print("FAIL. US stock price is not update to date. /home/ryan/DATA/DAY_Global/US/AAPL.csv")
-
-    df = pd.read_csv("/home/ryan/DATA/DAY_Global/MG/MSFT.MG")
-    if len(df[df["datetime"] == today_s_us]) == 1:
-        print("PASS. MG stock price is update to date.  /home/ryan/DATA/DAY_Global/MG/MSFT.MG")
-    else:
-        print("FAIL. MG stock price is not update to date. /home/ryan/DATA/DAY_Global/MG/MSFT.MG")
 
     print(" ==== verify_price_utd completed ====")
 
