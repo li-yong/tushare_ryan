@@ -143,12 +143,13 @@ def verify_price_utd():
     #######check us
     today_s_us = finlib.Finlib().get_last_trading_day_us()
 
-    df = pd.read_csv("/home/ryan/DATA/DAY_Global/stooq/US/AAPL.csv")
+    csvf = "/home/ryan/DATA/DAY_Global/stooq/US/AAPL.csv"
+    df = pd.read_csv(csvf)
     finlib.Finlib().pprint(df.iloc[-1:])
     if len(df[df["date"] == today_s_us]) == 1:
-        print("PASS. US stock price is update to date. /home/ryan/DATA/DAY_Global/US/AAPL.csv")
+        print("PASS. US stock price is update to date. "+csvf)
     else:
-        print("FAIL. US stock price is not update to date. /home/ryan/DATA/DAY_Global/US/AAPL.csv")
+        print("FAIL. US stock price is not update to date "+ csvf)
 
     print(" ==== verify_price_utd completed ====")
 
