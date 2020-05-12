@@ -69,7 +69,7 @@ if [ $fetch_or_exam == "EXAM" ]; then
   #----------------- KP ---------------------------#
     ########## AG KP
     #output: /home/ryan/DATA/result/selected/key_points_ag.csv
-    python t_daily_get_key_points.py  -x AG  --selected --calc_base  --force
+    python t_daily_get_key_points.py  -x AG  --selected --calc_base
     #output: /home/ryan/DATA/result/selected/key_points_ag_today.csv
     python t_daily_get_key_points.py  -x AG  --selected --calc_today  --force
     #/home/ryan/DATA/result/selected/key_points_ag_today_selected.csv
@@ -77,7 +77,7 @@ if [ $fetch_or_exam == "EXAM" ]; then
 
     ########### US KP
     #output: /home/ryan/DATA/result/selected/key_points_us.csv
-    python t_daily_get_key_points.py  -x US  --selected --calc_base --force
+    python t_daily_get_key_points.py  -x US  --selected --calc_base
     #output: /home/ryan/DATA/result/selected/key_points_us_today.csv
     python t_daily_get_key_points.py  -x US  --selected --calc_today --force
     #/home/ryan/DATA/result/selected/key_points_us_today_selected.csv
@@ -85,7 +85,7 @@ if [ $fetch_or_exam == "EXAM" ]; then
 
     ########### HK KP
     #/home/ryan/DATA/result/selected/key_points_hk.csv
-    python t_daily_get_key_points.py  -x HK  --selected --calc_base  --force
+    python t_daily_get_key_points.py  -x HK  --selected --calc_base
     #/home/ryan/DATA/result/selected/key_points_hk_today.csv
     python t_daily_get_key_points.py  -x HK  --selected --calc_today  --force
     python t_daily_get_key_points.py  -x HK  --selected --today_selection  --force
