@@ -3951,15 +3951,18 @@ def main():
         concept_top()
 
     if fetch_all_f:
+        #fast first
+        fetch_basic_daily(fast_fetch=fast_fetch_f)  #300 credits
+        _fetch_pro_concept()  #300 credits
+        _fetch_pro_repurchase()  #600 credits
+        #_fetch_cctv_news() #120 credits.  5 times/minute
+
+        #then timecosting
         _fetch_pro_basic()
         #_fetch_stk_holdertrade(fast_fetch=fast_fetch_f) #don't have 2000 api credits
         fetch(fast_fetch=fast_fetch_f)
         fetch_basic_quarterly()
-        fetch_basic_daily(fast_fetch=fast_fetch_f)  #300 credits
 
-        _fetch_pro_concept()  #300 credits
-        _fetch_pro_repurchase()  #600 credits
-        #_fetch_cctv_news() #120 credits.  5 times/minute
 
     elif merge_individual_f:
 

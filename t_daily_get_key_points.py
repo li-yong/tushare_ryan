@@ -417,6 +417,9 @@ def main():
 
             df = finlib.Finlib().regular_read_csv_to_stdard_df(inputF)
 
+            if df.__len__() < 100:
+                continue
+
             # adding name column
             df = pd.merge(df, stock_list, on='code', how='inner', suffixes=('', '_x'))
 

@@ -481,7 +481,7 @@ if [ $full_or_daily == "FULL" ]; then
 fi
 
 if [ $full_or_daily == "DAILY" ]; then
-    #python t_daily_get_key_points.py  -x AG  --calc_base  #slow (10hours).  run every 7 days. output: /home/ryan/DATA/result/key_points_AG.csv
+    python t_daily_get_key_points.py  -x AG  --calc_base  #slow (10hours).  run every 7 days. output: /home/ryan/DATA/result/key_points_AG.csv
     python t_daily_get_key_points.py  -x AG  --calc_today  #fast. output: /home/ryan/DATA/result/key_points_AG_today.csv
     python t_daily_get_key_points.py  -x AG  --today_selection #fast. output: /home/ryan/DATA/result/key_points_AG_today_selected.csv
 fi
