@@ -122,22 +122,30 @@ def verify_price_utd():
 
     csvf = base_fund_2 + "/source/basic_daily/basic_" + today_s_short + ".csv"
     finlib.Finlib().file_verify(csvf, day=1, hide_pass=False, print_len=True)
-
-    #######check ag
     finlib.Finlib().pprint(pd.read_csv(csvf).iloc[-1:])
     if (not pd.isnull(today_p)) and (today_p != 10000000000):
-        print("PASS. AG stock price is update to date. /home/ryan/DATA/DAY_Global/AG/SH600519.csv , " + today_s + " , " + str(today_p))
+        print("PASS. AG basic is update to date. " +csvf+"\n")
     else:
-        print("FAIL. AG stock price is not update to date /home/ryan/DATA/DAY_Global/AG/SH600519.csv")
+        print("FAIL. AG basic is not update to date "+csvf+"\n")
+
+
+    #######check ag
+    csvf = "/home/ryan/DATA/DAY_Global/AG/SH600519.csv"
+    df = finlib.Finlib().regular_read_csv_to_stdard_df(csvf)
+    finlib.Finlib().pprint(df.iloc[-1:])
+    if len(df[df["date"] == today_s]) == 1:
+        print("PASS. AG stock is update to date. " +csvf+"\n")
+    else:
+        print("FAIL. AG stock is not update to date. " +csvf+"\n")
 
     #######check hk
     csvf = "/home/ryan/DATA/DAY_Global/HK/00700.csv"
     df = pd.read_csv(csvf)
     finlib.Finlib().pprint(df.iloc[-1:])
     if len(df[df["date"] == today_s]) == 1:
-        print("PASS. HK stock price is update to date." +csvf)
+        print("PASS. HK stock price is update to date." +csvf+"\n")
     else:
-        print("FAIL. HK stock price is not update to date."+ csvf)
+        print("FAIL. HK stock price is not update to date."+ csvf+"\n")
 
 
     #######check us
@@ -147,9 +155,9 @@ def verify_price_utd():
     df = pd.read_csv(csvf)
     finlib.Finlib().pprint(df.iloc[-1:])
     if len(df[df["date"] == today_s_us]) == 1:
-        print("PASS. US stock price is update to date. "+csvf)
+        print("PASS. US stock price is update to date. "+csvf+"\n")
     else:
-        print("FAIL. US stock price is not update to date "+ csvf)
+        print("FAIL. US stock price is not update to date "+ csvf+"\n")
 
     print(" ==== verify_price_utd completed ====")
 

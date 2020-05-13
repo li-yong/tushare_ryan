@@ -37,8 +37,8 @@ rsync -az   haha_data_source:/home/ryan/DATA/DAY_Global/stooq/US_INDEX/  /home/r
 
 #US/HK has too long list to fit in haha_data_source (1GB memory)
 rsync -az   haha_data_source:/home/ryan/DATA/DAY_Global/US/  /home/ryan/DATA/DAY_Global/US/
-rsync -az   haha_power/ryan/DATA/DAY_Global/HK/  /home/ryan/DATA/DAY_Global/HK/
-#rsync -az   haha_power:/home/ryan/DATA/DAY_Global/US/  /home/ryan/DATA/DAY_Global/US/
+rsync -az   haha_data_source:/home/ryan/DATA/DAY_Global/HK/  /home/ryan/DATA/DAY_Global/HK/
+rsync -az   haha_data_source:/home/ryan/DATA/DAY_Global/US/  /home/ryan/DATA/DAY_Global/US/
 #rsync -az   haha_power:/home/ryan/DATA/DAY_Global/CH/  /home/ryan/DATA/DAY_Global/CH/
 #rsync -az   haha_power/ryan/DATA/DAY_Global/KG/  /home/ryan/DATA/DAY_Global/KG/
 
