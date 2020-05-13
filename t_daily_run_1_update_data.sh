@@ -5,6 +5,11 @@ cd /home/ryan/tushare_ryan
 
 git pull
 
+#### update the HK stock ####
+echo "updating HK/US selected stock daily from tushare "
+python ~/tushare_ryan/t_fetch_us_hk_bar.py --selected -x HK  --force_fetch;
+python ~/tushare_ryan/t_fetch_us_hk_bar.py --selected -x US  --force_fetch;
+
 #更新当天股票数据
 ######################################
 #Output:
@@ -19,36 +24,7 @@ python /home/ryan/tushare_ryan/t_daily_update_csv_from_tushare_.py;
 #
 ######################################
 
-python /home/ryan/tushare_ryan/t_get_index.py --fetch_index 
-
-
-
-
-######################################
-#
-# output:
-# /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/invidual/*.csv
-#
-######################################
-echo "daily update tushare pro fundamentals";
-#----
-# a full fetch. fetch everything.
-#----
-#python t_daily_fundamentals_2.py --fetch_data_all --force_run
-
-#----
-#full fetch. but files that has been updated in 5 days
-# (which should also be the most recent Quarter) will not be check again.
-#----
-python t_daily_fundamentals_2.py --fetch_data_all
-
-#----
-# # fast_fetch fetch
-# 1.good stock.  <<< commented now, as #fast_fetch doesn't have content.
-# 2.this_q and last_q for ts.express
-#----
-python t_daily_fundamentals_2.py --fetch_data_all --fast_fetch  #most time, update most recent q
-
+# python /home/ryan/tushare_ryan/t_get_index.py --fetch_index #script file no longer exist
 
 
 ######################################
@@ -62,27 +38,6 @@ python t_daily_hsgt.py --fetch_moneyflow_all #time consuming
 python t_daily_hsgt.py --fetch_moneyflow_daily  #time consuming (a little)
 
 
-
-######################################
-#
-# output:
-# /home/ryan/DATA/pickle/Stock_Fundamental/top_10_holder/summary_600519.csv
-# /home/ryan/DATA/pickle/Stock_Fundamental/top_10_holder/detail_600519.csv
-#
-######################################
-python t_top_10_holders.py --fetch  #time consuming
-
-
-######################################
-##update announcement.
-#
-######################################
-#cd /home/ryan/repo/trading/lib/China_stock_announcement_ryan/python_scraw
-#echo "updating today SSE announcement"
-#python cninfo_main.py sse ;   #/home/ryan/DATA/announcement/sse/list/2017/2017-12-26.csv
-
-#echo "updating today regulator announcement"
-#python cninfo_main.py regulator;  #/home/ryan/DATA/announcement/reg/list/2017/2017-12-26.csv
 
 ######################################
 #
@@ -126,7 +81,7 @@ python t_daily_fundamentals.py  --update_get_A_stock_instrment;  #/home/ryan/DAT
 echo "AG stock daily updated!"
 
 
-# HK Stock update along with US at evening of the day, and exam on the next day morning at 8.00 AM.
+
 
 ######################################
 ### To update Fenghong required data, have to be run in home/public network on laptop daily.
@@ -148,6 +103,53 @@ echo "AG stock daily updated!"
 ######################################
 python t_fenghong.py  --fetch_reference
 
+
+
+
+######################################
+#
+# output:
+# /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/invidual/*.csv
+#
+######################################
+echo "daily update tushare pro fundamentals";
+#----
+# a full fetch. fetch everything.
+#----
+#python t_daily_fundamentals_2.py --fetch_data_all --force_run
+
+#----
+#full fetch. but files that has been updated in 5 days
+# (which should also be the most recent Quarter) will not be check again.
+#----
+# python t_daily_fundamentals_2.py --fetch_data_all  #time consuming.
+
+#----
+# # fast_fetch fetch
+# 1.good stock.  <<< commented now, as #fast_fetch doesn't have content.
+# 2.this_q and last_q for ts.express
+#----
+python t_daily_fundamentals_2.py --fetch_data_all --fast_fetch  #most time, update most recent q.  #time consuming.
+
+
+
+
+
+######################################
+#
+# output:
+# /home/ryan/DATA/pickle/Stock_Fundamental/top_10_holder/summary_600519.csv
+# /home/ryan/DATA/pickle/Stock_Fundamental/top_10_holder/detail_600519.csv
+#
+######################################
+python t_top_10_holders.py --fetch  #time consuming
+
+
+
+
+# HK Stock update along with US at evening of the day, and exam on the next day morning at 8.00 AM.
+
+
 ######################################
 ## input: /home/ryan/DATA/pickle/instrument_A.csv, get code from the file
 ## output: /home/ryan/DATA/DAY_No_Adj/*.csv
@@ -167,8 +169,6 @@ python t_fenghong.py  --fetch_no_adj_data  --force_fetch_data #time consuming
 #python t_monthly_jaqs_fundamental.py --fetch_data_all --force_fetch_data
 
 
-
-
 #### 20190102 home thinkpad laptop replaced td to sync all days ###
 #### this part has been replaced by
 # python t_daily_fundamentals_2.py  --fetch_data_all @ haha_data_source ###
@@ -182,10 +182,6 @@ python t_fenghong.py  --fetch_no_adj_data  --force_fetch_data #time consuming
 #ssh root@td reboot &
 
 
-#### Now update the HK stock ####
-echo "updating HK/US selected stock daily from tushare "
-python ~/tushare_ryan/t_fetch_us_hk_bar.py --selected -x HK  --force_fetch;
-python ~/tushare_ryan/t_fetch_us_hk_bar.py --selected -x US  --force_fetch;
 
 echo "updating HK/US all stocks daily from tushare "
 python ~/tushare_ryan/t_fetch_us_hk_bar.py -x HK; #time consuming
