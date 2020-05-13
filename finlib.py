@@ -714,7 +714,8 @@ class Finlib:
         elif re.match('SZ', code):  #
             code_S = code
         else:
-            logging.info(("Fatal: UNKNOWN CODE " + code))
+            pass
+            #logging.info(("Fatal: UNKNOWN CODE " + code))
         return code_S
 
     def add_market_to_code_single(self, code):
@@ -731,7 +732,8 @@ class Finlib:
         elif re.match('^SZ', code):  #
             code_S = code
         else:
-            logging.info(("Fatal: UNKNOWN CODE " + code))
+            pass
+            #logging.info(("Fatal: UNKNOWN CODE " + code))
         return code_S
 
     def add_market_to_code(self, df, dot_f=False, tspro_format=False):
@@ -765,7 +767,7 @@ class Finlib:
                 code_number = re.match('^SZ(.*)', code).group(1)  # 600519
                 code_S2 = code_number + dot + 'SZ'
             else:
-                logging.info(("Fatal: UNKNOWN CODE " + code))
+                #logging.info(("Fatal: UNKNOWN CODE " + code))
                 continue
 
             if tspro_format:

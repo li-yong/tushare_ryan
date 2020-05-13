@@ -1090,7 +1090,7 @@ def merge_individual_bash_basic(fast_fetch=False):
 
         check_csv = fund_base_source + "/individual_per_stock/600519.SH_basic.csv"
 
-        if (not force_run_global) and finlib.Finlib().is_cached(check_csv, day=5):
+        if (not force_run_global) and finlib.Finlib().is_cached(check_csv, day=6):
             print("*_basic.csv are updated in 5 days, not process. result checked by " + check_csv)
 
         tmp_dir = "~/tmp/pro_basic"
@@ -1254,7 +1254,7 @@ def merge_local_bash():
 
         output_csv = fund_base_source + "/" + f + ".csv"
 
-        if (not force_run_global) and finlib.Finlib().is_cached(output_csv, day=3):
+        if (not force_run_global) and finlib.Finlib().is_cached(output_csv, day=6):
             logging.info("file updated in 3 days, not process. " + output_csv)
             continue
 
@@ -1283,7 +1283,7 @@ def merge_local_bash():
 def merge_local_bash_basic(output_csv, fast=False):
     logging.info("DAILY merge local basic")
     logging.info(output_csv)
-    if (not fast) and (not force_run_global) and finlib.Finlib().is_cached(output_csv, 5) and (os.stat(output_csv).st_size >= 10):
+    if (not fast) and (not force_run_global) and finlib.Finlib().is_cached(output_csv, 6) and (os.stat(output_csv).st_size >= 10):
         logging.info("file is updated in 5 days, not merge again. " + output_csv)
         return ()
 
@@ -1391,7 +1391,7 @@ def merge_local_bash_basic_quarterly():
 
     logging.info("DAILY merge local basic quartly")
     logging.info(output_csv)
-    if (not force_run_global) and finlib.Finlib().is_cached(output_csv, 5) and (os.stat(output_csv).st_size >= 10):
+    if (not force_run_global) and finlib.Finlib().is_cached(output_csv, 6) and (os.stat(output_csv).st_size >= 10):
         logging.info("file is updated in 5 days, not merge again. " + output_csv)
         return ()
 
@@ -1434,7 +1434,7 @@ def merge_local_bash_basic_quarterly():
 
 def sum_fina_mainbz():
 
-    if (not force_run_global) and finlib.Finlib().is_cached(csv_fina_mainbz_sum, day=3):
+    if (not force_run_global) and finlib.Finlib().is_cached(csv_fina_mainbz_sum, day=6):
         logging.info("skip file, it been updated in 3 day. " + csv_fina_mainbz_sum)
         return
 
@@ -1484,8 +1484,8 @@ def sum_fina_mainbz():
 
 def percent_fina_mainbz():
 
-    if (not force_run_global) and finlib.Finlib().is_cached(csv_fina_mainbz_latest_percent, day=5):
-        logging.info("skip file, it been updated in 5 day. " + csv_fina_mainbz_latest_percent)
+    if (not force_run_global) and finlib.Finlib().is_cached(csv_fina_mainbz_latest_percent, day=6):
+        logging.info("skip file, it been updated in 6 day. " + csv_fina_mainbz_latest_percent)
         return
 
     df = pd.read_csv(csv_fina_mainbz_latest, converters={'end_date': str})
@@ -1731,7 +1731,7 @@ def _merge_quarterly(end_date, df_income, df_balancesheet, df_cashflow, df_fina_
 
     output_csv = fund_base_merged + "/merged_all_" + end_date + ".csv"
 
-    if (not force_run_global) and finlib.Finlib().is_cached(output_csv, day=2):
+    if (not force_run_global) and finlib.Finlib().is_cached(output_csv, day=6):
         logging.info("file has been updated in 2 days, will not calculate. " + output_csv)
         return
 
@@ -1812,7 +1812,7 @@ def _extract_latest(csv_input, csv_output, feature, col_name_list, ts_code=None,
         logging.info("skip, input csv doesn't exist " + csv_input)
         return
 
-    if (not force_run_global) and finlib.Finlib().is_cached(csv_output, day=1):
+    if (not force_run_global) and finlib.Finlib().is_cached(csv_output, day=6):
         logging.info("skip file, it been updated in 1 day. " + csv_output)
         return
 
@@ -1875,7 +1875,7 @@ def _analyze_step_1(end_date):
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
-    if (not force_run_global) and finlib.Finlib().is_cached(csv_output, day=5):
+    if (not force_run_global) and finlib.Finlib().is_cached(csv_output, day=6):
         logging.info("file has been updated in 1 days, will not calculate. " + csv_output)
         return
 
@@ -2467,7 +2467,7 @@ def _analyze_step_2(end_date):
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
-    if (not force_run_global) and finlib.Finlib().is_cached(csv_output, day=5):
+    if (not force_run_global) and finlib.Finlib().is_cached(csv_output, day=6):
         logging.info("file has been updated in 1 days, will not calculate. " + csv_output)
         return
 
@@ -2654,7 +2654,7 @@ def _analyze_step_3(end_date):
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
-    if (not force_run_global) and finlib.Finlib().is_cached(csv_output, day=5):
+    if (not force_run_global) and finlib.Finlib().is_cached(csv_output, day=6):
         logging.info("file has been updated in 1 days, will not calculate. " + csv_output)
         return
 

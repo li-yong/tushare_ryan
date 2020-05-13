@@ -47,7 +47,7 @@ python t_daily_fundamentals_2.py --fetch_data_all
 # 1.good stock.  <<< commented now, as #fast_fetch doesn't have content.
 # 2.this_q and last_q for ts.express
 #----
-python t_daily_fundamentals_2.py --fetch_data_all --fast_fetch  --force_run #most time, update most recent q
+python t_daily_fundamentals_2.py --fetch_data_all --fast_fetch  #most time, update most recent q
 
 
 
@@ -58,8 +58,8 @@ python t_daily_fundamentals_2.py --fetch_data_all --fast_fetch  --force_run #mos
 #
 ######################################
 python t_daily_hsgt.py --fetch_hsgt_top_10
-python t_daily_hsgt.py --fetch_moneyflow_all
-python t_daily_hsgt.py --fetch_moneyflow_daily 
+python t_daily_hsgt.py --fetch_moneyflow_all #time consuming
+python t_daily_hsgt.py --fetch_moneyflow_daily  #time consuming (a little)
 
 
 
@@ -70,7 +70,7 @@ python t_daily_hsgt.py --fetch_moneyflow_daily
 # /home/ryan/DATA/pickle/Stock_Fundamental/top_10_holder/detail_600519.csv
 #
 ######################################
-python t_top_10_holders.py --fetch
+python t_top_10_holders.py --fetch  #time consuming
 
 
 ######################################
@@ -112,10 +112,10 @@ python t_daily_fundamentals.py  --fetch_data_all;
 ######################################
 echo "updating market, security, instrument, A_stock"
 python t_daily_fundamentals.py  --update_get_market;  #/home/ryan/DATA/pickle/market.csv
-python t_daily_fundamentals.py  --update_get_security;   #saved to /home/ryan/DATA/pickle/security.csv
+python t_daily_fundamentals.py  --update_get_security;   #saved to /home/ryan/DATA/pickle/security.csv #stop work. 20200513
 
 python t_daily_fundamentals.py  --update_get_instrument;  # /home/ryan/DATA/pickle/instrument.csv
-python t_daily_fundamentals.py  --update_get_A_stock_instrment;  #/home/ryan/DATA/pickle/instrument_A.csv
+python t_daily_fundamentals.py  --update_get_A_stock_instrment;  #/home/ryan/DATA/pickle/instrument_A.csv #stop work. 20200513
 
 
 # update forex, get forex yesterday data from td.
@@ -153,7 +153,7 @@ python t_fenghong.py  --fetch_reference
 ## output: /home/ryan/DATA/DAY_No_Adj/*.csv
 ## BestTV-W works
 ######################################
-python t_fenghong.py  --fetch_no_adj_data  --force_fetch_data
+python t_fenghong.py  --fetch_no_adj_data  --force_fetch_data #time consuming
 
 
 
@@ -188,7 +188,7 @@ python ~/tushare_ryan/t_fetch_us_hk_bar.py --selected -x HK  --force_fetch;
 python ~/tushare_ryan/t_fetch_us_hk_bar.py --selected -x US  --force_fetch;
 
 echo "updating HK/US all stocks daily from tushare "
-python ~/tushare_ryan/t_fetch_us_hk_bar.py -x HK;
+python ~/tushare_ryan/t_fetch_us_hk_bar.py -x HK; #time consuming
 
 #14000 companies, and tushare no longer have updates since 2020/04/27
 #python ~/tushare_ryan/t_fetch_us_hk_bar.py -x US;
