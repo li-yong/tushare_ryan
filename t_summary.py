@@ -1334,7 +1334,6 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
     ####################
     todayS_ymd = datetime.today().strftime('%Y%m%d')
     day_3_before_date = datetime.strptime(todayS_ymd, '%Y%m%d') - timedelta(5)
-    #day_3_before_date = day_3_before_date.strftime('%Y-%m-%d')
     day_3_before_date_ymd = day_3_before_date.strftime('%Y%m%d')
 
     #skip_sets = ('df_sz50', 'df_zz500', 'df_sme', 'df_hs300', 'df_gem')
