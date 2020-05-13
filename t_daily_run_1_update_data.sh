@@ -7,8 +7,10 @@ git pull
 
 #### update the HK stock ####
 echo "updating HK/US selected stock daily from tushare "
-python ~/tushare_ryan/t_fetch_us_hk_bar.py --selected -x HK  --force_fetch;
-python ~/tushare_ryan/t_fetch_us_hk_bar.py --selected -x US  --force_fetch;
+#python ~/tushare_ryan/t_fetch_us_hk_bar.py --selected -x HK  --force_fetch;
+python ~/tushare_ryan/t_fetch_us_hk_bar.py --selected -x HK;
+#python ~/tushare_ryan/t_fetch_us_hk_bar.py --selected -x US  --force_fetch;
+python ~/tushare_ryan/t_fetch_us_hk_bar.py --selected -x US;
 
 #更新当天股票数据
 ######################################

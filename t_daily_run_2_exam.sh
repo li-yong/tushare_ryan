@@ -279,7 +279,7 @@ if [ $full_or_daily == "DAILY" ]; then
     # 30min. force_run is required.
     #force_run is required because it calculated the dymanic changing data that keep updating. eg. one 20190308, the data is not fixed
     #of 20181231, the daily run keeps calculate rpt_20181231 for every step.
-    python t_daily_fundamentals_2.py  --analyze  --daily_a --big_memory --force_run
+    python t_daily_fundamentals_2.py  --analyze  --daily_a --big_memory
 fi
 
 

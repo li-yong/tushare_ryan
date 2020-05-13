@@ -654,7 +654,7 @@ def _ts_pro_fetch(pro_con, stock_list, fast_fetch, query, query_fields, fetch_pe
             print(ind_csv)
 
             #if (finlib.Finlib().is_cached(ind_csv, day=3)) and (not force_run_global) :
-            if (finlib.Finlib().is_cached(ind_csv, day=3)):
+            if (finlib.Finlib().is_cached(ind_csv, day=6)):
                 logging.info("file updated in 3 day, no--concept_topt fetch again " + ind_csv)
                 continue
             elif not os.path.exists(ind_csv):
@@ -1004,14 +1004,14 @@ def _merge_individual_bash(ts_code, feature):
 
     input_file = fund_base_source + "/" + feature + ".csv"
 
-    if finlib.Finlib().is_cached(input_file, 3) and (not force_run_global):
+    if finlib.Finlib().is_cached(input_file, 6) and (not force_run_global):
         logging.info("not processing as file have been updated in 3 days. " + input_file)
         return
 
     output_dir = fund_base_source + "/individual_per_stock"
     output_csv = output_dir + "/" + ts_code + "_" + feature + ".csv"
 
-    if finlib.Finlib().is_cached(output_csv, day=3) and (not force_run_global):
+    if finlib.Finlib().is_cached(output_csv, day=6) and (not force_run_global):
         logging.info("file updated in 3 days, not processing. " + output_csv)
         return ()
 
