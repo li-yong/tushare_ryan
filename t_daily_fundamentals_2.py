@@ -615,7 +615,7 @@ def handler(signum, frame):
 def _ts_pro_fetch(pro_con, stock_list, fast_fetch, query, query_fields, fetch_period_list):
     #save_only == generate 6 source/*.csv, e.g income.csv, balance_sheet.csv
     basic_df = get_pro_basic()
-    fetch_most_recent_report_perid = finlib.Finlib().get_year_month_quarter()['fetch_most_recent_report_perid'][0]
+    fetch_most_recent_report_perid = finlib.Finlib().get_year_month_quarter()['fetch_most_recent_report_perid'][-1]
 
     if not os.path.exists(fund_base_source):
         os.makedirs(fund_base_source)
@@ -693,35 +693,57 @@ def _ts_pro_fetch(pro_con, stock_list, fast_fetch, query, query_fields, fetch_pe
                 logging.info("not fetch as stock is not on market. " + ts_code + " " + period + ". p_cnt " + str(p_cnt) + " stock_cnd " + str(stock_cnt) + " total " + total + " query " + query)
                 continue
 
-            signal.signal(signal.SIGALRM, handler)
+            #signal.signal(signal.SIGALRM, handler)
+
+            file_csv = fund_base_source + "/individual/" + period + "/" + ts_code + "_" + query + ".csv"
+
+            print(file_csv)
+
+
+            if finlib.Finlib().is_cached(file_csv,day=6):
+                logging.info("file has been updated in 6 days, not fetch again "+file_csv)
+                continue
 
             #try:
             logging.info("fetching period " + str(p_cnt) + " of " + str(all_per_cnt) + " , stock " + str(stock_cnt) + " of " + total + ", Getting " + query + " " + ts_code + " " + period)
+
+
             time.sleep(0.7)
 
-            signal.alarm(5)
-
+            #signal.alarm(5)
+            df_tmp = pd.DataFrame()
             if query in ['income', 'balancesheet', 'cashflow', 'fina_indicator', 'fina_audit', 'disclosure_date', 'express', 'fina_mainbz']:
                 if fast_fetch:
-                    df_tmp = pro_con.query(query, ts_code=ts_code, fields=query_fields)
+                    if query in ['fina_audit', 'fina_mainbz', 'disclosure_date', 'express'] and (not str(period).__contains__("1231")):
+                        continue
+                    else:
+                        df_tmp = pro_con.query(query, ts_code=ts_code, fields=query_fields)
                 else:
-                    df_tmp = pro_con.query(query, ts_code=ts_code, fields=query_fields, end_date=period)
+                    if query in ['fina_audit', 'fina_mainbz', 'disclosure_date', 'express'] and (not str(period).__contains__("1231")):
+                        continue
+                    else:
+                        df_tmp = pro_con.query(query, ts_code=ts_code, fields=query_fields, end_date=period)
             elif query in ['forecast']:
                 if fast_fetch:
-                    df_tmp = pro_con.query(query, ts_code=ts_code, fields=query_fields, period=period)
+                    if (str(period).__contains__("1231")):
+                        df_tmp = pro_con.query(query, ts_code=ts_code, fields=query_fields, period=period)
+                    else:
+                        continue
                 else:
                     df_tmp = pro_con.query(query, ts_code=ts_code, fields=query_fields)
             elif query in ['dividend']:
                 if fast_fetch:
-                    df_tmp = pro_con.query(query, ts_code=ts_code, fields=query_fields)
+                    if (str(period).__contains__("1231")):
+                        df_tmp = pro_con.query(query, ts_code=ts_code, fields=query_fields)
+                    else:
+                        continue
                 else:
                     df_tmp = pro_con.query(query, ts_code=ts_code, fields=query_fields, end_date=period)
 
             logging.info(". received len " + str(df_tmp.__len__()))
-            logging.info(df_tmp.head(2))
-            logging.info(df_tmp.tail(2))
+            finlib.Finlib().pprint(df_tmp.head(1))
 
-            signal.alarm(0)
+            #signal.alarm(0)
             # df_tmp = df_tmp.astype(str)
             # logging.info(df_tmp)
 
@@ -735,6 +757,12 @@ def _ts_pro_fetch(pro_con, stock_list, fast_fetch, query, query_fields, fetch_pe
 
             if (not force_run_global) and fast_fetch:
                 df_tmp = df_tmp[df_tmp[field] == fetch_most_recent_report_perid]
+                if df_tmp.__len__() > 1:
+                    df_tmp = df_tmp[df_tmp['update_flag']=="1"]
+                    if df_tmp.__len__() > 1:
+                        df_tmp = df_tmp.iloc[0]
+
+            df_tmp = df_tmp.reset_index().drop('index', axis=1)
 
             name = stock_list[stock_list['code'] == ts_code]['name'].values[0]
             df_tmp = pd.DataFrame([name] * df_tmp.__len__(), columns=['name']).join(df_tmp)
