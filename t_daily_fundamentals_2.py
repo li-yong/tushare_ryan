@@ -655,7 +655,7 @@ def _ts_pro_fetch(pro_con, stock_list, fast_fetch, query, query_fields, fetch_pe
 
             #if (finlib.Finlib().is_cached(ind_csv, day=3)) and (not force_run_global) :
             if (finlib.Finlib().is_cached(ind_csv, day=6)):
-                logging.info("file updated in 3 day, no--concept_topt fetch again " + ind_csv)
+                logging.info("file updated in 6 day, not fetch again " + ind_csv)
                 continue
             elif not os.path.exists(ind_csv):
                 open(ind_csv, 'a').close()  #create empty
@@ -751,6 +751,9 @@ def _ts_pro_fetch(pro_con, stock_list, fast_fetch, query, query_fields, fetch_pe
 
             for ed in end_date_lst:
                 ed = str(ed)
+                if ed == 'nan':
+                    continue
+                logging.info("end date is "+ ed)
 
                 if ed in already_fetch_p:
                     #print("already fetched " + ed)
