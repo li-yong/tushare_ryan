@@ -750,6 +750,7 @@ def _ts_pro_fetch(pro_con, stock_list, fast_fetch, query, query_fields, fetch_pe
             #    logging.info("created empty file "+ind_csv)
 
             for ed in end_date_lst:
+                ed = str(ed)
 
                 if ed in already_fetch_p:
                     #print("already fetched " + ed)
