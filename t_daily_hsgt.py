@@ -141,7 +141,7 @@ def fetch_moneyflow(fetch_whole=False, fetch_today=True):
     for index, row in stock_list.iterrows():
         i += 1
         #print(str(i) + " of " + str(stock_list.__len__()) + " ", end="")
-        print(str(i) + " of " + str(stock_list.__len__()))
+        logging.info(str(i) + " of " + str(stock_list.__len__()))
         name, code = row['name'], row['code']
 
         # SH600519 --> 600519.SH
@@ -158,6 +158,7 @@ def fetch_moneyflow(fetch_whole=False, fetch_today=True):
             else:
                 df_new = df_tmp
             df_new.to_csv(csv_f, encoding='UTF-8', index=False)
+            logging.info("saved to "+csv_f+" len "+str(df_new.__len__()))
 
         elif fetch_whole:
             if finlib.Finlib().is_cached(csv_f, 3):
@@ -169,7 +170,7 @@ def fetch_moneyflow(fetch_whole=False, fetch_today=True):
             df = finlib.Finlib().ts_code_to_code(df)
             df = df.reindex(index=df.index[::-1])
             df.to_csv(csv_f, encoding='UTF-8', index=False)
-            print("len " + str(df.__len__()) + " " + csv_f)
+            logging.info("len " + str(df.__len__()) + " " + csv_f)
 
     #df_4 = pro.moneyflow(trade_date=trade_day)
     #df_4 = df_4.sort_values('net_mf_amount', ascending=False, inplace=False)

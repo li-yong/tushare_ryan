@@ -58,9 +58,6 @@ else
 fi
 
 
-
-
-
 # sync smaller folders first
 if [[ ${source_host} == "haha_65" ]]; then
   rsync -avz  haha_66:/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/merged/  /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/merged/

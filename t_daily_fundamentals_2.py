@@ -589,7 +589,7 @@ def fetch(fast_fetch=False):
 
     # not fetching/calculating fundermental data at month 6,9, 11, 12
     if not finlib.Finlib().get_report_publish_status()['process_fund_or_not']:
-        print("not processing fundermental data at this month. ")
+        logging.info("not processing fundermental data at this month. ")
         return ()
     else:
         _ts_pro_fetch(pro, stock_list, fast_fetch, 'income', query_fields_income, fetch_period_list)  #利润表
@@ -607,7 +607,7 @@ def fetch(fast_fetch=False):
 
 
 def handler(signum, frame):
-    print("timeout when fetching!")
+    logging.info("timeout when fetching!")
     raise Exception("end of time")
 
 
@@ -651,7 +651,7 @@ def _ts_pro_fetch(pro_con, stock_list, fast_fetch, query, query_fields, fetch_pe
 
             ind_csv = dir + "/" + ts_code + "_" + query + ".csv"
 
-            print(ind_csv)
+            #print(ind_csv)
 
             #if (finlib.Finlib().is_cached(ind_csv, day=3)) and (not force_run_global) :
             if (finlib.Finlib().is_cached(ind_csv, day=6)):
@@ -1091,7 +1091,7 @@ def merge_individual_bash_basic(fast_fetch=False):
         check_csv = fund_base_source + "/individual_per_stock/600519.SH_basic.csv"
 
         if (not force_run_global) and finlib.Finlib().is_cached(check_csv, day=6):
-            print("*_basic.csv are updated in 5 days, not process. result checked by " + check_csv)
+            logging.info("*_basic.csv are updated in 5 days, not process. result checked by " + check_csv)
 
         tmp_dir = "~/tmp/pro_basic"
         if not os.path.exists(tmp_dir):
@@ -1895,8 +1895,8 @@ def _analyze_step_1(end_date):
 
     #if debug_global or True:  #ryan debug
     if debug_global:
-        #df = df[df['ts_code']=='600519.SH'].reset_index().drop('index', axis=1)
-        df = df.loc[df['ts_code'].isin(['000501.SZ', '600511.SH', '600535.SH', '600406.SH', '600519.SH', '600520.SH', '600518.SH', '600503.SH', '600506.SH'])].reset_index().drop('index', axis=1)
+        df = df[df['ts_code']=='600519.SH'].reset_index().drop('index', axis=1)
+        #df = df.loc[df['ts_code'].isin(['000501.SZ', '600511.SH', '600535.SH', '600406.SH', '600519.SH', '600520.SH', '600518.SH', '600503.SH', '600506.SH'])].reset_index().drop('index', axis=1)
 
     lst = list(df['ts_code'].unique())
     lst.sort()
@@ -2695,6 +2695,12 @@ def _analyze_step_3(end_date):
         df.to_csv(csv_output, encoding='UTF-8', index=False)
         logging.info(__file__ + ": " + "analysze step 3 result saved to " + csv_output)
 
+        sl_3 = "/home/ryan/DATA/result/latest_fundamental_year_pro.csv"
+        if os.path.exists(sl_3):
+            os.unlink(sl_3)
+        os.symlink(csv_output, sl_3)
+        logging.info("make symbol link " + sl_3 + " --> " + csv_output)
+
 
 def _analyze_step_4():
     #end_date in format 20171231
@@ -2906,6 +2912,9 @@ def _analyze_step_6():
     #logging.info(df.head(10))
 
     #exit(0)
+
+    if debug_global:
+        df = df[df['code'] == "600519"]
 
     df = pd.DataFrame([0] * df.__len__(), columns=['ValuePrice']).join(df)  #the stock price should be
     df = pd.DataFrame([0] * df.__len__(), columns=['CurrentPrice']).join(df)  #the stock price  actually be
@@ -3126,6 +3135,10 @@ def _analyze_step_7():
                 month = mat.group(2)
                 score = the_df[c]
 
+                if str(year) < "2015":
+                    logging.info("Not process year before 2015")
+                    continue
+
                 price_the_day = finlib.Finlib().get_price(code_m=code, date=year + "-" + month + "-" + "31")
 
                 if np.isnan(score):
@@ -3285,10 +3298,15 @@ def analyze(fully_a=False, daily_a=True, fast=True):
     #    period_list=["20171231"]
 
     for e in period_list:
-        if e < '20001231':
+        logging.info("e is "+str(e))
+        if e < '20151231':
+            logging.info("not process date before 2015" +str(e))
             continue
 
         sys.stdout.write("end_date " + e + ". ")
+
+        #continue
+
         # as many date lost on Q1, Q3 report, so only process half-year, and year report.
         # !!!! @todo ryan: parallary compare on yearly report; Q1, Q2, Q3 data can be used in self comparision.
         # !!!!
@@ -3677,7 +3695,7 @@ def _fetch_stk_holdertrade(fast_fetch=False):
 
         #update each csv
         for ts_code in df_today['ts_code']:
-            print(ts_code)
+            logging.info(ts_code)
             output_csv = dir + "/" + ts_code + ".csv"
 
             df_new = df_today[df_today['ts_code'] == ts_code]
@@ -3799,10 +3817,10 @@ def concept_top():
         merged_inner.insert(2, 'cat_code', cat_code)
         merged_inner.insert(3, 'cat_name', cat_name)
 
-        print(str(cat_code) + " " + cat_name + ", " + str(merged_inner.__len__()) + " qualified stocks")
+        logging.info(str(cat_code) + " " + cat_name + ", " + str(merged_inner.__len__()) + " qualified stocks")
 
         if merged_inner.__len__() > 0:
-            print(merged_inner)
+            logging.info(merged_inner)
             pass
 
         df_out = pd.concat([df_out, merged_inner], sort=False).reset_index().drop('index', axis=1)
@@ -3810,7 +3828,7 @@ def concept_top():
     df_out = finlib.Finlib().ts_code_to_code(df=df_out)
     df_out.to_csv(output_csv, encoding='UTF-8', index=False)
 
-    print('concept_top saved to ' + output_csv + " ,len " + str(df_out.__len__()))
+    logging.info('concept_top saved to ' + output_csv + " ,len " + str(df_out.__len__()))
     pass
 
 
@@ -3971,7 +3989,7 @@ def main():
 
         # not fetching/calculating fundermental data at month 5,6,9, 11, 12
         if not finlib.Finlib().get_report_publish_status()['process_fund_or_not']:
-            print("not processing fundermental data at this month. ")
+            logging.info("not processing fundermental data at this month. ")
             exit()
         else:
             # generate source/individual_per_stock/*.csv from source/*.csv
@@ -3983,7 +4001,7 @@ def main():
         #merge_local()
         # not fetching/calculating fundermental data at month 5,6,9, 11, 12
         if not finlib.Finlib().get_report_publish_status()['process_fund_or_not']:
-            print("not processing fundermental data at this month. ")
+            logging.info("not processing fundermental data at this month. ")
             exit()
         else:
             merge_local_bash()
@@ -4006,7 +4024,7 @@ def main():
 
         # not fetching/calculating fundermental data at month 5,6,9, 11, 12
         if not finlib.Finlib().get_report_publish_status()['process_fund_or_not']:
-            print("not processing fundermental data at this month. ")
+            logging.info("not processing fundermental data at this month. ")
             exit()
         else:
             analyze(fully_a=fully_a_f, daily_a=daily_a_f, fast=fast_fetch_f)
