@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 #this script runs on haha_data_source
 
+
+
 cd /home/ryan/tushare_ryan
 
 git pull

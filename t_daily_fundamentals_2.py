@@ -708,7 +708,7 @@ def _ts_pro_fetch(pro_con, stock_list, fast_fetch, query, query_fields, fetch_pe
             logging.info("fetching period " + str(p_cnt) + " of " + str(all_per_cnt) + " , stock " + str(stock_cnt) + " of " + total + ", Getting " + query + " " + ts_code + " " + period)
 
 
-            time.sleep(0.7)
+            time.sleep(60.0/45)
 
             #signal.alarm(5)
             df_tmp = pd.DataFrame()
