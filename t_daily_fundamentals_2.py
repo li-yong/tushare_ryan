@@ -695,87 +695,87 @@ def _ts_pro_fetch(pro_con, stock_list, fast_fetch, query, query_fields, fetch_pe
 
             signal.signal(signal.SIGALRM, handler)
 
-            try:
-                logging.info("fetching period " + str(p_cnt) + " of " + str(all_per_cnt) + " , stock " + str(stock_cnt) + " of " + total + ", Getting " + query + " " + ts_code + " " + period)
-                time.sleep(0.7)
+            #try:
+            logging.info("fetching period " + str(p_cnt) + " of " + str(all_per_cnt) + " , stock " + str(stock_cnt) + " of " + total + ", Getting " + query + " " + ts_code + " " + period)
+            time.sleep(0.7)
 
-                signal.alarm(5)
+            signal.alarm(5)
 
-                if query in ['income', 'balancesheet', 'cashflow', 'fina_indicator', 'fina_audit', 'disclosure_date', 'express', 'fina_mainbz']:
-                    if fast_fetch:
-                        df_tmp = pro_con.query(query, ts_code=ts_code, fields=query_fields)
-                    else:
-                        df_tmp = pro_con.query(query, ts_code=ts_code, fields=query_fields, end_date=period)
-                elif query in ['forecast']:
-                    if fast_fetch:
-                        df_tmp = pro_con.query(query, ts_code=ts_code, fields=query_fields, period=period)
-                    else:
-                        df_tmp = pro_con.query(query, ts_code=ts_code, fields=query_fields)
-                elif query in ['dividend']:
-                    if fast_fetch:
-                        df_tmp = pro_con.query(query, ts_code=ts_code, fields=query_fields)
-                    else:
-                        df_tmp = pro_con.query(query, ts_code=ts_code, fields=query_fields, end_date=period)
+            if query in ['income', 'balancesheet', 'cashflow', 'fina_indicator', 'fina_audit', 'disclosure_date', 'express', 'fina_mainbz']:
+                if fast_fetch:
+                    df_tmp = pro_con.query(query, ts_code=ts_code, fields=query_fields)
+                else:
+                    df_tmp = pro_con.query(query, ts_code=ts_code, fields=query_fields, end_date=period)
+            elif query in ['forecast']:
+                if fast_fetch:
+                    df_tmp = pro_con.query(query, ts_code=ts_code, fields=query_fields, period=period)
+                else:
+                    df_tmp = pro_con.query(query, ts_code=ts_code, fields=query_fields)
+            elif query in ['dividend']:
+                if fast_fetch:
+                    df_tmp = pro_con.query(query, ts_code=ts_code, fields=query_fields)
+                else:
+                    df_tmp = pro_con.query(query, ts_code=ts_code, fields=query_fields, end_date=period)
 
-                logging.info(". received len " + str(df_tmp.__len__()))
-                logging.info(df_tmp.head(2))
-                logging.info(df_tmp.tail(2))
+            logging.info(". received len " + str(df_tmp.__len__()))
+            logging.info(df_tmp.head(2))
+            logging.info(df_tmp.tail(2))
 
-                signal.alarm(0)
-                # df_tmp = df_tmp.astype(str)
-                # logging.info(df_tmp)
+            signal.alarm(0)
+            # df_tmp = df_tmp.astype(str)
+            # logging.info(df_tmp)
 
-                field = ''
-                if 'end_date' in df_tmp.columns:
-                    field = 'end_date'
-                elif 'period' in df_tmp.columns:
-                    field = 'period'
-                elif 'ann_date' in df_tmp.columns:
-                    field = 'ann_date'
+            field = ''
+            if 'end_date' in df_tmp.columns:
+                field = 'end_date'
+            elif 'period' in df_tmp.columns:
+                field = 'period'
+            elif 'ann_date' in df_tmp.columns:
+                field = 'ann_date'
 
-                if (not force_run_global) and fast_fetch:
-                    df_tmp = df_tmp[df_tmp[field] == fetch_most_recent_report_perid]
+            if (not force_run_global) and fast_fetch:
+                df_tmp = df_tmp[df_tmp[field] == fetch_most_recent_report_perid]
 
-                name = stock_list[stock_list['code'] == ts_code]['name'].values[0]
-                df_tmp = pd.DataFrame([name] * df_tmp.__len__(), columns=['name']).join(df_tmp)
-                df_tmp = df_tmp.drop_duplicates().reset_index().drop('index', axis=1)
+            name = stock_list[stock_list['code'] == ts_code]['name'].values[0]
+            df_tmp = pd.DataFrame([name] * df_tmp.__len__(), columns=['name']).join(df_tmp)
+            df_tmp = df_tmp.drop_duplicates().reset_index().drop('index', axis=1)
 
-                #df_tmp contains multiple end_date
-                end_date_lst = list(df_tmp[field].unique())
+            #df_tmp contains multiple end_date
+            end_date_lst = list(df_tmp[field].unique())
 
-                #create an empty csv file if return df is empty.
-                #if (not os.path.exists(ind_csv)) and (period not in end_date_lst or df_tmp.__len__()== 0):
-                #if (not os.path.exists(ind_csv)):
-                #    open(ind_csv, 'a').close()
-                #    logging.info("created empty file "+ind_csv)
+            #create an empty csv file if return df is empty.
+            #if (not os.path.exists(ind_csv)) and (period not in end_date_lst or df_tmp.__len__()== 0):
+            #if (not os.path.exists(ind_csv)):
+            #    open(ind_csv, 'a').close()
+            #    logging.info("created empty file "+ind_csv)
 
-                for ed in end_date_lst:
+            for ed in end_date_lst:
 
-                    if ed in already_fetch_p:
-                        #print("already fetched " + ed)
-                        continue
+                if ed in already_fetch_p:
+                    #print("already fetched " + ed)
+                    continue
 
-                    df_tmp_sub = df_tmp[df_tmp[field] == ed]
-                    df_tmp_sub = df_tmp_sub.reset_index().drop('index', axis=1)
+                df_tmp_sub = df_tmp[df_tmp[field] == ed]
+                df_tmp_sub = df_tmp_sub.reset_index().drop('index', axis=1)
 
-                    dir_sub = fund_base_source + "/individual/" + ed
-                    if not os.path.isdir(dir_sub):
-                        os.mkdir(dir_sub)
+                dir_sub = fund_base_source + "/individual/" + ed
+                if not os.path.isdir(dir_sub):
+                    os.mkdir(dir_sub)
 
-                    ind_csv_sub = dir_sub + "/" + ts_code + "_" + query + ".csv"
+                ind_csv_sub = dir_sub + "/" + ts_code + "_" + query + ".csv"
 
-                    if (not os.path.exists(ind_csv_sub)) or (force_run_global) or (os.stat(ind_csv).st_size == 0):
-                        df_tmp_sub.to_csv(ind_csv_sub, encoding='UTF-8', index=False)
-                        logging.info(__file__ + ": " + "saved " + ind_csv_sub + " . len " + str(df_tmp_sub.__len__()))
-                    #else:
-                    #logging.info("file exists, "+ind_csv_sub)
+                if (not os.path.exists(ind_csv_sub)) or (force_run_global) or (os.stat(ind_csv).st_size == 0):
+                    df_tmp_sub.to_csv(ind_csv_sub, encoding='UTF-8', index=False)
+                    logging.info(__file__ + ": " + "saved " + ind_csv_sub + " . len " + str(df_tmp_sub.__len__()))
+                #else:
+                #logging.info("file exists, "+ind_csv_sub)
 
-                    if not ed in already_fetch_p:
-                        already_fetch_p.append(ed)
-                        #logging.info("append "+ed +" to already_fetch_p")
+                if not ed in already_fetch_p:
+                    already_fetch_p.append(ed)
+                    #logging.info("append "+ed +" to already_fetch_p")
 
             # df_tmp.to_csv(ind_csv, encoding='UTF-8', index=False)
-
+'''            
             except:
                 logging.info("exception, sleeping 30sec then renew the ts_pro connection")
 
@@ -789,7 +789,7 @@ def _ts_pro_fetch(pro_con, stock_list, fast_fetch, query, query_fields, fetch_pe
                     logging.info(sys.exc_value.message)  # print the human readable unincode
                     logging.info("query: " + query + " ts_code: " + ts_code + " period: " + period)
                     sys.exc_clear()
-
+'''
 
 '''
         try:
