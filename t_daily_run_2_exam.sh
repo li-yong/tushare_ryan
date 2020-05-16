@@ -125,8 +125,9 @@ if [ $full_or_daily == "FULL" ]; then
     python t_daily_fundamentals_2.py --merge_local_basic --force_run  # <<< ??? hour. update weekly.
 fi
 
+#/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/basic.csv
 if [ $full_or_daily == "DAILY" ]; then
-    python t_daily_fundamentals_2.py --merge_local_basic --fast_fetch ## only merge last trading days to
+    python t_daily_fundamentals_2.py --merge_local_basic --fast_fetch ## only merge last trading days to. 50 sec
 fi
 
 
@@ -203,7 +204,8 @@ fi
 
 #only merge 1q before data. Use when the script runs stable.
 if [ $full_or_daily == "DAILY" ]; then
-    python t_daily_fundamentals_2.py  --merge_quarterly --big_memory --fast_fetch  #<<< only merage current, e.g. 20181231
+    echo "SKIP"
+    #python t_daily_fundamentals_2.py  --merge_quarterly --big_memory --fast_fetch  #<<< only merage current, e.g. 20181231
 fi
 
 ######################### extract_latest

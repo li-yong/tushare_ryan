@@ -1036,15 +1036,11 @@ def _merge_individual_bash(ts_code, feature):
 
     input_file = fund_base_source + "/" + feature + ".csv"
 
-    if finlib.Finlib().is_cached(input_file, 6) and (not force_run_global):
-        logging.info("not processing as file have been updated in 3 days. " + input_file)
-        return
-
     output_dir = fund_base_source + "/individual_per_stock"
     output_csv = output_dir + "/" + ts_code + "_" + feature + ".csv"
 
     if finlib.Finlib().is_cached(output_csv, day=6) and (not force_run_global):
-        logging.info("file updated in 3 days, not processing. " + output_csv)
+        logging.info("file updated in 6 days, not processing. " + output_csv)
         return ()
 
     if not os.path.exists(output_dir):
@@ -1287,7 +1283,7 @@ def merge_local_bash():
         output_csv = fund_base_source + "/" + f + ".csv"
 
         if (not force_run_global) and finlib.Finlib().is_cached(output_csv, day=6):
-            logging.info("file updated in 3 days, not process. " + output_csv)
+            logging.info("file updated in 6 days, not process. " + output_csv)
             continue
 
         cmd = " find -L " + input_dir + " -name *_" + f + ".csv  -exec cat {} >> " + tmp_f + " \;"
@@ -1467,7 +1463,7 @@ def merge_local_bash_basic_quarterly():
 def sum_fina_mainbz():
 
     if (not force_run_global) and finlib.Finlib().is_cached(csv_fina_mainbz_sum, day=6):
-        logging.info("skip file, it been updated in 3 day. " + csv_fina_mainbz_sum)
+        logging.info("skip file, it been updated in 6 day. " + csv_fina_mainbz_sum)
         return
 
     df = pd.read_csv(csv_fina_mainbz, converters={'end_date': str})
@@ -1488,8 +1484,7 @@ def sum_fina_mainbz():
         ed = list(df_tmp['end_date'].unique())
 
         for e in ed:
-            sys.stdout.write(code + " " + e + ". ")
-            sys.stdout.flush()
+            logging.info(__file__ + ": mainbz "+ code + " end date " + e + ". ")
 
             df_code_date = df_tmp[df_tmp['end_date'] == e]
 
@@ -1544,8 +1539,8 @@ def percent_fina_mainbz():
     i = 0
 
     for code in lst:
-        sys.stdout.write(code + " ")
-        sys.stdout.flush()
+        i+=1
+        logging.info(__file__+" percent_fina_mainbz "+code + " "+str(i) + " of "+str(lst.__len__()))
 
         df_tmp = df[df['ts_code'] == code].reset_index().drop('index', axis=1)
 
@@ -1870,6 +1865,7 @@ def _extract_latest(csv_input, csv_output, feature, col_name_list, ts_code=None,
         df_tmp = df[df["ts_code"] == ts_code]
         max_date = df_tmp['end_date'].max()
         df_tmp = df_tmp[df_tmp["end_date"] == max_date]
+        finlib.Finlib().pprint(df_tmp)
         df_result = df_result.append(df_tmp)
         pass
 
@@ -2551,8 +2547,7 @@ def _analyze_step_2(end_date):
     cols = df.columns.tolist()
 
     for i in range(len):
-        sys.stdout.write("analyze step_2 " + str(i) + " of " + str(len) + ". ")
-        sys.stdout.flush()
+        logging.info("analyze step_2 " + str(i) + " of " + str(len) + ". ")
 
         scoreTotRev = round(stats.percentileofscore(df['total_revenue'], df.iloc[i]['total_revenue']), 2)
         df.iloc[i, df.columns.get_loc('scoreTotRev')] = scoreTotRev
@@ -2702,8 +2697,7 @@ def _analyze_step_3(end_date):
     cols = df.columns.tolist()
 
     for i in range(len):
-        sys.stdout.write("analyze step_3 " + str(i) + " of " + str(len) + ". ")
-        sys.stdout.flush()
+        logging.info("analyze step_3 " + str(i) + " of " + str(len) + ". ")
 
         sos = round(stats.percentileofscore(df['score'], df.iloc[i]['score']), 2)
         df.iloc[i, df.columns.get_loc('sos')] = sos
@@ -2781,7 +2775,7 @@ def _analyze_step_4():
 
     i = 0
     for ts_code in uniq_ts_code:
-        logging.info("=== " + ts_code + " " + str(i) + " of " + str(df_result.__len__()) + " ===")
+        logging.info("=== analyze step4 " + ts_code + " " + str(i) + " of " + str(df_result.__len__()) + " ===")
 
         stock_df = df[df['ts_code'] == ts_code].sort_values(by='end_date', ascending=False)
         name = stock_df.iloc[0]['name']
@@ -2868,8 +2862,7 @@ def _analyze_step_5():
 
     for i in range(df.__len__()):
         ts_code = df.iloc[i]['ts_code']
-        sys.stdout.write("analyze_step_5 " + str(i) + " of " + str(df.__len__()) + ". ")
-        sys.stdout.flush()
+        logging.info("analyze_step_5 " + str(i) + " of " + str(df.__len__()) + ". ")
 
         #score_over_years
         score_soy = round(stats.percentileofscore(df['score_over_years'], df.iloc[i]['score_over_years']), 2)
@@ -2967,8 +2960,7 @@ def _analyze_step_6():
 
     for i in range(df.__len__()):
         code = df.iloc[i]['code']
-        sys.stdout.write("analyze step_6 " + str(i) + " of " + str(df.__len__()) + ". ")
-        sys.stdout.flush()
+        logging.info("analyze step_6 " + str(i) + " of " + str(df.__len__()) + ". ")
 
         guben = df.iloc[i]['totals'] * 10**8  #totals,总股本(亿)
 
@@ -3150,7 +3142,7 @@ def _analyze_step_7():
 
         ktr_cnt_win = ktr_cnt_all = ktr_sum = 0.0
 
-        logging.info("==== " + str(i) + " of " + str(len) + " ====")
+        logging.info("==== analyze_step_7 " + str(i) + " of " + str(len) + " ====")
         the_df = df_result.iloc[i]
 
         code = the_df['code']
