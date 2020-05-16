@@ -717,29 +717,47 @@ def _ts_pro_fetch(pro_con, stock_list, fast_fetch, query, query_fields, fetch_pe
                     if query in ['fina_audit', 'fina_mainbz', 'disclosure_date', 'express'] and (not str(period).__contains__("1231")):
                         continue
                     else:
-                        df_tmp = pro_con.query(query, ts_code=ts_code, fields=query_fields, period=period)
+                        try:
+                            df_tmp = pro_con.query(query, ts_code=ts_code, fields=query_fields, period=period)
+                        except Exception as e:
+                            logging.exception("Exception occurred")
                 else:
                     if query in ['fina_audit', 'fina_mainbz', 'disclosure_date', 'express'] and (not str(period).__contains__("1231")):
                         continue
                     else:
-                        df_tmp = pro_con.query(query, ts_code=ts_code, fields=query_fields, period=period)
+                        try:
+                            df_tmp = pro_con.query(query, ts_code=ts_code, fields=query_fields, period=period)
+                        except Exception as e:
+                            logging.exception("Exception occurred")
             elif query in ['forecast']:
                 if fast_fetch:
                     if (str(period).__contains__("1231")):
-                        df_tmp = pro_con.query(query, ts_code=ts_code, fields=query_fields, period=period)
+                        try:
+                            df_tmp = pro_con.query(query, ts_code=ts_code, fields=query_fields, period=period)
+                        except Exception as e:
+                            logging.exception("Exception occurred")
                     else:
                         continue
                 else:
-                    df_tmp = pro_con.query(query, ts_code=ts_code, fields=query_fields)
+                    try:
+                        df_tmp = pro_con.query(query, ts_code=ts_code, fields=query_fields)
+                    except Exception as e:
+                        logging.exception("Exception occurred")
             elif query in ['dividend']:
                 if fast_fetch:
                     if (str(period).__contains__("1231")):
-                        df_tmp = pro_con.query(query, ts_code=ts_code, fields=query_fields, period=period)
+                        try:
+                            df_tmp = pro_con.query(query, ts_code=ts_code, fields=query_fields, period=period)
+                        except Exception as e:
+                            logging.exception("Exception occurred")
                     else:
                         continue
                 else:
-                    df_tmp = pro_con.query(query, ts_code=ts_code, fields=query_fields)
-                    #df_tmp = pro_con.query(query, ts_code=ts_code, fields=query_fields, end_date=period)
+                    try:
+                        df_tmp = pro_con.query(query, ts_code=ts_code, fields=query_fields)
+                        #df_tmp = pro_con.query(query, ts_code=ts_code, fields=query_fields, end_date=period)
+                    except Exception as e:
+                        logging.exception("Exception occurred")
 
             logging.info(". received len " + str(df_tmp.__len__()))
             finlib.Finlib().pprint(df_tmp.head(1))
