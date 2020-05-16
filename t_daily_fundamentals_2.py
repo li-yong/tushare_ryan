@@ -717,12 +717,12 @@ def _ts_pro_fetch(pro_con, stock_list, fast_fetch, query, query_fields, fetch_pe
                     if query in ['fina_audit', 'fina_mainbz', 'disclosure_date', 'express'] and (not str(period).__contains__("1231")):
                         continue
                     else:
-                        df_tmp = pro_con.query(query, ts_code=ts_code, fields=query_fields)
+                        df_tmp = pro_con.query(query, ts_code=ts_code, fields=query_fields, period=period)
                 else:
                     if query in ['fina_audit', 'fina_mainbz', 'disclosure_date', 'express'] and (not str(period).__contains__("1231")):
                         continue
                     else:
-                        df_tmp = pro_con.query(query, ts_code=ts_code, fields=query_fields, end_date=period)
+                        df_tmp = pro_con.query(query, ts_code=ts_code, fields=query_fields, period=period)
             elif query in ['forecast']:
                 if fast_fetch:
                     if (str(period).__contains__("1231")):
@@ -734,11 +734,12 @@ def _ts_pro_fetch(pro_con, stock_list, fast_fetch, query, query_fields, fetch_pe
             elif query in ['dividend']:
                 if fast_fetch:
                     if (str(period).__contains__("1231")):
-                        df_tmp = pro_con.query(query, ts_code=ts_code, fields=query_fields)
+                        df_tmp = pro_con.query(query, ts_code=ts_code, fields=query_fields, period=period)
                     else:
                         continue
                 else:
-                    df_tmp = pro_con.query(query, ts_code=ts_code, fields=query_fields, end_date=period)
+                    df_tmp = pro_con.query(query, ts_code=ts_code, fields=query_fields)
+                    #df_tmp = pro_con.query(query, ts_code=ts_code, fields=query_fields, end_date=period)
 
             logging.info(". received len " + str(df_tmp.__len__()))
             finlib.Finlib().pprint(df_tmp.head(1))
@@ -755,12 +756,12 @@ def _ts_pro_fetch(pro_con, stock_list, fast_fetch, query, query_fields, fetch_pe
             elif 'ann_date' in df_tmp.columns:
                 field = 'ann_date'
 
-            if (not force_run_global) and fast_fetch:
-                df_tmp = df_tmp[df_tmp[field] == fetch_most_recent_report_perid]
+            #if (not force_run_global) and fast_fetch:
+            df_tmp = df_tmp[df_tmp[field] == fetch_most_recent_report_perid]
+            if df_tmp.__len__() > 1:
+                df_tmp = df_tmp[df_tmp['update_flag']=="1"]
                 if df_tmp.__len__() > 1:
-                    df_tmp = df_tmp[df_tmp['update_flag']=="1"]
-                    if df_tmp.__len__() > 1:
-                        df_tmp = df_tmp.iloc[0]
+                    df_tmp = df_tmp.iloc[0]
 
             df_tmp = df_tmp.reset_index().drop('index', axis=1)
 
