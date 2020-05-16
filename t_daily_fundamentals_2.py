@@ -680,8 +680,8 @@ def _ts_pro_fetch(pro_con, stock_list, fast_fetch, query, query_fields, fetch_pe
             #on Friday, the most recent Q fund data will be updated.
             if (not force_run_global) \
                     and os.path.exists(ind_csv) \
-                    and os.stat(ind_csv).st_size > 0\
-                    and weekday != 5:
+                    and os.stat(ind_csv).st_size > 0:
+                    #and weekday != 5:
                 #and os.stat(ind_csv).st_size > 0 \
                 #and period < fetch_most_recent_report_perid:
                 already_fetch_p.append(period)
@@ -697,7 +697,7 @@ def _ts_pro_fetch(pro_con, stock_list, fast_fetch, query, query_fields, fetch_pe
 
             file_csv = fund_base_source + "/individual/" + period + "/" + ts_code + "_" + query + ".csv"
 
-            print(file_csv)
+            logging.info("handling "+file_csv)
 
 
             if finlib.Finlib().is_cached(file_csv,day=6):
