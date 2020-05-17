@@ -141,7 +141,7 @@ def fetch_moneyflow(fetch_whole=False, fetch_today=True):
     for index, row in stock_list.iterrows():
         i += 1
         #print(str(i) + " of " + str(stock_list.__len__()) + " ", end="")
-        logging.info(str(i) + " of " + str(stock_list.__len__()))
+        logging.info(__file__+" "+str(i) + " of " + str(stock_list.__len__()))
         name, code = row['name'], row['code']
 
         # SH600519 --> 600519.SH
@@ -158,7 +158,7 @@ def fetch_moneyflow(fetch_whole=False, fetch_today=True):
             else:
                 df_new = df_tmp
             df_new.to_csv(csv_f, encoding='UTF-8', index=False)
-            logging.info("saved to "+csv_f+" len "+str(df_new.__len__()))
+            logging.info(__file__+" "+"saved to "+csv_f+" len "+str(df_new.__len__()))
 
         elif fetch_whole:
             if finlib.Finlib().is_cached(csv_f, 3):
@@ -170,7 +170,7 @@ def fetch_moneyflow(fetch_whole=False, fetch_today=True):
             df = finlib.Finlib().ts_code_to_code(df)
             df = df.reindex(index=df.index[::-1])
             df.to_csv(csv_f, encoding='UTF-8', index=False)
-            logging.info("len " + str(df.__len__()) + " " + csv_f)
+            logging.info(__file__+" "+"len " + str(df.__len__()) + " " + csv_f)
 
     #df_4 = pro.moneyflow(trade_date=trade_day)
     #df_4 = df_4.sort_values('net_mf_amount', ascending=False, inplace=False)
@@ -245,7 +245,7 @@ def analyze_moneyflow(mf_ana_date, mf_ana_pre_days=3, mf_ana_test_hold_days=5, p
 
     for index, row in stock_list.iterrows():
         i += 1
-        logging.info(str(i) + " of " + str(stock_list.__len__()))
+        logging.info(__file__+" "+str(i) + " of " + str(stock_list.__len__()))
         name, code = row['name'], row['code']
 
         csv_in = csv_in_dir + "/" + code + ".csv"
@@ -307,11 +307,11 @@ def analyze_moneyflow(mf_ana_date, mf_ana_pre_days=3, mf_ana_test_hold_days=5, p
                     profit = round((p_out - p_in) / p_in * 100, 1)
 
                     if rst['sig'] > 0:
-                        logging.info("buy, hold short " + code + " " + name + " " + str(rst['date']) + " sig " + str(rst['sig']))
+                        logging.info(__file__+" "+"buy, hold short " + code + " " + name + " " + str(rst['date']) + " sig " + str(rst['sig']))
                         operation = "buy, hold short"
 
                     elif rst['sig'] < 0:
-                        logging.info("buy, hold long  " + code + " " + name + " " + str(rst['date']) + " sig " + str(rst['sig']))
+                        logging.info(__file__+" "+"buy, hold long  " + code + " " + name + " " + str(rst['date']) + " sig " + str(rst['sig']))
                         operation = "buy, hold long"
 
                     df_history = df_history.append(
@@ -331,7 +331,7 @@ def analyze_moneyflow(mf_ana_date, mf_ana_pre_days=3, mf_ana_test_hold_days=5, p
                         ignore_index=True)
 
                     df_history.to_csv(csv_out_history, encoding='UTF-8', index=False)
-                    logging.info("hit saved to " + csv_out_history)
+                    logging.info(__file__+" "+"hit saved to " + csv_out_history)
                     #pdb.set_trace()
 
                     rst = describe_std(row['code'], row['name'], df_sub, '(sv1+sv2)/sv0', mf_ana_date, force_print=True)
@@ -340,25 +340,25 @@ def analyze_moneyflow(mf_ana_date, mf_ana_pre_days=3, mf_ana_test_hold_days=5, p
                     rst = describe_std(row['code'], row['name'], df_sub, '(bm1-sm1)/bm0', mf_ana_date, force_print=True)
 
                     if rst['hit_today']:
-                        logging.info("today is hit")
+                        logging.info(__file__+" "+"today is hit")
                         df_today = df_today.append({'code': code, 'name': name, 'date': str(rst['date']), 'operation': operation, 'strength': rst['sig'], 'reason': reason}, ignore_index=True)
                         df_today.to_csv(csv_out_today, encoding='UTF-8', index=False)
-                        logging.info("Today hit saved to " + csv_out_today)
+                        logging.info(__file__+" "+"Today hit saved to " + csv_out_today)
 
         else:
-            logging.warning("no such file " + csv_in)
+            logging.warning(__file__+" "+"no such file " + csv_in)
             continue
 
-    logging.info("history profit describe:")
-    logging.info(df_history['profit'].describe())
-    logging.info("today hit account, len " + str(df_today.__len__()) + " " + csv_out_today)
+    logging.info(__file__+" "+"history profit describe:")
+    logging.info(__file__+" "+df_history['profit'].describe())
+    logging.info(__file__+" "+"today hit account, len " + str(df_today.__len__()) + " " + csv_out_today)
 
 
 ### MAIN ####
 if __name__ == '__main__':
 
     logging.info("\n")
-    logging.info("SCRIPT STARTING " + " ".join(sys.argv))
+    logging.info(__file__+" "+"SCRIPT STARTING " + " ".join(sys.argv))
 
     parser = OptionParser()
 

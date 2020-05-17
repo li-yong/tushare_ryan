@@ -299,12 +299,12 @@ def get_ts_field(ts_code, ann_date, field, big_memory):
         df = df_all_ts_pro
         df = df[df['ts_code'] == ts_code]
         if (df.__len__() == 0):
-            logging.info("no ts_code in df_all_ts_pro " + ts_code)
+            logging.info(__file__+" "+"no ts_code in df_all_ts_pro " + ts_code)
             return
 
         df = df[df['end_date'] == ann_date]
         if (df.__len__() == 0):
-            logging.info("no end_date in df_all_ts_pro " + ts_code + " " + ann_date)
+            logging.info(__file__+" "+"no end_date in df_all_ts_pro " + ts_code + " " + ann_date)
             return
 
         data_in_field = df[field].values[0]
@@ -314,19 +314,19 @@ def get_ts_field(ts_code, ann_date, field, big_memory):
         f = fund_base_merged + "/" + "merged_all_" + ann_date + ".csv"
 
         if not os.path.exists(f):
-            logging.info("file not exists, " + f)
+            logging.info(__file__+" "+"file not exists, " + f)
             return
 
         df = pd.read_csv(f, converters={'end_date': str})
 
         if not field in df.columns:
-            logging.info("filed not in the file, " + field + " " + f)
+            logging.info(__file__+" "+"filed not in the file, " + field + " " + f)
             return
 
         df = df[df['ts_code'] == ts_code]
 
         if (df.__len__() == 0):
-            logging.info("no ts_code in file " + ts_code + " " + f)
+            logging.info(__file__+" "+"no ts_code in file " + ts_code + " " + f)
             return
 
         data_in_field = df[field].values[0]  #always return the first one. suppose the 1st is the most updated one if multiple lines for the code+ann_date
@@ -488,7 +488,7 @@ def remove_dup_record(df_input, csv_name):
             if df_tmp_updated.__len__() > 1:
                 sys.stdout.write(csv_name + " has multi update_flag records, len " + str(df_tmp_updated.__len__()) + ".")
                 sys.stdout.flush()
-                logging.info("\t" + df_tmp_updated['ts_code'] + " " + df_tmp_updated['end_date'])
+                logging.info(__file__+" "+"\t" + df_tmp_updated['ts_code'] + " " + df_tmp_updated['end_date'])
                 df_append = df_tmp_updated.iloc[0]  #choose the 1st updated records if have multiple updated records
                 df = df.append(df_append)
                 continue
@@ -501,7 +501,7 @@ def remove_dup_record(df_input, csv_name):
                 sys.stdout.write(csv_name + " has multi records, len " + str(len) + " and zero update_flag records.")
                 sys.stdout.flush()
                 df_append = df_tmp.iloc[0]
-                logging.info("\t" + df_append['ts_code'] + " " + df_append['end_date'])
+                logging.info(__file__+" "+"\t" + df_append['ts_code'] + " " + df_append['end_date'])
                 df = df.append(df_append)
                 continue
         else:
@@ -509,12 +509,12 @@ def remove_dup_record(df_input, csv_name):
             sys.stdout.write(csv_name + " has multi records, len " + str(len) + " and no update_flag in column.")
             sys.stdout.flush()
             df_append = df_tmp.iloc[0]
-            logging.info("\t" + df_append['ts_code'] + " " + df_append['end_date'])
+            logging.info(__file__+" "+"\t" + df_append['ts_code'] + " " + df_append['end_date'])
             df = df.append(df_append)
             continue
 
     len = df.__len__()
-    logging.info("len of " + csv_name + " after remove dup records " + str(len))
+    logging.info(__file__+" "+"len of " + csv_name + " after remove dup records " + str(len))
     return (df)
 
 
@@ -523,7 +523,7 @@ def load_fund_result(mini_score=80):
 
     f_fund_2 = "/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/report/step3/rpt_" + stable_rpt_date + ".csv"
 
-    logging.info("loading df_fund_2, " + f_fund_2)
+    logging.info(__file__+" "+"loading df_fund_2, " + f_fund_2)
     if (os.path.isfile(f_fund_2)) and os.stat(f_fund_2).st_size >= 10:  # > 10 bytes
         df_fund_2 = pd.read_csv(f_fund_2)
         df_fund_2 = df_fund_2[df_fund_2['sos'] > mini_score]
@@ -535,8 +535,8 @@ def load_fund_result(mini_score=80):
         df_fund_2 = df_fund_2.drop_duplicates()
         df_fund_2 = df_fund_2.reset_index().drop('index', axis=1)
     else:
-        logging.info("no such file " + f_fund_2)
-        logging.info("stop and exit")
+        logging.info(__file__+" "+"no such file " + f_fund_2)
+        logging.info(__file__+" "+"stop and exit")
         exit(0)
     return (df_fund_2)
 
@@ -589,7 +589,7 @@ def fetch(fast_fetch=False):
 
     # not fetching/calculating fundermental data at month 6,9, 11, 12
     if not finlib.Finlib().get_report_publish_status()['process_fund_or_not']:
-        logging.info("not processing fundermental data at this month. ")
+        logging.info(__file__+" "+"not processing fundermental data at this month. ")
         return ()
     else:
         _ts_pro_fetch(pro, stock_list, fast_fetch, 'income', query_fields_income, fetch_period_list)  #利润表
@@ -607,7 +607,7 @@ def fetch(fast_fetch=False):
 
 
 def handler(signum, frame):
-    logging.info("timeout when fetching!")
+    logging.info(__file__+" "+"timeout when fetching!")
     raise Exception("end of time")
 
 
@@ -638,11 +638,11 @@ def _ts_pro_fetch(pro_con, stock_list, fast_fetch, query, query_fields, fetch_pe
         for period in fetch_period_list:
             p_cnt += 1
 
-            #logging.info("p_cnt "+str(p_cnt)+" stock_cnd "+str(stock_cnt) + " total " + total+" query "+query )
+            #logging.info(__file__+" "+"p_cnt "+str(p_cnt)+" stock_cnd "+str(stock_cnt) + " total " + total+" query "+query )
             #continue
 
             if period in already_fetch_p:
-                logging.info("skip period " + period + ", it has been fetched before")
+                logging.info(__file__+" "+"skip period " + period + ", it has been fetched before")
                 continue
 
             dir = fund_base_source + "/individual/" + period
@@ -655,7 +655,7 @@ def _ts_pro_fetch(pro_con, stock_list, fast_fetch, query, query_fields, fetch_pe
 
             #if (finlib.Finlib().is_cached(ind_csv, day=3)) and (not force_run_global) :
             if (finlib.Finlib().is_cached(ind_csv, day=6)):
-                logging.info("file updated in 6 day, not fetch again " + ind_csv)
+                logging.info(__file__+" "+"file updated in 6 day, not fetch again " + ind_csv)
                 continue
             elif not os.path.exists(ind_csv):
                 open(ind_csv, 'a').close()  #create empty
@@ -665,7 +665,7 @@ def _ts_pro_fetch(pro_con, stock_list, fast_fetch, query, query_fields, fetch_pe
                 os.utime(ind_csv, (modTime, modTime))
 
             if (not force_run_global) and (period < fetch_most_recent_report_perid):
-                logging.info("not fetch stable period on " + ind_csv)
+                logging.info(__file__+" "+"not fetch stable period on " + ind_csv)
                 continue
 
 
@@ -673,7 +673,7 @@ def _ts_pro_fetch(pro_con, stock_list, fast_fetch, query, query_fields, fetch_pe
                     and os.stat(ind_csv).st_size > 0 \
                     and period < fetch_most_recent_report_perid:
                 already_fetch_p.append(period)
-                logging.info("not fetch as file already exists " + ind_csv + ". p_cnt " + str(p_cnt) + " stock_cnd " + str(stock_cnt) + " total " + total + " query " + query)
+                logging.info(__file__+" "+"not fetch as file already exists " + ind_csv + ". p_cnt " + str(p_cnt) + " stock_cnd " + str(stock_cnt) + " total " + total + " query " + query)
                 continue
 
             weekday = datetime.datetime.today().weekday()
@@ -685,27 +685,27 @@ def _ts_pro_fetch(pro_con, stock_list, fast_fetch, query, query_fields, fetch_pe
                 #and os.stat(ind_csv).st_size > 0 \
                 #and period < fetch_most_recent_report_perid:
                 already_fetch_p.append(period)
-                logging.info("file have data already, not fetch out of FRIDAY. " + ind_csv + ". p_cnt " + str(p_cnt) + " stock_cnd " + str(stock_cnt) + " total " + total + " query " + query)
+                logging.info(__file__+" "+"file have data already, not fetch out of FRIDAY. " + ind_csv + ". p_cnt " + str(p_cnt) + " stock_cnd " + str(stock_cnt) + " total " + total + " query " + query)
                 continue
 
             if not finlib.Finlib().is_on_market(ts_code, period, basic_df):
                 #logging.info()
-                logging.info("not fetch as stock is not on market. " + ts_code + " " + period + ". p_cnt " + str(p_cnt) + " stock_cnd " + str(stock_cnt) + " total " + total + " query " + query)
+                logging.info(__file__+" "+"not fetch as stock is not on market. " + ts_code + " " + period + ". p_cnt " + str(p_cnt) + " stock_cnd " + str(stock_cnt) + " total " + total + " query " + query)
                 continue
 
             #signal.signal(signal.SIGALRM, handler)
 
             file_csv = fund_base_source + "/individual/" + period + "/" + ts_code + "_" + query + ".csv"
 
-            logging.info("handling "+file_csv)
+            logging.info(__file__+" "+"handling "+file_csv)
 
 
             if finlib.Finlib().is_cached(file_csv,day=6):
-                logging.info("file has been updated in 6 days, not fetch again "+file_csv)
+                logging.info(__file__+" "+"file has been updated in 6 days, not fetch again "+file_csv)
                 continue
 
             #try:
-            logging.info("fetching period " + str(p_cnt) + " of " + str(all_per_cnt) + " , stock " + str(stock_cnt) + " of " + total + ", Getting " + query + " " + ts_code + " " + period)
+            logging.info(__file__+" "+"fetching period " + str(p_cnt) + " of " + str(all_per_cnt) + " , stock " + str(stock_cnt) + " of " + total + ", Getting " + query + " " + ts_code + " " + period)
 
 
             time.sleep(60.0/45)
@@ -759,7 +759,7 @@ def _ts_pro_fetch(pro_con, stock_list, fast_fetch, query, query_fields, fetch_pe
                     except Exception as e:
                         logging.exception("Exception occurred")
 
-            logging.info(". received len " + str(df_tmp.__len__()))
+            logging.info(__file__+" "+". received len " + str(df_tmp.__len__()))
             finlib.Finlib().pprint(df_tmp.head(1))
 
             #signal.alarm(0)
@@ -794,13 +794,13 @@ def _ts_pro_fetch(pro_con, stock_list, fast_fetch, query, query_fields, fetch_pe
             #if (not os.path.exists(ind_csv)) and (period not in end_date_lst or df_tmp.__len__()== 0):
             #if (not os.path.exists(ind_csv)):
             #    open(ind_csv, 'a').close()
-            #    logging.info("created empty file "+ind_csv)
+            #    logging.info(__file__+" "+"created empty file "+ind_csv)
 
             for ed in end_date_lst:
                 ed = str(ed)
                 if ed == 'nan':
                     continue
-                logging.info("end date is "+ ed)
+                logging.info(__file__+" "+"end date is "+ ed)
 
                 if ed in already_fetch_p:
                     #print("already fetched " + ed)
@@ -819,16 +819,16 @@ def _ts_pro_fetch(pro_con, stock_list, fast_fetch, query, query_fields, fetch_pe
                     df_tmp_sub.to_csv(ind_csv_sub, encoding='UTF-8', index=False)
                     logging.info(__file__ + ": " + "saved " + ind_csv_sub + " . len " + str(df_tmp_sub.__len__()))
                 #else:
-                #logging.info("file exists, "+ind_csv_sub)
+                #logging.info(__file__+" "+"file exists, "+ind_csv_sub)
 
                 if not ed in already_fetch_p:
                     already_fetch_p.append(ed)
-                    #logging.info("append "+ed +" to already_fetch_p")
+                    #logging.info(__file__+" "+"append "+ed +" to already_fetch_p")
 
             # df_tmp.to_csv(ind_csv, encoding='UTF-8', index=False)
 '''            
             except:
-                logging.info("exception, sleeping 30sec then renew the ts_pro connection")
+                logging.info(__file__+" "+"exception, sleeping 30sec then renew the ts_pro connection")
 
             finally:
 
@@ -838,7 +838,7 @@ def _ts_pro_fetch(pro_con, stock_list, fast_fetch, query, query_fields, fetch_pe
                     # logging.info(unicode(traceback.print_exception(*sys.exc_info())).encode('utf8')) #python2
                     logging.info(str(traceback.print_exception(*sys.exc_info())).encode('utf8'))  #python3
                     logging.info(sys.exc_value.message)  # print the human readable unincode
-                    logging.info("query: " + query + " ts_code: " + ts_code + " period: " + period)
+                    logging.info(__file__+" "+"query: " + query + " ts_code: " + ts_code + " period: " + period)
                     sys.exc_clear()
 '''
 
@@ -869,12 +869,12 @@ def _ts_pro_fetch(pro_con, stock_list, fast_fetch, query, query_fields, fetch_pe
                 df_sub.to_csv(ind_csv, encoding='UTF-8', index=False)
                 logging.info(__file__ + ": " + "saved sub csv "+ind_csv)
             else:
-                logging.info("file has been update in 1 days, not fetch again. " +ind_csv)
+                logging.info(__file__+" "+"file has been update in 1 days, not fetch again. " +ind_csv)
 
             j += 1
 
         except:
-            logging.info("exception, sleeping 30sec then renew the ts_pro connection")
+            logging.info(__file__+" "+"exception, sleeping 30sec then renew the ts_pro connection")
 
         finally:
             if sys.exc_info() == (None, None, None):
@@ -882,7 +882,7 @@ def _ts_pro_fetch(pro_con, stock_list, fast_fetch, query, query_fields, fetch_pe
             else:
                 logging.info(unicode(traceback.print_exception(*sys.exc_info())).encode('utf8'))
                 logging.info(sys.exc_value.message) #print the human readable unincode
-                logging.info("query: "+query+" ts_code: " + ts_code)
+                logging.info(__file__+" "+"query: "+query+" ts_code: " + ts_code)
                 sys.exc_clear()
 '''
 '''
@@ -904,7 +904,7 @@ def _ts_pro_fetch_end_date(pro_con, ts_code,  query, query_fields, fetch_period_
 
 
         if finlib.Finlib().is_cached(ind_csv, 3):
-            logging.info("file already updated in 3 days, not fetch again "+ind_csv)
+            logging.info(__file__+" "+"file already updated in 3 days, not fetch again "+ind_csv)
             continue
 
 
@@ -923,7 +923,7 @@ def _ts_pro_fetch_end_date(pro_con, ts_code,  query, query_fields, fetch_period_
         time.sleep(1)
         df_tmp = df_tmp.astype(str)
         df_tmp.to_csv(ind_csv, encoding='UTF-8', index=False)
-        logging.info("saved "+ind_csv)
+        logging.info(__file__+" "+"saved "+ind_csv)
 
 
         #df_sub = pd.concat([df_tmp, df_sub], sort=False)
@@ -955,7 +955,7 @@ def fetch_basic_quarterly():
     for i in b:
         output_csv = dir_q + "/basic_" + i + ".csv"  #the date in filename is i but not the actual date of the data.
         if os.path.exists(output_csv) and os.stat(output_csv).st_size >= 10 and (not force_run_global):
-            logging.info("file exist and have content, not fetch again " + output_csv)
+            logging.info(__file__+" "+"file exist and have content, not fetch again " + output_csv)
             continue
 
         d = finlib.Finlib().get_last_trading_day(date=i)
@@ -970,7 +970,7 @@ def fetch_basic_quarterly():
         df = pro.daily_basic(ts_code='', trade_date=trade_date, fields=fields)
         time.sleep(1)
         df.to_csv(output_csv, encoding='UTF-8', index=False)
-        logging.info("saved basic of all stocks to " + output_csv + " len " + str(df.__len__()))
+        logging.info(__file__+" "+"saved basic of all stocks to " + output_csv + " len " + str(df.__len__()))
 
 
 def fetch_basic_daily(fast_fetch=False):
@@ -1014,15 +1014,15 @@ def fetch_basic_daily(fast_fetch=False):
         output_csv = dir_d + "/basic_" + trade_date + ".csv"
 
         if os.path.exists(output_csv) and os.stat(output_csv).st_size >= 10 and (not force_run_global):
-            logging.info("file exist and have content, not fetch again " + output_csv)
+            logging.info(__file__+" "+"file exist and have content, not fetch again " + output_csv)
             continue
 
-        logging.info("fetch daily_basic on date " + str(trade_date))
+        logging.info(__file__+" "+"fetch daily_basic on date " + str(trade_date))
         df = pro.daily_basic(ts_code='', trade_date=trade_date, fields=fields)
         time.sleep(1)
 
         df.to_csv(output_csv, encoding='UTF-8', index=False)
-        logging.info("saved basic of all stocks to " + output_csv + " len " + str(df.__len__()))
+        logging.info(__file__+" "+"saved basic of all stocks to " + output_csv + " len " + str(df.__len__()))
 
     pass
 
@@ -1050,7 +1050,7 @@ def merge_individual():
 #input: ~/DATA/pickle/Stock_Fundamental/fundamentals_2/source/*.csv
 #output: ~/DATA/pickle/Stock_Fundamental/fundamentals_2/source/individual_per_stock/a_stock_code_feature.csv
 def _merge_individual_bash(ts_code, feature):
-    logging.info("processing " + ts_code + " " + feature)
+    logging.info(__file__+" "+"processing " + ts_code + " " + feature)
     fetch_most_recent_report_perid = finlib.Finlib().get_year_month_quarter()['fetch_most_recent_report_perid'][0]
 
     input_file = fund_base_source + "/" + feature + ".csv"
@@ -1059,7 +1059,7 @@ def _merge_individual_bash(ts_code, feature):
     output_csv = output_dir + "/" + ts_code + "_" + feature + ".csv"
 
     if finlib.Finlib().is_cached(output_csv, day=6) and (not force_run_global):
-        logging.info("file updated in 6 days, not processing. " + output_csv)
+        logging.info(__file__+" "+"file updated in 6 days, not processing. " + output_csv)
         return ()
 
     if not os.path.exists(output_dir):
@@ -1092,13 +1092,13 @@ def merge_individual_bash_basic(fast_fetch=False):
 
         input_csv = fund_base_source + "/basic_daily/basic_" + last_trade_date + ".csv"
 
-        logging.info("DAILY UPDATE, update " + input_csv + " to source/individual_per_stock/*code*_basic.csv")
+        logging.info(__file__+" "+"DAILY UPDATE, update " + input_csv + " to source/individual_per_stock/*code*_basic.csv")
 
         if not os.path.exists(input_csv):
             logging.error("no such file " + input_csv + " , cannot continue")
             exit(0)
 
-        logging.info("read csv " + input_csv)
+        logging.info(__file__+" "+"read csv " + input_csv)
         df = pd.read_csv(
             input_csv,
             converters={i: str
@@ -1118,27 +1118,27 @@ def merge_individual_bash_basic(fast_fetch=False):
                 df_exist = pd.read_csv(output_csv, converters={i: str for i in range(20)})  #@todo: need to specify the column name. Dangerous
                 df_test = df_exist[df_exist.trade_date == this_date]
                 if df_test.__len__() == 1:
-                    logging.info("file already updated. " + output_csv + " to date " + this_date)
+                    logging.info(__file__+" "+"file already updated. " + output_csv + " to date " + this_date)
                     continue
                 elif df_test.__len__() > 1:
-                    logging.info("ERROR, duplicate records in . " + output_csv + " for day " + this_date)
+                    logging.info(__file__+" "+"ERROR, duplicate records in . " + output_csv + " for day " + this_date)
                     continue
                 else:
                     df_exist = df_exist.append(entry).reset_index().drop('index', axis=1)
                     df_exist.to_csv(output_csv, encoding='UTF-8', index=False)
-                    logging.info("updated day " + this_date + " to " + output_csv + " len " + str(df_exist.__len__()))
+                    logging.info(__file__+" "+"updated day " + this_date + " to " + output_csv + " len " + str(df_exist.__len__()))
             else:
-                logging.info("new stock " + ts_code + " no such file, " + output_csv)
+                logging.info(__file__+" "+"new stock " + ts_code + " no such file, " + output_csv)
                 entry.to_csv(output_csv, encoding='UTF-8', index=False)
-                logging.info("file saved, len " + str(entry.__len__()))
+                logging.info(__file__+" "+"file saved, len " + str(entry.__len__()))
 
     if not fast_fetch:
-        logging.info("FULL UPDATE, overwrite exists. processing basic, split source/basic.csv to source/individual_per_stock/ts_code_basic.csv")
+        logging.info(__file__+" "+"FULL UPDATE, overwrite exists. processing basic, split source/basic.csv to source/individual_per_stock/ts_code_basic.csv")
 
         check_csv = fund_base_source + "/individual_per_stock/600519.SH_basic.csv"
 
         if (not force_run_global) and finlib.Finlib().is_cached(check_csv, day=6):
-            logging.info("*_basic.csv are updated in 5 days, not process. result checked by " + check_csv)
+            logging.info(__file__+" "+"*_basic.csv are updated in 5 days, not process. result checked by " + check_csv)
 
         tmp_dir = "~/tmp/pro_basic"
         if not os.path.exists(tmp_dir):
@@ -1258,7 +1258,7 @@ def zzz_merge_local_bash(feature,  output_csv, col_name_list):
             cols.remove(i)
             cols.insert(0, i)
         else:
-            logging.info("warning, no column named " + i + " in cols")
+            logging.info(__file__+" "+"warning, no column named " + i + " in cols")
 
     df = df[cols]
     df = df.fillna(0)
@@ -1271,7 +1271,7 @@ def zzz_merge_local_bash(feature,  output_csv, col_name_list):
         df = None    #free memory
         df_exist_all = None
     else:
-        logging.info("df is empty")
+        logging.info(__file__+" "+"df is empty")
 
 
     pass
@@ -1302,14 +1302,14 @@ def merge_local_bash():
         output_csv = fund_base_source + "/" + f + ".csv"
 
         if (not force_run_global) and finlib.Finlib().is_cached(output_csv, day=6):
-            logging.info("file updated in 6 days, not process. " + output_csv)
+            logging.info(__file__+" "+"file updated in 6 days, not process. " + output_csv)
             continue
 
         cmd = " find -L " + input_dir + " -name *_" + f + ".csv  -exec cat {} >> " + tmp_f + " \;"
         logging.info(cmd)
         start_time = time.time()
         os.system(cmd)
-        logging.info("--- %s seconds ---" % (time.time() - start_time))
+        logging.info(__file__+" "+"--- %s seconds ---" % (time.time() - start_time))
 
         #sort and uniq, inplace
 
@@ -1320,7 +1320,7 @@ def merge_local_bash():
         os.system("rm -f " + tmp_f)
 
         #os.system("mv "+tmp_f +  " "+output_csv)
-        logging.info("merged all " + f + " to " + output_csv)
+        logging.info(__file__+" "+"merged all " + f + " to " + output_csv)
 
 
 ###############################
@@ -1328,10 +1328,10 @@ def merge_local_bash():
 #output:  /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/basic.csv
 ###############################
 def merge_local_bash_basic(output_csv, fast=False):
-    logging.info("DAILY merge local basic")
+    logging.info(__file__+" "+"DAILY merge local basic")
     logging.info(output_csv)
     if (not fast) and (not force_run_global) and finlib.Finlib().is_cached(output_csv, 6) and (os.stat(output_csv).st_size >= 10):
-        logging.info("file is updated in 5 days, not merge again. " + output_csv)
+        logging.info(__file__+" "+"file is updated in 5 days, not merge again. " + output_csv)
         return ()
 
     f_header = "~/tmp/header.txt"
@@ -1355,7 +1355,7 @@ def merge_local_bash_basic(output_csv, fast=False):
             logging.error("no such file " + output_csv + " , cannot continue")
             exit(0)
 
-        logging.info("read csv " + output_csv)
+        logging.info(__file__+" "+"read csv " + output_csv)
         df = pd.read_csv(
             output_csv,
             skiprows=9390000,
@@ -1380,11 +1380,11 @@ def merge_local_bash_basic(output_csv, fast=False):
         logging.info(cmd_content)
         os.system(cmd_content)
 
-        logging.info("merged latest trading date" + last_trade_date + " to " + output_csv)
+        logging.info(__file__+" "+"merged latest trading date" + last_trade_date + " to " + output_csv)
         return ()
 
     if (not fast):
-        logging.info("FULLY merge local basic")
+        logging.info(__file__+" "+"FULLY merge local basic")
         cmd_header = "for i in `ls " + fund_base_source + "/basic_daily/basic_*.csv`; do sed 1q $i > " + f_header + "; break; done;"
 
         cmd_content = "rm -f " + f_content + "; "
@@ -1425,7 +1425,7 @@ def merge_local_bash_basic(output_csv, fast=False):
         df.to_csv(output_csv, encoding='UTF-8', index=False)
         logging.info(__file__ + ": " + "saved, " + output_csv+" . len "+str(df.__len__()))
     else:
-        logging.info("df is empty")
+        logging.info(__file__+" "+"df is empty")
     '''
 
 
@@ -1436,16 +1436,16 @@ def merge_local_bash_basic(output_csv, fast=False):
 def merge_local_bash_basic_quarterly():
     output_csv = fund_base_source + "/basic_quarterly.csv"
 
-    logging.info("DAILY merge local basic quartly")
+    logging.info(__file__+" "+"DAILY merge local basic quartly")
     logging.info(output_csv)
     if (not force_run_global) and finlib.Finlib().is_cached(output_csv, 6) and (os.stat(output_csv).st_size >= 10):
-        logging.info("file is updated in 5 days, not merge again. " + output_csv)
+        logging.info(__file__+" "+"file is updated in 5 days, not merge again. " + output_csv)
         return ()
 
     f_header = "~/tmp/header.txt"
     f_content = "~/tmp/content.txt"
 
-    logging.info("merge local basic quarterly starts")
+    logging.info(__file__+" "+"merge local basic quarterly starts")
     cmd_header = "for i in `ls " + fund_base_source + "/basic_quarterly/basic_*.csv`; do sed 1q $i > " + f_header + "; break; done;"
 
     cmd_content = "rm -f " + f_content + "; "
@@ -1475,14 +1475,14 @@ def merge_local_bash_basic_quarterly():
     cmd = "rm -f " + f_content
     logging.info(cmd)
     os.system(cmd)
-    logging.info("merge local basic quarterly completed , saved to " + output_csv)
+    logging.info(__file__+" "+"merge local basic quarterly completed , saved to " + output_csv)
     return
 
 
 def sum_fina_mainbz():
 
     if (not force_run_global) and finlib.Finlib().is_cached(csv_fina_mainbz_sum, day=6):
-        logging.info("skip file, it been updated in 6 day. " + csv_fina_mainbz_sum)
+        logging.info(__file__+" "+"skip file, it been updated in 6 day. " + csv_fina_mainbz_sum)
         return
 
     df = pd.read_csv(csv_fina_mainbz, converters={'end_date': str})
@@ -1531,7 +1531,7 @@ def sum_fina_mainbz():
 def percent_fina_mainbz():
 
     if (not force_run_global) and finlib.Finlib().is_cached(csv_fina_mainbz_latest_percent, day=6):
-        logging.info("skip file, it been updated in 6 day. " + csv_fina_mainbz_latest_percent)
+        logging.info(__file__+" "+"skip file, it been updated in 6 day. " + csv_fina_mainbz_latest_percent)
         return
 
     df = pd.read_csv(csv_fina_mainbz_latest, converters={'end_date': str})
@@ -1609,7 +1609,7 @@ def zzz_merge_local(stock_list, feature,  output_csv, col_name_list):
     df_exist_all = pd.DataFrame(columns=['ts_code','end_date']) #including all the ts_code
 
     if (not force_run_global) and finlib.Finlib().is_cached(output_csv, day=3):
-        logging.info("skip file, it been updated in 3 day. "+output_csv)
+        logging.info(__file__+" "+"skip file, it been updated in 3 day. "+output_csv)
         return
     ## start of load from exist csv
     # fast_fetch will updating source/*.csv based on this.
@@ -1619,9 +1619,9 @@ def zzz_merge_local(stock_list, feature,  output_csv, col_name_list):
         #df_exist_all = pd.read_csv(output_csv, converters={'end_date': str})
         df_exist_all = pd.read_csv(output_csv, converters={i: str for i in range(100)})
         df_exist_all = df_exist_all.drop_duplicates()
-        logging.info("loaded " + output_csv + ", len " + str(df_exist_all.__len__()))
+        logging.info(__file__+" "+"loaded " + output_csv + ", len " + str(df_exist_all.__len__()))
     else:
-        logging.info("File not exist, no local history reocrds need to merge, generate new from individual/*.csv. "+output_csv)
+        logging.info(__file__+" "+"File not exist, no local history reocrds need to merge, generate new from individual/*.csv. "+output_csv)
 
 
     ## end of load from exist csv
@@ -1644,7 +1644,7 @@ def zzz_merge_local(stock_list, feature,  output_csv, col_name_list):
             sys.stdout.write("_merge_local " +feature+" "+  str(j)+" of "+str(total_len)+". ")
             sys.stdout.flush()
 
-            #logging.info("file will be reading "+ind_csv)
+            #logging.info(__file__+" "+"file will be reading "+ind_csv)
 
             #df_sub = pd.read_csv(ind_csv, converters={'end_date': str})
             df_sub = pd.read_csv(ind_csv, converters={i: str for i in range(100)}) #read all columns as string
@@ -1687,12 +1687,12 @@ def zzz_merge_local(stock_list, feature,  output_csv, col_name_list):
             df_exist_all =  pd.concat([df_exist_exclude, df_sub], sort=False)
 
             df_sub = pd.DataFrame() #empty the df_sub
-            logging.info("csv len "+str(df_exist_all.__len__()))
+            logging.info(__file__+" "+"csv len "+str(df_exist_all.__len__()))
 
 
         #except:
         #    logging.info(traceback.print_exception(*exc_info))
-        #    logging.info("exception, sleeping 30sec then renew the ts_pro connection")
+        #    logging.info(__file__+" "+"exception, sleeping 30sec then renew the ts_pro connection")
 
         #finally:
         #    if exc_info == (None, None, None):
@@ -1712,7 +1712,7 @@ def zzz_merge_local(stock_list, feature,  output_csv, col_name_list):
             cols.remove(i)
             cols.insert(0, i)
         else:
-            logging.info("warning, no column named " + i + " in cols")
+            logging.info(__file__+" "+"warning, no column named " + i + " in cols")
 
     df = df[cols]
     df = df.fillna(0)
@@ -1778,11 +1778,11 @@ def _merge_quarterly(end_date, df_income, df_balancesheet, df_cashflow, df_fina_
     output_csv = fund_base_merged + "/merged_all_" + end_date + ".csv"
 
     if (not force_run_global) and finlib.Finlib().is_cached(output_csv, day=6):
-        logging.info("file has been updated in 2 days, will not calculate. " + output_csv)
+        logging.info(__file__+" "+"file has been updated in 2 days, will not calculate. " + output_csv)
         return
 
     i = 0
-    logging.info("\n==== " + end_date + " ====")
+    logging.info(__file__+" "+"\n==== " + end_date + " ====")
 
     sys.stdout.write("\tdf_income, ")
     sys.stdout.flush()
@@ -1795,7 +1795,7 @@ def _merge_quarterly(end_date, df_income, df_balancesheet, df_cashflow, df_fina_
 
     cols = str(df_result_d.columns.__len__())
     lens = str(df_result_d.__len__())
-    logging.info("cols " + cols + ", lens " + lens)
+    logging.info(__file__+" "+"cols " + cols + ", lens " + lens)
 
     #logging.info(df_result_d[df_result_d['ts_code']=='000001.SZ'].__len__())
 
@@ -1819,7 +1819,7 @@ def _merge_quarterly(end_date, df_income, df_balancesheet, df_cashflow, df_fina_
         cols = str(df_result_d.columns.__len__())
         lens = str(df_result_d.__len__())
 
-        logging.info("cols " + cols + ", lens " + lens)
+        logging.info(__file__+" "+"cols " + cols + ", lens " + lens)
 
     df_result_d = df_result_d.drop_duplicates()
     df_result_d.replace('', 0, inplace=True)  #replace '' value to 0, otherwise will cause score to NaN in later analyse step1.
@@ -1855,15 +1855,15 @@ def extract_latest():
 
 def _extract_latest(csv_input, csv_output, feature, col_name_list, ts_code=None, end_date=None):
     if not os.path.exists(csv_input):
-        logging.info("skip, input csv doesn't exist " + csv_input)
+        logging.info(__file__+" "+"skip, input csv doesn't exist " + csv_input)
         return
 
     if (not force_run_global) and finlib.Finlib().is_cached(csv_output, day=6):
-        logging.info("skip file, it been updated in 1 day. " + csv_output)
+        logging.info(__file__+" "+"skip file, it been updated in 1 day. " + csv_output)
         return
 
     if os.stat(csv_input).st_size == 0:
-        logging.info("skip, empty input file " + csv_input)
+        logging.info(__file__+" "+"skip, empty input file " + csv_input)
         return
 
     df_result = pd.DataFrame()
@@ -1898,15 +1898,15 @@ def _extract_latest(csv_input, csv_output, feature, col_name_list, ts_code=None,
             cols.remove(i)
             cols.insert(0, i)
         else:
-            logging.info("warning, no column named " + i + " in cols")
+            logging.info(__file__+" "+"warning, no column named " + i + " in cols")
 
     df_result = df_result[cols]
     df_result.fillna(0, inplace=True)
 
     if df_result.__len__() > 0:
-        logging.info("\n=== DataFrame " + feature + " ===")
+        logging.info(__file__+" "+"\n=== DataFrame " + feature + " ===")
         logging.info(df_result.iloc[0].astype(str))
-        logging.info("\n")
+        logging.info(__file__+" "+"\n")
 
     df_result.to_csv(csv_output, encoding='UTF-8', index=False)
     logging.info(__file__ + ": " + "saved to " + csv_output + " . len " + str(df_result.__len__()))
@@ -1914,7 +1914,7 @@ def _extract_latest(csv_input, csv_output, feature, col_name_list, ts_code=None,
 
 def _analyze_step_1(end_date):
 
-    logging.info("=== analyze step 1 ===")
+    logging.info(__file__+" "+"=== analyze step 1 ===")
     #end_date in format 20171231
     output_dir = fund_base_report + "/step1"
     csv_output = fund_base_report + "/step1/rpt_" + end_date + ".csv"
@@ -1923,13 +1923,13 @@ def _analyze_step_1(end_date):
         os.makedirs(output_dir)
 
     if (not force_run_global) and finlib.Finlib().is_cached(csv_output, day=6):
-        logging.info("file has been updated in 1 days, will not calculate. " + csv_output)
+        logging.info(__file__+" "+"file has been updated in 1 days, will not calculate. " + csv_output)
         return
 
     f = fund_base_merged + "/" + "merged_all_" + end_date + ".csv"
 
     if not os.path.isfile(f):
-        logging.info("input file not found " + f)
+        logging.info(__file__+" "+"input file not found " + f)
         return
 
     #df['net_profit'].describe()
@@ -2008,18 +2008,18 @@ def _analyze_step_1(end_date):
             pass  #debug
 
         if not finlib.Finlib().is_on_market(ts_code, end_date, basic_df):
-            logging.info("stock has been not on market. " + ts_code + " , " + end_date)
+            logging.info(__file__+" "+"stock has been not on market. " + ts_code + " , " + end_date)
             #df = df[df['ts_code'] != ts_code]  #remove the ts_code from df that saved in csv. <<< bug introduced.
             continue
 
         #debug
-        #logging.info("i is " + str(i))
+        #logging.info(__file__+" "+"i is " + str(i))
         #continue
 
         # ryan debug start
         '''
         if not re.match("\d{6}", end_date):
-            logging.info("end date wrong "+end_date)
+            logging.info(__file__+" "+"end date wrong "+end_date)
         continue
 
         exit()
@@ -2307,7 +2307,7 @@ def _analyze_step_1(end_date):
 
 
 def _analyze_xiaoxiong_ct(ts_code, end_date, basic_df):
-    logging.info("=== analyze _analyze_xiaoxiong_ct ===")
+    logging.info(__file__+" "+"=== analyze _analyze_xiaoxiong_ct ===")
 
     # changtou xueyuan, xiaoxiong di li
     garbageReason = ""
@@ -2326,17 +2326,17 @@ def _analyze_xiaoxiong_ct(ts_code, end_date, basic_df):
     #if True:
     #    pass
     #else:
-    #    logging.info("_analyze_xiaoxiong_ct: not handle Q1, Q3 report, " + end_date)
+    #    logging.info(__file__+" "+"_analyze_xiaoxiong_ct: not handle Q1, Q3 report, " + end_date)
     #    return
 
     date_match = re.match('(\d{4})(\d{2})(\d{2})$', end_date)
 
     if not finlib.Finlib().is_on_market(ts_code, end_date, basic_df):
-        logging.info("stock has been not on market. " + ts_code + " , " + end_date)
+        logging.info(__file__+" "+"stock has been not on market. " + ts_code + " , " + end_date)
         return (dict_rtn)
 
     if not (date_match):
-        logging.info("Error, date format unknown " + end_date)
+        logging.info(__file__+" "+"Error, date format unknown " + end_date)
         return (dict_rtn)
 
     year = int(date_match.group(1))
@@ -2359,13 +2359,13 @@ def _analyze_xiaoxiong_ct(ts_code, end_date, basic_df):
         rule_1_year_1 = (this_revenue - this_revenue_4q_before) - (this_accounts_receiv - this_accounts_receiv_4q_before)
         rule_1_year_2 = (this_revenue_4q_before - this_revenue_8q_before) - (this_accounts_receiv_4q_before - this_accounts_receiv_8q_before)
         if rule_1_year_1 < 0 and rule_1_year_2 < 0:  #bigger is better
-            #logging.info("garbage")
+            #logging.info(__file__+" "+"garbage")
             #连续两年应收账款上升幅度超过营业收入上升幅度，没赚钱，收到白条。
             garbageReason += "Accounts receivable increased more than business income for two consecutive years. "
             garbageCnt += 1
         else:
             pass
-            #logging.info("pass rule 1")
+            #logging.info(__file__+" "+"pass rule 1")
     except:
         pass
 
@@ -2382,7 +2382,7 @@ def _analyze_xiaoxiong_ct(ts_code, end_date, basic_df):
             garbageCnt += 1
         else:
             pass
-            #logging.info("pass rule 2")
+            #logging.info(__file__+" "+"pass rule 2")
     except:
         pass
 
@@ -2397,7 +2397,7 @@ def _analyze_xiaoxiong_ct(ts_code, end_date, basic_df):
             garbageCnt += 1
         else:
             pass
-            #logging.info("pass rule 3")
+            #logging.info(__file__+" "+"pass rule 3")
     except:
         pass
 
@@ -2411,7 +2411,7 @@ def _analyze_xiaoxiong_ct(ts_code, end_date, basic_df):
             #经营活动现金流量净值大于净利润
             bonusReason += 'Net cash flow of operating activities > net profit. '
             bonusCnt += 1
-            #logging.info("bonus, rule 4")
+            #logging.info(__file__+" "+"bonus, rule 4")
     except:
         pass
 
@@ -2420,7 +2420,7 @@ def _analyze_xiaoxiong_ct(ts_code, end_date, basic_df):
         if this_free_cashflow > 0:  #bigger is better
             bonusReason += 'Free cashflow > 0. '
             bonusCnt += 1
-            #logging.info("bonus, rule 5")
+            #logging.info(__file__+" "+"bonus, rule 5")
     except:
         pass
 
@@ -2433,7 +2433,7 @@ def _analyze_xiaoxiong_ct(ts_code, end_date, basic_df):
 
 
 def _analyze_white_horse_ct(ts_code, end_date, basic_df):
-    logging.info("=== analyze _analyze_white_horse_ct ===")
+    logging.info(__file__+" "+"=== analyze _analyze_white_horse_ct ===")
     # changtou bai ma gu
     garbageReason = ""
     bonusReason = ""
@@ -2447,7 +2447,7 @@ def _analyze_white_horse_ct(ts_code, end_date, basic_df):
     dict_rtn['garbageReason'] = garbageReason
 
     if not finlib.Finlib().is_on_market(ts_code, end_date, basic_df):
-        logging.info("stock has been not on market. " + ts_code + " , " + end_date)
+        logging.info(__file__+" "+"stock has been not on market. " + ts_code + " , " + end_date)
         return (dict_rtn)
 
     if re.match('\d{4}0630$', end_date) or re.match('\d{4}1231$', end_date) or re.match('201[8|7|6]', end_date):
@@ -2483,12 +2483,12 @@ def _analyze_white_horse_ct(ts_code, end_date, basic_df):
         if (this_roe >= roeC and roe_1y >= roeC and roe_1y >= roeC and roe_2y >= roeC and roe_3y >= roeC and roe_4y >= roeC and roe_5y >= roeC and roe_6y >= roeC):
             bonusReason += 'ROE > ' + str(roeC) + ' consecutively (7years). '
             bonusCnt += 1
-            logging.info("bonus. " + bonusReason)
+            logging.info(__file__+" "+"bonus. " + bonusReason)
 
             if this_pb > 0 and this_pb < 8:
                 bonusReason += 'white horse '
                 bonusCnt += 1
-                logging.info("bonus. " + bonusReason + ' ' + ts_code + " " + end_date)
+                logging.info(__file__+" "+"bonus. " + bonusReason + ' ' + ts_code + " " + end_date)
 
     except:
         pass
@@ -2505,7 +2505,7 @@ def _analyze_step_2(end_date):
     #end_date in format 20171231
 
     #add columns to the sheet
-    logging.info("=== analyze step 2 ===")
+    logging.info(__file__+" "+"=== analyze step 2 ===")
 
     csv_input = fund_base_report + "/step1/rpt_" + end_date + ".csv"
     output_dir = fund_base_report + "/step2"
@@ -2515,11 +2515,11 @@ def _analyze_step_2(end_date):
         os.makedirs(output_dir)
 
     if (not force_run_global) and finlib.Finlib().is_cached(csv_output, day=6):
-        logging.info("file has been updated in 1 days, will not calculate. " + csv_output)
+        logging.info(__file__+" "+"file has been updated in 1 days, will not calculate. " + csv_output)
         return
 
     if not os.path.isfile(csv_input):
-        logging.info("input file not found " + csv_input)
+        logging.info(__file__+" "+"input file not found " + csv_input)
         return
 
     if os.stat(csv_input).st_size < 10:
@@ -2566,7 +2566,7 @@ def _analyze_step_2(end_date):
     cols = df.columns.tolist()
 
     for i in range(len):
-        logging.info("analyze step_2 " + str(i) + " of " + str(len) + ". ")
+        logging.info(__file__+" "+"analyze step_2 " + str(i) + " of " + str(len) + ". ")
 
         scoreTotRev = round(stats.percentileofscore(df['total_revenue'], df.iloc[i]['total_revenue']), 2)
         df.iloc[i, df.columns.get_loc('scoreTotRev')] = scoreTotRev
@@ -2675,7 +2675,7 @@ def _analyze_step_2(end_date):
             cols.remove(i)
             cols.insert(0, i)
         else:
-            logging.info("warning, no column named " + i + " in cols")
+            logging.info(__file__+" "+"warning, no column named " + i + " in cols")
 
     df = df[cols]
 
@@ -2691,7 +2691,7 @@ def _analyze_step_3(end_date):
     #end_date in format 20171231
 
     #add columns to the sheet
-    logging.info("=== analyze step 3 ===")
+    logging.info(__file__+" "+"=== analyze step 3 ===")
     csv_input = fund_base_report + "/step2/rpt_" + end_date + ".csv"
 
     output_dir = fund_base_report + "/step3"
@@ -2701,11 +2701,11 @@ def _analyze_step_3(end_date):
         os.makedirs(output_dir)
 
     if (not force_run_global) and finlib.Finlib().is_cached(csv_output, day=6):
-        logging.info("file has been updated in 1 days, will not calculate. " + csv_output)
+        logging.info(__file__+" "+"file has been updated in 1 days, will not calculate. " + csv_output)
         return
 
     if not os.path.isfile(csv_input):
-        logging.info("input file not found " + csv_input)
+        logging.info(__file__+" "+"input file not found " + csv_input)
         return
 
     df = pd.read_csv(csv_input, converters={'end_date': str})
@@ -2716,7 +2716,7 @@ def _analyze_step_3(end_date):
     cols = df.columns.tolist()
 
     for i in range(len):
-        logging.info("analyze step_3 " + str(i) + " of " + str(len) + ". ")
+        logging.info(__file__+" "+"analyze step_3 " + str(i) + " of " + str(len) + ". ")
 
         sos = round(stats.percentileofscore(df['score'], df.iloc[i]['score']), 2)
         df.iloc[i, df.columns.get_loc('sos')] = sos
@@ -2729,7 +2729,7 @@ def _analyze_step_3(end_date):
             cols.remove(i)
             cols.insert(0, i)
         else:
-            logging.info("warning, no column named " + i + " in cols")
+            logging.info(__file__+" "+"warning, no column named " + i + " in cols")
 
     df = df[cols]
 
@@ -2744,7 +2744,7 @@ def _analyze_step_3(end_date):
         if os.path.exists(sl_3):
             os.unlink(sl_3)
         os.symlink(csv_output, sl_3)
-        logging.info("make symbol link " + sl_3 + " --> " + csv_output)
+        logging.info(__file__+" "+"make symbol link " + sl_3 + " --> " + csv_output)
 
 
 def _analyze_step_4():
@@ -2756,10 +2756,10 @@ def _analyze_step_4():
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
-    logging.info("=== analyze step 4 ===")
+    logging.info(__file__+" "+"=== analyze step 4 ===")
 
     if (not force_run_global) and finlib.Finlib().is_cached(csv_output, day=1):
-        logging.info("file has been updated in 1 days, will not calculate. " + csv_output)
+        logging.info(__file__+" "+"file has been updated in 1 days, will not calculate. " + csv_output)
         return
 
     df = df_result = pd.DataFrame()
@@ -2778,7 +2778,7 @@ def _analyze_step_4():
         df_1 = df_1[['ts_code', 'name', 'sos', 'end_date']]
 
         df = df.append(df_1)
-        #logging.info(". len "+str(df.__len__()))
+        #logging.info(__file__+" "+". len "+str(df.__len__()))
 
     uniq_ts_code = df['ts_code'].unique()
 
@@ -2794,7 +2794,7 @@ def _analyze_step_4():
 
     i = 0
     for ts_code in uniq_ts_code:
-        logging.info("=== analyze step4 " + ts_code + " " + str(i) + " of " + str(df_result.__len__()) + " ===")
+        logging.info(__file__+" "+"=== analyze step4 " + ts_code + " " + str(i) + " of " + str(df_result.__len__()) + " ===")
 
         stock_df = df[df['ts_code'] == ts_code].sort_values(by='end_date', ascending=False)
         name = stock_df.iloc[0]['name']
@@ -2833,7 +2833,7 @@ def _analyze_step_4():
             avg_sum += score_of_date
             factor = base**col_n
 
-            #logging.info("\tfactor "+str(factor)+". period "+str(sd))
+            #logging.info(__file__+" "+"\tfactor "+str(factor)+". period "+str(sd))
 
             score_over_years += factor * score_of_date  #the latest * 1, next *0.7, next 0.7^2, next 0.7^3
             col_n += 1
@@ -2867,21 +2867,21 @@ def _analyze_step_5():
         os.makedirs(output_dir)
 
     if (not force_run_global) and finlib.Finlib().is_cached(csv_output, day=1):
-        logging.info("file has been updated in 1 days, will not calculate. " + csv_output)
+        logging.info(__file__+" "+"file has been updated in 1 days, will not calculate. " + csv_output)
         return
 
     df = pd.DataFrame()
 
-    logging.info("=== analyze step 5 ===")
+    logging.info(__file__+" "+"=== analyze step 5 ===")
 
-    #logging.info("loading "+csv_input)
+    #logging.info(__file__+" "+"loading "+csv_input)
     df = pd.read_csv(csv_input)
 
     df = pd.DataFrame([0] * df.__len__(), columns=['scoreA']).join(df)  #score of score over years
 
     for i in range(df.__len__()):
         ts_code = df.iloc[i]['ts_code']
-        logging.info("analyze_step_5 " + str(i) + " of " + str(df.__len__()) + ". ")
+        logging.info(__file__+" "+"analyze_step_5 " + str(i) + " of " + str(df.__len__()) + ". ")
 
         #score_over_years
         score_soy = round(stats.percentileofscore(df['score_over_years'], df.iloc[i]['score_over_years']), 2)
@@ -2918,33 +2918,33 @@ def _analyze_step_6():
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
-    logging.info("=== analyze step 6 ===")
+    logging.info(__file__+" "+"=== analyze step 6 ===")
 
     if (not force_run_global) and finlib.Finlib().is_cached(csv_output, day=1):
-        logging.info("file has been updated in 1 days, will not calculate. " + csv_output)
+        logging.info(__file__+" "+"file has been updated in 1 days, will not calculate. " + csv_output)
         return
 
     if (not force_run_global) and finlib.Finlib().is_cached(csv_selected_output, day=1) and (not overwrite):
-        logging.info("file has been updated in 1 days, will not calculate. " + csv_selected_output)
+        logging.info(__file__+" "+"file has been updated in 1 days, will not calculate. " + csv_selected_output)
         return
 
     df = pd.DataFrame()
 
     #stock_code = "SZ000402"
 
-    logging.info("loading " + csv_input_1)
+    logging.info(__file__+" "+"loading " + csv_input_1)
     df_1 = pd.read_csv(csv_input_1)
     df_1 = finlib.Finlib().ts_code_to_code(df=df_1)  #code:SH600519
     #df_1 = df_1[df_1['code']==stock_code]
 
-    logging.info("loading " + csv_input_2)
+    logging.info(__file__+" "+"loading " + csv_input_2)
     df_2 = pd.read_csv(csv_input_2, converters={'code': str})
     df_2 = finlib.Finlib().add_market_to_code(df=df_2)  #code: SH600519
 
     if debug_global:
         df_2 = df_2[df_2['code'] == "SH600519"]
 
-    logging.info("loading " + csv_input_3)
+    logging.info(__file__+" "+"loading " + csv_input_3)
     df_3 = pd.read_csv(csv_input_3)
     df_3 = finlib.Finlib().ts_code_to_code(df=df_3)
     df_3 = df_3[['code', 'scoreA']]  #code: SH600519, scoreA:NaN
@@ -2979,12 +2979,12 @@ def _analyze_step_6():
 
     for i in range(df.__len__()):
         code = df.iloc[i]['code']
-        logging.info("analyze step_6 " + str(i) + " of " + str(df.__len__()) + ". ")
+        logging.info(__file__+" "+"analyze step_6 " + str(i) + " of " + str(df.__len__()) + ". ")
 
         guben = df.iloc[i]['totals'] * 10**8  #totals,总股本(亿)
 
         if guben == 0:
-            logging.info("Fatal error, guben = 0, " + code)
+            logging.info(__file__+" "+"Fatal error, guben = 0, " + code)
             #exit(1)
             guben = 10**20  #a very huge/big number,so result is very small to ignored.
 
@@ -3111,7 +3111,7 @@ def _analyze_step_6():
 #def verify_fund_increase():
 def _analyze_step_7():
 
-    logging.info("=== analyze step 7 : verify_fund_increase ===")  #buy at month after the financial report,hold a quarter.
+    logging.info(__file__+" "+"=== analyze step 7 : verify_fund_increase ===")  #buy at month after the financial report,hold a quarter.
 
     output_dir = fund_base_report + "/step7"
     csv_output = output_dir + "/verify_fund_increase.csv"
@@ -3120,7 +3120,7 @@ def _analyze_step_7():
         os.makedirs(output_dir)
 
     if (not force_run_global) and finlib.Finlib().is_cached(csv_output, day=1):
-        logging.info("file has been updated in 1 days, will not calculate. " + csv_output)
+        logging.info(__file__+" "+"file has been updated in 1 days, will not calculate. " + csv_output)
         return
 
     csv_input = fund_base_report + "/step4/multiple_years_score.csv"
@@ -3161,7 +3161,7 @@ def _analyze_step_7():
 
         ktr_cnt_win = ktr_cnt_all = ktr_sum = 0.0
 
-        logging.info("==== analyze_step_7 " + str(i) + " of " + str(len) + " ====")
+        logging.info(__file__+" "+"==== analyze_step_7 " + str(i) + " of " + str(len) + " ====")
         the_df = df_result.iloc[i]
 
         code = the_df['code']
@@ -3179,7 +3179,7 @@ def _analyze_step_7():
                 score = the_df[c]
 
                 if str(year) < "2015":
-                    logging.info("Not process year before 2015")
+                    logging.info(__file__+" "+"Not process year before 2015")
                     continue
 
                 price_the_day = finlib.Finlib().get_price(code_m=code, date=year + "-" + month + "-" + "31")
@@ -3222,7 +3222,7 @@ def _analyze_step_7():
                         if quarter_inc > 0:
                             ktr_cnt_win += 1
 
-                        #logging.info("score "+str(score)+", "+str(quarter_inc)+": "+str(year_ktr_start)+str(month_ktr_start)+" -> "+str(year_ktr_end)+str(month_ktr_end))
+                        #logging.info(__file__+" "+"score "+str(score)+", "+str(quarter_inc)+": "+str(year_ktr_start)+str(month_ktr_start)+" -> "+str(year_ktr_end)+str(month_ktr_end))
 
                     #end of the buy and sell (ktr)
 
@@ -3261,51 +3261,51 @@ def _analyze_step_8():
         os.makedirs(output_dir)
 
     if (not force_run_global) and finlib.Finlib().is_cached(csv_output, day=1):
-        logging.info("file has been updated in 1 days, will not calculate. " + csv_output)
+        logging.info(__file__+" "+"file has been updated in 1 days, will not calculate. " + csv_output)
         return
 
     if (not force_run_global) and finlib.Finlib().is_cached(csv_output_selected, day=1):
-        logging.info("file has been updated in 1 days, will not calculate. " + csv_output_selected)
+        logging.info(__file__+" "+"file has been updated in 1 days, will not calculate. " + csv_output_selected)
         return
 
     df = pd.DataFrame()
 
-    logging.info("=== analyze step 8 ===")
+    logging.info(__file__+" "+"=== analyze step 8 ===")
 
     #stock_code = "SZ000402"
 
-    logging.info("loading " + csv_input_1)
+    logging.info(__file__+" "+"loading " + csv_input_1)
     df_1 = pd.read_csv(csv_input_1)
     #df_1 = finlib.Finlib().ts_code_to_code(df=df_1)
-    #logging.info("read line "+str(df_1.__len__()))
+    #logging.info(__file__+" "+"read line "+str(df_1.__len__()))
 
-    logging.info("loading " + csv_input_2)
+    logging.info(__file__+" "+"loading " + csv_input_2)
     df_2 = pd.read_csv(csv_input_2, converters={'code': str})
     #df_2 = finlib.Finlib().add_market_to_code(df=df_2)
-    #logging.info("read line " + str(df_2.__len__()))
+    #logging.info(__file__+" "+"read line " + str(df_2.__len__()))
 
     df = pd.merge(df_1, df_2, how='inner', on=['code'], suffixes=('', '_stock_basics'))
     #   len = df.__len__()
-    #logging.info("after merge len "+str(len))
+    #logging.info(__file__+" "+"after merge len "+str(len))
 
     df.to_csv(csv_output, encoding='UTF-8', index=False)
     logging.info(__file__ + ": " + "analysze step 8 result saved to " + csv_output + " . len " + str(df.__len__()))
 
     #scoreAB = 80  <<< This has been filted in step6/selected.csv
     #df = df[df['scoreAB']>scoreAB]
-    #logging.info("scoreAB > "+str(scoreAB) +" " + str(df.__len__()))
+    #logging.info(__file__+" "+"scoreAB > "+str(scoreAB) +" " + str(df.__len__()))
 
     ktr_win_p = 50
     df = df[df['ktr_win_p'] >= ktr_win_p]
-    logging.info("ktr_win_p >= " + str(ktr_win_p) + " " + str(df.__len__()))
+    logging.info(__file__+" "+"ktr_win_p >= " + str(ktr_win_p) + " " + str(df.__len__()))
 
     #ktr_inc_avg = 3
     #df = df[df['ktr_inc_avg']>ktr_inc_avg]
-    #logging.info("ktr_inc_avg > "+str(ktr_inc_avg)+" " + str(df.__len__()))
+    #logging.info(__file__+" "+"ktr_inc_avg > "+str(ktr_inc_avg)+" " + str(df.__len__()))
 
     #ktr_cnt_win = 5
     #df = df[df['ktr_cnt_win']>ktr_cnt_win]
-    #logging.info("ktr_cnt_win > "+str(ktr_cnt_win)+" " + str(df.__len__()))
+    #logging.info(__file__+" "+"ktr_cnt_win > "+str(ktr_cnt_win)+" " + str(df.__len__()))
 
     df.to_csv(csv_output_selected, encoding='UTF-8', index=False)
     logging.info(__file__ + ": " + "analysze step 8 selected result saved to " + csv_output_selected + " , len " + str(df.__len__()))
@@ -3341,9 +3341,9 @@ def analyze(fully_a=False, daily_a=True, fast=True):
     #    period_list=["20171231"]
 
     for e in period_list:
-        logging.info("e is "+str(e))
+        logging.info(__file__+" "+"e is "+str(e))
         if e < '20151231':
-            logging.info("not process date before 2015" +str(e))
+            logging.info(__file__+" "+"not process date before 2015" +str(e))
             continue
 
         sys.stdout.write("end_date " + e + ". ")
@@ -3359,7 +3359,7 @@ def analyze(fully_a=False, daily_a=True, fast=True):
             _analyze_step_3(end_date=e)  # score of score
 
         else:
-            logging.info("not handle Q1, Q2, Q3 report, " + e)
+            logging.info(__file__+" "+"not handle Q1, Q2, Q3 report, " + e)
             continue
 
     _analyze_step_4()  #evaluate the stock score in mutliple years.
@@ -3390,7 +3390,7 @@ def analyze(fully_a=False, daily_a=True, fast=True):
                 _analyze_step_2(end_date=e, overwrite=overwrite)  # score
                 _analyze_step_3(end_date=e, overwrite=overwrite)  # score of score
             else:
-                logging.info("not handle Q1, Q3 report, "+e)
+                logging.info(__file__+" "+"not handle Q1, Q3 report, "+e)
                 continue
 
 
@@ -3432,7 +3432,7 @@ def extract_white_horse():
         if not os.path.exists(input_csv):
             continue
         else:
-            logging.info("reading " + input_csv)
+            logging.info(__file__+" "+"reading " + input_csv)
             df_q = pd.read_csv(input_csv, converters={'end_date': str})
             #df_q = df_q.fillna(0)
             df_q = df_q[df_q['bonusReason'].str.contains('white horse', na=False)]  #filter out the white horse
@@ -3457,11 +3457,11 @@ def extract_high_freecashflow_price_ratio():
     output_csv = fund_base_report + "/freecashflow_price_ratio.csv"
 
     if not os.path.exists(csv_input):
-        logging.info("input csv doesn't exist, " + csv_input)
+        logging.info(__file__+" "+"input csv doesn't exist, " + csv_input)
         return
 
     if not os.stat(csv_input).st_size >= 10:
-        logging.info("input csv is empty. " + csv_input)
+        logging.info(__file__+" "+"input csv is empty. " + csv_input)
         return
 
     df = pd.read_csv(csv_input)  #no end_date column in the csv
@@ -3497,14 +3497,14 @@ def extract_hen_cow():
         if not os.path.exists(input_csv):
             continue
         else:
-            logging.info("reading " + input_csv)
+            logging.info(__file__+" "+"reading " + input_csv)
             df_q = pd.read_csv(input_csv, converters={'end_date': str})
             df_q_hen = df_q[df_q['scoreHen'] > 80]  # filter out the white horse
             df_q_cow = df_q[df_q['scoreCow'] > 80]  # filter out the white horse
             df_q_hen_cow = df_q_cow.append(df_q_hen)
-            #logging.info("df_q_hen len " + str(df_q_hen.__len__()))
-            #logging.info("df_q_cow len " + str(df_q_cow.__len__()))
-            #logging.info("hen_cow len "+str(df_q_hen_cow.__len__()))
+            #logging.info(__file__+" "+"df_q_hen len " + str(df_q_hen.__len__()))
+            #logging.info(__file__+" "+"df_q_cow len " + str(df_q_cow.__len__()))
+            #logging.info(__file__+" "+"hen_cow len "+str(df_q_hen_cow.__len__()))
 
             for c in df_q_hen_cow['ts_code'].values:
                 for v in df_stock_list[df_stock_list['ts_code'] == c].index.values:
@@ -3533,7 +3533,7 @@ def disclosure_date_notify(days):
     output_csv = csv_disclosure_date_latest_notify
 
     if not os.path.exists(input_csv):
-        logging.info("file not exist, quit. " + input_csv)
+        logging.info(__file__+" "+"file not exist, quit. " + input_csv)
 
     #df = pd.read_csv(input_csv, converters={'code':str,'name':str,'ann_date':str,'end_date':str, 'pre_date':str,'actual_date':str,'modify_date':str}, encoding="utf-8" )
     df = pd.read_csv(input_csv, converters={'code': str, 'ann_date': str, 'end_date': str, 'pre_date': str, 'actual_date': str, 'modify_date': str}, encoding="utf-8")
@@ -3572,12 +3572,12 @@ def _fetch_pro_basic():
     output_csv = dir + "/pro_basic.csv"
 
     if finlib.Finlib().is_cached(output_csv, 1):
-        logging.info("not fetch basic as the file updated in 1 day. " + output_csv)
+        logging.info(__file__+" "+"not fetch basic as the file updated in 1 day. " + output_csv)
         return ()
 
     df = pro.query('stock_basic', exchange='', list_status='L', fields='ts_code,symbol,name,area,industry,list_date')
     df.to_csv(output_csv, encoding='UTF-8', index=False)
-    logging.info("pro basic saved to " + output_csv + " . len " + str(df.__len__()))
+    logging.info(__file__+" "+"pro basic saved to " + output_csv + " . len " + str(df.__len__()))
     return (df)
 
 
@@ -3599,7 +3599,7 @@ def _fetch_pro_concept():
     output_csv = dir + "/pro_concept.csv"
 
     if finlib.Finlib().is_cached(output_csv, 1) and (not force_run_global):
-        logging.info("not fetch concept as the file updated in 1 day. " + output_csv)
+        logging.info(__file__+" "+"not fetch concept as the file updated in 1 day. " + output_csv)
         return ()
 
     #df_result = pd.DataFrame(columns=['cat_name', 'cat_code'])
@@ -3613,7 +3613,7 @@ def _fetch_pro_concept():
 
         #df_sub = pd.DataFrame()
         cat_name = df_c[df_c['code'] == id]['name'].iloc[0]
-        logging.info("query concept details, " + str(i) + " of " + str(cnt) + ", id " + str(id) + " name " + cat_name)
+        logging.info(__file__+" "+"query concept details, " + str(i) + " of " + str(cnt) + ", id " + str(id) + " name " + cat_name)
 
         try:
             df_cd = pro.concept_detail(id=id, fields='ts_code,name')
@@ -3627,7 +3627,7 @@ def _fetch_pro_concept():
             df_result = pd.concat([df_result, df_cd], sort=False).reset_index().drop('index', axis=1)
 
         except:
-            logging.info("exception in get_pro_concept")
+            logging.info(__file__+" "+"exception in get_pro_concept")
         finally:
             if sys.exc_info() == (None, None, None):
                 pass  # no exception
@@ -3635,11 +3635,11 @@ def _fetch_pro_concept():
                 logging.info(str(traceback.print_exception(*sys.exc_info())).encode('utf8'))
                 #logging.info(unicode(traceback.print_exception(*sys.exc_info())).encode('utf8'))
                 logging.info(sys.exc_value.message)  # print the human readable unincode
-                logging.info("cat_id: " + id + " cat_name: " + cat_name)
+                logging.info(__file__+" "+"cat_id: " + id + " cat_name: " + cat_name)
                 sys.exc_clear()
 
     df_result.to_csv(output_csv, encoding='UTF-8', index=False)
-    logging.info("pro concept saved to " + output_csv + " . len " + str(df_result.__len__()))
+    logging.info(__file__+" "+"pro concept saved to " + output_csv + " . len " + str(df_result.__len__()))
     return (df_result)
 
 
@@ -3655,13 +3655,13 @@ def _fetch_cctv_news():
     output_csv = dir + "/cctv_news.csv"
 
     if finlib.Finlib().is_cached(output_csv, 1) and (not force_run_global):
-        logging.info("not fetch cctv news as the file updated in 1 day")
+        logging.info(__file__+" "+"not fetch cctv news as the file updated in 1 day")
         return ()
 
     df_result = pd.DataFrame(columns=['date', 'title', 'content'])
 
     if os.path.exists(output_csv):
-        logging.info("loading " + output_csv)
+        logging.info(__file__+" "+"loading " + output_csv)
         df_result = pd.read_csv(output_csv, converters={'date': str})
 
     #df_result = pd.DataFrame(columns=['cat_name', 'cat_code'])
@@ -3674,21 +3674,21 @@ def _fetch_cctv_news():
         date_S = date.strftime("%Y%m%d")
 
         if df_result[df_result['date'] == date_S].__len__() > 0:
-            logging.info("." + date_S)  #already have the records
+            logging.info(__file__+" "+"." + date_S)  #already have the records
             date = date + datetime.timedelta(1)
             continue
 
-        logging.info("getting cctv news " + date_S)
+        logging.info(__file__+" "+"getting cctv news " + date_S)
 
         try:
             df_cctv_news = pro.cctv_news(date=date_S)
             df_result = df_result.append(df_cctv_news)
-            logging.info("len " + str(df_result.__len__()))
+            logging.info(__file__+" "+"len " + str(df_result.__len__()))
             #            df_result.to_csv(output_csv, encoding='UTF-8', index=False)
 
             time.sleep(1)
         except:
-            logging.info("exception in fetching cctv news")
+            logging.info(__file__+" "+"exception in fetching cctv news")
         finally:
             if sys.exc_info() == (None, None, None):
                 pass  # no exception
@@ -3696,13 +3696,13 @@ def _fetch_cctv_news():
                 logging.info(str(traceback.print_exception(*sys.exc_info())).encode('utf8'))
                 #logging.info(unicode(traceback.print_exception(*sys.exc_info())).encode('utf8'))
                 logging.info(sys.exc_value.message)  # print the human readable unincode
-                logging.info("exception in fetching cctv news")
+                logging.info(__file__+" "+"exception in fetching cctv news")
                 sys.exc_clear()
 
         date = date + datetime.timedelta(1)
 
     df_result.to_csv(output_csv, encoding='UTF-8', index=False)
-    logging.info("cctv news saved to " + output_csv + " . len " + str(df_result.__len__()))
+    logging.info(__file__+" "+"cctv news saved to " + output_csv + " . len " + str(df_result.__len__()))
     return (df_result)
 
 
@@ -3727,11 +3727,11 @@ def _fetch_stk_holdertrade(fast_fetch=False):
         os.mkdir(dir)
 
     if (finlib.Finlib().is_cached(today_holder_trade_csv, 1)) and (not force_run_global):
-        logging.info("file has been updated in 1 day, not fetch again " + today_holder_trade_csv)
+        logging.info(__file__+" "+"file has been updated in 1 day, not fetch again " + today_holder_trade_csv)
     else:
         df_today = pro.stk_holdertrade(ann_date=today_S, fields=fields)
         df_today.to_csv(today_holder_trade_csv, encoding='UTF-8', index=False)
-        logging.info("Saved today stock holder trade to " + today_holder_trade_csv + " . len " + str(df_today.__len__()))
+        logging.info(__file__+" "+"Saved today stock holder trade to " + today_holder_trade_csv + " . len " + str(df_today.__len__()))
 
         if debug_global:
             df_today = df_today[df_today['ts_code'] == "600519.SH"]
@@ -3744,7 +3744,7 @@ def _fetch_stk_holdertrade(fast_fetch=False):
             df_new = df_today[df_today['ts_code'] == ts_code]
 
             if os.path.exists(output_csv):
-                logging.info("loading " + output_csv)
+                logging.info(__file__+" "+"loading " + output_csv)
                 df_base = pd.read_csv(output_csv, converters={'ann_date': str, 'begin_date': str, 'close_date': str})
                 df_base = df_base.append(df_new)
             else:
@@ -3763,7 +3763,7 @@ def _fetch_stk_holdertrade(fast_fetch=False):
             output_csv = dir + "/" + ts_code + ".csv"
 
             if finlib.Finlib().is_cached(output_csv, 5):
-                logging.info("not fetch holder trade as the file updated in 5 day. " + output_csv)
+                logging.info(__file__+" "+"not fetch holder trade as the file updated in 5 day. " + output_csv)
                 continue
 
             try:
@@ -3772,7 +3772,7 @@ def _fetch_stk_holdertrade(fast_fetch=False):
                 logging.info(str(cnt) + " of " + cnt_all + " , saved stock holder trade to " + output_csv + " . len " + str(df.__len__()))
                 time.sleep(0.8)
             except:
-                logging.info("exception, sleeping 30sec then renew the ts_pro connection")
+                logging.info(__file__+" "+"exception, sleeping 30sec then renew the ts_pro connection")
 
             finally:
 
@@ -3782,7 +3782,7 @@ def _fetch_stk_holdertrade(fast_fetch=False):
                     # logging.info(unicode(traceback.print_exception(*sys.exc_info())).encode('utf8')) #python2
                     logging.info(str(traceback.print_exception(*sys.exc_info())).encode('utf8'))  #python3
                     logging.info(sys.exc_value.message)  # print the human readable unincode
-                    logging.info("query: stk_holdertrade, ts_code: " + ts_code)
+                    logging.info(__file__+" "+"query: stk_holdertrade, ts_code: " + ts_code)
                     sys.exc_clear()
 
     return ()
@@ -3808,14 +3808,14 @@ def _fetch_pro_repurchase():
     output_csv = dir + "/pro_repurchase.csv"
 
     if finlib.Finlib().is_cached(output_csv, 1):
-        logging.info("not fetch repurchase as the file updated in 1 day")
+        logging.info(__file__+" "+"not fetch repurchase as the file updated in 1 day")
         return ()
 
     #df = pro.repurchase(ann_date='', start_date='20190101', end_date='20180510')
     df = pro.repurchase()
     time.sleep(0.5)  #抱歉，您每分钟最多访问该接口200次，权限的具体详情访问：https://tushare.pro/document/1?doc_id=108。
     df.to_csv(output_csv, encoding='UTF-8', index=False)
-    logging.info("pro repurchase saved to " + output_csv + " . len " + str(df.__len__()))
+    logging.info(__file__+" "+"pro repurchase saved to " + output_csv + " . len " + str(df.__len__()))
     return (df)
 
 
@@ -3880,8 +3880,8 @@ def main():
     #
     #########################
 
-    logging.info("\n")
-    logging.info("SCRIPT STARTING " + " ".join(sys.argv))
+    logging.info(__file__+" "+"\n")
+    logging.info(__file__+" "+"SCRIPT STARTING " + " ".join(sys.argv))
 
     parser = OptionParser()
 
@@ -3961,26 +3961,26 @@ def main():
 
     #verify_fund_increase_f = options.verify_fund_increase_f
 
-    logging.info("fetch_all_f: " + str(fetch_all_f))
-    logging.info("extract_latest_f: " + str(extract_latest_f))
-    logging.info("merge_quarterly_f: " + str(merge_quarterly_f))
-    logging.info("analyze_f: " + str(analyze_f))
-    logging.info("concept_top_f: " + str(concept_top_f))
-    logging.info("overwrite_f: " + str(overwrite_f))
-    logging.info("fully_a_f: " + str(fully_a_f))
-    logging.info("daily_a_f: " + str(daily_a_f))
-    logging.info("sum_mainbz_f: " + str(sum_mainbz_f))
-    logging.info("percent_mainbz_f: " + str(percent_mainbz_f))
-    logging.info("fast_fetch_f: " + str(fast_fetch_f))
-    logging.info("white_horse_hencow_fcf_f: " + str(white_horse_hencow_fcf_f))
-    logging.info("merge_individual_f: " + str(merge_individual_f))
-    logging.info("merge_local_f: " + str(merge_local_f))
-    logging.info("merge_local_basic_f: " + str(merge_local_basic_f))
-    logging.info("big_memory_f: " + str(big_memory_f))
-    logging.info("debug_f: " + str(debug_f))
-    logging.info("force_run_f: " + str(force_run_f))
-    logging.info("disclosure_date_notify_day_f: " + str(disclosure_date_notify_day_f))
-    #logging.info("disclosure_date_notify_day_f: " + str(disclosure_date_notify_day_f))
+    logging.info(__file__+" "+"fetch_all_f: " + str(fetch_all_f))
+    logging.info(__file__+" "+"extract_latest_f: " + str(extract_latest_f))
+    logging.info(__file__+" "+"merge_quarterly_f: " + str(merge_quarterly_f))
+    logging.info(__file__+" "+"analyze_f: " + str(analyze_f))
+    logging.info(__file__+" "+"concept_top_f: " + str(concept_top_f))
+    logging.info(__file__+" "+"overwrite_f: " + str(overwrite_f))
+    logging.info(__file__+" "+"fully_a_f: " + str(fully_a_f))
+    logging.info(__file__+" "+"daily_a_f: " + str(daily_a_f))
+    logging.info(__file__+" "+"sum_mainbz_f: " + str(sum_mainbz_f))
+    logging.info(__file__+" "+"percent_mainbz_f: " + str(percent_mainbz_f))
+    logging.info(__file__+" "+"fast_fetch_f: " + str(fast_fetch_f))
+    logging.info(__file__+" "+"white_horse_hencow_fcf_f: " + str(white_horse_hencow_fcf_f))
+    logging.info(__file__+" "+"merge_individual_f: " + str(merge_individual_f))
+    logging.info(__file__+" "+"merge_local_f: " + str(merge_local_f))
+    logging.info(__file__+" "+"merge_local_basic_f: " + str(merge_local_basic_f))
+    logging.info(__file__+" "+"big_memory_f: " + str(big_memory_f))
+    logging.info(__file__+" "+"debug_f: " + str(debug_f))
+    logging.info(__file__+" "+"force_run_f: " + str(force_run_f))
+    logging.info(__file__+" "+"disclosure_date_notify_day_f: " + str(disclosure_date_notify_day_f))
+    #logging.info(__file__+" "+"disclosure_date_notify_day_f: " + str(disclosure_date_notify_day_f))
 
     set_global(debug=debug_f, big_memory=big_memory_f, force_run=force_run_f)
 
@@ -4032,7 +4032,7 @@ def main():
 
         # not fetching/calculating fundermental data at month 5,6,9, 11, 12
         if not finlib.Finlib().get_report_publish_status()['process_fund_or_not']:
-            logging.info("not processing fundermental data at this month. ")
+            logging.info(__file__+" "+"not processing fundermental data at this month. ")
             exit()
         else:
             # generate source/individual_per_stock/*.csv from source/*.csv
@@ -4044,7 +4044,7 @@ def main():
         #merge_local()
         # not fetching/calculating fundermental data at month 5,6,9, 11, 12
         if not finlib.Finlib().get_report_publish_status()['process_fund_or_not']:
-            logging.info("not processing fundermental data at this month. ")
+            logging.info(__file__+" "+"not processing fundermental data at this month. ")
             exit()
         else:
             merge_local_bash()
@@ -4058,7 +4058,7 @@ def main():
         if (debug_f) or (big_memory_f):
             merge_quarterly(fast=fast_fetch_f)
         else:
-            logging.info("merge quarterly requires lot memory, use with either --big_memory, or --debug")
+            logging.info(__file__+" "+"merge quarterly requires lot memory, use with either --big_memory, or --debug")
     elif sum_mainbz_f:
         sum_fina_mainbz()
     elif percent_mainbz_f:
@@ -4067,7 +4067,7 @@ def main():
 
         # not fetching/calculating fundermental data at month 5,6,9, 11, 12
         if not finlib.Finlib().get_report_publish_status()['process_fund_or_not']:
-            logging.info("not processing fundermental data at this month. ")
+            logging.info(__file__+" "+"not processing fundermental data at this month. ")
             exit()
         else:
             analyze(fully_a=fully_a_f, daily_a=daily_a_f, fast=fast_fetch_f)
