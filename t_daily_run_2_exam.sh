@@ -161,7 +161,8 @@ if [ $full_or_daily == "FULL" ]; then
 fi
 
 if [ $full_or_daily == "DAILY" ]; then
-    python t_daily_fundamentals_2.py --merge_individual --fast_fetch #@todo, bug: only merge the latest day, but not the days which has not been in the target.
+    echo "skipped"
+    #python t_daily_fundamentals_2.py --merge_individual --fast_fetch #@todo, bug: only merge the latest day, but not the days which has not been in the target.
 fi
 
 
@@ -176,7 +177,8 @@ if [ $full_or_daily == "FULL" ]; then
 fi
 
 if [ $full_or_daily == "DAILY" ]; then
-    python t_daily_fundamentals_2.py  --sum_mainbz
+    echo "skipped"
+    #python t_daily_fundamentals_2.py  --sum_mainbz
 fi
 
 
@@ -314,7 +316,7 @@ fi
 #        "/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/latest/fina_indicator.csv"
 #output: "/home/ryan/DATA/result/pe_pb_rank.csv"
 #        "/home/ryan/DATA/result/pe_pb_rank_selected.csv"
-##########################
+##########################7
 if [ $full_or_daily == "FULL" ]; then
     rm -f /home/ryan/DATA/result/pe_pb_rank.csv
     rm -f /home/ryan/DATA/result/pe_pb_rank_selected.csv
