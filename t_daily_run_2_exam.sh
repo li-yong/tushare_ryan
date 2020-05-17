@@ -105,7 +105,7 @@ fi
 #input:  /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/hsgt_top10.csv
 #output : /home/ryan/DATA/result/hsgt_top_10_selected.csv
 #########################
-python t_daily_hsgt.py --analyze
+python t_daily_hsgt.py --analyze_hsgt
 
 
 #########################
