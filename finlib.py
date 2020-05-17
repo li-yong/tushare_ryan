@@ -32,7 +32,7 @@ import glob
 import logging
 import yaml
 logging.basicConfig(filename='/home/ryan/del.log', filemode='a', format='%(asctime)s %(message)s', datefmt='%m_%d %H:%M:%S', level=logging.DEBUG)
-
+logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 import warnings
 
 # warnings.filterwarnings("error")
