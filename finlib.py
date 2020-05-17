@@ -1356,7 +1356,7 @@ class Finlib:
                 # 52week price
                 if (df_last_row['close'].values[0] - min_close_df['close']) < 0.02 * min_close_df['close']:  # 2% near the lowest price
                     date_min_c = min_close_df['date']
-                    time_delta = datetime.strptime(df_last_row['date'].values[0], '%Y-%m-%d') - datetime.strptime(date_min_c, '%Y-%m-%d')
+                    time_delta = datetime.strptime(df_last_row['date'].values[0], '%Y%m%d') - datetime.strptime(date_min_c, '%Y%m%d')
                     time_delta = time_delta.days
 
                     if time_delta >= 0:
