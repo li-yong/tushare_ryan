@@ -2731,7 +2731,7 @@ def _analyze_step_3(end_date):
         logging.info(__file__ + ": " + "analysze step 3 result saved to " + csv_output)
 
         sl_3 = "/home/ryan/DATA/result/latest_fundamental_year_pro.csv"
-        if os.path.exists(sl_3):
+        if os.path.lexists(sl_3):
             os.unlink(sl_3)
         os.symlink(csv_output, sl_3)
         logging.info(__file__ + " " + "make symbol link " + sl_3 + " --> " + csv_output)

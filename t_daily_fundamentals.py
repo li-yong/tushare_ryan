@@ -933,7 +933,7 @@ def quarterly_fundamental_any(df_basic, year_quarter, debug=False):
 
     df_q_r.to_csv(dump_csv_q, encoding='UTF-8', index=True)
 
-    if os.path.exists(dump_csv_q_sym_link):
+    if os.path.lexists(dump_csv_q_sym_link):
         os.unlink(dump_csv_q_sym_link)
 
     os.symlink(dump_csv_q, dump_csv_q_sym_link)
@@ -1552,7 +1552,7 @@ def today_fundamental_any(todayS=None):
     today_all.to_csv(dump_csv_d, encoding='UTF-8', index=False)
     logging.info(__file__ + ": " + "Fundamental Analysising based on Today data, result saved to " + dump_csv_d + " , len " + str(today_all.__len__()))
 
-    if os.path.exists(dump_csv_d_sym_link):
+    if os.path.lexists(dump_csv_d_sym_link):
         os.unlink(dump_csv_d_sym_link)
 
     os.symlink(dump_csv_d, dump_csv_d_sym_link)
@@ -1592,13 +1592,13 @@ def zzz_peg_last_year(year, quarter, debug=False):
     logging.info(__file__ + ": " + year_quarter + " fundmental peg Selectd result saved to " + output_csv_2 + " , len " + str(df_result_2.__len__()))
 
     sl_1 = "/home/ryan/DATA/result/latest_fundamental_peg.csv"
-    if os.path.exists(sl_1):
+    if os.path.lexists(sl_1):
         os.unlink(sl_1)
     os.symlink(output_csv, sl_1)
     logging.info(__file__+" "+"make symbol link " + sl_1 + " --> " + output_csv)
 
     sl_2 = "/home/ryan/DATA/result/latest_fundamental_peg_selected.csv"
-    if os.path.exists(sl_2):
+    if os.path.lexists(sl_2):
         os.unlink(sl_2)
     os.symlink(output_csv_2, sl_2)
     logging.info(__file__+" "+"make symbol link " + sl_2 + " --> " + output_csv_2)
@@ -1643,13 +1643,13 @@ def peg_last_year(year, quarter, debug=False):
     logging.info(__file__ + ": " + year_quarter + " fundmental peg Selectd result saved to " + output_csv_2 + " , len " + str(df_result_2.__len__()))
 
     sl_1 = "/home/ryan/DATA/result/latest_fundamental_peg.csv"
-    if os.path.exists(sl_1):
+    if os.path.lexists(sl_1):
         os.unlink(sl_1)
     os.symlink(output_csv, sl_1)
     logging.info(__file__+" "+"make symbol link " + sl_1 + " --> " + output_csv)
 
     sl_2 = "/home/ryan/DATA/result/latest_fundamental_peg_selected.csv"
-    if os.path.exists(sl_2):
+    if os.path.lexists(sl_2):
         os.unlink(sl_2)
     os.symlink(output_csv_2, sl_2)
     logging.info(__file__+" "+"make symbol link " + sl_2 + " --> " + output_csv_2)
