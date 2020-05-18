@@ -1,18 +1,31 @@
 #!/usr/bin/env bash
 #this script runs on haha_data_source
 
+full_or_daily=$1
+
+if [ $full_or_daily == "FULL" ]; then
+    echo "$0: FULL RUN"
+elif [ $full_or_daily == "DAILY" ]; then
+    echo "$0: DAILY RUN"
+else
+    echo "Have to specify FULL or DAILY. Quiting";
+    exit
+fi
+
+
+sleep 2
+
 
 
 cd /home/ryan/tushare_ryan
-
 git pull
 
 #### update the HK stock ####
 echo "updating HK/US selected stock daily from tushare "
 #python ~/tushare_ryan/t_fetch_us_hk_bar.py --selected -x HK  --force_fetch;
-python ~/tushare_ryan/t_fetch_us_hk_bar.py --selected -x HK;
+python /home/ryan/tushare_ryan/t_fetch_us_hk_bar.py --selected -x HK;
 #python ~/tushare_ryan/t_fetch_us_hk_bar.py --selected -x US  --force_fetch;
-python ~/tushare_ryan/t_fetch_us_hk_bar.py --selected -x US;
+python /home/ryan/tushare_ryan/t_fetch_us_hk_bar.py --selected -x US;
 
 #更新当天股票数据
 ######################################
@@ -38,9 +51,13 @@ python /home/ryan/tushare_ryan/t_daily_update_csv_from_tushare_.py;
 #
 ######################################
 python t_daily_hsgt.py --fetch_hsgt_top_10
-python t_daily_hsgt.py --fetch_moneyflow_all #time consuming
-python t_daily_hsgt.py --fetch_moneyflow_daily  #time consuming (a little)
 
+if [ $full_or_daily == "FULL" ]; then
+  rm -f /home/ryan/DATA/DAY_Global/AG_MoneyFlow/*.csv
+  python t_daily_hsgt.py --fetch_moneyflow_all #time consuming
+fi
+
+python t_daily_hsgt.py --fetch_moneyflow_daily  #time consuming (a little)
 
 
 ######################################
@@ -60,22 +77,23 @@ python t_daily_hsgt.py --fetch_moneyflow_daily  #time consuming (a little)
 #                      ZZ500.csv #中证500成份股
 #
 ######################################
-cd /home/ryan/tushare_ryan
-echo "updating quarter fund data of 2018 Q1 to Q4, update /home/ryan/DATA/pickle/*.pickle"
-python t_daily_fundamentals.py  --fetch_data_all;
-
+if [ $full_or_daily == "FULL" ]; then
+  echo "updating quarter fund data, update /home/ryan/DATA/pickle/*.pickle"
+  python t_daily_fundamentals.py  --fetch_data_all;
+fi
 
 ######################################
 #
-#
+
 ######################################
-echo "updating market, security, instrument, A_stock"
-python t_daily_fundamentals.py  --update_get_market;  #/home/ryan/DATA/pickle/market.csv
-python t_daily_fundamentals.py  --update_get_security;   #saved to /home/ryan/DATA/pickle/security.csv #stop work. 20200513
+if [ $full_or_daily == "FULL" ]; then
+  echo "updating market, security, instrument, A_stock"
+  python t_daily_fundamentals.py  --update_get_market;  #/home/ryan/DATA/pickle/market.csv
+  python t_daily_fundamentals.py  --update_get_security;   #saved to /home/ryan/DATA/pickle/security.csv #stop work. 20200513
 
-python t_daily_fundamentals.py  --update_get_instrument;  # /home/ryan/DATA/pickle/instrument.csv
-python t_daily_fundamentals.py  --update_get_A_stock_instrment;  #/home/ryan/DATA/pickle/instrument_A.csv #stop work. 20200513
-
+  python t_daily_fundamentals.py  --update_get_instrument;  # /home/ryan/DATA/pickle/instrument.csv
+  python t_daily_fundamentals.py  --update_get_A_stock_instrment;  #/home/ryan/DATA/pickle/instrument_A.csv #stop work. 20200513
+fi
 
 # update forex, get forex yesterday data from td.
 #bash /home/ryan/oandapybot-ubuntu/t_forex_daily_prepare.sh -e CP_YESTERDAY_FOREX_DATA_FROM_HK_VSP_TO_HAHA_BRAIN
@@ -105,8 +123,9 @@ echo "AG stock daily updated!"
 ## xsg_csv = "/home/ryan/DATA/pickle/Stock_Fundamental/fenghong/_xsg_all.csv"
 ## new_stock_csv = "/home/ryan/DATA/pickle/Stock_Fundamental/fenghong/_new_stock.csv"
 ######################################
-python t_fenghong.py  --fetch_reference
-
+if [ $full_or_daily == "FULL" ]; then
+  python t_fenghong.py  --fetch_reference
+fi
 
 
 
@@ -116,7 +135,6 @@ python t_fenghong.py  --fetch_reference
 # /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/invidual/*.csv
 #
 ######################################
-echo "daily update tushare pro fundamentals";
 #----
 # a full fetch. fetch everything.
 #----
@@ -133,8 +151,10 @@ echo "daily update tushare pro fundamentals";
 # 1.good stock.  <<< commented now, as #fast_fetch doesn't have content.
 # 2.this_q and last_q for ts.express
 #----
-python t_daily_fundamentals_2.py --fetch_data_all --fast_fetch  #most time, update most recent q.  #time consuming.
-
+if [ $full_or_daily == "FULL" ]; then
+  echo "daily update tushare pro fundamentals";
+  python t_daily_fundamentals_2.py --fetch_data_all --fast_fetch  #most time, update most recent q.  #time consuming.
+fi
 
 
 
@@ -147,7 +167,9 @@ python t_daily_fundamentals_2.py --fetch_data_all --fast_fetch  #most time, upda
 #
 ######################################
 # not run because time consuming. 20200518
-# python t_top_10_holders.py --fetch  #time consuming
+if [ $full_or_daily == "FULL" ]; then
+   python t_top_10_holders.py --fetch  #time consuming
+fi
 
 
 
@@ -161,7 +183,9 @@ python t_daily_fundamentals_2.py --fetch_data_all --fast_fetch  #most time, upda
 ## BestTV-W works
 ######################################
 # not run because time consuming. 20200518
-# python t_fenghong.py  --fetch_no_adj_data  --force_fetch_data #time consuming
+if [ $full_or_daily == "FULL" ]; then
+  python t_fenghong.py  --fetch_no_adj_data  --force_fetch_data #time consuming
+fi
 
 
 
@@ -188,12 +212,14 @@ python t_daily_fundamentals_2.py --fetch_data_all --fast_fetch  #most time, upda
 #ssh root@td reboot &
 
 
+if [ $full_or_daily == "FULL" ]; then
+  echo "updating HK/US all stocks daily from tushare "
+  python ~/tushare_ryan/t_fetch_us_hk_bar.py -x HK; #time consuming
 
-echo "updating HK/US all stocks daily from tushare "
-python ~/tushare_ryan/t_fetch_us_hk_bar.py -x HK; #time consuming
+  #14000 companies, and tushare no longer have updates since 2020/04/27
+  #python ~/tushare_ryan/t_fetch_us_hk_bar.py -x US;
+  echo "HK/US daily update completed."
+fi
 
-#14000 companies, and tushare no longer have updates since 2020/04/27
-#python ~/tushare_ryan/t_fetch_us_hk_bar.py -x US;
-echo "HK/US daily update completed."
 
 echo "done, script completed"

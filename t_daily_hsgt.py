@@ -162,6 +162,7 @@ def fetch_moneyflow(fetch_whole=False, fetch_today=True):
 
         elif fetch_whole:
             if finlib.Finlib().is_cached(csv_f, 3):
+                logging.info(__file__+" "+"file has been updated in 3 days. "+csv_f)
                 continue
             df = pro.moneyflow(ts_code=ts_code)
             time.sleep(0.5)
@@ -364,11 +365,11 @@ if __name__ == '__main__':
 
     parser.add_option("--force_run", action="store_true", dest="force_run_f", default=False, help="force fetch, force generate file, even when file exist or just updated")
 
-    parser.add_option("--fetch_moneyflow_all", action="store_true", dest="fetch_moneyflow_all_f", default=False, help="fetch moneyflow full history for stocks ")
+    parser.add_option("--fetch_moneyflow_all", action="store_true", dest="fetch_moneyflow_all_f", default=False, help="fetch moneyflow full history for stocks, by pro.moneyflow(ts_code) ")
 
     parser.add_option("--fetch_hsgt_top_10", action="store_true", dest="fetch_hsgt_top_10_f", default=False, help="fetch hsgt ")
 
-    parser.add_option("--fetch_moneyflow_daily", action="store_true", dest="fetch_moneyflow_daily_f", default=False, help="fetch today moneyflow and update to all stocks )")
+    parser.add_option("--fetch_moneyflow_daily", action="store_true", dest="fetch_moneyflow_daily_f", default=False, help="fetch today moneyflow and update to all stocks, by pro.moneyflow(trade_date) )")
 
     parser.add_option("--analyze_hsgt", action="store_true", dest="analyze_hsgt_f", default=False, help="analyze hsgt ")
 
