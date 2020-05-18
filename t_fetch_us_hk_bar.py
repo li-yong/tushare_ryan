@@ -68,7 +68,7 @@ def get_hk_us(df, cons, start_date, appendix, todayS, force_fetch):
         name = df.iloc[i]['name']
         #cons = ts.get_apis()  #<<<<< renew connection every time
 
-        sys.stdout.write(str(i + 1) + "/" + str(df.__len__()) + " get " + str(code) + " " + str(name) + ". " + appendix + ". ")  #print without newline
+        logging.info(__file__+" "+str(i + 1) + "/" + str(df.__len__()) + " get " + str(code) + " " + str(name) + ". " + appendix + ". ")  #print without newline
         #a_csv = '/home/ryan/DATA/DAY_Global/' + str(code) + '.' + appendix  # WUBA.CH
         #a_csv = '/home/ryan/DATA/DAY_Global/' + appendix + '/' + str(code) + '.' + appendix  # DATA/DAY_Global/CH/WUBA.CH
         a_csv = '/home/ryan/DATA/DAY_Global/' + appendix + '/' + str(code) + '.csv'  # DATA/DAY_Global/CH/WUBA.CH
