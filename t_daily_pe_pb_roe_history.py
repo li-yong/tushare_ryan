@@ -73,7 +73,7 @@ def get_indicator_history():
             print('empty input file ' + file_code)
             continue
 
-        sys.stdout.write(code_m)
+        logging.info(__file__+" "+code_m)
 
         df_sub = pd.read_csv(file_code, converters={'code': str})
 

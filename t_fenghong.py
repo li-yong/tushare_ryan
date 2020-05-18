@@ -78,7 +78,7 @@ def get_reference_data():
     for year in range(2017, year_q['year'] + 1):  #should not (2010,2019) as it will overwrite the 1980 to 2010 data.
         #for year in range(2018,2019): #debug
         ######################## ts.profit_data  ###################
-        sys.stdout.write('profit_data year ' + str(year) + ". ")
+        logging.info(__file__+" "+'profit_data year ' + str(year) + ". ")
         sys.stdout.flush()
 
         dump_reference_profit_data = "/home/ryan/DATA/pickle/Stock_Fundamental/fenghong/profit_data/pd_" + str(year) + ".csv"

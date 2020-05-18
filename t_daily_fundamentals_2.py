@@ -486,19 +486,19 @@ def remove_dup_record(df_input, csv_name):
         if "update_flag" in df_tmp.columns:
             df_tmp_updated = df_tmp[df_tmp['update_flag'] == '1']  #<<< it is string 1.
             if df_tmp_updated.__len__() > 1:
-                sys.stdout.write(csv_name + " has multi update_flag records, len " + str(df_tmp_updated.__len__()) + ".")
+                logging.info(__file__+" "+csv_name + " has multi update_flag records, len " + str(df_tmp_updated.__len__()) + ".")
                 sys.stdout.flush()
                 logging.info(__file__ + " " + "\t" + df_tmp_updated['ts_code'] + " " + df_tmp_updated['end_date'])
                 df_append = df_tmp_updated.iloc[0]  #choose the 1st updated records if have multiple updated records
                 df = df.append(df_append)
                 continue
             elif df_tmp_updated.__len__() == 1:
-                sys.stdout.write(csv_name + " has one update_flag record\n")
+                logging.info(__file__+" "+csv_name + " has one update_flag record\n")
                 df_append = df_tmp_updated.iloc[0]
                 df = df.append(df_append)
                 continue
             else:
-                sys.stdout.write(csv_name + " has multi records, len " + str(len) + " and zero update_flag records.")
+                logging.info(__file__+" "+csv_name + " has multi records, len " + str(len) + " and zero update_flag records.")
                 sys.stdout.flush()
                 df_append = df_tmp.iloc[0]
                 logging.info(__file__ + " " + "\t" + df_append['ts_code'] + " " + df_append['end_date'])
@@ -506,7 +506,7 @@ def remove_dup_record(df_input, csv_name):
                 continue
         else:
             #now df_tmp have multiple dup records, and no update_flag in columns.
-            sys.stdout.write(csv_name + " has multi records, len " + str(len) + " and no update_flag in column.")
+            logging.info(__file__+" "+csv_name + " has multi records, len " + str(len) + " and no update_flag in column.")
             sys.stdout.flush()
             df_append = df_tmp.iloc[0]
             logging.info(__file__ + " " + "\t" + df_append['ts_code'] + " " + df_append['end_date'])
@@ -850,7 +850,7 @@ def _ts_pro_fetch(pro_con, stock_list, fast_fetch, query, query_fields, fetch_pe
 
             if force_run_global or fast_fetch or (not finlib.Finlib().is_cached(ind_csv, day=1)):
                 #3352 of 3621, Getting Income 000626.SZ. len 89041
-                sys.stdout.write(str(j)+" of "+total+", Getting "+query+" "+ts_code+". ")
+                logging.info(__file__+" "+str(j)+" of "+total+", Getting "+query+" "+ts_code+". ")
                 sys.stdout.flush()
 
                 df_sub = pd.DataFrame()
@@ -1991,7 +1991,7 @@ def _analyze_step_1(end_date):
         ts_code = df.iloc[i]['ts_code']
         end_date = df.iloc[i]['end_date']
 
-        sys.stdout.write(ts_code + " , " + end_date + " ===\n")
+        logging.info(__file__+" "+ts_code + " , " + end_date + " ===\n")
         sys.stdout.flush()
 
         if end_date == '20171231':
@@ -2760,7 +2760,6 @@ def _analyze_step_4():
     for f in x:
         csv_input = fund_base_report + "/step3/" + f  # f: rpt_200712313.csv
 
-        #sys.stdout.write(csv_input)
         periord = re.match("rpt_(\d{6}).*.csv", f).group(1)  #periord: 200712
         periord_list.append(periord)
 
@@ -2807,9 +2806,7 @@ def _analyze_step_4():
             if (str(d) == '0') or (str(d) == '0.0') or (pd.isnull(d)):
                 continue
 
-            #sys.stdout.write(d + ". ")
             sd = re.match('(\d{6})\d\d', d).group(1)
-            #sys.stdout.write(sd+". ")
 
             score_of_date = stock_df[stock_df['end_date'] == d].iloc[0]['sos']
 

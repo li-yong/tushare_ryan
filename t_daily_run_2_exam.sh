@@ -503,7 +503,8 @@ fi
 #  /home/ryan/DATA/result/top_10_holder_summary_latest.csv"
 #  /home/ryan/DATA/result/top_10_holder_detail_latest.csv"
 ###############################
-python t_top_10_holders.py --analyze
+# not run because time consuming. 20200518
+# python t_top_10_holders.py --analyze
 
 
 

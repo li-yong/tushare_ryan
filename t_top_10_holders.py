@@ -64,7 +64,7 @@ def get_top_10_holder_data():
         code = str(code)
         name = df_code_name_map[df_code_name_map['code'] == code]['name'].values[0]
         i += 1
-        logging.info(code + " " + name + " " + str(i + 1) + '/' + str(leng))
+        logging.info(__file__+" "+code + " " + name + " " + str(i + 1) + '/' + str(leng))
 
         df_a_sum = df_a_detail = pd.DataFrame()
 
@@ -91,7 +91,7 @@ def get_top_10_holder_data():
 
                 df_a_sum.to_csv(top_10_summary_csv, encoding='UTF-8', index=False)
                 df_a_detail.to_csv(top_10_detail_csv, encoding='UTF-8', index=False)
-                logging.info('top 10 holder summary and detail csv files were saved.')
+                logging.info(__file__+" "+'top 10 holder summary and detail csv files were saved.')
             except:
                 logging.info(__file__+" "+"\tcaught exception, top10_holders, code " + code)
             finally:
@@ -120,7 +120,7 @@ def load_top_10_holder_data():
         code = str(code)
         name = df_code_name_map[df_code_name_map['code'] == code]['name'].values[0]
         i += 1
-        logging.info(code + " " + name + " " + str(i + 1) + '/' + str(leng))
+        logging.info(__file__+" "+code + " " + name + " " + str(i + 1) + '/' + str(leng))
 
         df_a_sum = df_a_detail = pd.DataFrame()
 
@@ -205,7 +205,7 @@ def analyze_detail(debug=False):
             code_name = df_tmp.iloc[j]['name_x']
             h_pro = df_tmp.iloc[j]['h_pro']
             hold_stocks += code + "_" + code_name + "_" + str(h_pro) + " "
-            logging.info('\t ' + code + " " + code_name)
+            logging.info(__file__+" "+'\t ' + code + " " + code_name)
 
             hold = df_tmp.iloc[j]['hold']  #单位万股
 
@@ -275,7 +275,7 @@ def main():
         #df_result = analyze_detail(debug=True)
         df_result = analyze_detail(debug=False)
 
-    logging.info('script completed')
+    logging.info(__file__+" "+'script completed')
     os._exit(0)
 
 

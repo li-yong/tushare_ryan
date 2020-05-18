@@ -146,7 +146,8 @@ python t_daily_fundamentals_2.py --fetch_data_all --fast_fetch  #most time, upda
 # /home/ryan/DATA/pickle/Stock_Fundamental/top_10_holder/detail_600519.csv
 #
 ######################################
-python t_top_10_holders.py --fetch  #time consuming
+# not run because time consuming. 20200518
+# python t_top_10_holders.py --fetch  #time consuming
 
 
 
@@ -159,7 +160,8 @@ python t_top_10_holders.py --fetch  #time consuming
 ## output: /home/ryan/DATA/DAY_No_Adj/*.csv
 ## BestTV-W works
 ######################################
-python t_fenghong.py  --fetch_no_adj_data  --force_fetch_data #time consuming
+# not run because time consuming. 20200518
+# python t_fenghong.py  --fetch_no_adj_data  --force_fetch_data #time consuming
 
 
 

@@ -69,7 +69,7 @@ def update_holc(todayS_l, base_dir, pickle_only, add_miss):
 
     for i in range(0, a.__len__()):
         code = a.iloc[i]
-        sys.stdout.write(code + " ")
+        logging.info(__file__+" "+code + " ")
 
         o = today_all.iloc[i]['open']
         h = today_all.iloc[i]['high']

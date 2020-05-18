@@ -97,7 +97,7 @@ def w_shape(csv_f, period):
         logging.info('file not exist. ' + csv_f)
         return (rtn)
 
-    sys.stdout.write(csv_f + ": ")
+    logging.info(__file__+" "+csv_f + ": ")
 
     df_rtn = pd.DataFrame()
 
