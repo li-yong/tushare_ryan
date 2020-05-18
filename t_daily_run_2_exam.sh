@@ -128,7 +128,7 @@ fi
 
 #/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/basic.csv
 if [ $full_or_daily == "DAILY" ]; then
-    python t_daily_fundamentals_2.py --merge_local_basic --fast_fetch ## only merge last trading days to. 50 sec
+  python t_daily_fundamentals_2.py --merge_local_basic --fast_fetch ## only merge last trading days to. 50 sec
 fi
 
 
@@ -145,7 +145,8 @@ fi
 
 #03_07 23:09:00 file updated in 3 days, not process. /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/income.csv
 if [ $full_or_daily == "DAILY" ]; then
-    python t_daily_fundamentals_2.py --merge_local --fast_fetch
+    echo "SKIP"
+    #python t_daily_fundamentals_2.py --merge_local --fast_fetch
 fi
 
 
