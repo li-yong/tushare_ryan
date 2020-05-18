@@ -383,7 +383,7 @@ def main():
         df_rtn = today_selection(outputF_today)
         df_rtn.to_csv(outputF_today_s, encoding='UTF-8', index=False)
         finlib.Finlib().pprint(df_rtn)
-        sys.stdout.write("output saved to " + outputF_today_s + "\n")
+        logging.info(__file__+" "+"output saved to " + outputF_today_s + "\n")
         exit(0)
 
     if calc_base or calc_today:
@@ -436,7 +436,7 @@ def main():
 
                 df_rtn = df_rtn.append(df_tmp).reset_index().drop('index', axis=1)
                 # df_rtn.to_csv(outputF, encoding='UTF-8', index=False)
-                # sys.stdout.write("output saved to "+outputF+"\n")
+                # logging.info(__file__+" "+"output saved to "+outputF+"\n")
 
             if calc_today:
                 df_tmp = check_last_day(df_hl[df_hl['code'] == code], df)
@@ -445,11 +445,11 @@ def main():
                     df_rtn = df_rtn.append(df_tmp).reset_index().drop('index', axis=1)
 
                 # df_rtn.to_csv(outputF_today, encoding='UTF-8', index=False)
-                # sys.stdout.write("output saved to "+outputF_today+"\n")
+                # logging.info(__file__+" "+"output saved to "+outputF_today+"\n")
 
         if calc_base:
             df_rtn.to_csv(outputF, encoding='UTF-8', index=False)
-            sys.stdout.write("output saved to " + outputF + "\n")
+            logging.info(__file__+" "+"output saved to " + outputF + "\n")
 
         if calc_today:
             # L then H,  down_cnt more then less, long_expect_ear more than less.
@@ -461,7 +461,7 @@ def main():
 
             df_rtn.to_csv(outputF_today, encoding='UTF-8', index=False)
             finlib.Finlib().pprint(df_rtn)
-            sys.stdout.write("output saved to " + outputF_today + "\n")
+            logging.info(__file__+" "+"output saved to " + outputF_today + "\n")
 
     # print df.head(1)
 

@@ -89,7 +89,7 @@ def get_reference_data():
             if (year > 2008) and ((not os.path.isfile(dump_reference_profit_data)) or (year == year_q['last_quarter']['year'] and quarter == year_q['last_quarter']['quarter'])):
                 #if (year > 2008) and ((not os.path.isfile(dump_reference_profit_data))):
                 #logging.info(__file__+" "+"\tGetting profit_data, ts.profit_data\t")  # 分配预案
-                sys.stdout.write("getting profit_data, ts.profit_data. year " + str(year))
+                logging.info(__file__+" "+"getting profit_data, ts.profit_data. year " + str(year))
                 sys.stdout.flush()
                 df_tmp = ts.profit_data(year=year, top=30000, retry_count=10, pause=0.001)
                 df_tmp.to_csv(dump_reference_profit_data, encoding='UTF-8', index=False)
@@ -98,7 +98,7 @@ def get_reference_data():
                 #df_tmp.to_pickle(dump_reference_profit_data)
                 #logging.info(df_tmp.__len__())
             elif os.path.isfile(dump_reference_profit_data):
-                #sys.stdout.write("\tloading profit_data"+dump_reference_profit_data)
+                #logging.info(__file__+" "+"\tloading profit_data"+dump_reference_profit_data)
                 df_tmp = pandas.read_csv(dump_reference_profit_data, converters={'code': str})
 
         except:
@@ -124,7 +124,7 @@ def get_reference_data():
             if (year == year_q['year']) and (quarter >= year_q['quarter']):
                 continue
 
-            #sys.stdout.write("\tforecast_data, year " + str(year) + " quarter " + str(quarter) + " start ")
+            #logging.info(__file__+" "+"\tforecast_data, year " + str(year) + " quarter " + str(quarter) + " start ")
             #sys.stdout.flush()
             dump_reference_forecast_data = "/home/ryan/DATA/pickle/Stock_Fundamental/fenghong/forecast/fd_" + str(year) + "_" + str(quarter) + ".csv"
             try:
@@ -133,14 +133,14 @@ def get_reference_data():
 
                 if (year > 2010) and ((not os.path.isfile(dump_reference_forecast_data)) or (year == year_q['last_quarter']['year'] and quarter == year_q['last_quarter']['quarter'])):
                     #if (year > 2010) and ((not os.path.isfile(dump_reference_forecast_data))):
-                    sys.stdout.write("getting forecast_data, ts.forecast_data, year " + str(year) + " quarter " + str(quarter))  # 业绩预告
+                    logging.info(__file__+" "+"getting forecast_data, ts.forecast_data, year " + str(year) + " quarter " + str(quarter))  # 业绩预告
                     sys.stdout.flush()
                     df_tmp = ts.forecast_data(year, quarter)
                     df_tmp.to_csv(dump_reference_forecast_data, encoding='UTF-8', index=False)
                     logging.info(__file__ + ": " + "saved, " + dump_reference_forecast_data)
                     #df_tmp.to_pickle(dump_reference_forecast_data)
                 elif os.path.isfile(dump_reference_forecast_data):
-                    #sys.stdout.write("\tloading forecast_data")
+                    #logging.info(__file__+" "+"\tloading forecast_data")
                     df_tmp = pandas.read_csv(dump_reference_forecast_data, converters={'code': str})
 
             except:
@@ -163,7 +163,7 @@ def get_reference_data():
             if (year == year_q['year']) and (quarter >= year_q['quarter']):
                 continue
 
-            #sys.stdout.write("\tfund_holdings, year "+str(year) + " quarter "+str(quarter)+ " start ")
+            #logging.info(__file__+" "+"\tfund_holdings, year "+str(year) + " quarter "+str(quarter)+ " start ")
             dump_reference_fund_holdings = "/home/ryan/DATA/pickle/Stock_Fundamental/fenghong/fund_hold/fh_" + str(year) + "_" + str(quarter) + ".csv"
             try:
                 exc_info = sys.exc_info()
@@ -171,7 +171,7 @@ def get_reference_data():
 
                 if (year > 2010) and ((not os.path.isfile(dump_reference_fund_holdings)) or (year == year_q['last_quarter']['year'] and quarter == year_q['last_quarter']['quarter'])):
                     #if (year > 2010) and ((not os.path.isfile(dump_reference_fund_holdings))):
-                    sys.stdout.write("\t\tgetting fund_holdings, ts.fund_holdings, year " + str(year) + " quarter " + str(quarter))  # 基金持股
+                    logging.info(__file__+" "+"\t\tgetting fund_holdings, ts.fund_holdings, year " + str(year) + " quarter " + str(quarter))  # 基金持股
                     sys.stdout.flush()
                     df_tmp = ts.fund_holdings(year, quarter)
                     df_tmp.to_csv(dump_reference_fund_holdings, encoding='UTF-8', index=False)
@@ -179,7 +179,7 @@ def get_reference_data():
 
                     #df_tmp.to_pickle(dump_reference_fund_holdings)
                 elif os.path.isfile(dump_reference_fund_holdings):
-                    #sys.stdout.write("\tloading fund_holdings")
+                    #logging.info(__file__+" "+"\tloading fund_holdings")
                     df_tmp = pandas.read_csv(dump_reference_fund_holdings, converters={'code': str})
 
             except:
@@ -203,7 +203,7 @@ def get_reference_data():
             if year < 2010:
                 continue  # start from year 2010
 
-            #sys.stdout.write("\trestricted shares lifted, year " + str(year) + " month " + str(month) + " start")
+            #logging.info(__file__+" "+"\trestricted shares lifted, year " + str(year) + " month " + str(month) + " start")
             sys.stdout.flush()
             dump_reference_xsg_data = "/home/ryan/DATA/pickle/Stock_Fundamental/fenghong/restricted_lifted/rl_" + str(year) + "_" + str(month) + ".csv"
 
@@ -220,7 +220,7 @@ def get_reference_data():
 
                     #df_tmp.to_pickle(dump_reference_xsg_data)
                 elif os.path.isfile(dump_reference_xsg_data):
-                    #sys.stdout.write("\tloading xsg_data")
+                    #logging.info(__file__+" "+"\tloading xsg_data")
                     df_tmp = pandas.read_csv(dump_reference_xsg_data, converters={'code': str})
 
             except:
@@ -241,7 +241,7 @@ def get_reference_data():
 
     dump_reference_sh_margins = "/home/ryan/DATA/pickle/Stock_Fundamental/fenghong/sh_margin/sh_margin.csv"
     if (year > 2010) and ((not os.path.isfile(dump_reference_sh_margins)) or (year == 2018)):
-        #sys.stdout.write("\ngetting sh_margins, ts.sh_margins, start "+str(start)+ " end "+str(end))  # 融资融券（沪市）
+        #logging.info(__file__+" "+"\ngetting sh_margins, ts.sh_margins, start "+str(start)+ " end "+str(end))  # 融资融券（沪市）
         sys.stdout.flush()
 
         try:
@@ -261,7 +261,7 @@ def get_reference_data():
                 traceback.print_exception(*exc_info)
             del exc_info
     elif os.path.isfile(dump_reference_sh_margins):
-        #sys.stdout.write("\tloading sh_margins")
+        #logging.info(__file__+" "+"\tloading sh_margins")
         df_sh_margins = pandas.read_csv(dump_reference_sh_margins,converters={'code': str})
         df_sh_margins.to_csv(sh_margin_csv,  encoding='UTF-8', index=False)
         logging.info(__file__ + ": " + "saved, " + sh_margin_csv)
@@ -270,7 +270,7 @@ def get_reference_data():
 
     dump_reference_sz_margins = "/home/ryan/DATA/pickle/Stock_Fundamental/fenghong/sz_margin/sz_margin.csv"
     if (year > 2010) and ((not os.path.isfile(dump_reference_sz_margins)) or (year == 2018)):
-        #sys.stdout.write("\ngetting sz_margins, ts.sz_margins, start "+str(start)+ " end "+str(end))  # 融资融券（深市）
+        #logging.info(__file__+" "+"\ngetting sz_margins, ts.sz_margins, start "+str(start)+ " end "+str(end))  # 融资融券（深市）
         sys.stdout.flush()
 
         try:
@@ -291,7 +291,7 @@ def get_reference_data():
             del exc_info
 
     elif os.path.isfile(dump_reference_sz_margins):
-        #sys.stdout.write("\tloading sz_margins")
+        #logging.info(__file__+" "+"\tloading sz_margins")
         df_sz_margins = pandas.read_csv(dump_reference_sz_margins,converters={'code': str})
         df_sz_margins.to_csv(sz_margin_csv,  encoding='UTF-8', index=False)
         logging.info(__file__ + ": " + "saved, " + sz_margin_csv)
@@ -347,7 +347,7 @@ def fetch_data_no_adj(debug=False, force_fetch=False):
         #    continue
 
         if (not os.path.isfile(csv_f)) or (os.stat(csv_f).st_size <= 200):  # 200 bytes
-            sys.stdout.write("file not exist or empty file, full fetch " + csv_f)
+            logging.info(__file__+" "+"file not exist or empty file, full fetch " + csv_f)
             sys.stdout.flush()
             start_date_req = default_start_date
         else:
@@ -383,9 +383,9 @@ def fetch_data_no_adj(debug=False, force_fetch=False):
 
             #if next_date > default_date_d:  # csv already have data
             start_date_req = next_date.strftime('%Y%m%d')
-            sys.stdout.write("append exist csv from " + start_date_req + ". ")
+            logging.info(__file__+" "+"append exist csv from " + start_date_req + ". ")
             #else:
-            #    sys.stdout.write("will do a full update, since " + start_date_req + ". ")
+            #    logging.info(__file__+" "+"will do a full update, since " + start_date_req + ". ")
 
             ############ delta update end
 
@@ -393,7 +393,7 @@ def fetch_data_no_adj(debug=False, force_fetch=False):
             ts.close_apis(cons)
             cons = ts.get_apis()
 
-        sys.stdout.write("fetch " + csv_f + " " + str(i) + " of " + str(df_code_name_map.__len__()))
+        logging.info(__file__+" "+"fetch " + csv_f + " " + str(i) + " of " + str(df_code_name_map.__len__()))
         sys.stdout.flush()
 
         try:
@@ -407,7 +407,7 @@ def fetch_data_no_adj(debug=False, force_fetch=False):
                 logging.info(__file__+" "+"ts.bar return None for " + code)
                 continue
             else:
-                sys.stdout.write(" len fetched " + str(df_hist_data.__len__()) + " ")
+                logging.info(__file__+" "+" len fetched " + str(df_hist_data.__len__()) + " ")
 
         except:
             logging.info(__file__+" "+"\tcaught exception on, code " + str(code))
@@ -473,7 +473,7 @@ def fetch_data_no_adj(debug=False, force_fetch=False):
 
         #if not os.path.isfile(csv_f):
         if True:
-            sys.stdout.write("fetch "+csv_f +". " +str(i) +" of "+str(df.__len__()))
+            logging.info(__file__+" "+"fetch "+csv_f +". " +str(i) +" of "+str(df.__len__()))
             sys.stdout.flush()
 
             try:

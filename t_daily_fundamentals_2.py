@@ -898,7 +898,7 @@ def _ts_pro_fetch_end_date(pro_con, ts_code,  query, query_fields, fetch_period_
 
 
         if os.path.exists(ind_csv) and "20151231" > period:
-            sys.stdout.write("not fetch as file alreay exists "+ind_csv)
+            logging.info(__file__+" "+"not fetch as file alreay exists "+ind_csv)
             continue
 
 
@@ -1631,7 +1631,7 @@ def zzz_merge_local(stock_list, feature,  output_csv, col_name_list):
                 j = j+1
                 continue
 
-            sys.stdout.write("_merge_local " +feature+" "+  str(j)+" of "+str(total_len)+". ")
+            logging.info(__file__+" "+"_merge_local " +feature+" "+  str(j)+" of "+str(total_len)+". ")
             sys.stdout.flush()
 
             #logging.info(__file__+" "+"file will be reading "+ind_csv)
@@ -1659,14 +1659,14 @@ def zzz_merge_local(stock_list, feature,  output_csv, col_name_list):
             df_diff_only = df_diff.loc[df_diff['Exist'] == 'right_only']
 
             df_exist_only = df_exist[df_exist['end_date'].isin(list(df_diff_only['end_date'].values))]
-            sys.stdout.write("Records only exsits in local csv, len "+str(df_exist_only.__len__())+". ")
+            logging.info(__file__+" "+"Records only exsits in local csv, len "+str(df_exist_only.__len__())+". ")
             sys.stdout.flush()
 
 
             df_result = pd.concat([df_exist_only, df_new], sort=False).sort_values(by='end_date', ascending=False).reset_index(
                 drop=True)
             df_result = df_result[df_sub.columns]
-            sys.stdout.write("Records will dump to local csv, len " + str(df_result.__len__())+". ")
+            logging.info(__file__+" "+"Records will dump to local csv, len " + str(df_result.__len__())+". ")
             sys.stdout.flush()
 
 
@@ -1774,7 +1774,7 @@ def _merge_quarterly(end_date, df_income, df_balancesheet, df_cashflow, df_fina_
     i = 0
     logging.info(__file__ + " " + "\n==== " + end_date + " ====")
 
-    sys.stdout.write("\tdf_income, ")
+    logging.info(__file__+" "+"\tdf_income, ")
     sys.stdout.flush()
 
     df_income = df_income[df_income['end_date'] == end_date]
@@ -1793,7 +1793,7 @@ def _merge_quarterly(end_date, df_income, df_balancesheet, df_cashflow, df_fina_
         #i += 1
         #suffix = "_x"+str(i)
         suffix = "_" + df_name
-        sys.stdout.write("\t" + df_name + ", ")
+        logging.info(__file__+" "+"\t" + df_name + ", ")
         sys.stdout.flush()
 
         df = eval(df_name)
@@ -1980,7 +1980,7 @@ def _analyze_step_1(end_date):
     df_len = df.__len__()
 
     for i in range(0, df_len):
-        sys.stdout.write("=== analyze step_1, " + str(i + 1) + " of " + str(df_len) + ". ")
+        logging.info(__file__+" "+"=== analyze step_1, " + str(i + 1) + " of " + str(df_len) + ". ")
 
         garbageReason = ''
         bonusReason = ''
@@ -3336,7 +3336,7 @@ def analyze(fully_a=False, daily_a=True, fast=True):
             logging.info(__file__ + " " + "not process date before 2015" + str(e))
             continue
 
-        sys.stdout.write("end_date " + e + ". ")
+        logging.info(__file__+" "+"end_date " + e + ". ")
 
         #continue
 
@@ -3365,7 +3365,7 @@ def analyze(fully_a=False, daily_a=True, fast=True):
             if e < '2010':
                 continue
 
-            sys.stdout.write("end_date " + e + ". ")
+            logging.info(__file__+" "+"end_date " + e + ". ")
 
             #as many date lost on Q1, Q3 report, so only process half-year, and year report.
 

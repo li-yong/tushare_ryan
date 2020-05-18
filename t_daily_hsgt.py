@@ -75,10 +75,10 @@ def fetch_hsgt_top_10():
             print("skip, already have records on " + trade_date_s)
             continue
 
-        sys.stdout.write("fetching hsgt_top 10 " + trade_date_s)
+        logging.info(__file__+" "+"fetching hsgt_top 10 " + trade_date_s)
 
         df_h = pro.hsgt_top10(trade_date=trade_date_s, market_type='1')
-        sys.stdout.write(", get len " + str(df_h.__len__()) + "\n")
+        logging.info(__file__+" "+", get len " + str(df_h.__len__()) + "\n")
         df = df.append(df_h)
 
     cols = ['trade_date', 'ts_code', 'name', 'close', 'net_amount', 'amount', 'buy', 'change', 'market_type', 'rank', 'sell']

@@ -37,7 +37,7 @@ def buy_limit(quote_ctx, trd_ctx, df_stock_info, code, drop_threshold=0.19, pwd_
     #    lot_size = 0
     #    price_to_order = 0
 
-    sys.stdout.write("Placing buying limit order, " + code + ", price: " + str(price_to_order) + ", lot: " + str(lot_size) + ", env: " + str(trd_env))
+    logging.info(__file__+" "+"Placing buying limit order, " + code + ", price: " + str(price_to_order) + ", lot: " + str(lot_size) + ", env: " + str(trd_env))
 
     ret, order_table = trd_ctx.place_order(price=price_to_order, qty=lot_size, code=code, trd_side=ft.TrdSide.BUY, trd_env=trd_env, order_type=order_type)
 

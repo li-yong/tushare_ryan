@@ -127,9 +127,9 @@ def get_hk_us(df, cons, start_date, appendix, todayS, force_fetch):
 
             if next_date > default_date_d:  #csv already have data
                 start_date_req = next_date.strftime('%Y-%m-%d')
-                sys.stdout.write("append exist csv from " + start_date_req + ". ")
+                logging.info(__file__+" "+"append exist csv from " + start_date_req + ". ")
             else:
-                sys.stdout.write("will do a full update, since " + start_date_req + ". ")
+                logging.info(__file__+" "+"will do a full update, since " + start_date_req + ". ")
 
         try:
             exc_info = sys.exc_info()
@@ -140,7 +140,7 @@ def get_hk_us(df, cons, start_date, appendix, todayS, force_fetch):
 
             #time.sleep(2)
             if str(a_stock_df) == 'None':
-                sys.stdout.write("ts.bar return None. retry " + str(code) + ". 1st. ")
+                logging.info(__file__+" "+"ts.bar return None. retry " + str(code) + ". 1st. ")
                 ts.close_apis(cons)
                 time.sleep(a_wait_time)
                 cons = ts.get_apis()
@@ -171,7 +171,7 @@ def get_hk_us(df, cons, start_date, appendix, todayS, force_fetch):
 
             a_stock_df = a_stock_df.reset_index()
 
-            sys.stdout.write(" len " + str(a_stock_df.__len__()) + ". ")
+            logging.info(__file__+" "+" len " + str(a_stock_df.__len__()) + ". ")
 
             df_name = pd.DataFrame([name] * a_stock_df.__len__(), columns=['name'])
             df_short_name = pd.DataFrame([appendix] * a_stock_df.__len__(), columns=['short_name'])

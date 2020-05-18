@@ -130,7 +130,7 @@ def verify(bv_csv, op, start_date=None, end_date=None, top_N=5, days_after_signa
                 stock_count = 0.0
                 profit = (balance - balance_init) / balance_init
                 profit = round(profit, 2)
-                sys.stdout.write("sell at " + str(the_df_pre['date']) + " " + str(the_df_pre['c']) + ". profit " + str(profit) + ". ")
+                logging.info(__file__+" "+"sell at " + str(the_df_pre['date']) + " " + str(the_df_pre['c']) + ". profit " + str(profit) + ". ")
 
             if balance > 0 and index_in_df + 1 < df.__len__():  #not the latest row.
                 #buy at the_df_aft
@@ -163,7 +163,7 @@ def verify(bv_csv, op, start_date=None, end_date=None, top_N=5, days_after_signa
                 stock_count = 0.0
                 profit = (balance - balance_init) / balance_init
                 profit = round(profit, 2)
-                sys.stdout.write("sell at " + str(the_df_pre['date']) + " " + str(the_df_pre['c']) + ". profit " + str(profit) + ". ")
+                logging.info(__file__+" "+"sell at " + str(the_df_pre['date']) + " " + str(the_df_pre['c']) + ". profit " + str(profit) + ". ")
 
             if balance > 0 and index_in_df + 1 < df.__len__():  #not the latest row.
                 #buy at the_df_aft
@@ -196,7 +196,7 @@ def verify(bv_csv, op, start_date=None, end_date=None, top_N=5, days_after_signa
                 stock_count = 0.0
                 profit = (balance - balance_init) / balance_init
                 profit = round(profit, 2)
-                sys.stdout.write("sell at " + str(the_df_pre['date']) + " " + str(the_df_pre['c']) + ". profit " + str(profit) + ". ")
+                logging.info(__file__+" "+"sell at " + str(the_df_pre['date']) + " " + str(the_df_pre['c']) + ". profit " + str(profit) + ". ")
 
             if balance > 0 and index_in_df + 1 < df.__len__():  #not the latest row.
                 #buy at the_df_aft
@@ -227,7 +227,7 @@ def verify(bv_csv, op, start_date=None, end_date=None, top_N=5, days_after_signa
 
             #Buy at the_df_pre
             if balance > 0:
-                sys.stdout.write("buy at " + str(the_df_pre['date']) + " " + str(the_df_pre['c']) + ". ")
+                logging.info(__file__+" "+"buy at " + str(the_df_pre['date']) + " " + str(the_df_pre['c']) + ". ")
                 balance = balance * (1 - trade_cost)
                 stock_count = balance / the_df_pre['c']
                 balance = 0
@@ -240,7 +240,7 @@ def verify(bv_csv, op, start_date=None, end_date=None, top_N=5, days_after_signa
                 profit = (balance - balance_init) / balance_init
                 profit = round(profit, 2)
 
-                sys.stdout.write("sell at " + str(the_df_aft['date']) + " " + str(the_df_aft['c']) + ". profit " + str(profit) + ".\n")
+                logging.info(__file__+" "+"sell at " + str(the_df_aft['date']) + " " + str(the_df_aft['c']) + ". profit " + str(profit) + ".\n")
 
     elif op == "CATCH_MAX_DECREASE":
         ######################
@@ -264,7 +264,7 @@ def verify(bv_csv, op, start_date=None, end_date=None, top_N=5, days_after_signa
 
             # Buy at the_df_pre
             if balance > 0:
-                sys.stdout.write("buy at " + str(the_df_pre['date']) + " " + str(the_df_pre['c']) + ". ")
+                logging.info(__file__+" "+"buy at " + str(the_df_pre['date']) + " " + str(the_df_pre['c']) + ". ")
                 balance = balance * (1 - trade_cost)
                 stock_count = balance / the_df_pre['c']
                 balance = 0
@@ -277,7 +277,7 @@ def verify(bv_csv, op, start_date=None, end_date=None, top_N=5, days_after_signa
                 profit = (balance - balance_init) / balance_init
                 profit = round(profit, 2)
 
-                sys.stdout.write("sell at " + str(the_df_aft['date']) + " " + str(the_df_aft['c']) + ". profit " + str(profit) + ".\n")
+                logging.info(__file__+" "+"sell at " + str(the_df_aft['date']) + " " + str(the_df_aft['c']) + ". profit " + str(profit) + ".\n")
 
     if op in ["MISS_MAX_INCREASE", "MISS_MAX_DECREASE "]:
         #sell at the last day

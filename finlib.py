@@ -257,7 +257,7 @@ class Finlib:
         # a= pd.merge(df_basic,df, on='code',how='inner')
         # logging.info(str(a.__len__()))
 
-        sys.stdout.write("input df len " + str(df.__len__()) + ". ")
+        logging.info(__file__+" "+"input df len " + str(df.__len__()) + ". ")
 
         d = df_basic['code'].tolist()
         df = df[df['code'].isin(d)]
