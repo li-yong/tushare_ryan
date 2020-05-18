@@ -2907,12 +2907,12 @@ def _analyze_step_6():
 
     logging.info(__file__ + " " + "=== analyze step 6 ===")
 
-    if (not force_run_global) and finlib.Finlib().is_cached(csv_output, day=1):
-        logging.info(__file__ + " " + "file has been updated in 1 days, will not calculate. " + csv_output)
+    if (not force_run_global) and finlib.Finlib().is_cached(csv_output, day=6):
+        logging.info(__file__ + " " + "file has been updated in 6 days, will not calculate. " + csv_output)
         return
 
-    if (not force_run_global) and finlib.Finlib().is_cached(csv_selected_output, day=1) and (not overwrite):
-        logging.info(__file__ + " " + "file has been updated in 1 days, will not calculate. " + csv_selected_output)
+    if (not force_run_global) and finlib.Finlib().is_cached(csv_selected_output, day=6):
+        logging.info(__file__ + " " + "file has been updated in 6 days, will not calculate. " + csv_selected_output)
         return
 
     df = pd.DataFrame()
@@ -3340,7 +3340,7 @@ def analyze(fully_a=False, daily_a=True, fast=True):
         # as many date lost on Q1, Q3 report, so only process half-year, and year report.
         # !!!! @todo ryan: parallary compare on yearly report; Q1, Q2, Q3 data can be used in self comparision.
         # !!!!
-        if re.match('\d{4}1231$', e) or daily_a:  #daily_a check the most recent only(small scope), so daily_a check all steps.
+        if re.match('\d{4}1231$', e) or daily_a or force_run_global:  #daily_a check the most recent only(small scope), so daily_a check all steps.
             _analyze_step_1(end_date=e)  # field calculate
             _analyze_step_2(end_date=e)  # score
             _analyze_step_3(end_date=e)  # score of score
@@ -3349,11 +3349,13 @@ def analyze(fully_a=False, daily_a=True, fast=True):
             logging.info(__file__ + " " + "not handle Q1, Q2, Q3 report, " + e)
             continue
 
-    _analyze_step_4()  #evaluate the stock score in mutliple years.
-    _analyze_step_5()  #'scoreA'
-    _analyze_step_6()  #under valued stock, valuePrice/actualPrice. scoreA,V_C_P,
-    _analyze_step_7()
-    _analyze_step_8()
+
+    if fully_a:
+        _analyze_step_4()  # evaluate the stock score in mutliple years.
+        _analyze_step_5()  # 'scoreA'
+        _analyze_step_6()  #under valued stock, valuePrice/actualPrice. scoreA,V_C_P, #time consuming.
+        _analyze_step_7()  #time consuming
+        _analyze_step_8()
 
 
 '''
