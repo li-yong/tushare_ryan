@@ -159,10 +159,7 @@ def check_last_day(df_hl, df):
     df_hl = df_hl.join(pd.DataFrame([np.nan] * df_hl.__len__(), columns=['short_expect_ear_perct']))
     df_hl = df_hl.join(pd.DataFrame([np.nan] * df_hl.__len__(), columns=['delta_to_short_enter']))
 
-    rtn_cols = [
-        'code', 'name', 'current_date', 'current_close', 'delta_to_long_enter', 'long_enter', 'long_quit', 'long_expect_ear_perct', 'up_p', 'down_p', 'up_cnt', 'down_cnt', 'day_to_up', 'day_to_down',
-        'up_date', 'down_date', 'perc_to_up', 'perc_to_down', 'last_is_h_or_l', 'short_enter', 'short_quit', 'short_expect_ear_perct', 'delta_to_short_enter'
-    ]
+    rtn_cols = ['code', 'name', 'current_date', 'current_close', 'delta_to_long_enter', 'long_enter', 'long_quit', 'long_expect_ear_perct', 'up_p', 'down_p', 'up_cnt', 'down_cnt', 'day_to_up', 'day_to_down', 'up_date', 'down_date', 'perc_to_up', 'perc_to_down', 'last_is_h_or_l', 'short_enter', 'short_quit', 'short_expect_ear_perct', 'delta_to_short_enter']
 
     if df_hl.__len__() < 2:
         df_hl = df_hl[rtn_cols]
@@ -233,8 +230,7 @@ def check_last_day(df_hl, df):
 
             delta_to_long_enter = round(100 * (long_enter - current_close) / current_close, 1)
 
-            print("long enter: " + str(long_enter) + " ,current " + str(current_close) + " ,long quit " + str(long_quit) + " ,long expect earn " + str(long_expect_ear_perct) + " ,delta " +
-                  str(delta_to_long_enter) + " .")
+            print("long enter: " + str(long_enter) + " ,current " + str(current_close) + " ,long quit " + str(long_quit) + " ,long expect earn " + str(long_expect_ear_perct) + " ,delta " + str(delta_to_long_enter) + " .")
             df_hl.iloc[i, df_hl.columns.get_loc('long_enter')] = long_enter
             df_hl.iloc[i, df_hl.columns.get_loc('long_quit')] = long_quit
             df_hl.iloc[i, df_hl.columns.get_loc('long_expect_ear_perct')] = long_expect_ear_perct
@@ -259,8 +255,7 @@ def check_last_day(df_hl, df):
 
             delta_to_short_enter = round(100 * (current_close - short_enter) / current_close, 1)
 
-            print("short enter: " + str(short_enter) + " ,current " + str(current_close) + " ,short quit " + str(short_quit) + " ,short expect earn " + str(short_expect_ear_perct) + " ,delta " +
-                  str(delta_to_short_enter) + " .")
+            print("short enter: " + str(short_enter) + " ,current " + str(current_close) + " ,short quit " + str(short_quit) + " ,short expect earn " + str(short_expect_ear_perct) + " ,delta " + str(delta_to_short_enter) + " .")
             df_hl.iloc[i, df_hl.columns.get_loc('short_enter')] = short_enter
             df_hl.iloc[i, df_hl.columns.get_loc('short_quit')] = short_quit
             df_hl.iloc[i, df_hl.columns.get_loc('short_expect_ear_perct')] = short_expect_ear_perct
@@ -360,9 +355,9 @@ def main():
     else:
         output_dir_root = "/home/ryan/DATA/result"
 
-    outputF =  output_dir_root +"/key_points_"+ stock_global.lower() + ".csv"
-    outputF_today = output_dir_root+"/key_points_" + stock_global.lower() + "_today.csv"
-    outputF_today_s = output_dir_root+"/key_points_" + stock_global.lower() + "_today_selected.csv"
+    outputF = output_dir_root + "/key_points_" + stock_global.lower() + ".csv"
+    outputF_today = output_dir_root + "/key_points_" + stock_global.lower() + "_today.csv"
+    outputF_today_s = output_dir_root + "/key_points_" + stock_global.lower() + "_today_selected.csv"
 
     rst = finlib.Finlib().get_stock_configuration(selected=selected, stock_global=stock_global)
     out_dir = rst['out_dir']

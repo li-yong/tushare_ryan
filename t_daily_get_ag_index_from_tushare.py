@@ -15,7 +15,6 @@ logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m_%d %H:%M:%S', 
 logging.info("\n")
 logging.info("SCRIPT STARTING " + " ".join(sys.argv))
 
-
 from pandas.plotting import register_matplotlib_converters
 register_matplotlib_converters()
 
@@ -75,12 +74,7 @@ def main():
 
     parser.add_option("-f", "--fetch_index", action="store_true", dest="fetch_index_f", default=False, help="fetch SH000001")
 
-    parser.add_option("-v",
-                      "--verify_weekly_buy_sel_strategy",
-                      action="store_true",
-                      dest="verify_weekly_buy_sel_strategy_f",
-                      default=False,
-                      help="verify_weekly_buy_sel_strategy, buy on Mon, sell on Thu/Fri")
+    parser.add_option("-v", "--verify_weekly_buy_sel_strategy", action="store_true", dest="verify_weekly_buy_sel_strategy_f", default=False, help="verify_weekly_buy_sel_strategy, buy on Mon, sell on Thu/Fri")
 
     (options, args) = parser.parse_args()
     fetch_index_f = options.fetch_index_f

@@ -31,19 +31,11 @@ parser.add_option("-d", "--debug", action="store_true", dest="debug", default=Fa
 
 parser.add_option("--source_host", dest="source_host", default='10.32.191.66', type="str", help="source host,  default '10.32.191.66'")
 
-parser.add_option("--source_table",
-                  dest="source_table",
-                  default='zzz_pattern_perf_debug',
-                  type="str",
-                  help="source db table, default zzz_pattern_perf_debug, other options: pattern_perf_forex, pattern_perf ")
+parser.add_option("--source_table", dest="source_table", default='zzz_pattern_perf_debug', type="str", help="source db table, default zzz_pattern_perf_debug, other options: pattern_perf_forex, pattern_perf ")
 
 parser.add_option("--dest_host", dest="dest_host", default='127.0.0.1', type="str", help="destination host, default 127.0.0.1")
 
-parser.add_option("--dest_table",
-                  dest="dest_table",
-                  default='zzz_pattern_perf_debug',
-                  type="str",
-                  help="destination db table,  default zzz_pattern_perf_debug, other options: pattern_perf_forex, pattern_perf ")
+parser.add_option("--dest_table", dest="dest_table", default='zzz_pattern_perf_debug', type="str", help="destination db table,  default zzz_pattern_perf_debug, other options: pattern_perf_forex, pattern_perf ")
 
 parser.add_option("--skip_backup_before_execute", action="store_true", dest="skip_backup_before_execute", default=False, help="Skip backup table before execute, default=False")
 

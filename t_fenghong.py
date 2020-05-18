@@ -660,18 +660,17 @@ def analyze_one(debug=False):
         divi_percent = abs(100 * divi / (price * 10))  #divi is on 10 shares
         share_percent = 100 * shares / 10
 
-        df_result = df_result.append(
-            pd.DataFrame({
-                'code': [code],
-                'name': [name],
-                'year': [year],
-                'report_date': [report_date],
-                'divi': [divi],
-                'shares': [shares],
-                'price': [price],
-                'divi_percent': [divi_percent],
-                'shares_percent': [share_percent],
-            }))
+        df_result = df_result.append(pd.DataFrame({
+            'code': [code],
+            'name': [name],
+            'year': [year],
+            'report_date': [report_date],
+            'divi': [divi],
+            'shares': [shares],
+            'price': [price],
+            'divi_percent': [divi_percent],
+            'shares_percent': [share_percent],
+        }))
 
         logging.info("code " + str(code) + " report date " + str(report_date) + ".  div percent " + str(divi_percent) + ", share percent " + str(share_percent))
 
@@ -711,22 +710,21 @@ def analyze_two():
         share_sum = df_tmp['shares_percent'].sum()
         share_m = df_tmp['shares_percent'].mean()
 
-        df_result = df_result.append(
-            pd.DataFrame({
-                'code': [code],
-                'name': [name],
-                'score': [0],
-                'divi_m_score': [0],
-                'share_m_score': [0],
-                'fhcnt': [fhcnt],
-                'fhcnt_p': [0],
-                'divi_sum': [divi_percent_sum],
-                'divi_p': [0],
-                'divi_m': [divi_m],
-                'share_sum': [share_sum],
-                'share_p': [0],
-                'share_m': [share_m],
-            }))
+        df_result = df_result.append(pd.DataFrame({
+            'code': [code],
+            'name': [name],
+            'score': [0],
+            'divi_m_score': [0],
+            'share_m_score': [0],
+            'fhcnt': [fhcnt],
+            'fhcnt_p': [0],
+            'divi_sum': [divi_percent_sum],
+            'divi_p': [0],
+            'divi_m': [divi_m],
+            'share_sum': [share_sum],
+            'share_p': [0],
+            'share_m': [share_m],
+        }))
 
     fhcnt_all = df_result['fhcnt']
     divi_all = df_result['divi_sum']

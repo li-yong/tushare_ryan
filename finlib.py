@@ -485,7 +485,6 @@ class Finlib:
             #pd_tmp = pd.read_csv(price_csv, converters={'code': str}, header=None, names=['code', 'date', 'o', 'h', 'l', 'c', 'vol', 'amnt', 'tnv'])
             pd_tmp = self.regular_read_csv_to_stdard_df(price_csv)
 
-
             if pd_tmp.__len__() == 0:
                 logging.info("Fatal error, file is empty " + price_csv)
                 # exit(1)
@@ -2210,8 +2209,7 @@ class Finlib:
                     cmd = "talib." + target.upper() + "(close, timeperiod=30)"
 
                 elif target == 'sarext':
-                    cmd = "talib." + target.upper(
-                    ) + "(high, low, startvalue=0, offsetonreverse=0, accelerationinitlong=0, accelerationlong=0, accelerationmaxlong=0, accelerationinitshort=0, accelerationshort=0, accelerationmaxshort=0)"
+                    cmd = "talib." + target.upper() + "(high, low, startvalue=0, offsetonreverse=0, accelerationinitlong=0, accelerationlong=0, accelerationmaxlong=0, accelerationinitshort=0, accelerationshort=0, accelerationmaxshort=0)"
 
                 elif target == 'sar':
                     cmd = "talib." + target.upper() + "(high, low, acceleration=0, maximum=0)"
@@ -2432,7 +2430,7 @@ class Finlib:
                                          %s,%s,%s,%s,%s,%s,%s,%s,%s, \
                                          %s,%s,%s,%s,%s,%s,%s,%s,%s, \
                                          %s,%s,%s,%s,%s,%s,%s,%s,%s, \
-                                         %s,%s,%s,%s,%s,%s,%s,%s,%s)"                                                                                                                                          )
+                                         %s,%s,%s,%s,%s,%s,%s,%s,%s)"                                                                                                                                                                                                                                                                                    )
 
                 tm_list = ['1', '2', '3', '5', '7', '10', '15', '20', '30', '60', '120', '240']  # RYAN RESUME
                 tm_data_sql = []
@@ -2494,24 +2492,23 @@ class Finlib:
 
                 st_dict = {'_mean': 'mea', '_median': "med", '_min': 'min', '_max': 'max', '_variance': 'var', '_skewness': 'skw', '_kurtosis': 'kur', '_upcnt': 'uc', '_dncnt': 'dc'}
 
-                update_ptn_perf = (
-                    "UPDATE `" + db_tbl + "`  "
-                    "SET stockID = %(stockID)s, pattern = %(pattern)s, "
-                    " date_s = %(date_s)s, date_e = %(date_e)s, trading_days = %(trading_days)s,"
-                    " buy_signal_cnt = %(buy_signal_cnt)s, sell_signal_cnt = %(sell_signal_cnt)s, pattern = %(pattern)s, "
-                    " 1mea = %(1mea)s, 1med = %(1med)s, 1min = %(1min)s, 1max = %(1max)s, 1var = %(1var)s, 1skw = %(1skw)s, 1kur = %(1kur)s, 1uc = %(1uc)s, 1dc = %(1dc)s, "
-                    " 2mea = %(2mea)s, 2med = %(2med)s, 2min = %(2min)s, 2max = %(2max)s, 2var = %(2var)s, 2skw = %(2skw)s, 2kur = %(2kur)s, 2uc = %(2uc)s, 2dc = %(2dc)s, "
-                    " 3mea = %(3mea)s, 3med = %(3med)s, 3min = %(3min)s, 3max = %(3max)s, 3var = %(3var)s, 3skw = %(3skw)s, 3kur = %(3kur)s, 3uc = %(3uc)s, 3dc = %(3dc)s, "
-                    " 5mea = %(5mea)s, 5med = %(5med)s, 5min = %(5min)s, 5max = %(5max)s, 5var = %(5var)s, 5skw = %(5skw)s, 5kur = %(5kur)s, 5uc = %(5uc)s, 5dc = %(5dc)s, "
-                    " 7mea = %(7mea)s, 7med = %(7med)s, 7min = %(7min)s, 7max = %(7max)s, 7var = %(7var)s, 7skw = %(7skw)s, 7kur = %(7kur)s, 7uc = %(7uc)s, 7dc = %(7dc)s, "
-                    " 10mea = %(10mea)s, 10med = %(10med)s, 10min = %(10min)s, 10max = %(10max)s, 10var = %(10var)s, 10skw = %(10skw)s, 10kur = %(10kur)s, 10uc = %(10uc)s, 10dc = %(10dc)s, "
-                    " 15mea = %(15mea)s, 15med = %(15med)s, 15min = %(15min)s, 15max = %(15max)s, 15var = %(15var)s, 15skw = %(15skw)s, 15kur = %(15kur)s, 15uc = %(15uc)s, 15dc = %(15dc)s, "
-                    " 20mea = %(20mea)s, 20med = %(20med)s, 20min = %(20min)s, 20max = %(20max)s, 20var = %(20var)s, 20skw = %(20skw)s, 20kur = %(20kur)s, 20uc = %(20uc)s, 20dc = %(20dc)s, "
-                    " 30mea = %(30mea)s, 30med = %(30med)s, 30min = %(30min)s, 30max = %(30max)s, 30var = %(30var)s, 30skw = %(30skw)s, 30kur = %(30kur)s, 30uc = %(30uc)s, 30dc = %(30dc)s, "
-                    " 60mea = %(60mea)s, 60med = %(60med)s, 60min = %(60min)s, 60max = %(60max)s, 60var = %(60var)s, 60skw = %(60skw)s, 60kur = %(60kur)s, 60uc = %(60uc)s, 60dc = %(60dc)s, "
-                    " 120mea = %(120mea)s, 120med = %(120med)s, 120min = %(120min)s, 120max = %(120max)s, 120var = %(120var)s, 120skw = %(120skw)s, 120kur = %(120kur)s, 120uc = %(120uc)s, 120dc = %(120dc)s, "
-                    " 240mea = %(240mea)s, 240med = %(240med)s, 240min = %(240min)s, 240max = %(240max)s, 240var = %(240var)s, 240skw = %(240skw)s, 240kur = %(240kur)s, 240uc = %(240uc)s, 240dc = %(240dc)s "
-                    "WHERE pattern=%(pattern)s")
+                update_ptn_perf = ("UPDATE `" + db_tbl + "`  "
+                                   "SET stockID = %(stockID)s, pattern = %(pattern)s, "
+                                   " date_s = %(date_s)s, date_e = %(date_e)s, trading_days = %(trading_days)s,"
+                                   " buy_signal_cnt = %(buy_signal_cnt)s, sell_signal_cnt = %(sell_signal_cnt)s, pattern = %(pattern)s, "
+                                   " 1mea = %(1mea)s, 1med = %(1med)s, 1min = %(1min)s, 1max = %(1max)s, 1var = %(1var)s, 1skw = %(1skw)s, 1kur = %(1kur)s, 1uc = %(1uc)s, 1dc = %(1dc)s, "
+                                   " 2mea = %(2mea)s, 2med = %(2med)s, 2min = %(2min)s, 2max = %(2max)s, 2var = %(2var)s, 2skw = %(2skw)s, 2kur = %(2kur)s, 2uc = %(2uc)s, 2dc = %(2dc)s, "
+                                   " 3mea = %(3mea)s, 3med = %(3med)s, 3min = %(3min)s, 3max = %(3max)s, 3var = %(3var)s, 3skw = %(3skw)s, 3kur = %(3kur)s, 3uc = %(3uc)s, 3dc = %(3dc)s, "
+                                   " 5mea = %(5mea)s, 5med = %(5med)s, 5min = %(5min)s, 5max = %(5max)s, 5var = %(5var)s, 5skw = %(5skw)s, 5kur = %(5kur)s, 5uc = %(5uc)s, 5dc = %(5dc)s, "
+                                   " 7mea = %(7mea)s, 7med = %(7med)s, 7min = %(7min)s, 7max = %(7max)s, 7var = %(7var)s, 7skw = %(7skw)s, 7kur = %(7kur)s, 7uc = %(7uc)s, 7dc = %(7dc)s, "
+                                   " 10mea = %(10mea)s, 10med = %(10med)s, 10min = %(10min)s, 10max = %(10max)s, 10var = %(10var)s, 10skw = %(10skw)s, 10kur = %(10kur)s, 10uc = %(10uc)s, 10dc = %(10dc)s, "
+                                   " 15mea = %(15mea)s, 15med = %(15med)s, 15min = %(15min)s, 15max = %(15max)s, 15var = %(15var)s, 15skw = %(15skw)s, 15kur = %(15kur)s, 15uc = %(15uc)s, 15dc = %(15dc)s, "
+                                   " 20mea = %(20mea)s, 20med = %(20med)s, 20min = %(20min)s, 20max = %(20max)s, 20var = %(20var)s, 20skw = %(20skw)s, 20kur = %(20kur)s, 20uc = %(20uc)s, 20dc = %(20dc)s, "
+                                   " 30mea = %(30mea)s, 30med = %(30med)s, 30min = %(30min)s, 30max = %(30max)s, 30var = %(30var)s, 30skw = %(30skw)s, 30kur = %(30kur)s, 30uc = %(30uc)s, 30dc = %(30dc)s, "
+                                   " 60mea = %(60mea)s, 60med = %(60med)s, 60min = %(60min)s, 60max = %(60max)s, 60var = %(60var)s, 60skw = %(60skw)s, 60kur = %(60kur)s, 60uc = %(60uc)s, 60dc = %(60dc)s, "
+                                   " 120mea = %(120mea)s, 120med = %(120med)s, 120min = %(120min)s, 120max = %(120max)s, 120var = %(120var)s, 120skw = %(120skw)s, 120kur = %(120kur)s, 120uc = %(120uc)s, 120dc = %(120dc)s, "
+                                   " 240mea = %(240mea)s, 240med = %(240med)s, 240min = %(240min)s, 240max = %(240max)s, 240var = %(240var)s, 240skw = %(240skw)s, 240kur = %(240kur)s, 240uc = %(240uc)s, 240dc = %(240dc)s "
+                                   "WHERE pattern=%(pattern)s")
 
                 data_ptn_perf = {}
                 # data_ptn_perf = {'ID'}
@@ -3016,10 +3013,10 @@ class Finlib:
             self.pprint(df.head(2))
 
             #exit(0)
-            return(df)
+            return (df)
 
         if df.__len__() == 0:
-            return()
+            return ()
 
         if str(df['date'].iloc[0]).count("-") == 2:
             df['date'] = df['date'].apply(lambda _d: datetime.strptime(str(_d), '%Y-%m-%d'))
@@ -3282,8 +3279,8 @@ class Finlib:
             "long_take_profit_price": round(long_take_profit_price, 2),
             "long_stop_lost_price": round(long_stop_lost_price, 2),
             "one_percent_delta": round(delta, 2),
-            "long_take_profit_percent":round((long_take_profit_price - long_enter_price)*100/long_enter_price, 1),
-            "long_stop_lost_percent":round((long_stop_lost_price - long_enter_price)*100/long_enter_price, 1),
+            "long_take_profit_percent": round((long_take_profit_price - long_enter_price) * 100 / long_enter_price, 1),
+            "long_stop_lost_percent": round((long_stop_lost_price - long_enter_price) * 100 / long_enter_price, 1),
         }
 
         return (rtn)
@@ -3389,25 +3386,20 @@ class Finlib:
             exit(0)
 
         if dir == base_dir + "/AG":
-            rtn_df = pd.read_csv(data_csv_fp, converters={'code': str,'date':str}, header=None, skiprows=1, names=['code', 'date', 'open', 'high', 'low', 'close', 'volume', 'amount', 'tnv'])
+            rtn_df = pd.read_csv(data_csv_fp, converters={'code': str, 'date': str}, header=None, skiprows=1, names=['code', 'date', 'open', 'high', 'low', 'close', 'volume', 'amount', 'tnv'])
         elif dir in [base_dir + "/stooq/US_INDEX", base_dir + "/stooq/US"]:
             #DOW.csv  SP500.csv, AAPL.csv
-            rtn_df = pd.read_csv(data_csv_fp, converters={'code': str,'date':str}, encoding="utf-8")
+            rtn_df = pd.read_csv(data_csv_fp, converters={'code': str, 'date': str}, encoding="utf-8")
         elif dir == base_dir + "/US":
-            rtn_df = pd.read_csv(data_csv_fp, converters={'code': str,'date':str}, encoding="utf-8")
+            rtn_df = pd.read_csv(data_csv_fp, converters={'code': str, 'date': str}, encoding="utf-8")
         elif dir == base_dir + "/HK":
-            rtn_df = pd.read_csv(data_csv_fp, converters={'code': str,'date':str}, encoding="utf-8")
+            rtn_df = pd.read_csv(data_csv_fp, converters={'code': str, 'date': str}, encoding="utf-8")
         elif dir == base_dir + "/AG_INDEX":
-            rtn_df = pd.read_csv(data_csv_fp,
-                                 skiprows=1,
-                                 header=None,
-                                 names=['code', 'date', 'close', 'open', 'high', 'low', 'pre_close', 'change', 'pct_chg', 'vol', 'amount'],
-                                 converters={'code': str,'date':str},
-                                 encoding="utf-8")
+            rtn_df = pd.read_csv(data_csv_fp, skiprows=1, header=None, names=['code', 'date', 'close', 'open', 'high', 'low', 'pre_close', 'change', 'pct_chg', 'vol', 'amount'], converters={'code': str, 'date': str}, encoding="utf-8")
         elif dir.__contains__("/home/ryan/DATA/result"):
-            rtn_df = pd.read_csv(data_csv_fp, converters={'code': str,'date':str}, encoding="utf-8")
+            rtn_df = pd.read_csv(data_csv_fp, converters={'code': str, 'date': str}, encoding="utf-8")
         elif dir.__contains__("/home/ryan/DATA"):
-            rtn_df = pd.read_csv(data_csv_fp, converters={'code': str,'date':str}, encoding="utf-8")
+            rtn_df = pd.read_csv(data_csv_fp, converters={'code': str, 'date': str}, encoding="utf-8")
         else:
             logging.fatal("unknown path file " + data_csv_fp)
             exit(0)
@@ -3419,8 +3411,6 @@ class Finlib:
             rtn_df = self.add_market_to_code(rtn_df)
 
             rtn_df['code'] = rtn_df['code'].apply(lambda _d: str(_d).upper())
-
-
 
         return (rtn_df)
 

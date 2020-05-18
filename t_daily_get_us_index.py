@@ -21,12 +21,7 @@ output_csv_base = '~/DATA/pickle/INDEX_US_HK'
 # In[2]:
 
 #this code is stable as long as the following addresses are not being changed and thier structure not change
-urls = {
-    'SNP500': 'https://en.wikipedia.org/wiki/List_of_S%26P_500_companies',
-    'sp400': 'https://en.wikipedia.org/wiki/List_of_S%26P_400_companies',
-    'dow': 'https://en.wikipedia.org/wiki/Dow_Jones_Industrial_Average',
-    'nasdqa100': 'https://www.nasdaq.com/market-activity/quotes/nasdaq-ndx-index?render=download'
-}
+urls = {'SNP500': 'https://en.wikipedia.org/wiki/List_of_S%26P_500_companies', 'sp400': 'https://en.wikipedia.org/wiki/List_of_S%26P_400_companies', 'dow': 'https://en.wikipedia.org/wiki/Dow_Jones_Industrial_Average', 'nasdqa100': 'https://www.nasdaq.com/market-activity/quotes/nasdaq-ndx-index?render=download'}
 indices = {}
 for url in urls:
     print("getting " + url + " from " + urls[url])
@@ -65,11 +60,7 @@ for url in urls:
 
 # In[3]:
 
-urls = {
-    'NYSE': 'http://www.nasdaq.com/screening/companies-by-industry.aspx?exchange=NYSE&render=download',
-    'AMEX': 'http://www.nasdaq.com/screening/companies-by-industry.aspx?exchange=AMEX&render=download',
-    'NASDAQ': 'http://www.nasdaq.com/screening/companies-by-industry.aspx?exchange=NASDAQ&render=download'
-}
+urls = {'NYSE': 'http://www.nasdaq.com/screening/companies-by-industry.aspx?exchange=NYSE&render=download', 'AMEX': 'http://www.nasdaq.com/screening/companies-by-industry.aspx?exchange=AMEX&render=download', 'NASDAQ': 'http://www.nasdaq.com/screening/companies-by-industry.aspx?exchange=NASDAQ&render=download'}
 
 exchanges = {}
 for i in urls:

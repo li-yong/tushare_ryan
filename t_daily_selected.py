@@ -387,21 +387,19 @@ def analyze_moneyflow(mf_ana_date, mf_ana_pre_days=3, mf_ana_test_hold_days=5, p
                         logging.info("buy, hold long  " + code + " " + name + " " + str(rst['date']) + " sig " + str(rst['sig']))
                         operation = "buy, hold long"
 
-                    df_history = df_history.append(
-                        {
-                            'code': code,
-                            'name': name,
-                            'date': str(rst['date']),
-                            'operation': operation,
-                            'strength': rst['sig'],
-                            'reason': reason,
-                            'date_in': in_date.strftime('%Y-%m-%d'),
-                            'date_out': out_date.strftime('%Y-%m-%d'),
-                            'p_in': p_in,
-                            'p_out': p_out,
-                            'profit': profit,
-                        },
-                        ignore_index=True)
+                    df_history = df_history.append({
+                        'code': code,
+                        'name': name,
+                        'date': str(rst['date']),
+                        'operation': operation,
+                        'strength': rst['sig'],
+                        'reason': reason,
+                        'date_in': in_date.strftime('%Y-%m-%d'),
+                        'date_out': out_date.strftime('%Y-%m-%d'),
+                        'p_in': p_in,
+                        'p_out': p_out,
+                        'profit': profit,
+                    }, ignore_index=True)
 
                     df_history.to_csv(csv_out_history, encoding='UTF-8', index=False)
                     logging.info("hit saved to " + csv_out_history)

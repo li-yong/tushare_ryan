@@ -26,7 +26,7 @@ from optparse import OptionParser
 #logging.info("fetched to "+"csv.del")
 
 
-def stooq_download(code, mkt, days=1,force_fetch=False):
+def stooq_download(code, mkt, days=1, force_fetch=False):
     code = code.lower()
     mkt = mkt.lower()
 
@@ -62,6 +62,7 @@ def stooq_download(code, mkt, days=1,force_fetch=False):
     finlib.Finlib().pprint(df.iloc[-1:])
     pass
 
+
 parser = OptionParser()
 parser.add_option("--force_fetch", action="store_true", dest="force_fetch", default=False, help="force fetch data")
 
@@ -78,7 +79,7 @@ for mkt in ['US_INDEX', 'US']:
         i += 1
         name, code = row['name'], row['code']
         logging.info(str(i) + " of " + str(stock_list.__len__()) + " fetching stooq " + code + " " + name)
-        stooq_download(code=code, mkt=mkt,force_fetch=force_fetch)
+        stooq_download(code=code, mkt=mkt, force_fetch=force_fetch)
         pass
 
 logging.info("script completed. ")

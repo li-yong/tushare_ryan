@@ -125,14 +125,11 @@ def check_fibo(df, code, name, begin_date='20180101', show_fig_f=False, save_fig
         rtn_dict['long_tp_p'] = r['long_take_profit_price']
         rtn_dict['long_sl_p'] = r['long_stop_lost_price']
 
-
-
         rtn_dict['hit_sum'] = r['current_hit_cnt']['sum_cnt']
         rtn_dict['h_cnt'] = r['current_hit_cnt']['h_cnt']
         rtn_dict['l_cnt'] = r['current_hit_cnt']['l_cnt']
         rtn_dict['o_cnt'] = r['current_hit_cnt']['o_cnt']
         rtn_dict['c_cnt'] = r['current_hit_cnt']['c_cnt']
-
 
     return (rtn_dict)
 
@@ -217,7 +214,6 @@ def main():
         #print(df_t)
         if not df_t.empty:
             df_rtn = pd.concat([df_rtn, df_t], sort=False).reset_index().drop('index', axis=1)
-
 
     df_rtn.to_csv(out_f, encoding='UTF-8', index=False)
     print(df_rtn)

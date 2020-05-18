@@ -53,12 +53,7 @@ parser.add_option("-n", "--skip_backup_before_execute", action="store_true", des
 #parser.add_option("-l", "--to_table", dest="to_table", default='zzz_pattern_perf_debug',
 #                  help="save to DB table.")
 
-parser.add_option("-b",
-                  "--db_tbl",
-                  dest="db_tbl",
-                  default='zzz_pattern_perf_debug',
-                  type="str",
-                  help="insert to which table in DB, default is zzz_pattern_perf_debug.\n \
+parser.add_option("-b", "--db_tbl", dest="db_tbl", default='zzz_pattern_perf_debug', type="str", help="insert to which table in DB, default is zzz_pattern_perf_debug.\n \
                    pattern_perf_forex, pattern_perf ")
 
 (options, args) = parser.parse_args()

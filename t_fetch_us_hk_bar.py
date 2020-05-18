@@ -47,7 +47,7 @@ if (stock_global not in ['US', 'HK']):
 # delete /home/ryan/DATA/pickle/instrument.csv to fetch again.
 
 
-def get_hk_us(df, cons, start_date, appendix, todayS,force_fetch):
+def get_hk_us(df, cons, start_date, appendix, todayS, force_fetch):
     default_date_d = datetime.datetime.strptime(start_date, '%Y-%m-%d')
 
     fast_fetch = True  #for full fetch
@@ -68,7 +68,7 @@ def get_hk_us(df, cons, start_date, appendix, todayS,force_fetch):
         name = df.iloc[i]['name']
         #cons = ts.get_apis()  #<<<<< renew connection every time
 
-        sys.stdout.write(str(i+1) + "/" + str(df.__len__()) + " get " + str(code) + " " + str(name) + ". " + appendix + ". ")  #print without newline
+        sys.stdout.write(str(i + 1) + "/" + str(df.__len__()) + " get " + str(code) + " " + str(name) + ". " + appendix + ". ")  #print without newline
         #a_csv = '/home/ryan/DATA/DAY_Global/' + str(code) + '.' + appendix  # WUBA.CH
         #a_csv = '/home/ryan/DATA/DAY_Global/' + appendix + '/' + str(code) + '.' + appendix  # DATA/DAY_Global/CH/WUBA.CH
         a_csv = '/home/ryan/DATA/DAY_Global/' + appendix + '/' + str(code) + '.csv'  # DATA/DAY_Global/CH/WUBA.CH
@@ -226,7 +226,7 @@ csv_dir = rst['csv_dir']
 stock_list = rst['stock_list']
 
 todayS = datetime.datetime.today().strftime('%Y-%m-%d')
-get_hk_us(stock_list, cons, start_date, stock_global, todayS=todayS,force_fetch=force_fetch)
+get_hk_us(stock_list, cons, start_date, stock_global, todayS=todayS, force_fetch=force_fetch)
 
 logging.info('script completed')
 os._exit(0)

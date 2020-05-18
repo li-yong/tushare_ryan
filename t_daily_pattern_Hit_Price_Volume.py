@@ -51,13 +51,7 @@ parser.add_option("-s", "--single_process", action="store_true", dest="single_pr
 
 parser.add_option("-e", "--exam_date", dest="exam_date", help="exam_date, YYYY-MM--DD, no default value, missing will calc the nearest trading day, most time is today")
 
-parser.add_option("-l",
-                  "--local_source",
-                  action="store_true",
-                  dest="local_source",
-                  default=False,
-                  help="use local source, use when need modify source files. "
-                  "with -f --> /home/ryan/DATA/DAY_Forex_local, without -f /home/ryan/DATA/DAY_local")
+parser.add_option("-l", "--local_source", action="store_true", dest="local_source", default=False, help="use local source, use when need modify source files. " "with -f --> /home/ryan/DATA/DAY_Forex_local, without -f /home/ryan/DATA/DAY_local")
 parser.add_option("-f", "--forex", action="store_true", dest="forex", default=False, help="handle Forex, source is /home/ryan/DATA/DAY_Forex")
 
 parser.add_option("-x", "--stock_global", dest="stock_global", help="[CH(US)|KG(HK)|KH(HK)|MG(US)|US(US)|AG(A G)|dev(debug)], source is /home/ryan/DATA/DAY_global/xx/")
@@ -584,7 +578,7 @@ elif stock_global is not None:
     if stock_global in ["HK"]:
         root_dir = '/home/ryan/DATA/DAY_Global/HK'
     elif stock_global in ["US", "US_INDEX"]:
-        root_dir = '/home/ryan/DATA/DAY_Global/stooq/'+stock_global
+        root_dir = '/home/ryan/DATA/DAY_Global/stooq/' + stock_global
     else:
         root_dir = '/home/ryan/DATA/DAY_Global/' + stock_global
 

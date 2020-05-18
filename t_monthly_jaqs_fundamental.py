@@ -235,11 +235,7 @@ def fetch_secDailyIndicator(debug=False, force_fetch=False):
         '''
         #debug end
 
-        df, msg = api.query(
-            view="lb.secDailyIndicator",
-            fields=
-            'symbol,trade_date,total_mv, float_mv, pb,pb_new, pe,pe_ttm,ps,ps_ttm,turnoverratio, freeturnover, total_share, float_share, free_share, pcf_ocf,pcf_ocfttm,pcf_ncf,profit_ttm,profit_lyr,pcf_ncfttm,net_assets,close,price_div_dps,cash_flows_oper_act_ttm,cash_flows_oper_act_lyr,operrev_ttm,operrev_lyr,limit_status',
-            filter='symbol=' + symbol + '&start_date=' + start_date_req + '&end_date=' + todayS)
+        df, msg = api.query(view="lb.secDailyIndicator", fields='symbol,trade_date,total_mv, float_mv, pb,pb_new, pe,pe_ttm,ps,ps_ttm,turnoverratio, freeturnover, total_share, float_share, free_share, pcf_ocf,pcf_ocfttm,pcf_ncf,profit_ttm,profit_lyr,pcf_ncfttm,net_assets,close,price_div_dps,cash_flows_oper_act_ttm,cash_flows_oper_act_lyr,operrev_ttm,operrev_lyr,limit_status', filter='symbol=' + symbol + '&start_date=' + start_date_req + '&end_date=' + todayS)
 
         if (msg == '0,'):
             logging.info(" len fetched " + str(df.__len__()) + " ")
@@ -253,10 +249,7 @@ def fetch_secDailyIndicator(debug=False, force_fetch=False):
             #cols = ['code', 'name', 'trade_date', 'close', 'symbol', 'ps', 'ps_ttm', 'pe','pe_ttm', 'pb', 'price_div_dps',
             #        'float_mv', 'net_assets', 'pcf_ncf', 'pcf_ncfttm', 'pcf_ocf', 'pcf_ocfttm']
 
-            cols = [
-                'code', 'name', 'trade_date', 'close', 'symbol', 'ps', 'ps_ttm', 'pe', 'pe_ttm', 'pb', 'price_div_dps', 'float_mv', 'net_assets', 'pcf_ncf', 'pcf_ncfttm', 'pcf_ocf', 'pcf_ocfttm',
-                'float_share', 'free_share', 'limit_status', 'total_mv', 'total_share'
-            ]
+            cols = ['code', 'name', 'trade_date', 'close', 'symbol', 'ps', 'ps_ttm', 'pe', 'pe_ttm', 'pb', 'price_div_dps', 'float_mv', 'net_assets', 'pcf_ncf', 'pcf_ncfttm', 'pcf_ocf', 'pcf_ocfttm', 'float_share', 'free_share', 'limit_status', 'total_mv', 'total_share']
 
             # the actual return not match the document.
             #cols = ['code', 'name', 'trade_date', 'close', 'symbol', 'ps', 'ps_ttm', 'pe_ttm', 'pe', 'pe_ttm', 'pb',
@@ -506,8 +499,7 @@ def calc_quartly_report():
         #j_df_q_r.to_csv(j_quartly_report_csv, encoding='UTF-8', index=False)  # save first,  memory error on reset_index().drop.
         #logging.info(code +' saved, '+j_quartly_report_csv)
 
-    cols = ['year_quarter', 'code', 'name', 'close', 'symbol', 'ps', 'ps_ttm', 'pe', 'pe_ttm', 'pb', 'price_div_dps', 'float_mv', 'net_assets', 'pcf_ncf', 'pcf_ncfttm', 'pcf_ocf',
-            'pcf_ocfttm']  #remove 'Unnamed: 0'
+    cols = ['year_quarter', 'code', 'name', 'close', 'symbol', 'ps', 'ps_ttm', 'pe', 'pe_ttm', 'pb', 'price_div_dps', 'float_mv', 'net_assets', 'pcf_ncf', 'pcf_ncfttm', 'pcf_ocf', 'pcf_ocfttm']  #remove 'Unnamed: 0'
     j_df_q_r = j_df_q_r[cols]
     j_df_q_r.reset_index().drop('index', axis=1).to_csv(j_quartly_report_csv, encoding='UTF-8', index=False)
 
@@ -527,12 +519,7 @@ def main():
 
     parser.add_option("-o", "--force_fetch_data", action="store_true", dest="force_fetch_data", default=False, help="always fetch, even if file age < 3 days.")
 
-    parser.add_option("-q",
-                      "--calc_quartly_report",
-                      action="store_true",
-                      dest="calc_quartly_report",
-                      default=False,
-                      help="calc quartly mean data from the daily. (close price BuFuQuan.) Report saved to " + j_quartly_report_csv)
+    parser.add_option("-q", "--calc_quartly_report", action="store_true", dest="calc_quartly_report", default=False, help="calc quartly mean data from the daily. (close price BuFuQuan.) Report saved to " + j_quartly_report_csv)
 
     parser.add_option("-d", "--debug", action="store_true", dest="debug", default=False, help="use debug, instrument_A.csv.debug, when -f")
 

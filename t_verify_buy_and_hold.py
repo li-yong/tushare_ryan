@@ -377,13 +377,7 @@ def main():
         if not os.path.isfile(bv_csv):
             df = calc_daily_incease(input_csv=files_abs_path, bv_csv=bv_csv)
 
-        (code, start_date, end_date, profit, bhf_profit) = verify(bv_csv=bv_csv,
-                                                                  op=operation_f,
-                                                                  start_date=start_date_f,
-                                                                  end_date=end_date_f,
-                                                                  days_after_signal_to_buy=days_after_signal_to_buy_f,
-                                                                  buy_and_hold_days=buy_and_hold_days_f,
-                                                                  top_N=top_n_f)
+        (code, start_date, end_date, profit, bhf_profit) = verify(bv_csv=bv_csv, op=operation_f, start_date=start_date_f, end_date=end_date_f, days_after_signal_to_buy=days_after_signal_to_buy_f, buy_and_hold_days=buy_and_hold_days_f, top_N=top_n_f)
 
         if code is not None:
             df_result.loc[i] = [code, operation_f, start_date, end_date, profit, bhf_profit]

@@ -188,11 +188,9 @@ def backtest(array):
 
     cursor = cnx.cursor()
 
-    add_s_p_perf = ("INSERT INTO stock_pattern_overview "
-                    "(ID, stockID, pattern, date_s, date_e, trading_days, buy_signal_cnt, sell_signal_cnt, \
+    add_s_p_perf = ("INSERT INTO stock_pattern_overview " "(ID, stockID, pattern, date_s, date_e, trading_days, buy_signal_cnt, sell_signal_cnt, \
                     buy_cnt, sell_cnt, win_cnt, \
-                    lose_cnt, max_win, max_draw, increase_percent, no_op_in) "
-                    "VALUES (%s, %s, %s, %s, %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)")
+                    lose_cnt, max_win, max_draw, increase_percent, no_op_in) " "VALUES (%s, %s, %s, %s, %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)")
 
     data_s_p_perf = ('', code, "PATTEN_TODO", df['date'][0:1].values[0], df['date'][-1:].values[0], \
                      day_cnt, b_sig_cnt, s_sig_cnt, \

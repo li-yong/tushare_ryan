@@ -929,10 +929,7 @@ def quarterly_fundamental_any(df_basic, year_quarter, debug=False):
     #df_q_r = df_q_r.DataFrame.reset_index().drop('index', axis=1) #RYAN:BUG?
     df_q_r = df_q_r.reset_index().drop('index', axis=1)
 
-    df_q_r = finlib.Finlib().change_df_columns_order(df_q_r, [
-        'code', 'name', 'year_quarter', 'trade_date', 'result_value_quarter_fundation', 'business_income_perc', 'esp_perc', 'esp_ratio_perc', 'net_profits_perc', 'pb_perc', 'pe_perc', 'roe_perc',
-        'totalAssets_perc', 'esp_ratio', 'peg_1', 'peg_4'
-    ])
+    df_q_r = finlib.Finlib().change_df_columns_order(df_q_r, ['code', 'name', 'year_quarter', 'trade_date', 'result_value_quarter_fundation', 'business_income_perc', 'esp_perc', 'esp_ratio_perc', 'net_profits_perc', 'pb_perc', 'pe_perc', 'roe_perc', 'totalAssets_perc', 'esp_ratio', 'peg_1', 'peg_4'])
 
     df_q_r.to_csv(dump_csv_q, encoding='UTF-8', index=True)
 
@@ -2002,9 +1999,7 @@ def calc_ps(debug=False):
 
     df_ps = df_ps[df_ps['year_quarter'] == str(year) + "_" + str(quarter)]
 
-    cols_position = [
-        'year_quarter', 'code', 'name', 'ps', 'pe', 'industry', 'area', 'npr', 'net_profits', 'peg_1', 'peg_4', 'egr_1', 'egr_4', 'roe', 'activity', 'avgturnover', 'strength', 'rateofreturn'
-    ]
+    cols_position = ['year_quarter', 'code', 'name', 'ps', 'pe', 'industry', 'area', 'npr', 'net_profits', 'peg_1', 'peg_4', 'egr_1', 'egr_4', 'roe', 'activity', 'avgturnover', 'strength', 'rateofreturn']
 
     cols_ps = ['ps', 'peg_1', 'peg_4', 'egr_1', 'egr_4', 'year_quarter']
 

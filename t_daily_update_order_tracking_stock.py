@@ -65,14 +65,7 @@ for i in range(open_stocks.__len__()):
 
     db_tbl = 'order_tracking_stock'
 
-    update_sql = ("UPDATE `" + db_tbl + "`  "
-                  "SET D1_inc = %(D1_inc)s, D2_inc = %(D2_inc)s, D3_inc = %(D3_inc)s, D5_inc = %(D5_inc)s, "
-                  " D10_inc = %(D10_inc)s, D15_inc = %(D15_inc)s, D20_inc = %(D20_inc)s, "
-                  " D60_inc = %(D60_inc)s, D120_inc = %(D120_inc)s, D240_inc = %(D240_inc)s,"
-                  " ID_1 =%(ID_1)s, ID_2 = %(ID_2)s, ID_3 = %(ID_3)s, ID_5 = %(ID_5)s, "
-                  " ID_10 = %(ID_10)s, ID_15 = %(ID_15)s, ID_20 = %(ID_20)s, "
-                  " ID_60 = %(ID_60)s, ID_120 = %(ID_120)s, ID_240 = %(ID_240)s "
-                  " WHERE `id` = %(id)s")
+    update_sql = ("UPDATE `" + db_tbl + "`  " "SET D1_inc = %(D1_inc)s, D2_inc = %(D2_inc)s, D3_inc = %(D3_inc)s, D5_inc = %(D5_inc)s, " " D10_inc = %(D10_inc)s, D15_inc = %(D15_inc)s, D20_inc = %(D20_inc)s, " " D60_inc = %(D60_inc)s, D120_inc = %(D120_inc)s, D240_inc = %(D240_inc)s," " ID_1 =%(ID_1)s, ID_2 = %(ID_2)s, ID_3 = %(ID_3)s, ID_5 = %(ID_5)s, " " ID_10 = %(ID_10)s, ID_15 = %(ID_15)s, ID_20 = %(ID_20)s, " " ID_60 = %(ID_60)s, ID_120 = %(ID_120)s, ID_240 = %(ID_240)s " " WHERE `id` = %(id)s")
 
     data_sql = {}
     data_sql['id'] = int(id)
