@@ -285,7 +285,7 @@ def backtest(array):
 
 ### Main Start ###
 if __name__ == '__main__':
-    logging.info("SCRIPT STARTING " + " ".join(sys.argv))
+    logging.info(__file__+" "+"SCRIPT STARTING " + " ".join(sys.argv))
     array = []
 
     if truncate_tbl:

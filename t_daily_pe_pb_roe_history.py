@@ -165,7 +165,7 @@ def get_indicator_history():
 
 
 def main():
-    logging.info("SCRIPT STARTING " + " ".join(sys.argv))
+    logging.info(__file__+" "+"SCRIPT STARTING " + " ".join(sys.argv))
     get_indicator_history()
     select_from_result()
 

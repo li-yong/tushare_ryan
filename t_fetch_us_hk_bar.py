@@ -23,8 +23,8 @@ from optparse import OptionParser
 import logging
 logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m_%d %H:%M:%S', level=logging.DEBUG)
 
-logging.info("\n")
-logging.info("SCRIPT STARTING " + " ".join(sys.argv))
+logging.info(__file__+" "+"\n")
+logging.info(__file__+" "+"SCRIPT STARTING " + " ".join(sys.argv))
 
 parser = OptionParser()
 
@@ -81,7 +81,7 @@ def get_hk_us(df, cons, start_date, appendix, todayS, force_fetch):
         #    a_csv = '/home/ryan/DATA/DAY_Global/HK/' + str(code) + '.csv'
 
         #if finlib.Finlib().is_cached(a_csv, day=1):
-        #    logging.info("ignore because file was updated within 24 hours, " + a_csv)
+        #    logging.info(__file__+" "+"ignore because file was updated within 24 hours, " + a_csv)
         #    continue
 
         df_tmp = pandas.DataFrame()  #exists csv
@@ -94,13 +94,13 @@ def get_hk_us(df, cons, start_date, appendix, todayS, force_fetch):
                 continue
 
         if finlib.Finlib().is_cached(a_csv) and (not force_fetch):
-            logging.info("file has been updated in a day, not fetch again. " + a_csv)
+            logging.info(__file__+" "+"file has been updated in a day, not fetch again. " + a_csv)
             continue
 
         if os.path.isfile(a_csv):
 
             if os.stat(a_csv).st_size == 0:
-                logging.info("empty file, skip. " + a_csv)
+                logging.info(__file__+" "+"empty file, skip. " + a_csv)
                 continue
 
             df_tmp = pd.read_csv(a_csv, converters={'code': str, 'datetime': str})
@@ -115,14 +115,14 @@ def get_hk_us(df, cons, start_date, appendix, todayS, force_fetch):
 
             #if next_date > datetime.datetime.today():
             if next_date.strftime('%Y-%m-%d') > todayS:
-                logging.info("file already updated, not fetching again. " + a_csv + ". updated to " + last_date)
+                logging.info(__file__+" "+"file already updated, not fetching again. " + a_csv + ". updated to " + last_date)
                 continue
 
             #last date in csv is 7 days ago, most likely the source is not update, so skip this csv.
-            #logging.info("Next "+next_date.strftime('%Y-%m-%d'))
-            #logging.info("a week before "+ a_week_before_date.strftime('%Y-%m-%d'))
+            #logging.info(__file__+" "+"Next "+next_date.strftime('%Y-%m-%d'))
+            #logging.info(__file__+" "+"a week before "+ a_week_before_date.strftime('%Y-%m-%d'))
             if next_date.strftime('%Y-%m-%d') < a_week_before_date.strftime('%Y-%m-%d'):
-                logging.info("file too old to updated, not fetching. " + a_csv + ". updated to " + last_date)
+                logging.info(__file__+" "+"file too old to updated, not fetching. " + a_csv + ". updated to " + last_date)
                 #continue
 
             if next_date > default_date_d:  #csv already have data
@@ -136,7 +136,7 @@ def get_hk_us(df, cons, start_date, appendix, todayS, force_fetch):
             print("code " + str(code))
             a_stock_df = ts.bar(code, conn=cons, asset='X', adj='qfq', start_date=start_date_req, end_date='')
             if str(a_stock_df) != 'None':
-                logging.info("fetched df len " + str(a_stock_df.__len__()))
+                logging.info(__file__+" "+"fetched df len " + str(a_stock_df.__len__()))
 
             #time.sleep(2)
             if str(a_stock_df) == 'None':
@@ -146,7 +146,7 @@ def get_hk_us(df, cons, start_date, appendix, todayS, force_fetch):
                 cons = ts.get_apis()
                 a_stock_df = ts.bar(code, conn=cons, asset='X', adj='qfq', start_date=start_date_req, end_date='')
         except:
-            logging.info("\tcaught exception when getting data, try to renew cons")
+            logging.info(__file__+" "+"\tcaught exception when getting data, try to renew cons")
             ts.close_apis(cons)
             time.sleep(a_wait_time)
 
@@ -160,7 +160,7 @@ def get_hk_us(df, cons, start_date, appendix, todayS, force_fetch):
             del exc_info
 
         if str(a_stock_df) == 'None':
-            logging.info("ts.bar return None for code. Retry exhausted. " + str(code))
+            logging.info(__file__+" "+"ts.bar return None for code. Retry exhausted. " + str(code))
             continue
 
     #At this stage, a_stock_df should be valid.
@@ -194,9 +194,9 @@ def get_hk_us(df, cons, start_date, appendix, todayS, force_fetch):
             a_stock_df = df_tmp.append(a_stock_df, ignore_index=True)
             finlib.Finlib().pprint(a_stock_df.iloc[-1:])
             a_stock_df.to_csv(a_csv, encoding='UTF-8', index=False)
-            logging.info("saved " + a_csv)
+            logging.info(__file__+" "+"saved " + a_csv)
         except:
-            logging.info("\tcaught exception when processing to csv")
+            logging.info(__file__+" "+"\tcaught exception when processing to csv")
         finally:
             if exc_info == (None, None, None):
                 pass  # no exception

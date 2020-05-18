@@ -197,7 +197,7 @@ def macd(period):
         df_rtn = df_rtn[['code', 'name', 'date', 'action', 'reason', 'strength']]
         df_rtn.to_csv(output_csv, encoding='UTF-8', index=False)
 
-        logging.info("MACD selection saved to " + output_csv + " . len " + str(df_rtn.__len__()))
+        logging.info(__file__+" "+"MACD selection saved to " + output_csv + " . len " + str(df_rtn.__len__()))
 
 
 def calculate(indicator, period):
@@ -215,8 +215,8 @@ def analyze():
 
 
 def main():
-    logging.info("\n")
-    logging.info("SCRIPT STARTING " + " ".join(sys.argv))
+    logging.info(__file__+" "+"\n")
+    logging.info(__file__+" "+"SCRIPT STARTING " + " ".join(sys.argv))
 
     parser = OptionParser()
 

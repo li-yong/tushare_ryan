@@ -190,7 +190,7 @@ def main():
         logging.info(csv_f)
 
         if not os.path.isfile(csv_f):
-            logging.warning("file not exist. " + csv_f)
+            logging.warning(__file__+" "+"file not exist. " + csv_f)
             continue
 
         df = finlib.Finlib().regular_read_csv_to_stdard_df(csv_f)

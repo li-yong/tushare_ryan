@@ -98,7 +98,7 @@ def analyze_hsgt_top_10():
         df = pd.read_csv(input_csv, converters={'trade_date': str, 'ts_code': str})
         #df = pd.read_csv(input_csv)
     else:
-        logging.info("abort, no such file " + input_csv)
+        logging.info(__file__+" "+"abort, no such file " + input_csv)
         return ()
 
     #recent 10 days most source in money stocks
@@ -355,7 +355,7 @@ def analyze_moneyflow(mf_ana_date, mf_ana_pre_days=3, mf_ana_test_hold_days=5, p
 ### MAIN ####
 if __name__ == '__main__':
 
-    logging.info("\n")
+    logging.info(__file__+" "+"\n")
     logging.info(__file__ + " " + "SCRIPT STARTING " + " ".join(sys.argv))
 
     parser = OptionParser()
@@ -399,16 +399,16 @@ if __name__ == '__main__':
     if mf_ana_date == None:
         mf_ana_date = finlib.Finlib().get_last_trading_day()
 
-    logging.info("fetch_moneyflow_all_f: " + str(fetch_moneyflow_all_f))
-    logging.info("fetch_hsgt_top_10_f: " + str(fetch_hsgt_top_10_f))
-    logging.info("fetch_moneyflow_daily_f: " + str(fetch_moneyflow_daily_f))
-    logging.info("analyze_moneyflow_f: " + str(analyze_moneyflow_f))
-    logging.info("analyze_hsgt_f: " + str(analyze_hsgt_f))
-    logging.info("mf_ana_pre_days: " + str(mf_ana_pre_days))
-    logging.info("mf_ana_test_hold_days: " + str(mf_ana_test_hold_days))
-    logging.info("mf_ana_prime_stock: " + str(mf_ana_prime_stock))
-    logging.info("mf_ana_date: " + str(mf_ana_date))
-    logging.info("debug_f: " + str(debug_f))
+    logging.info(__file__+" "+"fetch_moneyflow_all_f: " + str(fetch_moneyflow_all_f))
+    logging.info(__file__+" "+"fetch_hsgt_top_10_f: " + str(fetch_hsgt_top_10_f))
+    logging.info(__file__+" "+"fetch_moneyflow_daily_f: " + str(fetch_moneyflow_daily_f))
+    logging.info(__file__+" "+"analyze_moneyflow_f: " + str(analyze_moneyflow_f))
+    logging.info(__file__+" "+"analyze_hsgt_f: " + str(analyze_hsgt_f))
+    logging.info(__file__+" "+"mf_ana_pre_days: " + str(mf_ana_pre_days))
+    logging.info(__file__+" "+"mf_ana_test_hold_days: " + str(mf_ana_test_hold_days))
+    logging.info(__file__+" "+"mf_ana_prime_stock: " + str(mf_ana_prime_stock))
+    logging.info(__file__+" "+"mf_ana_date: " + str(mf_ana_date))
+    logging.info(__file__+" "+"debug_f: " + str(debug_f))
 
     set_global(debug=debug_f, force_run=force_run_f)
 

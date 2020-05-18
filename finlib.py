@@ -66,15 +66,15 @@ class Account:
 
 class Finlib:
     def load_all_jaqs(self):
-        logging.info("load df basic requires lots of memory, > 1G will be consumed.")
+        logging.info(__file__+" "+"load df basic requires lots of memory, > 1G will be consumed.")
         csv = "/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/basic.csv"  # file 1.1G, lots of memory to loading >5G
         csv = "/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/basic_quarterly.csv"  #
 
         if not os.path.exists(csv):
-            logging.info("file not exists " + csv)
+            logging.info(__file__+" "+"file not exists " + csv)
             return ()
 
-        logging.info("reading " + csv)
+        logging.info(__file__+" "+"reading " + csv)
 
         # df = pd.read_csv(csv, converters={i: str for i in range(20)})
         df = pd.read_csv(csv, converters={'ts_code': str, 'trade_date': str})
@@ -83,7 +83,7 @@ class Finlib:
     '''
     def zzz_load_all_jaqs(self,debug=False, overwrite=False):
         #return() #ryan debug
-        logging.info("consolidate jaqs to a df requires lots of memory, > 2G will be consumed.")
+        logging.info(__file__+" "+"consolidate jaqs to a df requires lots of memory, > 2G will be consumed.")
 
 
         output_csv = "/home/ryan/DATA/result/jaqs/jaqs_all.csv"
@@ -100,24 +100,24 @@ class Finlib:
             exit()
 
         #if self.is_cached(output_csv,day=7) and (not overwrite):
-            #logging.info("load jaqs all from "+output_csv)
+            #logging.info(__file__+" "+"load jaqs all from "+output_csv)
             #df_all_jaqs = pd.read_csv(output_csv)
 
         if self.is_cached(output_pickle, day=7) and (not overwrite):
-            logging.info("load jaqs all from " + output_pickle)
+            logging.info(__file__+" "+"load jaqs all from " + output_pickle)
             df_all_jaqs = pd.read_pickle(output_pickle)
             return(df_all_jaqs)
 
         allFiles = glob.glob(path + "/*.csv")
 
-        logging.info("load_all_jaqs, reading files, 2G memory will be consumed, be paticent...")
+        logging.info(__file__+" "+"load_all_jaqs, reading files, 2G memory will be consumed, be paticent...")
         df_all_jaqs = pd.concat((pd.read_csv(f, converters={'code':str, 'trade_date':str}) for f in allFiles),sort=False)
-        logging.info("generate df_all_jaqs which concatted from "+path+"/*.csv has done.")
+        logging.info(__file__+" "+"generate df_all_jaqs which concatted from "+path+"/*.csv has done.")
 
-        #logging.info("saving df_all_jaqs , "+output_csv)
+        #logging.info(__file__+" "+"saving df_all_jaqs , "+output_csv)
         #df_all_jaqs.to_csv(output_csv, encoding='UTF-8', index=False)
 
-        logging.info("saving df_all_jaqs , " + output_pickle)
+        logging.info(__file__+" "+"saving df_all_jaqs , " + output_pickle)
         df_all_jaqs.to_pickle(output_pickle)
 
         return(df_all_jaqs)
@@ -127,7 +127,7 @@ class Finlib:
 
         output_pickle = "/home/ryan/DATA/result/jaqs/ts_all.pickle"
 
-        logging.info("consolidate ts_pro to a df requires lots of memory, > 500M will be consumed.")
+        logging.info(__file__+" "+"consolidate ts_pro to a df requires lots of memory, > 500M will be consumed.")
 
         path = "/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/merged"
 
@@ -135,7 +135,7 @@ class Finlib:
             path = path + ".dev"
 
         if self.is_cached(output_pickle, day=7) and (not overwrite):
-            logging.info("load tushare pro all from " + output_pickle)
+            logging.info(__file__+" "+"load tushare pro all from " + output_pickle)
             df_all_ts_pro = pd.read_pickle(output_pickle)
             return (df_all_ts_pro)
 
@@ -144,19 +144,19 @@ class Finlib:
             exit()
 
         allFiles = glob.glob(path + "/*.csv")
-        logging.info("load_all_ts_pro, reading files, 500M memory will be consumed, be paticent...")
+        logging.info(__file__+" "+"load_all_ts_pro, reading files, 500M memory will be consumed, be paticent...")
 
         df_all_ts_pro = pd.DataFrame()
 
         for f in allFiles:
-            logging.info("reading " + f)
+            logging.info(__file__+" "+"reading " + f)
             df_tmp = pd.read_csv(f, converters={'end_date': str, 'audit_agency': str, 'audit_result': str, 'audit_sign': str})
             df_all_ts_pro = pd.concat([df_all_ts_pro, df_tmp], sort=False)
 
         # df_all_ts_pro = pd.concat((pd.read_csv(f, converters={'end_date':str}) for f in allFiles), sort=False) #faster but no debug ablity
-        logging.info("generate df_all_ts_pro which concatted from " + path + "/*.csv has done.")
+        logging.info(__file__+" "+"generate df_all_ts_pro which concatted from " + path + "/*.csv has done.")
 
-        logging.info("saving df_all_ts_pro to " + output_pickle)
+        logging.info(__file__+" "+"saving df_all_ts_pro to " + output_pickle)
         df_all_ts_pro.to_pickle(output_pickle)
 
         return (df_all_ts_pro)
@@ -186,8 +186,8 @@ class Finlib:
         if fenmu == 0.0:
             return 0
 
-        # logging.info("log2 "+str(abs_fenzi - fenmu))
-        # logging.info("log2 "+str((abs_fenzi / fenmu) + 1))
+        # logging.info(__file__+" "+"log2 "+str(abs_fenzi - fenmu))
+        # logging.info(__file__+" "+"log2 "+str((abs_fenzi / fenmu) + 1))
 
         rst = np.log10(abs_fenzi) * \
               np.log2(abs_fenzi_min_fenmu) * \
@@ -208,14 +208,14 @@ class Finlib:
         df_basic = pd.DataFrame()
 
         if not os.path.isfile(csv_basic):
-            logging.info("Getting Basic, ts.get_stock_basics of " + todayS)  # 获取沪深上市公司基本情况
+            logging.info(__file__+" "+"Getting Basic, ts.get_stock_basics of " + todayS)  # 获取沪深上市公司基本情况
             try:
                 df_basic = ts.get_stock_basics()
                 df_basic = df_basic.reset_index()
                 df_basic.code = df_basic.code.astype(str)  # convert the code from numpy.int to string.
                 df_basic.reset_index().to_csv(csv_basic, encoding='UTF-8', index=False)
             except:
-                logging.info("exception in get_today_stock_basic()" + str(e))
+                logging.info(__file__+" "+"exception in get_today_stock_basic()" + str(e))
             finally:
                 if sys.exc_info() == (None, None, None):
                     pass  # no exception
@@ -225,7 +225,7 @@ class Finlib:
                     logging.info(sys.exc_value.message)  # print the human readable unincode
                     sys.exc_clear()
         else:
-            # logging.info("\nLoading Basic")
+            # logging.info(__file__+" "+"\nLoading Basic")
             df_basic = pandas.read_csv(csv_basic, converters={'code': str})
 
         return (df_basic)
@@ -236,7 +236,7 @@ class Finlib:
         df_basic = self.get_today_stock_basic()
         cols = ['code', 'name', 'esp', 'npr', 'timeToMarket']
         df_basic = df_basic[cols]
-        # logging.info("df_basic.__len__() is " + str(df_basic.__len__()))
+        # logging.info(__file__+" "+"df_basic.__len__() is " + str(df_basic.__len__()))
 
         df_basic = df_basic.fillna(0)
         df_basic = df_basic[df_basic['timeToMarket'] != 0]
@@ -244,13 +244,13 @@ class Finlib:
         a = datetime.now() - timedelta(360)
         b = a.date().strftime('%Y%m%d')  # '20170505'
         df_basic = df_basic[df_basic['timeToMarket'] < int(b)]
-        # logging.info("after timetoMarket>360, df_basic.__len__() is " + str(df_basic.__len__()))
+        # logging.info(__file__+" "+"after timetoMarket>360, df_basic.__len__() is " + str(df_basic.__len__()))
 
         df_basic = df_basic[df_basic['esp'] > 0]
-        # logging.info("after esp>0, df_basic.__len__() is " + str(df_basic.__len__()))
+        # logging.info(__file__+" "+"after esp>0, df_basic.__len__() is " + str(df_basic.__len__()))
 
         df_basic = df_basic[df_basic['npr'] > 0]
-        # logging.info("after npr>0, df_basic.__len__() is " + str(df_basic.__len__()))
+        # logging.info(__file__+" "+"after npr>0, df_basic.__len__() is " + str(df_basic.__len__()))
 
         df_basic = self.add_market_to_code(df=df_basic)  # the code must in format 'SH600xxx' etc
 
@@ -262,7 +262,7 @@ class Finlib:
         d = df_basic['code'].tolist()
         df = df[df['code'].isin(d)]
 
-        logging.info("after filter(timetomarket>360, esp>0, npr>0), df len " + str(df.__len__()))
+        logging.info(__file__+" "+"after filter(timetomarket>360, esp>0, npr>0), df len " + str(df.__len__()))
 
         return df
 
@@ -272,13 +272,13 @@ class Finlib:
                 timeToMarket = str(df_basic.iloc[i]['timeToMarket'])
 
                 if pd.isnull(timeToMarket):
-                    logging.info("code " + code + " timetomarket is " + str(timeToMarket))
+                    logging.info(__file__+" "+"code " + code + " timetomarket is " + str(timeToMarket))
                     continue
                 elif timeToMarket == '0':
-                    logging.info("code " + code + " timetomarket is " + str(timeToMarket))
+                    logging.info(__file__+" "+"code " + code + " timetomarket is " + str(timeToMarket))
                     continue
                 elif datetime.strptime(timeToMarket, '%Y%m%d') + timedelta(360) > datetime.now():
-                    logging.info("the stock " + str(code) + " is less than 1 year, " + str(timeToMarket))
+                    logging.info(__file__+" "+"the stock " + str(code) + " is less than 1 year, " + str(timeToMarket))
                     pass
 
     def get_year_month_quarter(self, year=None, month=None):
@@ -472,7 +472,7 @@ class Finlib:
         elif quarter == "1":
             mark_date = "0331"
         else:
-            logging.info("unknow quarter " + quarter)
+            logging.info(__file__+" "+"unknow quarter " + quarter)
 
         return (mark_date)
 
@@ -486,7 +486,7 @@ class Finlib:
             pd_tmp = self.regular_read_csv_to_stdard_df(price_csv)
 
             if pd_tmp.__len__() == 0:
-                logging.info("Fatal error, file is empty " + price_csv)
+                logging.info(__file__+" "+"Fatal error, file is empty " + price_csv)
                 # exit(1)
                 return price
 
@@ -497,11 +497,11 @@ class Finlib:
                     actual_price = df_the_day.iloc[-1:]['close'].values[0]  # '11.8231'
 
                     if actual_date != date:
-                        # logging.info("request "+code_m+" "+date+", return "+actual_date)
+                        # logging.info(__file__+" "+"request "+code_m+" "+date+", return "+actual_date)
                         pass
                     price = actual_price
                 else:
-                    logging.info("no record of " + code_m + " " + date)
+                    logging.info(__file__+" "+"no record of " + code_m + " " + date)
             else:
                 price = pd_tmp['close'][-1:].values[0]
 
@@ -519,35 +519,35 @@ class Finlib:
             xapi = ts_cs.xapi()
             con_succ = True
         except:
-            logging.info("except when getting ts_cs.xapi()")
+            logging.info(__file__+" "+"except when getting ts_cs.xapi()")
 
         if con_succ == False:
             try:
                 xapi = ts_cs.xapi_x()
                 con_succ = True
             except:
-                logging.info("except when getting ts_cs.xapi_x()")
+                logging.info(__file__+" "+"except when getting ts_cs.xapi_x()")
 
         if con_succ == False:
             try:
                 xapi = ts_cs.api()
                 con_succ = True
             except:
-                logging.info("except when getting ts_cs.api()")
-                logging.info("retrying exhaused")
+                logging.info(__file__+" "+"except when getting ts_cs.api()")
+                logging.info(__file__+" "+"retrying exhaused")
 
         market_csv = "/home/ryan/DATA/pickle/market.csv"
         # if os.path.isfile(market_csv) and force_update:
-        #    logging.info("deleting "+market_csv)
+        #    logging.info(__file__+" "+"deleting "+market_csv)
         #    os.remove(market_csv)
 
         if self.is_cached(market_csv, 3) and (not force_update):
             df_market = pd.read_csv(market_csv, converters={'code': str})
         else:
-            logging.info("fetching market")
+            logging.info(__file__+" "+"fetching market")
             df_market = ts_stock_trading.get_markets(xapi)
             df_market.to_csv(market_csv, encoding='UTF-8', index=False)  # len 48
-            logging.info("market saved to " + market_csv)
+            logging.info(__file__+" "+"market saved to " + market_csv)
 
         return df_market
 
@@ -559,38 +559,38 @@ class Finlib:
             api = ts_cs.api()  # no errors
             con_succ = True
         except:
-            logging.info("except when getting ts_cs.xapi()")  # AttributeError: 'TdxExHq_API' object has no attribute 'get_security_list'
+            logging.info(__file__+" "+"except when getting ts_cs.xapi()")  # AttributeError: 'TdxExHq_API' object has no attribute 'get_security_list'
 
         if con_succ == False:
             try:
                 api = ts_cs.xapi()
                 con_succ = True
             except:
-                logging.info("except when getting ts_cs.xapi_x()")  # AttributeError: 'TdxExHq_API' object has no attribute 'get_security_list'
+                logging.info(__file__+" "+"except when getting ts_cs.xapi_x()")  # AttributeError: 'TdxExHq_API' object has no attribute 'get_security_list'
 
         if con_succ == False:
             try:
                 api = ts_cs.xapi_x()
                 con_succ = True
             except:
-                logging.info("except when getting ts_cs.api()")
-                logging.info("retrying exhaused")
+                logging.info(__file__+" "+"except when getting ts_cs.api()")
+                logging.info(__file__+" "+"retrying exhaused")
 
                 # Stock
         security_csv = "/home/ryan/DATA/pickle/security.csv"
 
         # if os.path.isfile(security_csv) and force_update:
-        #    logging.info("removing file "+security_csv)
+        #    logging.info(__file__+" "+"removing file "+security_csv)
         #    os.remove(security_csv)
 
         if self.is_cached(security_csv, 3) and (not force_update):
             df_security = pd.read_csv(security_csv, converters={'code': str})
         else:
             # df_security = ts.get_security(api) # NOT FOUND 6000xxx in the map
-            logging.info("fetching security")
+            logging.info(__file__+" "+"fetching security")
             df_security = ts_stock_trading.get_security(api)  # ryan: add 2018 04 21
             df_security.to_csv(security_csv, encoding='UTF-8', index=False)  # len 7644
-            logging.info("security saved to " + security_csv)
+            logging.info(__file__+" "+"security saved to " + security_csv)
 
         return df_security
 
@@ -602,36 +602,36 @@ class Finlib:
             xapi = ts_cs.xapi()
             con_succ = True
         except:
-            logging.info("except when getting ts_cs.xapi()")
+            logging.info(__file__+" "+"except when getting ts_cs.xapi()")
 
         if con_succ == False:
             try:
                 xapi = ts_cs.xapi_x()
                 con_succ = True
             except:
-                logging.info("except when getting ts_cs.xapi_x()")
+                logging.info(__file__+" "+"except when getting ts_cs.xapi_x()")
 
         if con_succ == False:
             try:
                 xapi = ts_cs.api()
                 con_succ = True
             except:
-                logging.info("except when getting ts_cs.api()")
-                logging.info("retrying exhaused")
+                logging.info(__file__+" "+"except when getting ts_cs.api()")
+                logging.info(__file__+" "+"retrying exhaused")
 
                 # Qi Huo, HK Stock, US Stock
         instrument_csv = "/home/ryan/DATA/pickle/instrument.csv"
         # if os.path.isfile(instrument_csv) and force_update:
-        #    logging.info("deleting "+instrument_csv)
+        #    logging.info(__file__+" "+"deleting "+instrument_csv)
         #    os.remove(instrument_csv)
 
         if (not force_update) and self.is_cached(instrument_csv, 1):
             df_instrument = pd.read_csv(instrument_csv, converters={'code': str})
         else:
-            logging.info("fetching instrument")
+            logging.info(__file__+" "+"fetching instrument")
             df_instrument = ts_stock_trading.get_instrument(xapi)
             df_instrument.to_csv(instrument_csv, encoding='UTF-8', index=False)  # len 7644
-            logging.info("instrument saved to " + instrument_csv)
+            logging.info(__file__+" "+"instrument saved to " + instrument_csv)
 
         return df_instrument
 
@@ -895,13 +895,13 @@ class Finlib:
 
         if a.at[tdy_idx, "is_open"] == 0:
             if debug:
-                logging.info("Today " + todayS + " is not a trading day, checking previous days")
+                logging.info(__file__+" "+"Today " + todayS + " is not a trading day, checking previous days")
             tdy_idx = a[a['cal_date'] == int(todayS)].index.values[0]
             for i in range(tdy_idx, 0, -1):
                 if a.at[i, "is_open"] == 1:
                     exam_date = str(a.at[i, "cal_date"])
                     if debug:
-                        logging.info("Day " + exam_date + " is a trading day.")
+                        logging.info(__file__+" "+"Day " + exam_date + " is a trading day.")
                     break
 
         return str(exam_date)
@@ -911,19 +911,19 @@ class Finlib:
         csv_f = "/home/ryan/DATA/pickle/trading_day_2020.csv"
 
         if not os.path.isfile(csv_f):
-            # logging.info("downloading trading day data")
+            # logging.info(__file__+" "+"downloading trading day data")
             a = ts.trade_cal()
             # a.to_pickle(dump)
             a.to_csv(csv_f, encoding='UTF-8', index=False)
         else:
-            # logging.info("loading trading day data")
+            # logging.info(__file__+" "+"loading trading day data")
             # a = pandas.read_pickle(dump)
             a = pandas.read_csv(csv_f)
 
         tdy_idx = a[a['cal_date'] == int(dateS)].index.values[0]
 
         if a.at[tdy_idx, "is_open"] == 0:
-            logging.info("Date " + dateS + " is not a trading day")
+            logging.info(__file__+" "+"Date " + dateS + " is not a trading day")
             rst = False
 
         else:
@@ -1063,7 +1063,7 @@ class Finlib:
             # tnv=df.iloc[:,df.columns.get_loc('tnv')]  #turnoverratio
 
             if df[-1:]['close'].values[0] == 0 or df[-1:]['open'].values[0] == 0 or df[-1:]['volume'].values[0] == 0:
-                logging.info("ignore as the close price/open price/volume is 0")
+                logging.info(__file__+" "+"ignore as the close price/open price/volume is 0")
                 return (df, df_result)
 
             last_record_time = datetime.now()
@@ -1237,11 +1237,11 @@ class Finlib:
                     df_loop_2_5.iloc[i, df_loop_2_5.columns.get_loc('price_change_perc')] = delta_perc
 
                 if df_loop_2_5['price_change_perc'].max() == df_loop_2_5['price_change_perc'][-1:].values[0]:
-                    logging.info("code " + str(code) + " hit the max daily increase in last " + str(df_loop_2_5.__len__()) + " days")
+                    logging.info(__file__+" "+"code " + str(code) + " hit the max daily increase in last " + str(df_loop_2_5.__len__()) + " days")
                     df_result.loc[i_result] = [df_loop_2_5['date'][-1:].values[0], code, 'S', code + "_max_daily_increase", 1, closeP]
                     i_result += 1
                 elif df_loop_2_5['price_change_perc'].min() == df_loop_2_5['price_change_perc'][-1:].values[0]:
-                    logging.info("code " + str(code) + " hit the max daily decrease in last " + str(df_loop_2_5.__len__()) + " days")
+                    logging.info(__file__+" "+"code " + str(code) + " hit the max daily decrease in last " + str(df_loop_2_5.__len__()) + " days")
                     df_result.loc[i_result] = [df_loop_2_5['date'][-1:].values[0], code, 'B', code + "_max_daily_decrease", 1, closeP]
                     i_result += 1
 
@@ -1258,14 +1258,14 @@ class Finlib:
 
                 # if yesterday_close > 0 and (today_open < yesterday_close) and (today_open > today_close) : #and (round(today_open,1) == round(today_high,1))
                 if yesterday_close > 0 and (today_open < yesterday_close) and (yesterday_close > today_close) and (today_high < yesterday_close):  # and (round(today_open,1) == round(today_high,1))
-                    logging.info("code " + str(code) + " hit decrease gap ")
+                    logging.info(__file__+" "+"code " + str(code) + " hit decrease gap ")
                     op_strength = round((yesterday_close - today_open) * 100.0 / yesterday_close, 2)
                     df_result.loc[i_result] = [df_loop_2_5['date'][-1:].values[0], code, 'B', code + "_decrease_gap", op_strength, closeP]
                     i_result += 1
 
                 # if yesterday_close > 0 and (today_open > yesterday_close) and (today_open < today_close): #and (today_open == today_high)
                 if yesterday_close > 0 and (today_open > yesterday_close) and (yesterday_close < today_close) and (today_low > yesterday_close):  # and (today_open == today_high)
-                    logging.info("code " + str(code) + " hit increase gap ")
+                    logging.info(__file__+" "+"code " + str(code) + " hit increase gap ")
                     op_strength = round((today_open - yesterday_close) * 100.0 / yesterday_close, 2)
                     df_result.loc[i_result] = [df_loop_2_5['date'][-1:].values[0], code, 'S', code + "_increase_gap", op_strength, closeP]
                     i_result += 1
@@ -1289,7 +1289,7 @@ class Finlib:
                     p_cnt += 1
 
                     if debug and p_cnt > 300:
-                        logging.info("in debug mode, break talib pattern after 300 times running.")
+                        logging.info(__file__+" "+"in debug mode, break talib pattern after 300 times running.")
                         break
 
                     cmd = "talib." + p + "(o.values, h.values, l.values, c.values)"
@@ -1568,7 +1568,7 @@ class Finlib:
                     # code = code_match.group(1)
                     # else:
                     #    pass
-                    # logging.info("wrong code"+code)
+                    # logging.info(__file__+" "+"wrong code"+code)
                     # exit(1)
 
                     time = str(df.iloc[i - 1, df.columns.get_loc('date')])
@@ -1596,7 +1596,7 @@ class Finlib:
                         reason = code + "_B_pvbreak_lp_lv_v_or_c_up_or_dn_brk"  # price low, vol low, vol/c up/down break
                         df.iloc[i - 1, df.columns.get_loc('op')] += ';B' + str(this_buy_num)
                         df.iloc[i - 1, df.columns.get_loc('op_rsn')] += ";" + reason
-                        # logging.info("Buy "+str(this_buy_num)+ " "+code+" "+time+" "+ close_p+" "+reason)
+                        # logging.info(__file__+" "+"Buy "+str(this_buy_num)+ " "+code+" "+time+" "+ close_p+" "+reason)
                         if exam_date == time:
                             df_result.loc[i_result] = [time, code, 'B', reason, op_strength, close_p]
                             i_result += 1
@@ -1609,7 +1609,7 @@ class Finlib:
                         reason = code + "_B_pvbreak_lp_lv_p_up_brk"  # price low, vol low, price up break.
                         df.iloc[i - 1, df.columns.get_loc('op')] += ';B' + str(this_buy_num)
                         df.iloc[i - 1, df.columns.get_loc('op_rsn')] += ";" + reason
-                        # logging.info("Buy "+str(this_buy_num)+ " " + code + " " + time + " " + close_p + " " + reason)
+                        # logging.info(__file__+" "+"Buy "+str(this_buy_num)+ " " + code + " " + time + " " + close_p + " " + reason)
                         if exam_date == time:
                             df_result.loc[i_result] = [time, code, 'B', reason, op_strength, close_p]
                             i_result += 1
@@ -1619,7 +1619,7 @@ class Finlib:
                         reason = code + "_B_pvbreak_lp_v_up_brk"  # price low, vol up break
                         df.iloc[i - 1, df.columns.get_loc('op')] += ';B' + str(this_buy_num)
                         df.iloc[i - 1, df.columns.get_loc('op_rsn')] += ";" + reason
-                        # logging.info("Buy "+str(this_buy_num)+ " " + code + " " + time + " " + close_p + " " + reason)
+                        # logging.info(__file__+" "+"Buy "+str(this_buy_num)+ " " + code + " " + time + " " + close_p + " " + reason)
                         if exam_date == time:
                             df_result.loc[i_result] = [time, code, 'B', reason, op_strength, close_p]
                             i_result += 1
@@ -1629,7 +1629,7 @@ class Finlib:
                         reason = code + "_S_pvbreak_hp_v_up_brk"  # high price, vol up break
                         df.iloc[i - 1, df.columns.get_loc('op')] += ';S' + str(this_sell_num)
                         df.iloc[i - 1, df.columns.get_loc('op_rsn')] += ";" + reason
-                        # logging.info("Sell "+str(this_sell_num) + " "+ code + " " + time + " " + close_p + " " + reason)
+                        # logging.info(__file__+" "+"Sell "+str(this_sell_num) + " "+ code + " " + time + " " + close_p + " " + reason)
                         if exam_date == time:
                             df_result.loc[i_result] = [time, code, 'S', reason, op_strength, close_p]
                             i_result += 1
@@ -1639,7 +1639,7 @@ class Finlib:
                         reason = code + "_S_pvbreak_hp_p_dn_brk_v_up_brk"  # price high, price down break, vol up break.
                         df.iloc[i - 1, df.columns.get_loc('op')] += ';S' + str(this_sell_num)
                         df.iloc[i - 1, df.columns.get_loc('op_rsn')] += ";" + reason
-                        # logging.info("Sell " +str(this_sell_num)+ " "+ code + " " + time + " " + close_p + " " + reason)
+                        # logging.info(__file__+" "+"Sell " +str(this_sell_num)+ " "+ code + " " + time + " " + close_p + " " + reason)
                         if exam_date == time:
                             df_result.loc[i_result] = [time, code, 'S', reason, op_strength, close_p]
                             i_result += 1
@@ -1649,7 +1649,7 @@ class Finlib:
                         reason = code + "_B_pvbreak_lp_p_dn_brk_v_up_brk"  # price low, price down break, vol up break
                         df.iloc[i - 1, df.columns.get_loc('op')] += ';B' + str(this_buy_num)
                         df.iloc[i - 1, df.columns.get_loc('op_rsn')] += ";" + reason
-                        # logging.info("B "+str(this_buy_num)+ " " + code + " " + time + " " + close_p + " " + reason)
+                        # logging.info(__file__+" "+"B "+str(this_buy_num)+ " " + code + " " + time + " " + close_p + " " + reason)
                         if exam_date == time:
                             df_result.loc[i_result] = [time, code, 'B', reason, op_strength, close_p]
                             i_result += 1
@@ -1714,7 +1714,7 @@ class Finlib:
                   ):
 
             if debug and p_cnt > 300:
-                logging.info("in debug mode, break talib indicator div after 300 times running.")
+                logging.info(__file__+" "+"in debug mode, break talib indicator div after 300 times running.")
                 break
 
             if (b == 'bool_p_mfi_div' and eval(b) == True):
@@ -2262,13 +2262,13 @@ class Finlib:
                     target_n_days = ds_n_days['volume']
 
                 else:
-                    logging.info("Unknown target, die at finlib.py.")
+                    logging.info(__file__+" "+"Unknown target, die at finlib.py.")
                     exit(0)
 
             #if use_shared_eval:
             if target != 'pv':
                 if debug:
-                    logging.info("running " + cmd)
+                    logging.info(__file__+" "+"running " + cmd)
                 target_n_days = eval(cmd)
 
             # target_n_days = talib.MFI(high, low, close, volume, timeperiod=target_period)
@@ -2278,7 +2278,7 @@ class Finlib:
 
             if target_n_days_no_nan.__len__() < 1:
                 # if debug:
-                #    logging.info("zero size "+target+"_n_days_no_nan")
+                #    logging.info(__file__+" "+"zero size "+target+"_n_days_no_nan")
                 # return [0, ds_n_days.index[-1], code]
                 continue
 
@@ -2328,7 +2328,7 @@ class Finlib:
 
             if (close[-1] >= close_max) and ((target_n_days[-1] - 0.99 * target_max) < 0):  # close_max_target == target_n_days[-1]
                 if target_max_close == 0 or target_max == 0:
-                    logging.info("target_max_close or target_max is zero.  Avoid the div by zero error.")
+                    logging.info(__file__+" "+"target_max_close or target_max is zero.  Avoid the div by zero error.")
                     continue
                 expected_target = target_max * close_max * 1.0 / target_max_close  # should be great then actual mfi
                 op_strength = (expected_target - target_n_days[-1]) * 1.0 / target_max
@@ -2338,7 +2338,7 @@ class Finlib:
                 df.iloc[i - 1, df.columns.get_loc('op')] += ";S"
                 df.iloc[i - 1, df.columns.get_loc('op_rsn')] += ";" + reason
                 df.iloc[i - 1, df.columns.get_loc('op_strength')] += "," + str(op_strength)  #
-                # logging.info("code: " + str(code) + " Date:" + time \
+                # logging.info(__file__+" "+"code: " + str(code) + " Date:" + time \
                 #      + " Sell Sig on "+ target +"_"+  str(target_period) + " divergence")
 
                 if exam_date == time:
@@ -2348,7 +2348,7 @@ class Finlib:
             elif (close[-1] <= close_min) and (target_n_days[-1] - 1.01 * target_min) > 0:
 
                 if target_min_close == 0 or target_min == 0:
-                    logging.info("target_min_close or target_min is zero.  Avoid the div by zero error.")
+                    logging.info(__file__+" "+"target_min_close or target_min is zero.  Avoid the div by zero error.")
                     continue
 
                 expected_target = target_min * close[-1] * 1.0 / target_min_close  # should higher than today actual mfi
@@ -2359,7 +2359,7 @@ class Finlib:
                 df.iloc[i - 1, df.columns.get_loc('op_rsn')] += ";" + reason
                 df.iloc[i - 1, df.columns.get_loc('op_strength')] += "," + str(op_strength)
 
-                # logging.info("code: " + str(code) + " Date:" + time \
+                # logging.info(__file__+" "+"code: " + str(code) + " Date:" + time \
                 #      + " Buy Sig on "+target+"_" + str(target_period) + " divergence")
 
                 if exam_date == time:
@@ -2395,7 +2395,7 @@ class Finlib:
             #    tbl="pattern_perf"
 
             select_ptn_perf = ("SELECT * FROM `" + db_tbl + "` WHERE pattern=\'" + ptn_dict + "\'")
-            logging.info("select_ptn_perf " + select_ptn_perf)
+            logging.info(__file__+" "+"select_ptn_perf " + select_ptn_perf)
             cursor.execute(select_ptn_perf)  # mysql.connector.errors.InterfaceError: 2013: Lost connection to MySQL server during query
             record = cursor.fetchall()
 
@@ -2454,11 +2454,11 @@ class Finlib:
                 data_s_p_perf = (code_dict, ptn_dict, df['date'][0:1].values[0], df['date'][-1:].values[0], \
                                  day_cnt, dict[ptn_code]["buy_signal_cnt"], dict[ptn_code]["sell_signal_cnt"], \
                                  ) + tuple(tm_data_sql)
-                # logging.info("add_s_p_perf "+add_s_p_perf)
+                # logging.info(__file__+" "+"add_s_p_perf "+add_s_p_perf)
                 # logging.info(data_s_p_perf)
                 cursor.execute(add_s_p_perf, data_s_p_perf)
                 cnx.commit()
-                logging.info("created new record, " + db_tbl + ", " + ptn_dict)
+                logging.info(__file__+" "+"created new record, " + db_tbl + ", " + ptn_dict)
                 pass  # END OF INSERT
 
             if (record.__len__() == 1):
@@ -2485,7 +2485,7 @@ class Finlib:
                 if h_sell_signal_cnt is None:
                     h_sell_signal_cnt = 0
 
-                logging.info("update(merge) record, " + db_tbl + ", " + h_pattern)
+                logging.info(__file__+" "+"update(merge) record, " + db_tbl + ", " + h_pattern)
 
                 # if('XAUUSD_B_talib_CDLSEPARATINGLINES' == h_pattern):#debug
                 #    pass
@@ -2599,13 +2599,13 @@ class Finlib:
             year = re.match("(\d{4})\d{2}\d{2}", str(list_date)).group(1)
             earlist_report_period = year + "1231"
             if date < earlist_report_period:
-                # logging.info("stock has not been on market. "+ts_code + " , "+date+" . Earliest on market report "+earlist_report_period)
+                # logging.info(__file__+" "+"stock has not been on market. "+ts_code + " , "+date+" . Earliest on market report "+earlist_report_period)
                 return (False)
             else:
-                # logging.info("stock has been on market. "+ts_code + " , "+date+" . Earliest on market report "+earlist_report_period)
+                # logging.info(__file__+" "+"stock has been on market. "+ts_code + " , "+date+" . Earliest on market report "+earlist_report_period)
                 return (True)
         else:
-            logging.info("do not have on-market date for code " + ts_code)
+            logging.info(__file__+" "+"do not have on-market date for code " + ts_code)
             return (False)
 
     def file_verify(self, file_path, day=3, hide_pass=False, print_len=True):
@@ -2878,7 +2878,7 @@ class Finlib:
 
     def prime_stock_list(self):
         csv = '/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/report/step6/multiple_years_score_selected.csv'
-        logging.info("loading , " + csv)
+        logging.info(__file__+" "+"loading , " + csv)
         if (os.path.isfile(csv)) and os.stat(csv).st_size >= 10:  # > 10 bytes
             df = pd.read_csv(csv, encoding="utf-8")
         else:
@@ -3313,7 +3313,7 @@ class Finlib:
             date_col_name = 'datetime'
 
         if not os.path.isfile(data_csv):
-            logging.warning("warn: data file doesn't exist. " + data_csv)
+            logging.warning(__file__+" "+"warn: data file doesn't exist. " + data_csv)
             return (rtn)
         else:
             rtn['exist'] = True
@@ -3333,7 +3333,7 @@ class Finlib:
         if last_day_in_csv == last_trading_day_Ymd:
             rtn['updated'] = True
         else:
-            logging.warning("out-of-date, expected date " + str(last_trading_day_Y_m_d) + ". date in csv " + str(last_day_in_csv) + " " + data_csv)
+            logging.warning(__file__+" "+"out-of-date, expected date " + str(last_trading_day_Y_m_d) + ". date in csv " + str(last_day_in_csv) + " " + data_csv)
 
         pass
         return (rtn)

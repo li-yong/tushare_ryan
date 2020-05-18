@@ -28,8 +28,8 @@ from optparse import OptionParser
 import logging
 logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m_%d %H:%M:%S', level=logging.DEBUG)
 
-logging.info("\n")
-logging.info("SCRIPT STARTING " + " ".join(sys.argv))
+logging.info(__file__+" "+"\n")
+logging.info(__file__+" "+"SCRIPT STARTING " + " ".join(sys.argv))
 
 parser = OptionParser()
 

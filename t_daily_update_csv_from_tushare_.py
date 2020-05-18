@@ -47,9 +47,9 @@ def update_holc(todayS_l, base_dir, pickle_only, add_miss):
             #today_all = ts.get_today_all()
             today_all = pro.daily(trade_date=todayS_s)
             today_all.to_pickle(dump)
-            logging.info("Pickle saved to " + dump)
+            logging.info(__file__+" "+"Pickle saved to " + dump)
     else:
-        logging.info("read pickle from " + dump)
+        logging.info(__file__+" "+"read pickle from " + dump)
         today_all = pandas.read_pickle(dump)
 
     today_all = finlib.Finlib().remove_market_from_tscode(today_all)
@@ -59,10 +59,10 @@ def update_holc(todayS_l, base_dir, pickle_only, add_miss):
     df_basic = pro.stock_basic()
     df_basic = finlib.Finlib().remove_market_from_tscode(df_basic)
     df_basic.to_csv(instrument_csv, encoding='UTF-8', index=False)  # len 3515
-    logging.info("\nsaved to " + instrument_csv)
+    logging.info(__file__+" "+"\nsaved to " + instrument_csv)
 
     if pickle_only:
-        logging.info("Save pickle only, exit")
+        logging.info(__file__+" "+"Save pickle only, exit")
         exit(0)
 
     a = today_all['code']
@@ -106,7 +106,7 @@ def update_holc(todayS_l, base_dir, pickle_only, add_miss):
             df_tmp = pd.read_csv(csv_f, converters={'code': str}, skiprows=1, header=None, names=['code', 'date', 'o', 'h', 'l', 'c', 'vol', 'amnt', 'tnv'])
 
             if df_tmp.__len__() == 0:
-                logging.info("empty file " + csv_f)
+                logging.info(__file__+" "+"empty file " + csv_f)
                 with open(csv_f, "a") as fh:
                     fh.write(csv_append_s)
                 fh.close()
@@ -122,7 +122,7 @@ def update_holc(todayS_l, base_dir, pickle_only, add_miss):
             # if next_date > datetime.datetime.today():
             #if next_date.strftime('%Y-%m-%d') > todayS:
             if next_date.strftime('%Y%m%d') > todayS_s:
-                logging.info("file already updated, not fetching again. " + csv_f + ". updated to " + last_date)
+                logging.info(__file__+" "+"file already updated, not fetching again. " + csv_f + ". updated to " + last_date)
                 continue
 
             #file exist, append.
@@ -156,16 +156,16 @@ def main():
     pickle_only = options.pickle_only
     exam_date = options.exam_date
 
-    logging.info("base_dir: " + str(base_dir))
-    logging.info("pickle_only: " + str(pickle_only))
-    logging.info("exam_date: " + str(exam_date))
+    logging.info(__file__+" "+"base_dir: " + str(base_dir))
+    logging.info(__file__+" "+"pickle_only: " + str(pickle_only))
+    logging.info(__file__+" "+"exam_date: " + str(exam_date))
 
     dump = ''
 
     if exam_date is None:
         exam_date = finlib.Finlib().get_last_trading_day()
         exam_date = datetime.strptime(exam_date, '%Y%m%d').strftime('%Y-%m-%d')
-        logging.info("exam_date reset to: " + exam_date)
+        logging.info(__file__+" "+"exam_date reset to: " + exam_date)
         dump = "/home/ryan/DATA/pickle/daily_update_source/" + exam_date + "ts_ud.pickle"
     elif ((not add_miss) and (not os.path.isfile(dump))):
         logging.error("expecting --add_miss.  pickle file " + dump + " does not exist, at this situation --exam_date without --add_miss fetchs wrong data from tushare for date which is the past.")
@@ -181,7 +181,7 @@ def main():
 
     update_holc(todayS_l, base_dir, pickle_only, add_miss)
 
-    logging.info("Script Completed.")
+    logging.info(__file__+" "+"Script Completed.")
     os._exit(0)
 
 

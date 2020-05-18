@@ -139,7 +139,7 @@ def fetch_secDailyIndicator(debug=False, force_fetch=False):
         elif re.match('^3', code):
             market = "SZ"
         else:
-            logging.info("unknown market for code " + code)
+            logging.info(__file__+" "+"unknown market for code " + code)
             continue
             #exit(1)
 
@@ -150,7 +150,7 @@ def fetch_secDailyIndicator(debug=False, force_fetch=False):
         sys.stdout.flush()
 
         if (not force_run_global) and finlib.Finlib().is_cached(csv_f, day=3) and (not force_fetch):
-            logging.info("ignore because csv_f was updated within 3 days, " + csv_f)
+            logging.info(__file__+" "+"ignore because csv_f was updated within 3 days, " + csv_f)
             continue
 
         #todayS = datetime.today().strftime('%Y%m%d')
@@ -161,7 +161,7 @@ def fetch_secDailyIndicator(debug=False, force_fetch=False):
         df_tmp = pd.DataFrame()  #base of the csv
 
         if (not os.path.isfile(csv_f)) or (os.stat(csv_f).st_size <= 200):  #200 bytes
-            logging.info("file not exist or empty file, full fetch " + csv_f)
+            logging.info(__file__+" "+"file not exist or empty file, full fetch " + csv_f)
             start_date_req = default_start_date
         else:
             ############ delta update start
@@ -174,24 +174,24 @@ def fetch_secDailyIndicator(debug=False, force_fetch=False):
             a_week_before_date = datetime.strptime(todayS, '%Y%m%d') - timedelta(20)
 
             if next_date.strftime('%Y%m%d') > todayS:
-                logging.info("file " + csv_f + " already updated, not fetching again. " + str(i_cnt) + " of " + str(total_len) + ". updated to " + last_date)
+                logging.info(__file__+" "+"file " + csv_f + " already updated, not fetching again. " + str(i_cnt) + " of " + str(total_len) + ". updated to " + last_date)
                 i_cnt += 1
 
                 continue
 
             # last date in csv is 7 days ago, most likely the source is not update, so skip this csv.
-            # logging.info("Next "+next_date.strftime('%Y-%m-%d'))
-            # logging.info("a week before "+ a_week_before_date.strftime('%Y-%m-%d'))
+            # logging.info(__file__+" "+"Next "+next_date.strftime('%Y-%m-%d'))
+            # logging.info(__file__+" "+"a week before "+ a_week_before_date.strftime('%Y-%m-%d'))
             if next_date.strftime('%Y%m%d') < a_week_before_date.strftime('%Y%m%d'):
-                logging.info("file too old to updated, not fetching. " + str(i_cnt) + " of " + str(total_len) + ". updated to " + last_date)
+                logging.info(__file__+" "+"file too old to updated, not fetching. " + str(i_cnt) + " of " + str(total_len) + ". updated to " + last_date)
                 #i_cnt += 1
                 #continue
 
             #if next_date > default_date_d:  # csv already have data
             start_date_req = next_date.strftime('%Y%m%d')
-            logging.info("append exist csv from " + start_date_req + ". ")
+            logging.info(__file__+" "+"append exist csv from " + start_date_req + ". ")
             #else:
-            #    logging.info("will do a full update, since " + start_date_req + ". ")
+            #    logging.info(__file__+" "+"will do a full update, since " + start_date_req + ". ")
 
             ############
 
@@ -238,7 +238,7 @@ def fetch_secDailyIndicator(debug=False, force_fetch=False):
         df, msg = api.query(view="lb.secDailyIndicator", fields='symbol,trade_date,total_mv, float_mv, pb,pb_new, pe,pe_ttm,ps,ps_ttm,turnoverratio, freeturnover, total_share, float_share, free_share, pcf_ocf,pcf_ocfttm,pcf_ncf,profit_ttm,profit_lyr,pcf_ncfttm,net_assets,close,price_div_dps,cash_flows_oper_act_ttm,cash_flows_oper_act_lyr,operrev_ttm,operrev_lyr,limit_status', filter='symbol=' + symbol + '&start_date=' + start_date_req + '&end_date=' + todayS)
 
         if (msg == '0,'):
-            logging.info(" len fetched " + str(df.__len__()) + " ")
+            logging.info(__file__+" "+" len fetched " + str(df.__len__()) + " ")
 
             code_df = pd.DataFrame([code] * df.__len__(), columns=['code'])
             name_df = pd.DataFrame([name] * df.__len__(), columns=['name'])
@@ -266,11 +266,11 @@ def fetch_secDailyIndicator(debug=False, force_fetch=False):
             df_result = df_tmp.append(df, ignore_index=True)
 
             df_result.to_csv(csv_f, encoding='UTF-8', index=False)
-            #logging.info("saved, len " + str(df_result.__len__()))
+            #logging.info(__file__+" "+"saved, len " + str(df_result.__len__()))
             logging.info(__file__ + ": " + "saved, " + csv_f + " , Len " + str(df_result.__len__()))
 
         else:
-            logging.info("query secDailyIndicator failed, msg " + msg)
+            logging.info(__file__+" "+"query secDailyIndicator failed, msg " + msg)
             continue
 
     return ()
@@ -307,7 +307,7 @@ def fetch_cashFlow(debug=False, force_fetch=False):
         elif re.match('^3', code):
             market = "SZ"
         else:
-            logging.info("unknown market for code "+code)
+            logging.info(__file__+" "+"unknown market for code "+code)
             continue
             #exit(1)
 
@@ -317,7 +317,7 @@ def fetch_cashFlow(debug=False, force_fetch=False):
         sys.stdout.flush()
 
         if finlib.Finlib().is_cached(csv_f, day=3) and (not force_fetch):
-            logging.info("ignore because csv_f was updated within 3 days, " + csv_f)
+            logging.info(__file__+" "+"ignore because csv_f was updated within 3 days, " + csv_f)
             continue
 
         todayS = datetime.today().strftime('%Y%m%d')
@@ -325,7 +325,7 @@ def fetch_cashFlow(debug=False, force_fetch=False):
 
         df_tmp = pd.DataFrame()  #base of the csv
 
-        logging.info("file not exist or empty file, full fetch "+csv_f)
+        logging.info(__file__+" "+"file not exist or empty file, full fetch "+csv_f)
         start_date_req = default_start_date
 
 
@@ -349,7 +349,7 @@ def fetch_cashFlow(debug=False, force_fetch=False):
                             filter='symbol=' + symbol + '&start_date=' + start_date_req + '&end_date=' + todayS)
 
         if (msg == '0,'):
-            logging.info(" len fetched "+str(df.__len__())+" ")
+            logging.info(__file__+" "+" len fetched "+str(df.__len__())+" ")
 
             code_df = pd.DataFrame([code]*df.__len__(),columns=['code'])
             name_df = pd.DataFrame([name]*df.__len__(),columns=['name'])
@@ -363,10 +363,10 @@ def fetch_cashFlow(debug=False, force_fetch=False):
             df_result = df_tmp.append(df, ignore_index=True)
 
             df_result.to_csv(csv_f, encoding='UTF-8', index=False)
-            logging.info("saved, len " + str(df_result.__len__()))
+            logging.info(__file__+" "+"saved, len " + str(df_result.__len__()))
 
         else:
-            logging.info("query secDailyIndicator failed, msg "+msg)
+            logging.info(__file__+" "+"query secDailyIndicator failed, msg "+msg)
             continue
 
 
@@ -377,7 +377,7 @@ def fetch_cashFlow(debug=False, force_fetch=False):
 def calc_quartly_report():
 
     if (not force_run_global) and finlib.Finlib().is_cached(j_quartly_report_csv, day=5):
-        logging.info("skip file, it been updated in 5 day. " + j_quartly_report_csv)
+        logging.info(__file__+" "+"skip file, it been updated in 5 day. " + j_quartly_report_csv)
         return
 
     base_dir = "/home/ryan/DATA/DAY_JAQS"
@@ -390,7 +390,7 @@ def calc_quartly_report():
     this_len = last_len = 0
 
     for code in list(df_code_name_map['code']):
-        logging.info("=== " + str(i_cnt) + " of " + str(total_len) + " ===")
+        logging.info(__file__+" "+"=== " + str(i_cnt) + " of " + str(total_len) + " ===")
         i_cnt += 1
 
         code = str(code)
@@ -401,14 +401,14 @@ def calc_quartly_report():
         elif re.match('^3', code):
             market = "SZ"
         else:
-            logging.info("unknown market for code " + code)
+            logging.info(__file__+" "+"unknown market for code " + code)
             continue
             #exit(1)
 
         csv_f = base_dir + "/" + market + code + ".csv"
 
         if not os.path.isfile(csv_f):
-            logging.info("not found source file to calc quartly report " + csv_f)
+            logging.info(__file__+" "+"not found source file to calc quartly report " + csv_f)
             continue
 
         df = pd.read_csv(csv_f, converters={'code': str})
@@ -441,7 +441,7 @@ def calc_quartly_report():
                 year_quarter = str(year) + "_" + str(quarter)  #format compliance with /DATA/result/fundamental.csv
 
                 df_q = df.query(query)
-                #logging.info("date len "+str(df_q.__len__()))
+                #logging.info(__file__+" "+"date len "+str(df_q.__len__()))
 
                 if df_q.__len__() > 0:
                     df_tmp.iloc[0, df_tmp.columns.get_loc('close')] = df_q['close'].mean()
@@ -484,16 +484,16 @@ def calc_quartly_report():
                     j_df_q_r = j_df_q_r.append(df_tmp)
                     this_len = j_df_q_r.__len__()
 
-                    #logging.info("j_df_q_r length "+str(this_len))
+                    #logging.info(__file__+" "+"j_df_q_r length "+str(this_len))
 
                     if (this_len >= last_len):
                         last_len = this_len
                     else:
-                        logging.info("should not be here")
+                        logging.info(__file__+" "+"should not be here")
                         exit(0)
 
                 else:
-                    #logging.info("no record, " + code + " " + q_start + " " + q_end)
+                    #logging.info(__file__+" "+"no record, " + code + " " + q_start + " " + q_end)
                     pass
 
         #j_df_q_r.to_csv(j_quartly_report_csv, encoding='UTF-8', index=False)  # save first,  memory error on reset_index().drop.
@@ -512,7 +512,7 @@ def main():
     #
     #########################
 
-    logging.info("SCRIPT STARTING " + " ".join(sys.argv))
+    logging.info(__file__+" "+"SCRIPT STARTING " + " ".join(sys.argv))
     parser = OptionParser()
 
     parser.add_option("-f", "--fetch_data_all", action="store_true", dest="fetch_all", default=False, help="fetch all the quarterly fundatation history data. saved to /home/ryan/DATA/DAY_JAQS")
@@ -532,11 +532,11 @@ def main():
     debug = options.debug
     force_run_f = options.force_run_f
 
-    logging.info("fetch_all: " + str(fetch_all_f))
-    logging.info("force_fetch: " + str(force_fetch_data_f))
-    logging.info("calc_quartly_report: " + str(calc_quartly_report_f))
-    logging.info("debug: " + str(debug))
-    logging.info("force_run_f: " + str(force_run_f))
+    logging.info(__file__+" "+"fetch_all: " + str(fetch_all_f))
+    logging.info(__file__+" "+"force_fetch: " + str(force_fetch_data_f))
+    logging.info(__file__+" "+"calc_quartly_report: " + str(calc_quartly_report_f))
+    logging.info(__file__+" "+"debug: " + str(debug))
+    logging.info(__file__+" "+"force_run_f: " + str(force_run_f))
 
     global force_run_global
     force_run_global = False
@@ -549,7 +549,7 @@ def main():
     elif calc_quartly_report_f:
         calc_quartly_report()
 
-    logging.info("script completed")
+    logging.info(__file__+" "+"script completed")
     os._exit(0)
 
 

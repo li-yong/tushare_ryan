@@ -55,7 +55,7 @@ def refine_df(input_df, has_db_record=False, force_pass=False, force_pass_open_r
     #d = d.reset_index().drop('index', axis=1)
     #d = input_df
 
-    logging.info("function refine_df, input df records " + str(input_df.__len__()) + " total stocks in the list: " + str(input_df.__len__()))
+    logging.info(__file__+" "+"function refine_df, input df records " + str(input_df.__len__()) + " total stocks in the list: " + str(input_df.__len__()))
 
     #df_rtn = pd.DataFrame(columns=input_df.columns).rename(columns={'op': 'hit_ptn_cnt'}).drop('op_rsn', axis=1)
     df_rtn = pd.DataFrame(columns=input_df.columns).rename(columns={'op': 'hit_ptn_cnt'})
@@ -126,7 +126,7 @@ def refine_df(input_df, has_db_record=False, force_pass=False, force_pass_open_r
                 elif (avg2 > 0.02) and (avg5 > 0.02) and (sum2uc > sum2dc * 3) and (sum5uc > sum5dc * 3):
                     pass  #Don't stop, continue to running into codes below.
                 else:
-                    logging.info("not qualified to buy")
+                    logging.info(__file__+" "+"not qualified to buy")
                     continue
 
         c_code = str(c['code'].values[0])
@@ -142,7 +142,7 @@ def refine_df(input_df, has_db_record=False, force_pass=False, force_pass_open_r
         c_status = 'OPEN'
 
         if pd.isnull(c_close_p) or float(c_close_p) == 0.0:
-            logging.info("not processing as c_close_p is 0. " + c_code + " " + c_name + " " + c_date)
+            logging.info(__file__+" "+"not processing as c_close_p is 0. " + c_code + " " + c_name + " " + c_date)
             continue
 
         #
@@ -152,7 +152,7 @@ def refine_df(input_df, has_db_record=False, force_pass=False, force_pass_open_r
             db_tbl = 'order_tracking_stock'
 
             if open_stocks.__len__() > 0:
-                logging.info("Have OPEN order on code " + c_code + ", +1 its buy_cnt")
+                logging.info(__file__+" "+"Have OPEN order on code " + c_code + ", +1 its buy_cnt")
                 exist_buy_reason = open_stocks['buy_reason'].values[0]
                 exist_buy_cnt = open_stocks['buy_cnt'].values[0]
 
@@ -202,7 +202,7 @@ def refine_df(input_df, has_db_record=False, force_pass=False, force_pass_open_r
                     strength = strength.split(',')[0]
 
                 op_strength_group_sum += float(strength)
-            logging.info("re-calc op_strength_group_sum to " + str(op_strength_group_sum) + ", " + c_code + " " + c_name)
+            logging.info(__file__+" "+"re-calc op_strength_group_sum to " + str(op_strength_group_sum) + ", " + c_code + " " + c_name)
 
         if has_db_record:
             df_rtn = df_rtn.append({
@@ -564,86 +564,86 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
 
             arr.append('df_fib_ag_index_selected')
         else:
-            logging.info("NOT found file " + f_fib_ag_index_selected)
+            logging.info(__file__+" "+"NOT found file " + f_fib_ag_index_selected)
 
         if finlib.Finlib().is_cached(f_fib_ag_selected, day=2):
             df_fib_ag_selected = finlib.Finlib().regular_read_csv_to_stdard_df(f_fib_ag_selected)
             arr.append('df_fib_ag_selected')
         else:
-            logging.info("NOT found file " + f_fib_ag_selected)
+            logging.info(__file__+" "+"NOT found file " + f_fib_ag_selected)
 
         if finlib.Finlib().is_cached(f_fib_us_index_selected, day=2):
             df_fib_us_index_selected = finlib.Finlib().regular_read_csv_to_stdard_df(f_fib_us_index_selected)
             arr.append('df_fib_us_index_selected')
         else:
-            logging.info("NOT found file " + f_fib_us_index_selected)
+            logging.info(__file__+" "+"NOT found file " + f_fib_us_index_selected)
 
         ########## us
         if finlib.Finlib().is_cached(f_key_points_us_selected, day=2):
             df_key_points_us_selected = finlib.Finlib().regular_read_csv_to_stdard_df(f_key_points_us_selected)
             arr.append('df_key_points_us_selected')
         else:
-            logging.info("NOT found file " + f_key_points_us_selected)
+            logging.info(__file__+" "+"NOT found file " + f_key_points_us_selected)
 
         if finlib.Finlib().is_cached(f_pv_no_filter_us_selected, day=2):
             df_pv_no_filter_us_selected = finlib.Finlib().regular_read_csv_to_stdard_df(f_pv_no_filter_us_selected)
             arr.append('df_pv_no_filter_us_selected')
         else:
-            logging.info("NOT found file " + f_pv_no_filter_us_selected)
+            logging.info(__file__+" "+"NOT found file " + f_pv_no_filter_us_selected)
 
         if finlib.Finlib().is_cached(f_fib_us_selected, day=2):
             df_fib_us_selected = finlib.Finlib().regular_read_csv_to_stdard_df(f_fib_us_selected)
             arr.append('df_fib_us_selected')
         else:
-            logging.info("NOT found file " + f_fib_us_selected)
+            logging.info(__file__+" "+"NOT found file " + f_fib_us_selected)
 
         ######## hk
         if finlib.Finlib().is_cached(f_key_points_hk_selected, day=2):
             df_key_points_hk_selected = finlib.Finlib().regular_read_csv_to_stdard_df(f_key_points_hk_selected)
             arr.append('df_key_points_hk_selected')
         else:
-            logging.info("NOT found file " + f_key_points_hk_selected)
+            logging.info(__file__+" "+"NOT found file " + f_key_points_hk_selected)
 
         if finlib.Finlib().is_cached(f_pv_no_filter_hk_selected, day=2):
             df_pv_no_filter_hk_selected = finlib.Finlib().regular_read_csv_to_stdard_df(f_pv_no_filter_hk_selected)
             arr.append('df_pv_no_filter_hk_selected')
         else:
-            logging.info("NOT found file " + f_pv_no_filter_hk_selected)
+            logging.info(__file__+" "+"NOT found file " + f_pv_no_filter_hk_selected)
 
         if finlib.Finlib().is_cached(f_fib_hk_selected, day=2):
             df_fib_hk_selected = finlib.Finlib().regular_read_csv_to_stdard_df(f_fib_hk_selected)
             arr.append('df_fib_hk_selected')
         else:
-            logging.info("NOT found file " + f_fib_hk_selected)
+            logging.info(__file__+" "+"NOT found file " + f_fib_hk_selected)
 
         ######## ag
         if finlib.Finlib().is_cached(f_key_points_ag_selected, day=2):
             df_key_points_ag_selected = finlib.Finlib().regular_read_csv_to_stdard_df(f_key_points_ag_selected)
             arr.append('df_key_points_ag_selected')
         else:
-            logging.info("NOT found file " + f_key_points_ag_selected)
+            logging.info(__file__+" "+"NOT found file " + f_key_points_ag_selected)
 
         if finlib.Finlib().is_cached(f_pv_no_filter_ag_selected, day=2):
             df_pv_no_filter_ag_selected = finlib.Finlib().regular_read_csv_to_stdard_df(f_pv_no_filter_ag_selected)
             arr.append('df_pv_no_filter_ag_selected')
         else:
-            logging.info("NOT found file " + f_pv_no_filter_ag_selected)
+            logging.info(__file__+" "+"NOT found file " + f_pv_no_filter_ag_selected)
 
         if finlib.Finlib().is_cached(f_fib_ag_selected, day=2):
             df_fib_ag_selected = finlib.Finlib().regular_read_csv_to_stdard_df(f_fib_ag_selected)
             arr.append('df_fib_ag_selected')
         else:
-            logging.info("NOT found file " + f_fib_ag_selected)
+            logging.info(__file__+" "+"NOT found file " + f_fib_ag_selected)
 
     elif stock_global in ['AG']:
-        logging.info("loading  df_pv_no_filter, " + f_pv_no_filter)
+        logging.info(__file__+" "+"loading  df_pv_no_filter, " + f_pv_no_filter)
         if (os.path.isfile(f_pv_no_filter)) and os.stat(f_pv_no_filter).st_size >= 10:  # > 10 bytes
             df_pv_no_filter = finlib.Finlib().regular_read_csv_to_stdard_df(f_pv_no_filter)
             df_pv_no_filter.drop_duplicates(inplace=True)
             df_pv_no_filter = finlib.Finlib().remove_garbage(df_pv_no_filter, code_filed_name='code', code_format='C2D6')
             arr.append('df_pv_no_filter')
         else:
-            logging.info("NOT found file " + f_pv_no_filter)
+            logging.info(__file__+" "+"NOT found file " + f_pv_no_filter)
 
         if 'df_pv_no_filter' in locals():
             if 'index' in df_pv_no_filter.columns:
@@ -659,52 +659,52 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
             len_df_pv_no_filter_0 = str(df_pv_no_filter.__len__())
 
             # ==== Low price ====
-            logging.info("loading df_pv_break")
+            logging.info(__file__+" "+"loading df_pv_break")
             df_pv_break = df_pv_no_filter[df_pv_no_filter['op_rsn'].str.contains('_pvbreak_')]
 
             df_pv_break = refine_df(df_pv_break, has_db_record=False, force_pass=True, insert_buy_record_to_db=False, debug=debug)
 
             if df_pv_break.__len__() <= 0:
-                logging.info("empty df_pv_break")
+                logging.info(__file__+" "+"empty df_pv_break")
                 exit()
             else:
                 df_pv_break = df_pv_break.loc[df_pv_break['close_p'] != '0.0']
                 len_df_pv_break_0 = str(df_pv_break.__len__())
 
             # ====== max_daily_increase
-            logging.info("loading df_max_daily_increase")
+            logging.info(__file__+" "+"loading df_max_daily_increase")
             df_max_daily_increase = df_pv_no_filter[df_pv_no_filter['op_rsn'].str.contains('_max_daily_increase')]
             df_max_daily_increase = df_max_daily_increase.reset_index()
             df_max_daily_increase = refine_df(df_max_daily_increase, has_db_record=False, force_pass=True, insert_buy_record_to_db=False, debug=debug)
             df_max_daily_increase = finlib.Finlib().remove_garbage(df_max_daily_increase, code_filed_name='code', code_format='C2D6')
-            logging.info("\t df_max_daily_increase length " + str(df_max_daily_increase.__len__()))
+            logging.info(__file__+" "+"\t df_max_daily_increase length " + str(df_max_daily_increase.__len__()))
 
             # ====== max_daily_decrease
-            logging.info("loading df_max_daily_decrease")
+            logging.info(__file__+" "+"loading df_max_daily_decrease")
             df_max_daily_decrease = df_pv_no_filter[df_pv_no_filter['op_rsn'].str.contains('_max_daily_decrease')]
             df_max_daily_decrease = df_max_daily_decrease.reset_index()
             df_max_daily_decrease = refine_df(df_max_daily_decrease, has_db_record=False, force_pass=True, insert_buy_record_to_db=False, debug=debug)
             df_max_daily_decrease = finlib.Finlib().remove_garbage(df_max_daily_decrease, code_filed_name='code', code_format='C2D6')
-            logging.info("\t df_max_daily_decrease length " + str(df_max_daily_decrease.__len__()))
+            logging.info(__file__+" "+"\t df_max_daily_decrease length " + str(df_max_daily_decrease.__len__()))
 
             # ====== decrease gap
-            logging.info("loading df_decrease_gap")
+            logging.info(__file__+" "+"loading df_decrease_gap")
             df_decrease_gap = df_pv_no_filter[df_pv_no_filter['op_rsn'].str.contains('_decrease_gap')]
             df_decrease_gap = df_decrease_gap.reset_index()
             df_decrease_gap = refine_df(df_decrease_gap, has_db_record=False, force_pass=True, insert_buy_record_to_db=False, debug=debug)
             df_decrease_gap = finlib.Finlib().remove_garbage(df_decrease_gap, code_filed_name='code', code_format='C2D6')
-            logging.info("\t df_decrease_gap length " + str(df_decrease_gap.__len__()))
+            logging.info(__file__+" "+"\t df_decrease_gap length " + str(df_decrease_gap.__len__()))
 
             # ====== increase gap
-            logging.info("loading df_increase_gap")
+            logging.info(__file__+" "+"loading df_increase_gap")
             df_increase_gap = df_pv_no_filter[df_pv_no_filter['op_rsn'].str.contains('_increase_gap')]
             df_increase_gap = df_increase_gap.reset_index()
             df_increase_gap = refine_df(df_increase_gap, has_db_record=False, force_pass=True, insert_buy_record_to_db=False, debug=debug)
             df_increase_gap = finlib.Finlib().remove_garbage(df_increase_gap, code_filed_name='code', code_format='C2D6')
-            logging.info("\t df_increase_gap length " + str(df_increase_gap.__len__()))
+            logging.info(__file__+" "+"\t df_increase_gap length " + str(df_increase_gap.__len__()))
 
             # ====== 52 week low price
-            logging.info("loading df_low_price_year")
+            logging.info(__file__+" "+"loading df_low_price_year")
             df_low_price_year = df_pv_no_filter[df_pv_no_filter['op_rsn'].str.contains('_pvbreak_lp_year')]
 
             # if 'index' in df_low_price_year.columns: df_low_price_year = df_low_price_year.drop('index', axis=1)
@@ -713,10 +713,10 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
             df_low_price_year = df_low_price_year.reset_index()
             df_low_price_year = refine_df(df_low_price_year, has_db_record=False, force_pass=True, insert_buy_record_to_db=False, debug=debug)
             df_low_price_year = finlib.Finlib().remove_garbage(df_low_price_year, code_filed_name='code', code_format='C2D6')
-            logging.info("\t df_low_price_year length " + str(df_low_price_year.__len__()))
+            logging.info(__file__+" "+"\t df_low_price_year length " + str(df_low_price_year.__len__()))
 
             # ====== 52 week low volume
-            logging.info("loading df_low_vol_year")
+            logging.info(__file__+" "+"loading df_low_vol_year")
             df_low_vol_year = df_pv_no_filter[df_pv_no_filter['op_rsn'].str.contains('_pvbreak_lv_year')]
             # if 'index' in df_low_vol_year.columns: df_low_vol_year = df_low_vol_year.drop('index', axis=1)
             # if 'level_0' in df_low_vol_year.columns: df_low_vol_year = df_low_vol_year.drop('level_0', axis=1)
@@ -724,11 +724,11 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
             df_low_vol_year = df_low_vol_year.reset_index()
             df_low_vol_year = refine_df(df_low_vol_year, has_db_record=False, force_pass=True, insert_buy_record_to_db=False, debug=debug)
             df_low_vol_year = finlib.Finlib().remove_garbage(df_low_vol_year, code_filed_name='code', code_format='C2D6')
-            logging.info("\t df_low_vol_year length " + str(df_low_vol_year.__len__()))
+            logging.info(__file__+" "+"\t df_low_vol_year length " + str(df_low_vol_year.__len__()))
 
             # ====== 52 week high price
             '''
-            logging.info("loading df_high_price_year")
+            logging.info(__file__+" "+"loading df_high_price_year")
             df_high_price_year = df_pv_no_filter[df_pv_no_filter['op_rsn'].str.contains('_pvbreak_hp_year')]
             #if 'index' in df_high_price_year.columns: df_high_price_year = df_high_price_year.drop('index', axis=1)
             #if 'level_0' in df_high_price_year.columns: df_high_price_year = df_high_price_year.drop('level_0', axis=1)
@@ -736,11 +736,11 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
             df_high_price_year = df_high_price_year.reset_index()
             df_high_price_year = refine_df(df_high_price_year, has_db_record=False, force_pass=True, insert_buy_record_to_db=False, debug=debug)
             df_high_price_year = finlib.Finlib().remove_garbage(df_high_price_year, code_filed_name='code', code_format='C2D6')
-            logging.info("\t df_high_price_year length "+str(df_high_price_year.__len__()))
+            logging.info(__file__+" "+"\t df_high_price_year length "+str(df_high_price_year.__len__()))
 
 
             #====== 52 week high volume
-            logging.info("loading df_high_vol_year")
+            logging.info(__file__+" "+"loading df_high_vol_year")
             df_high_vol_year = df_pv_no_filter[df_pv_no_filter['op_rsn'].str.contains('_pvbreak_hv_year')]
             #if 'index' in df_high_vol_year.columns: df_high_vol_year = df_high_vol_year.drop('index', axis=1)
             #if 'level_0' in df_high_vol_year.columns: df_high_vol_year = df_high_vol_year.drop('level_0', axis=1)
@@ -748,7 +748,7 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
             df_high_vol_year = df_high_vol_year.reset_index()
             df_high_vol_year = refine_df(df_high_vol_year, has_db_record=False, force_pass=True, insert_buy_record_to_db=False, debug=debug)
             df_high_vol_year = finlib.Finlib().remove_garbage(df_high_vol_year, code_filed_name='code', code_format='C2D6')
-            logging.info("\t df_high_vol_year length "+str(df_high_vol_year.__len__()))
+            logging.info(__file__+" "+"\t df_high_vol_year length "+str(df_high_vol_year.__len__()))
             '''
 
         # common df shared by AG, MG, HK ..
@@ -782,7 +782,7 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
         df_fenghong = finlib.Finlib().regular_read_csv_to_stdard_df(f_fenghong)
         df_fenghong = df_fenghong[df_fenghong['score'] >= 0.8]
         df_fenghong = finlib.Finlib().remove_garbage(df_fenghong, code_filed_name='code', code_format='C2D6')
-        logging.info("\t df_fenghong length " + str(df_fenghong.__len__()))
+        logging.info(__file__+" "+"\t df_fenghong length " + str(df_fenghong.__len__()))
 
         #df_ann=pd.DataFrame(columns=['code'])  #removed since ann stop working after julang info web adjusted. 20190228
 
@@ -805,163 +805,163 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
 
         #df_area_top = finlib.Finlib().regular_read_csv_to_stdard_df(f_area_top ) #removed to make report concise.
         #df_area_top = finlib.Finlib().remove_garbage(df_area_top, code_filed_name='code', code_format='C2D6')
-        #logging.info("\t df_area_top length " + str(df_area_top.__len__()))
+        #logging.info(__file__+" "+"\t df_area_top length " + str(df_area_top.__len__()))
 
         df_peg_ps = finlib.Finlib().regular_read_csv_to_stdard_df(f_fund_peg_ps)
         df_peg_ps = finlib.Finlib().add_market_to_code(df=df_peg_ps)
         df_peg_ps = finlib.Finlib().remove_garbage(df_peg_ps, code_filed_name='code', code_format='C2D6')
-        logging.info("\t df_peg_ps length " + str(df_peg_ps.__len__()))
+        logging.info(__file__+" "+"\t df_peg_ps length " + str(df_peg_ps.__len__()))
 
         df_support_resist_line_today = finlib.Finlib().regular_read_csv_to_stdard_df(f_support_resist_line_today)
         df_support_resist_line_today = finlib.Finlib().remove_garbage(df_support_resist_line_today, code_filed_name='code', code_format='C2D6')
-        logging.info("\t df_support_resist_line_today length " + str(df_support_resist_line_today.__len__()))
+        logging.info(__file__+" "+"\t df_support_resist_line_today length " + str(df_support_resist_line_today.__len__()))
 
         #df_disclosure_date_notify = finlib.Finlib().regular_read_csv_to_stdard_df(f_disclosure_date_notify)
 
         # CANNOT USE converters={'name':str}, it will cause error in tabulate. 'UnicodeDecodeError: 'ascii' codec can't decode byte 0xe6 in position 0: ordinal not in range(128)'
         df_disclosure_date_notify = finlib.Finlib().regular_read_csv_to_stdard_df(f_disclosure_date_notify)
         df_disclosure_date_notify = finlib.Finlib().remove_garbage(df_disclosure_date_notify, code_filed_name='code', code_format='C2D6')
-        logging.info("\t df_disclosure_date_notify length " + str(df_disclosure_date_notify.__len__()))
+        logging.info(__file__+" "+"\t df_disclosure_date_notify length " + str(df_disclosure_date_notify.__len__()))
 
         df_macd_m = finlib.Finlib().regular_read_csv_to_stdard_df(f_macd_m)
         df_macd_m = df_macd_m[df_macd_m.action.str.contains('BUY')]
         df_macd_m = finlib.Finlib().remove_garbage(df_macd_m, code_filed_name='code', code_format='C2D6')
-        logging.info("\t df_macd_m length " + str(df_macd_m.__len__()))
+        logging.info(__file__+" "+"\t df_macd_m length " + str(df_macd_m.__len__()))
 
         df_macd_w = finlib.Finlib().regular_read_csv_to_stdard_df(f_macd_w)
         df_macd_w = df_macd_w[df_macd_w.action.str.contains('BUY')]
         df_macd_w = finlib.Finlib().remove_garbage(df_macd_w, code_filed_name='code', code_format='C2D6')
-        logging.info("\t df_macd_w length " + str(df_macd_w.__len__()))
+        logging.info(__file__+" "+"\t df_macd_w length " + str(df_macd_w.__len__()))
 
         df_macd_d = finlib.Finlib().regular_read_csv_to_stdard_df(f_macd_d)
         df_macd_d = df_macd_d[df_macd_d.action.str.contains('BUY')]
         df_macd_d = finlib.Finlib().remove_garbage(df_macd_d, code_filed_name='code', code_format='C2D6')
-        logging.info("\t df_macd_d length " + str(df_macd_d.__len__()))
+        logging.info(__file__+" "+"\t df_macd_d length " + str(df_macd_d.__len__()))
 
         df_kdj_m = finlib.Finlib().regular_read_csv_to_stdard_df(f_kdj_m)
         df_kdj_m = df_kdj_m[df_kdj_m.action.str.contains('BUY')]
         df_kdj_m = finlib.Finlib().remove_garbage(df_kdj_m, code_filed_name='code', code_format='C2D6')
-        logging.info("\t df_kdj_m length " + str(df_kdj_m.__len__()))
+        logging.info(__file__+" "+"\t df_kdj_m length " + str(df_kdj_m.__len__()))
 
         df_kdj_w = finlib.Finlib().regular_read_csv_to_stdard_df(f_kdj_w)
         df_kdj_w = df_kdj_w[df_kdj_w.action.str.contains('BUY')]
         df_kdj_w = finlib.Finlib().remove_garbage(df_kdj_w, code_filed_name='code', code_format='C2D6')
-        logging.info("\t df_kdj_w length " + str(df_kdj_w.__len__()))
+        logging.info(__file__+" "+"\t df_kdj_w length " + str(df_kdj_w.__len__()))
 
         df_kdj_d = finlib.Finlib().regular_read_csv_to_stdard_df(f_kdj_d)
         df_kdj_d = df_kdj_d[df_kdj_d.action.str.contains('BUY')]
         df_kdj_d = finlib.Finlib().remove_garbage(df_kdj_d, code_filed_name='code', code_format='C2D6')
-        logging.info("\t df_kdj_d length " + str(df_kdj_d.__len__()))
+        logging.info(__file__+" "+"\t df_kdj_d length " + str(df_kdj_d.__len__()))
 
         df_hsgt = finlib.Finlib().regular_read_csv_to_stdard_df(f_hsgt)
         df_hsgt = finlib.Finlib().remove_garbage(df_hsgt, code_filed_name='code', code_format='C2D6')
-        logging.info("\t df_hsgt length " + str(df_hsgt.__len__()))
+        logging.info(__file__+" "+"\t df_hsgt length " + str(df_hsgt.__len__()))
 
         df_fib = finlib.Finlib().regular_read_csv_to_stdard_df(f_fib)
         df_fib = finlib.Finlib().remove_garbage(df_fib, code_filed_name='code', code_format='C2D6')
-        logging.info("\t df_fib length " + str(df_fib.__len__()))
+        logging.info(__file__+" "+"\t df_fib length " + str(df_fib.__len__()))
 
         df_fib_index = finlib.Finlib().regular_read_csv_to_stdard_df(f_fib_index)
-        logging.info("\t df_fib_index length " + str(df_fib_index.__len__()))
+        logging.info(__file__+" "+"\t df_fib_index length " + str(df_fib_index.__len__()))
 
         df_concept_top = finlib.Finlib().regular_read_csv_to_stdard_df(f_concept_top)
-        logging.info("\t df_concept_top length " + str(df_concept_top.__len__()))
+        logging.info(__file__+" "+"\t df_concept_top length " + str(df_concept_top.__len__()))
         '''remove to make result concise
         dump= "/home/ryan/DATA/pickle/sme.csv"
         if (not os.path.isfile(dump)):
-            logging.info("exit.  file not exist "+dump)
+            logging.info(__file__+" "+"exit.  file not exist "+dump)
             exit(1)
         else:
-            logging.info("read csv from "+dump)
+            logging.info(__file__+" "+"read csv from "+dump)
             #df_sme=pd.read_pickle(dump)
             df_sme=finlib.Finlib().regular_read_csv_to_stdard_df(dump)
 
         df_sme = df_sme[['code', 'name']]
         df_sme = finlib.Finlib().remove_garbage(df_sme, code_filed_name='code', code_format='C2D6')
-        logging.info("\t df_sme length " + str(df_sme.__len__()))
+        logging.info(__file__+" "+"\t df_sme length " + str(df_sme.__len__()))
 
 
         dump= "/home/ryan/DATA/pickle/gem.csv"
         if (not os.path.isfile(dump)):
-            logging.info("exit.  file not exist "+dump)
+            logging.info(__file__+" "+"exit.  file not exist "+dump)
             exit(1)
         else:
-            logging.info("read csv from "+dump)
+            logging.info(__file__+" "+"read csv from "+dump)
             df_gem=finlib.Finlib().regular_read_csv_to_stdard_df(dump)
         df_gem = df_gem[['code', 'name']]
         df_gem = finlib.Finlib().remove_garbage(df_gem, code_filed_name='code', code_format='C2D6')
-        logging.info("\t df_gem length " + str(df_gem.__len__()))
+        logging.info(__file__+" "+"\t df_gem length " + str(df_gem.__len__()))
 
 
 
         dump= "/home/ryan/DATA/pickle/sz50.csv"
         if (not os.path.isfile(dump)):
-            logging.info("exit.  file not exist "+dump)
+            logging.info(__file__+" "+"exit.  file not exist "+dump)
             exit(1)
         else:
-            logging.info("read csv from "+dump)
+            logging.info(__file__+" "+"read csv from "+dump)
             df_sz50=finlib.Finlib().regular_read_csv_to_stdard_df(dump)
         df_sz50 = df_sz50[['code', 'name']]
         df_sz50 = finlib.Finlib().remove_garbage(df_sz50, code_filed_name='code', code_format='C2D6')
-        logging.info("\t df_sz50 length " + str(df_sz50.__len__()))
+        logging.info(__file__+" "+"\t df_sz50 length " + str(df_sz50.__len__()))
 
 
 
         dump= "/home/ryan/DATA/pickle/hs300.csv"
         if (not os.path.isfile(dump)):
-            logging.info("exit.  file not exist "+dump)
+            logging.info(__file__+" "+"exit.  file not exist "+dump)
             exit(1)
         else:
-            logging.info("read csv from "+dump)
+            logging.info(__file__+" "+"read csv from "+dump)
             df_hs300=finlib.Finlib().regular_read_csv_to_stdard_df(dump)
         df_hs300 = df_hs300[['code', 'name']]
         df_hs300 = finlib.Finlib().remove_garbage(df_hs300, code_filed_name='code', code_format='C2D6')
-        logging.info("\t df_hs300 length " + str(df_hs300.__len__()))
+        logging.info(__file__+" "+"\t df_hs300 length " + str(df_hs300.__len__()))
 
 
 
         dump= "/home/ryan/DATA/pickle/ZZ500.csv"
         if (not os.path.isfile(dump)):
-            logging.info("exit.  file not exist "+dump)
+            logging.info(__file__+" "+"exit.  file not exist "+dump)
             exit(1)
         else:
-            logging.info("read csv from "+dump)
+            logging.info(__file__+" "+"read csv from "+dump)
             df_zz500=finlib.Finlib().regular_read_csv_to_stdard_df(dump)
 
         df_zz500 = df_zz500[['code', 'name']] #elimate date in the df as it is not necessary and not update to date.
         df_zz500 = finlib.Finlib().remove_garbage(df_zz500, code_filed_name='code', code_format='C2D6')
-        logging.info("\t df_zz500 length " + str(df_zz500.__len__()))
+        logging.info(__file__+" "+"\t df_zz500 length " + str(df_zz500.__len__()))
         '''
         '''
-        logging.info("loading df_ann "+f_ann)
+        logging.info(__file__+" "+"loading df_ann "+f_ann)
         if (os.path.isfile(f_ann) ):
             df_ann=finlib.Finlib().regular_read_csv_to_stdard_df(f_ann,dtype=str);
             df_ann = finlib.Finlib().remove_garbage(df_ann, code_filed_name='code', code_format='C2D6')
-            logging.info("\t df_ann length " + str(df_ann.__len__()))
+            logging.info(__file__+" "+"\t df_ann length " + str(df_ann.__len__()))
         else:
-            logging.info("no such file "+f_ann +". Using Dummy instead")
+            logging.info(__file__+" "+"no such file "+f_ann +". Using Dummy instead")
             #print("stop and exit")
             #exit(1)
         '''
-        logging.info("loading df_industry_top " + f_industry_top)
+        logging.info(__file__+" "+"loading df_industry_top " + f_industry_top)
         if (os.path.isfile(f_industry_top) and os.stat(f_industry_top).st_size >= 10):
             df_industry_top = finlib.Finlib().regular_read_csv_to_stdard_df(f_industry_top)
             df_industry_top = finlib.Finlib().remove_garbage(df_industry_top, code_filed_name='code', code_format='C2D6')
         else:
-            logging.warning("file not exist or no content " + f_industry_top)
+            logging.warning(__file__+" "+"file not exist or no content " + f_industry_top)
 
-        logging.info("\t df_industry_top length " + str(df_industry_top.__len__()))
+        logging.info(__file__+" "+"\t df_industry_top length " + str(df_industry_top.__len__()))
 
-        logging.info("loading df_moneyflow " + f_moneyflow)
+        logging.info(__file__+" "+"loading df_moneyflow " + f_moneyflow)
         if (os.path.isfile(f_moneyflow) and os.stat(f_moneyflow).st_size >= 10):
             df_moneyflow = finlib.Finlib().regular_read_csv_to_stdard_df(f_moneyflow)
             df_moneyflow = finlib.Finlib().remove_garbage(df_moneyflow, code_filed_name='code', code_format='C2D6')
         else:
-            logging.warning("file not exist or no content " + f_moneyflow)
+            logging.warning(__file__+" "+"file not exist or no content " + f_moneyflow)
 
-        logging.info("\t df_moneyflow length " + str(df_moneyflow.__len__()))
+        logging.info(__file__+" "+"\t df_moneyflow length " + str(df_moneyflow.__len__()))
 
-        logging.info("loading df_fund " + f_fund)
+        logging.info(__file__+" "+"loading df_fund " + f_fund)
         if (os.path.isfile(f_fund) and os.stat(f_fund).st_size >= 10):
             df_fund = finlib.Finlib().regular_read_csv_to_stdard_df(f_fund)
             df_fund = finlib.Finlib().add_market_to_code(df_fund)
@@ -977,19 +977,19 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
             df_fund = df_fund[cols]
             df_fund = df_fund.sort_values('result_value_sum', ascending=False)
             df_fund = df_fund.reset_index().drop('index', axis=1)
-            logging.info("\t df_fund length " + str(df_fund.__len__()))
+            logging.info(__file__+" "+"\t df_fund length " + str(df_fund.__len__()))
 
         else:
-            logging.info("no such file " + f_fund)
-            logging.info("stop and exit")
+            logging.info(__file__+" "+"no such file " + f_fund)
+            logging.info(__file__+" "+"stop and exit")
             exit(1)
 
-        logging.info("loading df_fund_2, " + f_fund_2)
+        logging.info(__file__+" "+"loading df_fund_2, " + f_fund_2)
         if (os.path.isfile(f_fund_2)) and os.stat(f_fund_2).st_size >= 10:  # > 10 bytes
             df_fund_2 = finlib.Finlib().regular_read_csv_to_stdard_df(f_fund_2)
             #df_fund_2 = df_fund_2[df_fund_2['scoreAB']>90]
             df_fund_2 = finlib.Finlib().remove_garbage(df_fund_2, code_filed_name='code', code_format='C2D6')
-            logging.info("\t df_fund_2 length " + str(df_fund_2.__len__()))
+            logging.info(__file__+" "+"\t df_fund_2 length " + str(df_fund_2.__len__()))
 
             #df_fund_2 = finlib.Finlib().ts_code_to_code(df_fund_2)
             #df_fund_2 = df_fund_2[['code', 'name', 'scoreA', 'V_C_P', 'ValuePrice', 'CurrentPrice',
@@ -999,61 +999,61 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
             df_fund_2 = df_fund_2.drop_duplicates()
             df_fund_2 = df_fund_2.reset_index().drop('index', axis=1)
         else:
-            logging.info("no such file " + f_fund_2)
-            logging.info("stop and exit")
+            logging.info(__file__+" "+"no such file " + f_fund_2)
+            logging.info(__file__+" "+"stop and exit")
             exit(0)
 
-        logging.info("loading df_pe_pb_roe_history, " + f_pe_pb_roe_history)
+        logging.info(__file__+" "+"loading df_pe_pb_roe_history, " + f_pe_pb_roe_history)
         if (os.path.isfile(f_pe_pb_roe_history)) and os.stat(f_pe_pb_roe_history).st_size >= 10:  # > 10 bytes
             df_pe_pb_roe_history = finlib.Finlib().regular_read_csv_to_stdard_df(f_pe_pb_roe_history)
             df_pe_pb_roe_history = finlib.Finlib().remove_garbage(df_pe_pb_roe_history, code_filed_name='code', code_format='C2D6')
-            logging.info("\t df_pe_pb_roe_history length " + str(df_pe_pb_roe_history.__len__()))
+            logging.info(__file__+" "+"\t df_pe_pb_roe_history length " + str(df_pe_pb_roe_history.__len__()))
 
             df_pe_pb_roe_history = df_pe_pb_roe_history.drop_duplicates()
             df_pe_pb_roe_history = df_pe_pb_roe_history.reset_index().drop('index', axis=1)
         else:
-            logging.info("no such file " + f_pe_pb_roe_history)
-            logging.info("stop and exit")
+            logging.info(__file__+" "+"no such file " + f_pe_pb_roe_history)
+            logging.info(__file__+" "+"stop and exit")
             exit(0)
 
         f_whitehorse = "/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/report/white_horse.csv"
-        logging.info("loading whitehorse, " + f_whitehorse)
+        logging.info(__file__+" "+"loading whitehorse, " + f_whitehorse)
         if (os.path.isfile(f_whitehorse)) and os.stat(f_whitehorse).st_size >= 10:  # > 10 bytes
             df_whitehorse = finlib.Finlib().regular_read_csv_to_stdard_df(f_whitehorse)
             df_whitehorse = finlib.Finlib().remove_garbage(df_whitehorse, code_filed_name='code', code_format='C2D6')
-            logging.info("\t df_whitehorse length " + str(df_whitehorse.__len__()))
+            logging.info(__file__+" "+"\t df_whitehorse length " + str(df_whitehorse.__len__()))
 
             df_whitehorse = df_whitehorse.drop_duplicates()
             df_whitehorse = df_whitehorse.reset_index().drop('index', axis=1)
         else:
-            logging.info("no such file " + f_whitehorse)
+            logging.info(__file__+" "+"no such file " + f_whitehorse)
 
         f_freecashflow_price_ratio = "/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/report/freecashflow_price_ratio.csv"
-        logging.info("loading f_freecashflow_price_ratio, " + f_freecashflow_price_ratio)
+        logging.info(__file__+" "+"loading f_freecashflow_price_ratio, " + f_freecashflow_price_ratio)
         if (os.path.isfile(f_freecashflow_price_ratio)) and os.stat(f_freecashflow_price_ratio).st_size >= 10:  # > 10 bytes
             df_freecashflow_price_ratio = finlib.Finlib().regular_read_csv_to_stdard_df(f_freecashflow_price_ratio)
             df_freecashflow_price_ratio = finlib.Finlib().remove_garbage(df_freecashflow_price_ratio, code_filed_name='code', code_format='C2D6')
-            logging.info("\t df_freecashflow_price_ratio length " + str(df_freecashflow_price_ratio.__len__()))
+            logging.info(__file__+" "+"\t df_freecashflow_price_ratio length " + str(df_freecashflow_price_ratio.__len__()))
 
             df_freecashflow_price_ratio = df_freecashflow_price_ratio.drop_duplicates()
             df_freecashflow_price_ratio = df_freecashflow_price_ratio.reset_index().drop('index', axis=1)
         else:
-            logging.info("no such file " + f_freecashflow_price_ratio)
+            logging.info(__file__+" "+"no such file " + f_freecashflow_price_ratio)
 
         f_hen_cow = "/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/report/hen_cow.csv"
-        logging.info("loading f_hen_cow, " + f_hen_cow)
+        logging.info(__file__+" "+"loading f_hen_cow, " + f_hen_cow)
         if (os.path.isfile(f_whitehorse)) and os.stat(f_whitehorse).st_size >= 10:  # > 10 bytes
             df_hen_cow = finlib.Finlib().regular_read_csv_to_stdard_df(f_hen_cow)
 
             df_hen_cow = finlib.Finlib().remove_garbage(df_hen_cow, code_filed_name='code', code_format='C2D6')
-            logging.info("\t df_hen_cow length " + str(df_hen_cow.__len__()))
+            logging.info(__file__+" "+"\t df_hen_cow length " + str(df_hen_cow.__len__()))
 
             df_hen_cow = df_hen_cow.drop_duplicates()
             df_hen_cow = df_hen_cow.reset_index().drop('index', axis=1)
         else:
-            logging.info("no such file " + f_hen_cow)
+            logging.info(__file__+" "+"no such file " + f_hen_cow)
 
-        logging.info("loading df_pv_db_buy_filter")
+        logging.info(__file__+" "+"loading df_pv_db_buy_filter")
         if (os.path.isfile(f_pv_db_buy_filter)) and os.stat(f_pv_db_buy_filter).st_size >= 10:  # > 10 bytes
             df_pv_db_buy_filter = finlib.Finlib().regular_read_csv_to_stdard_df(f_pv_db_buy_filter)
             df_pv_db_buy_filter.drop_duplicates(inplace=True)
@@ -1063,12 +1063,12 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
             df_pv_db_buy_filter = df_pv_db_buy_filter.loc[df_pv_db_buy_filter['close_p'] != '0.0']
             len_df_pv_db_buy_filter_0 = str(df_pv_db_buy_filter.__len__())
             df_pv_db_buy_filter = finlib.Finlib().remove_garbage(df_pv_db_buy_filter, code_filed_name='code', code_format='C2D6')
-            logging.info("\t df_pv_db_buy_filter length " + str(df_pv_db_buy_filter.__len__()))
+            logging.info(__file__+" "+"\t df_pv_db_buy_filter length " + str(df_pv_db_buy_filter.__len__()))
         else:
-            logging.info("ERROR: NOT found file " + f_pv_db_buy_filter)
+            logging.info(__file__+" "+"ERROR: NOT found file " + f_pv_db_buy_filter)
             #exit(0)
 
-        logging.info("loading  df_pv_db_sell_filter")
+        logging.info(__file__+" "+"loading  df_pv_db_sell_filter")
         if (os.path.isfile(f_pv_db_sell_filter)) and os.stat(f_pv_db_sell_filter).st_size >= 10:  # > 10 bytes
             df_pv_db_sell_filter = finlib.Finlib().regular_read_csv_to_stdard_df(f_pv_db_sell_filter)
             df_pv_db_sell_filter.drop_duplicates(inplace=True)
@@ -1078,10 +1078,10 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
             df_pv_db_sell_filter = df_pv_db_sell_filter.loc[df_pv_db_sell_filter['close_p'] != '0.0']
             len_df_pv_db_sell_filter_0 = str(df_pv_db_sell_filter.__len__())
             df_pv_db_sell_filter = finlib.Finlib().remove_garbage(df_pv_db_sell_filter, code_filed_name='code', code_format='C2D6')
-            logging.info("\t df_pv_db_sell_filter length " + str(df_pv_db_sell_filter.__len__()))
+            logging.info(__file__+" "+"\t df_pv_db_sell_filter length " + str(df_pv_db_sell_filter.__len__()))
 
         else:
-            logging.info("ERROR: NOT found file " + f_pv_db_sell_filter)
+            logging.info(__file__+" "+"ERROR: NOT found file " + f_pv_db_sell_filter)
             #exit(0)
 
     elif stock_global in ['HK', 'KG']:
@@ -1106,7 +1106,7 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
     ##################################################
     if stock_global in ['AG']:
         if 'df_pv_break' in locals():  # it has already been added to arr, do not arr.append again.
-            logging.info("filte df_pv_break")
+            logging.info(__file__+" "+"filte df_pv_break")
             df_pv_break = finlib.Finlib().df_filter(df_pv_break)
 
         if 'df_fenghong' in locals():
@@ -1141,120 +1141,120 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
 
         if 'df_pv_db_buy_filter' in locals():  #code already in 'SH/SZ' format
             len_df_pv_db_buy_filter_0 = str(df_pv_db_buy_filter.__len__())
-            logging.info("filtering df_pv_db_buy_filter")
+            logging.info(__file__+" "+"filtering df_pv_db_buy_filter")
             df_pv_db_buy_filter = finlib.Finlib().df_filter(df_pv_db_buy_filter)
             arr.append('df_pv_db_buy_filter')
 
         if 'df_pv_db_sell_filter' in locals():  #code already in 'SH/SZ' format
             arr.append('df_pv_db_sell_filter')
             len_df_pv_db_sell_filter_0 = str(df_pv_db_sell_filter.__len__())
-            logging.info("filtering df_pv_db_sell_filter")
+            logging.info(__file__+" "+"filtering df_pv_db_sell_filter")
             df_pv_db_sell_filter = finlib.Finlib().df_filter(df_pv_db_sell_filter)
 
         if 'df_pv_no_filter' in locals():  #code already in 'SH/SZ' format
-            logging.info("filtering df_pv_no_filter")
+            logging.info(__file__+" "+"filtering df_pv_no_filter")
             df_pv_no_filter = finlib.Finlib().df_filter(df_pv_no_filter)
             arr.append('df_pv_no_filter')
 
         if 'df_hs300' in locals():  #code already in 'SH/SZ' format
-            logging.info("filtering df_hs300")
+            logging.info(__file__+" "+"filtering df_hs300")
             df_hs300 = finlib.Finlib().df_filter(df_hs300)
             arr.append('df_hs300')
 
         if 'df_sz50' in locals():  #code already in 'SH/SZ' format
-            logging.info("filtering df_sz50")
+            logging.info(__file__+" "+"filtering df_sz50")
             df_sz50 = finlib.Finlib().df_filter(df_sz50)
             arr.append('df_sz50')
 
         if 'df_zz500' in locals():  #code already in 'SH/SZ' format
-            logging.info("filtering df_zz500")
+            logging.info(__file__+" "+"filtering df_zz500")
             df_zz500 = finlib.Finlib().df_filter(df_zz500)
             arr.append('df_zz500')
 
         if 'df_sme' in locals():  #code already in 'SH/SZ' format
-            logging.info("filtering df_sme")
+            logging.info(__file__+" "+"filtering df_sme")
             df_sme = finlib.Finlib().df_filter(df_sme)
             arr.append('df_sme')
 
         if 'df_gem' in locals():  #code already in 'SH/SZ' format
-            logging.info("filtering df_gem")
+            logging.info(__file__+" "+"filtering df_gem")
             df_gem = finlib.Finlib().df_filter(df_gem)
             arr.append('df_gem')
 
         if 'df_industry_top' in locals():
-            logging.info("filtering df_industry_top")
+            logging.info(__file__+" "+"filtering df_industry_top")
             df_industry_top = finlib.Finlib().add_market_to_code(df_industry_top)
             df_industry_top = finlib.Finlib().df_filter(df_industry_top)
             arr.append('df_industry_top')
 
         if 'df_area_top' in locals():
-            logging.info("filtering df_area_top")
+            logging.info(__file__+" "+"filtering df_area_top")
             df_area_top = finlib.Finlib().add_market_to_code(df_area_top)
             arr.append('df_area_top')
             df_area_top = finlib.Finlib().df_filter(df_area_top)
 
         if 'df_peg_ps' in locals():
-            logging.info("filtering df_peg_ps")
+            logging.info(__file__+" "+"filtering df_peg_ps")
             df_peg_ps = finlib.Finlib().df_filter(df_peg_ps)  #market code should in code, e.g.  SH600001
             arr.append('df_peg_ps')
 
         if 'df_support_resist_line_today' in locals():
-            logging.info("filtering df_support_resist_line_today")
+            logging.info(__file__+" "+"filtering df_support_resist_line_today")
             df_support_resist_line_today = finlib.Finlib().df_filter(df_support_resist_line_today)
             arr.append('df_support_resist_line_today')
 
         if 'df_disclosure_date_notify' in locals():
-            logging.info("filtering df_disclosure_date_notify")
+            logging.info(__file__+" "+"filtering df_disclosure_date_notify")
             df_disclosure_date_notify = finlib.Finlib().df_filter(df_disclosure_date_notify)
             arr.append('df_disclosure_date_notify')
 
         if 'df_macd_m' in locals():
-            logging.info("filtering df_macd_m")
+            logging.info(__file__+" "+"filtering df_macd_m")
             df_macd_m = finlib.Finlib().df_filter(df_macd_m)
             arr.append('df_macd_m')
 
         if 'df_macd_w' in locals():
-            logging.info("filtering df_macd_w")
+            logging.info(__file__+" "+"filtering df_macd_w")
             df_macd_w = finlib.Finlib().df_filter(df_macd_w)
             arr.append('df_macd_w')
 
         if 'df_macd_d' in locals():
-            logging.info("filtering df_macd_d")
+            logging.info(__file__+" "+"filtering df_macd_d")
             df_macd_d = finlib.Finlib().df_filter(df_macd_d)
             arr.append('df_macd_d')
 
         if 'df_kdj_m' in locals():
-            logging.info("filtering df_kdj_m")
+            logging.info(__file__+" "+"filtering df_kdj_m")
             df_kdj_m = finlib.Finlib().df_filter(df_kdj_m)
             arr.append('df_kdj_m')
 
         if 'df_kdj_w' in locals():
-            logging.info("filtering df_kdj_w")
+            logging.info(__file__+" "+"filtering df_kdj_w")
             df_kdj_w = finlib.Finlib().df_filter(df_kdj_w)
             arr.append('df_kdj_w')
 
         if 'df_kdj_d' in locals():
-            logging.info("filtering df_kdj_d")
+            logging.info(__file__+" "+"filtering df_kdj_d")
             df_kdj_d = finlib.Finlib().df_filter(df_kdj_d)
             arr.append('df_kdj_d')
 
         if 'df_hsgt' in locals():
-            logging.info("filtering df_hsgt")
+            logging.info(__file__+" "+"filtering df_hsgt")
             df_hsgt = finlib.Finlib().df_filter(df_hsgt)
             arr.append('df_hsgt')
 
         if 'df_fib' in locals():
-            logging.info("filtering df_fib")
+            logging.info(__file__+" "+"filtering df_fib")
             df_fib = finlib.Finlib().df_filter(df_fib)
             arr.append('df_fib')
 
         if 'df_fib_index' in locals():
-            logging.info("filtering df_fib_index")
+            logging.info(__file__+" "+"filtering df_fib_index")
             df_fib_index = finlib.Finlib().df_filter(df_fib_index)
             arr.append('df_fib_index')
 
         if 'df_concept_top' in locals():
-            logging.info("filtering df_concept_top")
+            logging.info(__file__+" "+"filtering df_concept_top")
             df_concept_top = finlib.Finlib().df_filter(df_concept_top)
             arr.append('df_concept_top')
 
@@ -1266,37 +1266,37 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
         #df_ann = refine_df(df_ann,has_db_record=False, force_pass=True)
         if 'df_ann' in locals():
             if stock_global in ['AG']:
-                logging.info("will refine_df df_ann announcement")
+                logging.info(__file__+" "+"will refine_df df_ann announcement")
                 #df_ann = refine_df(df_ann,has_db_record=False, force_pass=True, force_pass_open_reason='announcement')  #because the df_ann doesn't have duplicate on 'code' column
                 #df_ann = refine_df(df_ann,has_db_record=False, force_pass=True, force_pass_open_reason='announcement')  #because the df_ann doesn't have duplicate on 'code' column
                 df_ann = refine_df(df_ann, has_db_record=False, force_pass=True, force_pass_open_reason='announcement', insert_buy_record_to_db=False, debug=debug)  #because the df_ann doesn't have duplicate on 'code' column
 
         if 'df_pv_no_filter' in locals():
             if stock_global in ['AG']:
-                logging.info("will refine_df df_pv_no_filter")
+                logging.info(__file__+" "+"will refine_df df_pv_no_filter")
                 #df_pv_no_filter = refine_df(df_pv_no_filter,has_db_record=False)  #ryan comment to debug
                 df_pv_no_filter = refine_df(df_pv_no_filter, has_db_record=False, force_pass=True, insert_buy_record_to_db=False, debug=debug)
                 #refine_df(df_pv_no_filter,has_db_record=False) <<<<< LAEGE RESULT 9000
-                logging.info("Len df_pv_no_filter " + str(len_df_pv_no_filter_0) + " => " + str(df_pv_no_filter.__len__()))
+                logging.info(__file__+" "+"Len df_pv_no_filter " + str(len_df_pv_no_filter_0) + " => " + str(df_pv_no_filter.__len__()))
 
             #if stock_global in ['MG','US','CN']:
             else:
-                logging.info("will refine_df df_pv_no_filter")
+                logging.info(__file__+" "+"will refine_df df_pv_no_filter")
                 df_pv_no_filter = refine_df(df_pv_no_filter, has_db_record=False, force_pass=True, insert_buy_record_to_db=False, debug=debug)
-                logging.info("Len df_pv_no_filter " + str(len_df_pv_no_filter_0) + " => " + str(df_pv_no_filter.__len__()))
+                logging.info(__file__+" "+"Len df_pv_no_filter " + str(len_df_pv_no_filter_0) + " => " + str(df_pv_no_filter.__len__()))
 
         if 'df_pv_db_buy_filter' in locals():
             if stock_global in ['AG']:
-                logging.info("will refine_df df_pv_db_buy_filter")
+                logging.info(__file__+" "+"will refine_df df_pv_db_buy_filter")
                 #df_pv_db_buy_filter = refine_df(df_pv_db_buy_filter,has_db_record=True)
                 #df_pv_db_buy_filter = refine_df(df_pv_db_buy_filter,has_db_record=False) #ryan debug
                 df_pv_db_buy_filter = refine_df(df_pv_db_buy_filter, has_db_record=False, force_pass=True, insert_buy_record_to_db=False, debug=debug)
-                logging.info("Len df_pv_db_buy_filter " + str(len_df_pv_db_buy_filter_0) + " => " + str(df_pv_db_buy_filter.__len__()))
+                logging.info(__file__+" "+"Len df_pv_db_buy_filter " + str(len_df_pv_db_buy_filter_0) + " => " + str(df_pv_db_buy_filter.__len__()))
 
             else:
-                logging.info("will refine_df df_pv_db_buy_filter")
+                logging.info(__file__+" "+"will refine_df df_pv_db_buy_filter")
                 df_pv_db_buy_filter = refine_df(df_pv_no_filter, has_db_record=False, force_pass=True, insert_buy_record_to_db=False, debug=debug)
-                logging.info("Len df_pv_db_buy_filter " + str(len_df_pv_db_buy_filter_0) + " => " + str(df_pv_db_buy_filter.__len__()))
+                logging.info(__file__+" "+"Len df_pv_db_buy_filter " + str(len_df_pv_db_buy_filter_0) + " => " + str(df_pv_db_buy_filter.__len__()))
 
     ####################
     todayS_ymd = datetime.today().strftime('%Y%m%d')
@@ -1454,24 +1454,24 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
             df_reduced_year = df_fund_2
             #arr.remove('df_fund_2')
         else:
-            logging.info("Base df_fund_2 doesn't exists, quit the program.")
+            logging.info(__file__+" "+"Base df_fund_2 doesn't exists, quit the program.")
 
         if 'df_whitehorse' in locals():
             df_combined_year = pd.concat([df_combined_year, df_whitehorse], sort=False).drop_duplicates().reset_index().drop('index', axis=1)
             df_reduced_year = pd.merge(df_reduced_year, df_whitehorse, on='code', how='inner', suffixes=('', '_x')).drop('name_x', axis=1)
-            logging.info("After df_whitehorse, df_combined_year " + str(df_combined_year.__len__()) + ", df_reduced_year " + str(df_reduced_year.__len__()))
+            logging.info(__file__+" "+"After df_whitehorse, df_combined_year " + str(df_combined_year.__len__()) + ", df_reduced_year " + str(df_reduced_year.__len__()))
             #arr.remove('df_whitehorse')
 
         if 'df_hen_cow' in locals():
             df_combined_year = pd.concat([df_combined_year, df_hen_cow], sort=False).drop_duplicates().reset_index().drop('index', axis=1)
             df_reduced_year = pd.merge(df_reduced_year, df_hen_cow, on='code', how='inner', suffixes=('', '_x')).drop('name_x', axis=1)
-            logging.info("After df_hen_cow, df_combined_year " + str(df_combined_year.__len__()) + ", df_reduced_year " + str(df_reduced_year.__len__()))
+            logging.info(__file__+" "+"After df_hen_cow, df_combined_year " + str(df_combined_year.__len__()) + ", df_reduced_year " + str(df_reduced_year.__len__()))
             #arr.remove('df_hen_cow')
 
         if 'df_fenghong' in locals():
             df_combined_year = pd.concat([df_combined_year, df_fenghong], sort=False).drop_duplicates().reset_index().drop('index', axis=1)
             df_reduced_year = pd.merge(df_reduced_year, df_fenghong, on='code', how='inner', suffixes=('', '_x')).drop('name_x', axis=1)
-            logging.info("After df_fenghong, df_combined_year " + str(df_combined_year.__len__()) + ", df_reduced_year " + str(df_reduced_year.__len__()))
+            logging.info(__file__+" "+"After df_fenghong, df_combined_year " + str(df_combined_year.__len__()) + ", df_reduced_year " + str(df_reduced_year.__len__()))
             #arr.remove('df_fenghong')
 
         #gen quarterly df
@@ -1486,19 +1486,19 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
         if 'df_peg_ps' in locals():
             df_combined_quarter = pd.concat([df_combined_quarter, df_peg_ps], sort=False).drop_duplicates().reset_index().drop('index', axis=1)
             df_reduced_quarter = pd.merge(df_reduced_quarter, df_peg_ps, on='code', how='inner', suffixes=('', '_x')).drop('name_x', axis=1)
-            logging.info("After df_peg_ps, df_combined_quarter " + str(df_combined_quarter.__len__()) + ", df_reduced_quarter " + str(df_reduced_quarter.__len__()))
+            logging.info(__file__+" "+"After df_peg_ps, df_combined_quarter " + str(df_combined_quarter.__len__()) + ", df_reduced_quarter " + str(df_reduced_quarter.__len__()))
             #arr.remove('df_peg_ps')
 
         if 'df_freecashflow_price_ratio' in locals():
             df_combined_quarter = pd.concat([df_combined_quarter, df_freecashflow_price_ratio], sort=False).drop_duplicates().reset_index().drop('index', axis=1)
             df_reduced_quarter = pd.merge(df_reduced_quarter, df_freecashflow_price_ratio, on='code', how='inner', suffixes=('', '_x')).drop('name_x', axis=1)
-            logging.info("After df_freecashflow_price_ratio, df_combined_quarter " + str(df_combined_quarter.__len__()) + ", df_reduced_quarter " + str(df_reduced_quarter.__len__()))
+            logging.info(__file__+" "+"After df_freecashflow_price_ratio, df_combined_quarter " + str(df_combined_quarter.__len__()) + ", df_reduced_quarter " + str(df_reduced_quarter.__len__()))
             #arr.remove('df_freecashflow_price_ratio')
 
         if 'df_industry_top' in locals():
             df_combined_quarter = pd.concat([df_combined_quarter, df_industry_top], sort=False).drop_duplicates().reset_index().drop('index', axis=1)
             df_reduced_quarter = pd.merge(df_reduced_quarter, df_industry_top, on='code', how='inner', suffixes=('', '_x')).drop('name_x', axis=1)
-            logging.info("After df_industry_top, df_combined_quarter " + str(df_combined_quarter.__len__()) + ", df_reduced_quarter " + str(df_reduced_quarter.__len__()))
+            logging.info(__file__+" "+"After df_industry_top, df_combined_quarter " + str(df_combined_quarter.__len__()) + ", df_reduced_quarter " + str(df_reduced_quarter.__len__()))
             arr.remove('df_industry_top')
 
         #Treat this is the good candicates, while filter garbage filt the garbage only.
@@ -1509,11 +1509,11 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
         #
         #''' No need to filter every df with df_reduced_quarter_year which are the quarter and yearly good stock
         for a in arr:
-            logging.info("=== Inner Merge  " + a + " with df_reduced_quarter_year ====")
+            logging.info(__file__+" "+"=== Inner Merge  " + a + " with df_reduced_quarter_year ====")
             cmd = "pd.merge(" + a + ", df_reduced_quarter_year, on='code',how='inner',suffixes=('','_x')).drop('name_x', axis=1)"
 
             tmp_df = eval(cmd)
-            logging.info("length after merge :" + str(tmp_df.__len__()))
+            logging.info(__file__+" "+"length after merge :" + str(tmp_df.__len__()))
 
             s = a + " = tmp_df"  #df_max_daily_increase = tmp_df
             exec(s)
@@ -1525,11 +1525,11 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
 
     dict_df = {}
 
-    logging.info("------ Combination 1 -------")
+    logging.info(__file__+" "+"------ Combination 1 -------")
     for a in arr:
-        logging.info("=== " + a + " ====")
+        logging.info(__file__+" "+"=== " + a + " ====")
         if (a in ('df_zz500', 'df_sme', 'df_hs300', 'df_gem', 'sz50')):
-            logging.info("skip list set: " + a)
+            logging.info(__file__+" "+"skip list set: " + a)
             continue
 
         #cmd = a+".__len__()"
@@ -1539,7 +1539,7 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
         tmp = combin_filter(tmp, post_combine=True, debug=debug)
 
         if tmp.__len__() == 0:
-            logging.info("empty " + a)
+            logging.info(__file__+" "+"empty " + a)
             continue
 
         if a == 'df_fund_2':
@@ -1548,7 +1548,7 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
         if ('date' in tmp.columns):
             tmp = tmp[tmp['date'] >= day_3_before_date_ymd]
 
-        logging.info("sorting " + a)
+        logging.info(__file__+" "+"sorting " + a)
         tmp = my_sort(tmp, debug=debug)
         len = str(tmp.__len__())
 
@@ -1587,7 +1587,7 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
 
     for combi in range(2, arr.__len__() + 1):
         #def _proc_combination(arr, combi, skip_sets, df_dict, day_3_before_date, debug, rpt):
-        logging.info("------ Combination " + str(combi) + " -------")
+        logging.info(__file__+" "+"------ Combination " + str(combi) + " -------")
         for subset in itertools.combinations(arr, combi):
             if ('df_low_price_year' in subset) and ('df_high_price_year' in subset):
                 continue
@@ -1597,7 +1597,7 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
 
             # every(all) subset are in skipset
             if subset.__len__() == set(subset).intersection(set(skip_sets)).__len__():
-                logging.info("skip list set combination: " + " ".join(set(subset)))
+                logging.info(__file__+" "+"skip list set combination: " + " ".join(set(subset)))
                 continue
 
             long_term = 0
@@ -1629,7 +1629,7 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
                 tmp = dict_df[comb_df_name]
                 #logging.info(("reuse saved combined df " + comb_df_name))
             else:
-                #logging.info("combination no instance, " + comb_df_name)
+                #logging.info(__file__+" "+"combination no instance, " + comb_df_name)
                 continue
 
             dup_suffix = "_y" + str(subset.__len__() - 2)
@@ -1659,7 +1659,7 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
                 logging.info(rst)
 
     logging.info(("result saved to " + rpt))
-    logging.info("script completed")
+    logging.info(__file__+" "+"script completed")
 
     os._exit(0)
 
@@ -1673,11 +1673,11 @@ def ana_result():
     dict = {}
 
     if not os.path.exists(input_f):
-        logging.info("file not exist, " + input_f)
+        logging.info(__file__+" "+"file not exist, " + input_f)
         return
 
     fh = open(input_f, "r")
-    logging.info("loading " + input_f)
+    logging.info(__file__+" "+"loading " + input_f)
 
     skip_section = False
 
@@ -1721,8 +1721,8 @@ def main():
 
     logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m_%d %H:%M:%S', level=logging.DEBUG)
     # logging.basicConfig(filename='example.log', filemode='w', level=logging.DEBUG)
-    logging.info("\n")
-    logging.info("SCRIPT STARTING " + " ".join(sys.argv))
+    logging.info(__file__+" "+"\n")
+    logging.info(__file__+" "+"SCRIPT STARTING " + " ".join(sys.argv))
 
     parser = OptionParser()
 
@@ -1744,14 +1744,14 @@ def main():
     select = options.select
 
     if select:
-        logging.info("select flag is set, stock_global flag will be ignored.")
+        logging.info(__file__+" "+"select flag is set, stock_global flag will be ignored.")
 
     if (not select) and (stock_global is None):
-        logging.info("-x --stock_global is None, check help for available options, program exit")
+        logging.info(__file__+" "+"-x --stock_global is None, check help for available options, program exit")
         exit(0)
 
     if (full_combination) and (stock_global != 'AG'):
-        logging.info("--full_combination using with -x AG only")
+        logging.info(__file__+" "+"--full_combination using with -x AG only")
         exit(0)
 
     if action == 'generate_report':

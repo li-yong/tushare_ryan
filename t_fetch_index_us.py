@@ -13,8 +13,8 @@ from finsymbols.symbol_helper import *
 import logging
 logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m_%d %H:%M:%S', level=logging.DEBUG)
 
-logging.info("\n")
-logging.info("SCRIPT STARTING " + " ".join(sys.argv))
+logging.info(__file__+" "+"\n")
+logging.info(__file__+" "+"SCRIPT STARTING " + " ".join(sys.argv))
 
 HKHS_Prepare = False
 HKHS_Prepare = True
@@ -45,13 +45,13 @@ if HKHS_Prepare:
     df.rename(columns={"code_full": "code"}, inplace=True)
     df = df[['code', 'name', 'flow_perc', 'weight']]
     df.to_csv(csv, encoding='UTF-8', index=False)
-    logging.info("HKHS saved to " + csv)
+    logging.info(__file__+" "+"HKHS saved to " + csv)
 
 pass
 
 ########## SP 500 ##########
 csv = "/home/ryan/DATA/pickle/INDEX_US_HK/sp500.csv"
-logging.info("getting SP500")
+logging.info(__file__+" "+"getting SP500")
 sp500 = finsymbols.get_sp500_symbols()
 
 #conver list of dict to df
@@ -60,24 +60,24 @@ sp500_df.rename(columns={"symbol": "code"}, inplace=True)
 cols = ['code', 'company', 'headquarters', 'industry', 'sector']
 sp500_df = sp500_df[cols]
 sp500_df.to_csv(csv, encoding='UTF-8', index=False)
-logging.info("SP500 saved to " + csv)
+logging.info(__file__+" "+"SP500 saved to " + csv)
 
 logging.info('script completed')
 os._exit(0)
 
 # http://www.nasdaq.com/screening/companies-by-industry.aspx?exchange=NASDAQ&render=download
 
-logging.info("getting nasdaq")
+logging.info(__file__+" "+"getting nasdaq")
 nasdaq = finsymbols.get_nasdaq_symbols()
-logging.info("dumpping nasdaq")
+logging.info(__file__+" "+"dumpping nasdaq")
 pickle.dump(nasdaq, open("/home/ryan/DATA/pickle/INDEX_US/nasdaq.pickle", "wb"))
 
-logging.info("getting amex")
+logging.info(__file__+" "+"getting amex")
 amex = finsymbols.get_amex_symbols()
-logging.info("dumpping amex")
+logging.info(__file__+" "+"dumpping amex")
 pickle.dump(amex, open("/home/ryan/DATA/pickle/INDEX_US/amex.pickle", "wb"))
 
-logging.info("getting nyse")
+logging.info(__file__+" "+"getting nyse")
 nyse = finsymbols.get_nyse_symbols()
-logging.info("dumpping nyse")
+logging.info(__file__+" "+"dumpping nyse")
 pickle.dump(nyse, open("/home/ryan/DATA/pickle/INDEX_US/nyse.pickle", "wb"))

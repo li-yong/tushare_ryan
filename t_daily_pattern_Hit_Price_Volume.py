@@ -161,7 +161,7 @@ stock_global = options.stock_global
 selected = options.selected
 
 if stock_global is None:
-    logging.info("-x --stock_global is None, check help for available options, program exit")
+    logging.info(__file__+" "+"-x --stock_global is None, check help for available options, program exit")
     exit(0)
 
 merge_only = options.merge_only
@@ -249,95 +249,95 @@ bool_p_bbands_div = options.bool_p_bbands_div
 
 #exam_date= ts_ud.last_tddate() #not accurate.
 
-logging.info("debug: " + str(debug))
-logging.info("max_exam_day: " + str(max_exam_day))
-logging.info("single_process: " + str(single_process))
-logging.info("exam_date: " + str(exam_date))
-logging.info("forex: " + str(forex))
-logging.info("stock_global: " + str(stock_global))
-logging.info("merge_only: " + str(merge_only))
-logging.info("local_source: " + str(local_source))
+logging.info(__file__+" "+"debug: " + str(debug))
+logging.info(__file__+" "+"max_exam_day: " + str(max_exam_day))
+logging.info(__file__+" "+"single_process: " + str(single_process))
+logging.info(__file__+" "+"exam_date: " + str(exam_date))
+logging.info(__file__+" "+"forex: " + str(forex))
+logging.info(__file__+" "+"stock_global: " + str(stock_global))
+logging.info(__file__+" "+"merge_only: " + str(merge_only))
+logging.info(__file__+" "+"local_source: " + str(local_source))
 
-logging.info("bool_check_all: " + str(bool_check_all))
+logging.info(__file__+" "+"bool_check_all: " + str(bool_check_all))
 time.sleep(2)
 
 if False:
-    logging.info("bool_calc_std_mean, loop #1: " + str(bool_calc_std_mean))
-    logging.info("bool_perc_std_mean, loop #2: " + str(bool_perc_std_mean))
-    logging.info("bool_talib_pattern, loop #3: " + str(bool_talib_pattern))
-    logging.info("bool_pv_hit, loop #4: " + str(bool_pv_hit))
-    logging.info("bool_p_mfi_div, loop #5: " + str(bool_p_mfi_div))
-    logging.info("bool_p_rsi_div, loop #6: " + str(bool_p_rsi_div))
-    logging.info("bool_p_natr_div, loop #7: " + str(bool_p_natr_div))
-    logging.info("bool_p_tema_div, loop #8: " + str(bool_p_tema_div))
-    logging.info("bool_p_trima_div, loop #9: " + str(bool_p_trima_div))
+    logging.info(__file__+" "+"bool_calc_std_mean, loop #1: " + str(bool_calc_std_mean))
+    logging.info(__file__+" "+"bool_perc_std_mean, loop #2: " + str(bool_perc_std_mean))
+    logging.info(__file__+" "+"bool_talib_pattern, loop #3: " + str(bool_talib_pattern))
+    logging.info(__file__+" "+"bool_pv_hit, loop #4: " + str(bool_pv_hit))
+    logging.info(__file__+" "+"bool_p_mfi_div, loop #5: " + str(bool_p_mfi_div))
+    logging.info(__file__+" "+"bool_p_rsi_div, loop #6: " + str(bool_p_rsi_div))
+    logging.info(__file__+" "+"bool_p_natr_div, loop #7: " + str(bool_p_natr_div))
+    logging.info(__file__+" "+"bool_p_tema_div, loop #8: " + str(bool_p_tema_div))
+    logging.info(__file__+" "+"bool_p_trima_div, loop #9: " + str(bool_p_trima_div))
 
-    logging.info("bool_p_adx_div, loop #10: " + str(bool_p_adx_div))
-    logging.info("bool_p_adxr_div, loop #11: " + str(bool_p_adxr_div))
-    logging.info("bool_p_apo_div, loop #12: " + str(bool_p_apo_div))
-    logging.info("bool_p_aroon_div, loop #13: " + str(bool_p_aroon_div))
-    logging.info("bool_p_aroonosc_div, loop #14: " + str(bool_p_aroonosc_div))
-    logging.info("bool_p_bop_div, loop #15: " + str(bool_p_bop_div))
-    logging.info("bool_p_cci_div, loop #16: " + str(bool_p_cci_div))
-    logging.info("bool_p_cmo_div, loop #17: " + str(bool_p_cmo_div))
-    logging.info("bool_p_dx_div, loop #18: " + str(bool_p_dx_div))
-    logging.info("bool_p_minusdi_div, loop #19: " + str(bool_p_minusdi_div))
-    logging.info("bool_p_minusdm_div, loop #20: " + str(bool_p_minusdm_div))
-    logging.info("bool_p_mom_div, loop #21: " + str(bool_p_mom_div))
-    logging.info("bool_p_plusdi_div, loop #22: " + str(bool_p_plusdi_div))
-    logging.info("bool_p_plusdm_div, loop #23: " + str(bool_p_plusdm_div))
-    logging.info("bool_p_ppo_div, loop #24:" + str(bool_p_ppo_div))
-    logging.info("bool_p_roc_div, loop #25: " + str(bool_p_roc_div))
-    logging.info("bool_p_rocp_div, loop #26: " + str(bool_p_rocp_div))
-    logging.info("bool_p_rocr_div, loop #27: " + str(bool_p_rocr_div))
-    logging.info("bool_p_rocr100_div, loop #28: " + str(bool_p_rocr100_div))
-    logging.info("bool_p_trix_div, loop #29: " + str(bool_p_trix_div))
-    logging.info("bool_p_ultosc_div, loop #30: " + str(bool_p_ultosc_div))
-    logging.info("bool_p_willr_div, loop #31: " + str(bool_p_willr_div))
-    logging.info("bool_p_macd_div, loop #32: " + str(bool_p_macd_div))
-    logging.info("bool_p_macdext_div, loop #33: " + str(bool_p_macdext_div))
-    logging.info("bool_p_macdfix_div, loop #34: " + str(bool_p_macdfix_div))
+    logging.info(__file__+" "+"bool_p_adx_div, loop #10: " + str(bool_p_adx_div))
+    logging.info(__file__+" "+"bool_p_adxr_div, loop #11: " + str(bool_p_adxr_div))
+    logging.info(__file__+" "+"bool_p_apo_div, loop #12: " + str(bool_p_apo_div))
+    logging.info(__file__+" "+"bool_p_aroon_div, loop #13: " + str(bool_p_aroon_div))
+    logging.info(__file__+" "+"bool_p_aroonosc_div, loop #14: " + str(bool_p_aroonosc_div))
+    logging.info(__file__+" "+"bool_p_bop_div, loop #15: " + str(bool_p_bop_div))
+    logging.info(__file__+" "+"bool_p_cci_div, loop #16: " + str(bool_p_cci_div))
+    logging.info(__file__+" "+"bool_p_cmo_div, loop #17: " + str(bool_p_cmo_div))
+    logging.info(__file__+" "+"bool_p_dx_div, loop #18: " + str(bool_p_dx_div))
+    logging.info(__file__+" "+"bool_p_minusdi_div, loop #19: " + str(bool_p_minusdi_div))
+    logging.info(__file__+" "+"bool_p_minusdm_div, loop #20: " + str(bool_p_minusdm_div))
+    logging.info(__file__+" "+"bool_p_mom_div, loop #21: " + str(bool_p_mom_div))
+    logging.info(__file__+" "+"bool_p_plusdi_div, loop #22: " + str(bool_p_plusdi_div))
+    logging.info(__file__+" "+"bool_p_plusdm_div, loop #23: " + str(bool_p_plusdm_div))
+    logging.info(__file__+" "+"bool_p_ppo_div, loop #24:" + str(bool_p_ppo_div))
+    logging.info(__file__+" "+"bool_p_roc_div, loop #25: " + str(bool_p_roc_div))
+    logging.info(__file__+" "+"bool_p_rocp_div, loop #26: " + str(bool_p_rocp_div))
+    logging.info(__file__+" "+"bool_p_rocr_div, loop #27: " + str(bool_p_rocr_div))
+    logging.info(__file__+" "+"bool_p_rocr100_div, loop #28: " + str(bool_p_rocr100_div))
+    logging.info(__file__+" "+"bool_p_trix_div, loop #29: " + str(bool_p_trix_div))
+    logging.info(__file__+" "+"bool_p_ultosc_div, loop #30: " + str(bool_p_ultosc_div))
+    logging.info(__file__+" "+"bool_p_willr_div, loop #31: " + str(bool_p_willr_div))
+    logging.info(__file__+" "+"bool_p_macd_div, loop #32: " + str(bool_p_macd_div))
+    logging.info(__file__+" "+"bool_p_macdext_div, loop #33: " + str(bool_p_macdext_div))
+    logging.info(__file__+" "+"bool_p_macdfix_div, loop #34: " + str(bool_p_macdfix_div))
 
-    logging.info("bool_p_ad_div, loop #35: " + str(bool_p_ad_div))
-    logging.info("bool_p_adosc_div, loop #36: " + str(bool_p_adosc_div))
-    logging.info("bool_p_obv_div, loop #37: " + str(bool_p_obv_div))
+    logging.info(__file__+" "+"bool_p_ad_div, loop #35: " + str(bool_p_ad_div))
+    logging.info(__file__+" "+"bool_p_adosc_div, loop #36: " + str(bool_p_adosc_div))
+    logging.info(__file__+" "+"bool_p_obv_div, loop #37: " + str(bool_p_obv_div))
 
-    logging.info("bool_p_avgprice_div, loop #38: " + str(bool_p_avgprice_div))
-    logging.info("bool_p_medprice_div, loop #39: " + str(bool_p_medprice_div))
-    logging.info("bool_p_typprice_div, loop #40: " + str(bool_p_typprice_div))
-    logging.info("bool_p_wclprice_div, loop #41: " + str(bool_p_wclprice_div))
+    logging.info(__file__+" "+"bool_p_avgprice_div, loop #38: " + str(bool_p_avgprice_div))
+    logging.info(__file__+" "+"bool_p_medprice_div, loop #39: " + str(bool_p_medprice_div))
+    logging.info(__file__+" "+"bool_p_typprice_div, loop #40: " + str(bool_p_typprice_div))
+    logging.info(__file__+" "+"bool_p_wclprice_div, loop #41: " + str(bool_p_wclprice_div))
 
-    logging.info("bool_p_htdcperiod_div, loop #42: " + str(bool_p_htdcperiod_div))
-    logging.info("bool_p_htdcphase_div, loop #43: " + str(bool_p_htdcphase_div))
-    logging.info("bool_p_htphasor_div, loop #44: " + str(bool_p_htphasor_div))
-    logging.info("bool_p_htsine_div, loop #45: " + str(bool_p_htsine_div))
-    logging.info("bool_p_httrendmode_div, loop #46: " + str(bool_p_httrendmode_div))
+    logging.info(__file__+" "+"bool_p_htdcperiod_div, loop #42: " + str(bool_p_htdcperiod_div))
+    logging.info(__file__+" "+"bool_p_htdcphase_div, loop #43: " + str(bool_p_htdcphase_div))
+    logging.info(__file__+" "+"bool_p_htphasor_div, loop #44: " + str(bool_p_htphasor_div))
+    logging.info(__file__+" "+"bool_p_htsine_div, loop #45: " + str(bool_p_htsine_div))
+    logging.info(__file__+" "+"bool_p_httrendmode_div, loop #46: " + str(bool_p_httrendmode_div))
 
-    logging.info("bool_p_beta_div, loop #47: " + str(bool_p_beta_div))
-    logging.info("bool_p_correl_div, loop #48: " + str(bool_p_correl_div))
-    logging.info("bool_p_linearreg_div, loop #49: " + str(bool_p_linearreg_div))
-    logging.info("bool_p_linearregangle_div, loop #50: " + str(bool_p_linearregangle_div))
-    logging.info("bool_p_linearregintercept_div, loop #51: " + str(bool_p_linearregintercept_div))
-    logging.info("bool_p_linearregslope_div, loop #52: " + str(bool_p_linearregslope_div))
-    logging.info("bool_p_stddev_div, loop #53: " + str(bool_p_stddev_div))
-    logging.info("bool_p_tsf_div, loop #54: " + str(bool_p_tsf_div))
-    logging.info("bool_p_var_div, loop #55: " + str(bool_p_var_div))
+    logging.info(__file__+" "+"bool_p_beta_div, loop #47: " + str(bool_p_beta_div))
+    logging.info(__file__+" "+"bool_p_correl_div, loop #48: " + str(bool_p_correl_div))
+    logging.info(__file__+" "+"bool_p_linearreg_div, loop #49: " + str(bool_p_linearreg_div))
+    logging.info(__file__+" "+"bool_p_linearregangle_div, loop #50: " + str(bool_p_linearregangle_div))
+    logging.info(__file__+" "+"bool_p_linearregintercept_div, loop #51: " + str(bool_p_linearregintercept_div))
+    logging.info(__file__+" "+"bool_p_linearregslope_div, loop #52: " + str(bool_p_linearregslope_div))
+    logging.info(__file__+" "+"bool_p_stddev_div, loop #53: " + str(bool_p_stddev_div))
+    logging.info(__file__+" "+"bool_p_tsf_div, loop #54: " + str(bool_p_tsf_div))
+    logging.info(__file__+" "+"bool_p_var_div, loop #55: " + str(bool_p_var_div))
 
-    logging.info("bool_p_wma_div, loop #56: " + str(bool_p_wma_div))
-    logging.info("bool_p_t3_div, loop #57: " + str(bool_p_t3_div))
-    logging.info("bool_p_sma_div, loop #58: " + str(bool_p_sma_div))
-    logging.info("bool_p_sarext_div, loop #59: " + str(bool_p_sarext_div))
-    logging.info("bool_p_sar_div, loop #60: " + str(bool_p_sar_div))
-    logging.info("bool_p_midprice_div, loop #61: " + str(bool_p_midprice_div))
-    logging.info("bool_p_midpoint_div, loop #62: " + str(bool_p_midpoint_div))
-    #logging.info("bool_p_mavp_div, loop #63: "+str(bool_p_mavp_div))
-    logging.info("bool_p_mama_div, loop #64: " + str(bool_p_mama_div))
-    logging.info("bool_p_ma_div, loop #65: " + str(bool_p_ma_div))
-    logging.info("bool_p_kama_div, loop #66: " + str(bool_p_kama_div))
-    logging.info("bool_p_httrendline_div, loop #67: " + str(bool_p_httrendline_div))
-    logging.info("bool_p_ema_div, loop #68: " + str(bool_p_ema_div))
-    logging.info("bool_p_dema_div, loop #69: " + str(bool_p_dema_div))
-    logging.info("bool_p_bbands_div, loop #70: " + str(bool_p_bbands_div))
+    logging.info(__file__+" "+"bool_p_wma_div, loop #56: " + str(bool_p_wma_div))
+    logging.info(__file__+" "+"bool_p_t3_div, loop #57: " + str(bool_p_t3_div))
+    logging.info(__file__+" "+"bool_p_sma_div, loop #58: " + str(bool_p_sma_div))
+    logging.info(__file__+" "+"bool_p_sarext_div, loop #59: " + str(bool_p_sarext_div))
+    logging.info(__file__+" "+"bool_p_sar_div, loop #60: " + str(bool_p_sar_div))
+    logging.info(__file__+" "+"bool_p_midprice_div, loop #61: " + str(bool_p_midprice_div))
+    logging.info(__file__+" "+"bool_p_midpoint_div, loop #62: " + str(bool_p_midpoint_div))
+    #logging.info(__file__+" "+"bool_p_mavp_div, loop #63: "+str(bool_p_mavp_div))
+    logging.info(__file__+" "+"bool_p_mama_div, loop #64: " + str(bool_p_mama_div))
+    logging.info(__file__+" "+"bool_p_ma_div, loop #65: " + str(bool_p_ma_div))
+    logging.info(__file__+" "+"bool_p_kama_div, loop #66: " + str(bool_p_kama_div))
+    logging.info(__file__+" "+"bool_p_httrendline_div, loop #67: " + str(bool_p_httrendline_div))
+    logging.info(__file__+" "+"bool_p_ema_div, loop #68: " + str(bool_p_ema_div))
+    logging.info(__file__+" "+"bool_p_dema_div, loop #69: " + str(bool_p_dema_div))
+    logging.info(__file__+" "+"bool_p_bbands_div, loop #70: " + str(bool_p_bbands_div))
 
 if exam_date is None:
     exam_date = finlib.Finlib().get_last_trading_day()
@@ -355,7 +355,7 @@ if exam_date is None:
         exam_date = exam_date.strftime('%Y%m%d')
 
     exam_date = datetime.strptime(exam_date, '%Y%m%d').strftime('%Y-%m-%d')
-    logging.info("exam_date: " + exam_date)
+    logging.info(__file__+" "+"exam_date: " + exam_date)
 
 #exit(1)
 
@@ -389,7 +389,7 @@ def calc_init(array):
     exam_date = array['exam_date']
 
     if not finlib.Finlib().is_non_zero_file(inputF):
-        logging.info("not continue, empty file " + inputF)
+        logging.info(__file__+" "+"not continue, empty file " + inputF)
         return
 
     # inputF = '/home/ryan/DATA/DAY/' + file
@@ -404,13 +404,13 @@ def calc_init(array):
     # inputF = "/home/ryan/DATA/DAY_dev/SZ000780.csv"
     if single_process:
         progress_run += 1
-        #logging.info("Work on file " + inputF + ", last date is " + exam_date + ", run " + str(progress_run) + "/" + str(toal_run))
-        logging.info("Work on file " + inputF + ", run " + str(progress_run) + "/" + str(toal_run))
+        #logging.info(__file__+" "+"Work on file " + inputF + ", last date is " + exam_date + ", run " + str(progress_run) + "/" + str(toal_run))
+        logging.info(__file__+" "+"Work on file " + inputF + ", run " + str(progress_run) + "/" + str(toal_run))
     else:
         lock.acquire()
         progress_run += 1
-        #logging.info("Work on file " + inputF + ", last date is " + exam_date + ", run " + str(progress_run) + "/" + str(toal_run))
-        logging.info("Work on file " + inputF + ", run " + str(progress_run) + "/" + str(toal_run))
+        #logging.info(__file__+" "+"Work on file " + inputF + ", last date is " + exam_date + ", run " + str(progress_run) + "/" + str(toal_run))
+        logging.info(__file__+" "+"Work on file " + inputF + ", run " + str(progress_run) + "/" + str(toal_run))
         lock.release()
     '''
     if not re.match(".*DAY_Global.*/AG/.*", inputF):
@@ -429,23 +429,23 @@ def calc_init(array):
     df_original = df
 
     if df_original.__len__() <= 1:
-        logging.info("empty or only one line file, remove file " + inputF)
+        logging.info(__file__+" "+"empty or only one line file, remove file " + inputF)
         #os.remove(inputF) # Don't remove, the stock just released to market and only have one line, and ReadOnly file sytem.
         return
 
     if df_original.__len__() <= (max_exam_day + 253):  #253 trading days a year.
-        logging.info("not continue. day available less than specified max_exam_day+253 records" + inputF)
+        logging.info(__file__+" "+"not continue. day available less than specified max_exam_day+253 records" + inputF)
         return
 
     exam_date_in_df = df_original.iloc[-1].date
     exam_date = str(exam_date_in_df)
-    logging.info("exam_date set to latest date in csv " + exam_date)
+    logging.info(__file__+" "+"exam_date set to latest date in csv " + exam_date)
 
     # take last 3000 rows for analysis
     if max_exam_day == 0:
-        logging.info("explicitly check all the records " + str(df.__len__()) + " in file " + inputF)
+        logging.info(__file__+" "+"explicitly check all the records " + str(df.__len__()) + " in file " + inputF)
     else:
-        logging.info("check latest " + str(max_exam_day) + " records in file " + inputF)
+        logging.info(__file__+" "+"check latest " + str(max_exam_day) + " records in file " + inputF)
         df = df_original.iloc[df_original.__len__() - max_exam_day - 253:]
         df_not_processed = df_original.iloc[:df_original.__len__() - max_exam_day - 253 - 1]
 
@@ -552,21 +552,21 @@ def calc_init(array):
             if df_not_processed.__len__() >= 0:
                 df_not_processed.to_csv(inputF)
             else:
-                logging.info("local resource, but df_not_processed len is " + str(df_not_processed.__len__()))
+                logging.info(__file__+" "+"local resource, but df_not_processed len is " + str(df_not_processed.__len__()))
         else:
-            logging.info("keep remote source file no change.")  # when call -l, make sure -m equal 0. AS the no processing df will not be saved to remote.
+            logging.info(__file__+" "+"keep remote source file no change.")  # when call -l, make sure -m equal 0. AS the no processing df will not be saved to remote.
 
     except:
         traceback.print_exception(*exc_info)
-        logging.info("catched exception. outputF is " + outputF)
+        logging.info(__file__+" "+"catched exception. outputF is " + outputF)
 
     finally:
         del exc_info
 
 
 ### Main Start ###
-logging.info("\n")
-logging.info("SCRIPT STARTING " + " ".join(sys.argv))
+logging.info(__file__+" "+"\n")
+logging.info(__file__+" "+"SCRIPT STARTING " + " ".join(sys.argv))
 
 if forex:
     root_dir = '/home/ryan/DATA/DAY_Forex'
@@ -598,7 +598,7 @@ if debug:
     else:
         root_dir = '/home/ryan/DATA/DAY_Global_dev/' + stock_global  #or -d -x dev
 
-logging.info("root_dir " + root_dir)
+logging.info(__file__+" "+"root_dir " + root_dir)
 
 array = []
 
@@ -659,7 +659,7 @@ if not merge_only:
 
             calc_init(array)
 
-        logging.info("single process loop completed.")
+        logging.info(__file__+" "+"single process loop completed.")
     else:
         process_cnt = cpu_count - 1
         if process_cnt == 0:
@@ -688,14 +688,14 @@ for root, dirs, files in os.walk('/home/ryan/DATA/tmp/pv_today/' + stock_global)
 df = pd.DataFrame(columns=[])
 
 if files.__len__() == 0:
-    logging.info("No any stock hit the criteria today, script completed")
+    logging.info(__file__+" "+"No any stock hit the criteria today, script completed")
     exit(0)
 
-logging.info("merging today's PV hit result files from files in " + root)
+logging.info(__file__+" "+"merging today's PV hit result files from files in " + root)
 for file in files:
     df_tmp = pd.read_csv(root + "/" + file, converters={'code': str})
     if df_tmp.__len__() == 0:
-        logging.info("skip empty file " + file)
+        logging.info(__file__+" "+"skip empty file " + file)
         continue
     df = df.append(df_tmp)
 
@@ -724,7 +724,7 @@ if stock_global != 'dev':  #dev == debug, may have mixed type of code, result ze
     df = pd.merge(df_code_name_map, df, on='code', how='inner')
 
 df.to_csv(result_csv)
-logging.info("Today Talib and PV B no filter length " + str(df.__len__()) + ", result saved to " + result_csv)
+logging.info(__file__+" "+"Today Talib and PV B no filter length " + str(df.__len__()) + ", result saved to " + result_csv)
 
 ### Filter with DB records
 engine = create_engine('mysql://root:admin888.@_@@127.0.0.1/ryan_stock_db?charset=utf8')
@@ -743,21 +743,21 @@ query_sell_sql = "SELECT * FROM `pattern_perf` \
 
 query_sell_sql += "ORDER BY `2dc`-`2uc`"
 
-logging.info("query ideal BUY code/pattern perf in DB")
+logging.info(__file__+" "+"query ideal BUY code/pattern perf in DB")
 idea_buy_stock_in_db = pd.read_sql_query(query_buy_sql, engine, index_col='ID')
 idea_buy_stock_in_db.rename(columns={'pattern': 'op_rsn', 'stockID': 'code'}, inplace=True)
-logging.info("query ideal BUY code/pattern perf in DB, got record # " + str(idea_buy_stock_in_db.__len__()))
+logging.info(__file__+" "+"query ideal BUY code/pattern perf in DB, got record # " + str(idea_buy_stock_in_db.__len__()))
 
-logging.info("query ideal SELL code/pattern perf in DB")
+logging.info(__file__+" "+"query ideal SELL code/pattern perf in DB")
 idea_sell_stock_in_db = pd.read_sql_query(query_sell_sql, engine, index_col='ID')
 idea_sell_stock_in_db.rename(columns={'pattern': 'op_rsn', 'stockID': 'code'}, inplace=True)
-logging.info("query ideal SELL code/pattern perf in DB, got record # " + str(idea_sell_stock_in_db.__len__()))
+logging.info(__file__+" "+"query ideal SELL code/pattern perf in DB, got record # " + str(idea_sell_stock_in_db.__len__()))
 
 #print df.head(2)
 #print idea_buy_stock_in_db.head(2)
 #print idea_sell_stock_in_db.head(2)
 #logging.info(idea_buy_stock_in_db.columns)
-#logging.info("----")
+#logging.info(__file__+" "+"----")
 #logging.info(df.columns)
 
 #inner returns records exist in left and right df
@@ -769,7 +769,7 @@ df_sell = pd.merge(df, idea_sell_stock_in_db, left_on=['op_rsn', 'code'], right_
 df_buy.drop_duplicates(inplace=True)
 df_sell.drop_duplicates(inplace=True)
 
-logging.info("inner merge with today hit, record # " + str(df_buy.__len__()))
+logging.info(__file__+" "+"inner merge with today hit, record # " + str(df_buy.__len__()))
 
 cols = df_buy.columns.tolist()
 cols = [
@@ -817,8 +817,8 @@ if stock_global != 'dev':
 df_buy.to_csv(result_csv_buy, index=False)
 df_sell.to_csv(result_csv_sell, index=False)
 
-logging.info("Today Talib and PV B filtered result saved to " + result_csv_buy)
-logging.info("Today Talib and PV S filtered result saved to " + result_csv_sell)
+logging.info(__file__+" "+"Today Talib and PV B filtered result saved to " + result_csv_buy)
+logging.info(__file__+" "+"Today Talib and PV S filtered result saved to " + result_csv_sell)
 
-logging.info("Script completed")
+logging.info(__file__+" "+"Script completed")
 os._exit(0)

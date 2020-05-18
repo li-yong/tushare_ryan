@@ -23,7 +23,7 @@ from optparse import OptionParser
 #csv_file = open("csv.del", 'wb')
 #csv_file.write(url_content)
 #csv_file.close()
-#logging.info("fetched to "+"csv.del")
+#logging.info(__file__+" "+"fetched to "+"csv.del")
 
 
 def stooq_download(code, mkt, days=1, force_fetch=False):
@@ -36,7 +36,7 @@ def stooq_download(code, mkt, days=1, force_fetch=False):
         pathlib.Path(dir_o).mkdir(parents=True, exist_ok=True)
 
     if finlib.Finlib().is_cached(csv_o, day=days) and (not force_fetch):
-        logging.info("file is updated in " + str(days) + " days. not fetch again. " + csv_o)
+        logging.info(__file__+" "+"file is updated in " + str(days) + " days. not fetch again. " + csv_o)
         return
 
     url_head = 'https://stooq.com/q/d/l/?s='
@@ -52,13 +52,13 @@ def stooq_download(code, mkt, days=1, force_fetch=False):
     csv_file = open(csv_o, 'wb')
     csv_file.write(url_content)
     csv_file.close()
-    logging.info("fetched to " + csv_o)
+    logging.info(__file__+" "+"fetched to " + csv_o)
 
     df = pd.read_csv(csv_o, skiprows=1, names=['date', 'open', 'high', 'low', 'close', 'volume'], encoding="utf-8")
     df = pd.DataFrame([code] * df.__len__(), columns=['code']).join(df)
 
     df.to_csv(csv_o, encoding='UTF-8', index=False)
-    logging.info("formatted, csv length " + str(df.__len__()))
+    logging.info(__file__+" "+"formatted, csv length " + str(df.__len__()))
     finlib.Finlib().pprint(df.iloc[-1:])
     pass
 
@@ -82,7 +82,7 @@ for mkt in ['US_INDEX', 'US']:
         stooq_download(code=code, mkt=mkt, force_fetch=force_fetch)
         pass
 
-logging.info("script completed. ")
+logging.info(__file__+" "+"script completed. ")
 
 #https://quant.stackexchange.com/questions/26078/how-can-one-query-the-google-finance-api-for-dow-jones-and-sp-500-values
 #mkdir /home/ryan/DATA/DAY_Global/US_INDEX

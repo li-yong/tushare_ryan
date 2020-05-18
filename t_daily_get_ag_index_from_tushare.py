@@ -12,8 +12,8 @@ import logging
 import sys
 logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m_%d %H:%M:%S', level=logging.DEBUG)
 
-logging.info("\n")
-logging.info("SCRIPT STARTING " + " ".join(sys.argv))
+logging.info(__file__+" "+"\n")
+logging.info(__file__+" "+"SCRIPT STARTING " + " ".join(sys.argv))
 
 from pandas.plotting import register_matplotlib_converters
 register_matplotlib_converters()
@@ -60,9 +60,9 @@ def fetch_index(myToken, ts_code, csv_file):
 
     if (df.__len__() > 0):
         df.to_csv(csv_file, index=False)
-        logging.info("Index saved to " + csv_file + " ,len " + str(df.__len__()))
+        logging.info(__file__+" "+"Index saved to " + csv_file + " ,len " + str(df.__len__()))
     else:
-        logging.info("df lengh is 0, did not save to " + csv_file)
+        logging.info(__file__+" "+"df lengh is 0, did not save to " + csv_file)
 
 
 def main():

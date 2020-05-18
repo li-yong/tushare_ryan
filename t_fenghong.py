@@ -64,7 +64,7 @@ def get_reference_data():
     df_new_stock = pd.DataFrame()
 
     ######################## ts.new_stocks  ###################
-    logging.info("getting new_stocks, ts.new_stocks")  # 新股数据
+    logging.info(__file__+" "+"getting new_stocks, ts.new_stocks")  # 新股数据
     if finlib.Finlib().is_cached(new_stock_csv, 3):
         df_new_stock = pd.read_csv(new_stock_csv, converters={'code': str})
     else:
@@ -88,7 +88,7 @@ def get_reference_data():
 
             if (year > 2008) and ((not os.path.isfile(dump_reference_profit_data)) or (year == year_q['last_quarter']['year'] and quarter == year_q['last_quarter']['quarter'])):
                 #if (year > 2008) and ((not os.path.isfile(dump_reference_profit_data))):
-                #logging.info("\tGetting profit_data, ts.profit_data\t")  # 分配预案
+                #logging.info(__file__+" "+"\tGetting profit_data, ts.profit_data\t")  # 分配预案
                 sys.stdout.write("getting profit_data, ts.profit_data. year " + str(year))
                 sys.stdout.flush()
                 df_tmp = ts.profit_data(year=year, top=30000, retry_count=10, pause=0.001)
@@ -102,7 +102,7 @@ def get_reference_data():
                 df_tmp = pandas.read_csv(dump_reference_profit_data, converters={'code': str})
 
         except:
-            logging.info("\tcaught exception, profit_data, year " + str(year) + ", " + dump_reference_profit_data)
+            logging.info(__file__+" "+"\tcaught exception, profit_data, year " + str(year) + ", " + dump_reference_profit_data)
             exit(0)
         finally:
             df_profit_all = df_profit_all.append(df_tmp, ignore_index=True)
@@ -113,7 +113,7 @@ def get_reference_data():
                 traceback.print_exception(*exc_info)
             del exc_info
             #logging.info('\tprofit_data year ' + str(year) + " end")
-            #logging.info("\t---> df_profit_all len "+str(df_profit_all.__len__())) #update df all in every loop
+            #logging.info(__file__+" "+"\t---> df_profit_all len "+str(df_profit_all.__len__())) #update df all in every loop
 
             df_profit_all.to_csv(profit_csv, encoding='UTF-8', index=False)
             logging.info(__file__ + ": " + "df_profit_all saved, " + profit_csv + " . len " + str(df_profit_all.__len__()))
@@ -144,7 +144,7 @@ def get_reference_data():
                     df_tmp = pandas.read_csv(dump_reference_forecast_data, converters={'code': str})
 
             except:
-                logging.info("\tcaught exception, forecast_data, year " + str(year) + " quarter " + str(quarter))
+                logging.info(__file__+" "+"\tcaught exception, forecast_data, year " + str(year) + " quarter " + str(quarter))
             finally:
                 df_forecast_all = df_forecast_all.append(df_tmp, ignore_index=True)
 
@@ -154,7 +154,7 @@ def get_reference_data():
                     traceback.print_exception(*exc_info)
                 del exc_info
                 #logging.info('\tforecast_data year ' + str(year) +" quarter "+str(quarter) + " end")
-                #logging.info("\t---> df_forecast_all len " + str(df_forecast_all.__len__()))  # update df all in every loop
+                #logging.info(__file__+" "+"\t---> df_forecast_all len " + str(df_forecast_all.__len__()))  # update df all in every loop
                 df_forecast_all.to_csv(forecast_csv, encoding='UTF-8', index=False)
                 logging.info(__file__ + ": " + "saved, " + forecast_csv + " . len " + str(df_forecast_all.__len__()))
 
@@ -183,7 +183,7 @@ def get_reference_data():
                     df_tmp = pandas.read_csv(dump_reference_fund_holdings, converters={'code': str})
 
             except:
-                logging.info("\tcaught exception, fund_holdings, year " + str(year) + " quarter " + str(quarter))
+                logging.info(__file__+" "+"\tcaught exception, fund_holdings, year " + str(year) + " quarter " + str(quarter))
             finally:
                 df_fundholding_all = df_fundholding_all.append(df_tmp, ignore_index=True)
 
@@ -193,7 +193,7 @@ def get_reference_data():
                     traceback.print_exception(*exc_info)
                 del exc_info
                 #logging.info('\tfund_holdings year ' + str(year)  +" quarter "+str(quarter) + " end")
-                #logging.info("\t---> df_fundholding_all len "+str(df_fundholding_all.__len__())) #update df all in every loop
+                #logging.info(__file__+" "+"\t---> df_fundholding_all len "+str(df_fundholding_all.__len__())) #update df all in every loop
                 df_fundholding_all.to_csv(fundhold_csv, encoding='UTF-8', index=False)
                 logging.info(__file__ + ": " + "saved, " + fundhold_csv + " . len " + str(df_fundholding_all.__len__()))
 
@@ -213,7 +213,7 @@ def get_reference_data():
 
                 #if (year > 2010) and ((not os.path.isfile(dump_reference_xsg_data)) or (year == 2018)):
                 if (year > 2010) and ((not os.path.isfile(dump_reference_xsg_data))):
-                    logging.info("\t\tgetting xsg_data, ts.xsg_data, year " + str(year) + " month " + str(month))  # 限售股解禁
+                    logging.info(__file__+" "+"\t\tgetting xsg_data, ts.xsg_data, year " + str(year) + " month " + str(month))  # 限售股解禁
                     df_tmp = ts.xsg_data(year, month)
                     df_tmp.to_csv(dump_reference_xsg_data, encoding='UTF-8', index=False)
                     logging.info(__file__ + ": " + "saved, " + dump_reference_xsg_data)
@@ -224,7 +224,7 @@ def get_reference_data():
                     df_tmp = pandas.read_csv(dump_reference_xsg_data, converters={'code': str})
 
             except:
-                logging.info("\tcaught exception, xsg_data, year " + str(year) + " month " + str(month))
+                logging.info(__file__+" "+"\tcaught exception, xsg_data, year " + str(year) + " month " + str(month))
             finally:
                 df_xsg_all = df_xsg_all.append(df_tmp, ignore_index=True)
 
@@ -234,7 +234,7 @@ def get_reference_data():
                     traceback.print_exception(*exc_info)
                 del exc_info
                 #logging.info('\txsg_data year ' + str(year) + " quarter " + str(quarter) + " end")
-                #logging.info("\t---> df_xsg_all len " + str(df_xsg_all.__len__()))  # update df all in every loop
+                #logging.info(__file__+" "+"\t---> df_xsg_all len " + str(df_xsg_all.__len__()))  # update df all in every loop
                 df_xsg_all.to_csv(xsg_csv, encoding='UTF-8', index=False)
                 logging.info(__file__ + ": " + "saved, " + xsg_csv + " . len " + str(df_xsg_all.__len__()))
     ''''######################## ts.sh_margins  Obsolated###################
@@ -253,7 +253,7 @@ def get_reference_data():
 
             #df_sh_margins.to_pickle(dump_reference_sh_margins)
         except:
-            logging.info("\tcaught exception, sh_margins, year " + str(year) + " month " + str(month))
+            logging.info(__file__+" "+"\tcaught exception, sh_margins, year " + str(year) + " month " + str(month))
         finally:
             if exc_info == (None, None, None):
                 pass  # no exception
@@ -282,7 +282,7 @@ def get_reference_data():
 
             #df_sz_margins.to_pickle(dump_reference_sz_margins)
         except:
-            logging.info("\tcaught exception, sz_margins, year " + str(year) + " month " + str(month))
+            logging.info(__file__+" "+"\tcaught exception, sz_margins, year " + str(year) + " month " + str(month))
         finally:
             if exc_info == (None, None, None):
                 pass  # no exception
@@ -298,16 +298,16 @@ def get_reference_data():
 
    '''
 
-    logging.info("df_profit_all len " + str(df_profit_all.__len__()))
-    logging.info("df_forecast_all len " + str(df_forecast_all.__len__()))
-    logging.info("df_fundholding_all len " + str(df_fundholding_all.__len__()))
-    logging.info("df_xsg_all len " + str(df_xsg_all.__len__()))
+    logging.info(__file__+" "+"df_profit_all len " + str(df_profit_all.__len__()))
+    logging.info(__file__+" "+"df_forecast_all len " + str(df_forecast_all.__len__()))
+    logging.info(__file__+" "+"df_fundholding_all len " + str(df_fundholding_all.__len__()))
+    logging.info(__file__+" "+"df_xsg_all len " + str(df_xsg_all.__len__()))
 
-    logging.info("df_new_stock len " + str(df_new_stock.__len__()))
-    #logging.info("df_sh_margins len "+str(df_sh_margins.__len__()))
-    #logging.info("df_sz_margins len "+str(df_sz_margins.__len__()))
+    logging.info(__file__+" "+"df_new_stock len " + str(df_new_stock.__len__()))
+    #logging.info(__file__+" "+"df_sh_margins len "+str(df_sh_margins.__len__()))
+    #logging.info(__file__+" "+"df_sz_margins len "+str(df_sz_margins.__len__()))
 
-    logging.info("End of the sub get_reference_data")
+    logging.info(__file__+" "+"End of the sub get_reference_data")
     #end of get_reference_data
 
 
@@ -343,7 +343,7 @@ def fetch_data_no_adj(debug=False, force_fetch=False):
         df_tmp = pd.DataFrame()  # base of the csv
 
         #if finlib.Finlib().is_cached(csv_f, day=0) and (not force_fetch):
-        #    logging.info("ignore because csv_f was updated within 1 days, " + csv_f)
+        #    logging.info(__file__+" "+"ignore because csv_f was updated within 1 days, " + csv_f)
         #    continue
 
         if (not os.path.isfile(csv_f)) or (os.stat(csv_f).st_size <= 200):  # 200 bytes
@@ -359,7 +359,7 @@ def fetch_data_no_adj(debug=False, force_fetch=False):
             ####### fix start
             #df_tmp = df_tmp[:-1]
             #df_tmp.to_csv(csv_f, encoding='UTF-8', index=False)
-            #logging.info(". saved, len " + str(df_tmp.__len__()))
+            #logging.info(__file__+" "+". saved, len " + str(df_tmp.__len__()))
             #continue
             ####### fix end
 
@@ -369,15 +369,15 @@ def fetch_data_no_adj(debug=False, force_fetch=False):
             a_week_before_date = datetime.datetime.strptime(todayS, '%Y-%m-%d') - datetime.timedelta(20)
 
             if next_date.strftime('%Y-%m-%d') > todayS:
-                logging.info("file already updated, not fetching again. " + str(i) + " of " + str(total_len) + ". updated to " + last_date + " " + csv_f)
+                logging.info(__file__+" "+"file already updated, not fetching again. " + str(i) + " of " + str(total_len) + ". updated to " + last_date + " " + csv_f)
                 #i_cnt += 1
                 continue
 
             # last date in csv is 7 days ago, most likely the source is not update, so skip this csv.
-            # logging.info("Next "+next_date.strftime('%Y-%m-%d'))
-            # logging.info("a week before "+ a_week_before_date.strftime('%Y-%m-%d'))
+            # logging.info(__file__+" "+"Next "+next_date.strftime('%Y-%m-%d'))
+            # logging.info(__file__+" "+"a week before "+ a_week_before_date.strftime('%Y-%m-%d'))
             if next_date.strftime('%Y-%m-%d') < a_week_before_date.strftime('%Y-%m-%d'):
-                logging.info("file too old to updated, not fetching. " + str(i) + " of " + str(total_len) + ". updated to " + last_date + " " + csv_f)
+                logging.info(__file__+" "+"file too old to updated, not fetching. " + str(i) + " of " + str(total_len) + ". updated to " + last_date + " " + csv_f)
                 #i_cnt += 1
                 #continue
 
@@ -404,13 +404,13 @@ def fetch_data_no_adj(debug=False, force_fetch=False):
                                   start_date=start_date_req, end_date=todayS, retry_count=10)
 
             if df_hist_data is None:
-                logging.info("ts.bar return None for " + code)
+                logging.info(__file__+" "+"ts.bar return None for " + code)
                 continue
             else:
                 sys.stdout.write(" len fetched " + str(df_hist_data.__len__()) + " ")
 
         except:
-            logging.info("\tcaught exception on, code " + str(code))
+            logging.info(__file__+" "+"\tcaught exception on, code " + str(code))
             continue
         finally:
             if exc_info == (None, None, None):
@@ -440,7 +440,7 @@ def fetch_data_no_adj(debug=False, force_fetch=False):
 
 
 '''
-    logging.info("fetch No Adj Starts")
+    logging.info(__file__+" "+"fetch No Adj Starts")
 
     api = ts_cs.api(retry_count=10)
     cons  = ts.get_apis()
@@ -481,10 +481,10 @@ def fetch_data_no_adj(debug=False, force_fetch=False):
                 df_hist_data = ts.bar(code=code, conn=cons, adj=None,retry_count=10)
 
                 if df_hist_data is None:
-                    logging.info("ts.bar return None for "+code)
+                    logging.info(__file__+" "+"ts.bar return None for "+code)
                     continue
             except:
-                logging.info("\tcaught exception on, code " + str(code))
+                logging.info(__file__+" "+"\tcaught exception on, code " + str(code))
                 continue
             finally:
                 if exc_info == (None, None, None):
@@ -507,13 +507,13 @@ def fetch_data_no_adj(debug=False, force_fetch=False):
 
 
             df_hist_data.to_csv(csv_f,  encoding='UTF-8', index=False)
-            logging.info(". saved, len "+str(df_hist_data.__len__()))
+            logging.info(__file__+" "+". saved, len "+str(df_hist_data.__len__()))
 '''
 
 
 def analyze_one(debug=False):
     if (not force_run_global) and finlib.Finlib().is_cached(profit_analysis_csv, day=5):
-        logging.info("skip file, it been updated in 5 day. " + profit_analysis_csv)
+        logging.info(__file__+" "+"skip file, it been updated in 5 day. " + profit_analysis_csv)
         return
 
     df_profit = pd.DataFrame()
@@ -593,7 +593,7 @@ def analyze_one(debug=False):
     logging.info(("df_profit len: " + str(df_profit.__len__())))
     df = df_profit
 
-    logging.info("FengHong Analysis Starts")
+    logging.info(__file__+" "+"FengHong Analysis Starts")
 
     df_result = pd.DataFrame(columns=['code', 'name', 'year', 'report_date', 'divi', 'shares', 'price', 'divi_percent', 'shares_percent'])
 
@@ -625,7 +625,7 @@ def analyze_one(debug=False):
             continue
 
         if not os.path.isfile(csv_f):
-            logging.info("Cannot contine, not found file " + csv_f)
+            logging.info(__file__+" "+"Cannot contine, not found file " + csv_f)
             continue
         else:
             df_csv = pd.read_csv(csv_f, converters={'code': str}, skiprows=1, header=None, names=['code', 'date', 'o', 'h', 'l', 'c', 'vol', 'amnt', 'tnv'])
@@ -648,13 +648,13 @@ def analyze_one(debug=False):
                 break
 
         if price.__len__() == 0:
-            logging.info("WARNING:CANNOT GET HISTORY PRICE,  SHOULD NOT BE HERE. " + code + " " + last_trading_date)
+            logging.info(__file__+" "+"WARNING:CANNOT GET HISTORY PRICE,  SHOULD NOT BE HERE. " + code + " " + last_trading_date)
             continue
 
         price = price.values[0]
 
         if price == 0:
-            logging.info("Not continue as price is 0. " + code + " " + last_trading_date)
+            logging.info(__file__+" "+"Not continue as price is 0. " + code + " " + last_trading_date)
             continue
 
         divi_percent = abs(100 * divi / (price * 10))  #divi is on 10 shares
@@ -672,7 +672,7 @@ def analyze_one(debug=False):
             'shares_percent': [share_percent],
         }))
 
-        logging.info("code " + str(code) + " report date " + str(report_date) + ".  div percent " + str(divi_percent) + ", share percent " + str(share_percent))
+        logging.info(__file__+" "+"code " + str(code) + " report date " + str(report_date) + ".  div percent " + str(divi_percent) + ", share percent " + str(share_percent))
 
         #ts.bar(code='000651', conn=cons, start_date='2016-04-20', end_date='2016-04-30')
 
@@ -688,7 +688,7 @@ def analyze_two():
     # share_score: share_sum/fhcnt
 
     if (not force_run_global) and finlib.Finlib().is_cached(fenghong_score_csv, day=5):
-        logging.info("skip file, it been updated in 5 day. " + fenghong_score_csv)
+        logging.info(__file__+" "+"skip file, it been updated in 5 day. " + fenghong_score_csv)
         return
 
     df_result = pd.DataFrame(columns=['code', 'name', 'score', 'divi_m_score', 'share_m_score', 'fhcnt', 'fhcnt_p', 'divi_sum', 'divi_p', 'share_sum', 'share_p', 'divi_m', 'share_m'])
@@ -767,7 +767,7 @@ def analyze_two():
 
 
 def main():
-    logging.info("SCRIPT STARTING " + " ".join(sys.argv))
+    logging.info(__file__+" "+"SCRIPT STARTING " + " ".join(sys.argv))
     parser = OptionParser()
 
     parser.add_option("-e", "--fetch_reference", action="store_true", dest="fetch_ref_f", default=False, help="fetch reference")
@@ -793,13 +793,13 @@ def main():
     debug = options.debug
     force_run_f = options.force_run_f
 
-    logging.info("fetch_ref_f: " + str(fetch_ref_f))
-    logging.info("fetch_data_f: " + str(fetch_data_f))
-    logging.info("force_fetch_data_f: " + str(force_fetch_data_f))
-    logging.info("analyze_1_f: " + str(analyze_1_f))
-    logging.info("analyze_2_f: " + str(analyze_2_f))
-    logging.info("debug: " + str(debug))
-    logging.info("force_run_f: " + str(force_run_f))
+    logging.info(__file__+" "+"fetch_ref_f: " + str(fetch_ref_f))
+    logging.info(__file__+" "+"fetch_data_f: " + str(fetch_data_f))
+    logging.info(__file__+" "+"force_fetch_data_f: " + str(force_fetch_data_f))
+    logging.info(__file__+" "+"analyze_1_f: " + str(analyze_1_f))
+    logging.info(__file__+" "+"analyze_2_f: " + str(analyze_2_f))
+    logging.info(__file__+" "+"debug: " + str(debug))
+    logging.info(__file__+" "+"force_run_f: " + str(force_run_f))
 
     global force_run_global
     force_run_global = False

@@ -114,7 +114,7 @@ def w_shape(csv_f, period):
     len = df_period.__len__()
     for i in range(len):
         df_new = df_period[len - i - 100:len - i]
-        logging.info("Verifying " + str(df_new[-1:].date.values[0]))
+        logging.info(__file__+" "+"Verifying " + str(df_new[-1:].date.values[0]))
         rtn = _w_shape(df_new)
         if rtn['reason'][0] == "NOT_MATCH":
             pass
@@ -174,53 +174,53 @@ def _w_shape(df):
             if stage == 'null':
                 p0 = r1.close
                 d0 = r1.date.strftime("%Y-%m-%d")
-                logging.info("init s0" + ", middle point:" + str(r1.date) + " " + str(r1.close))
+                logging.info(__file__+" "+"init s0" + ", middle point:" + str(r1.date) + " " + str(r1.close))
                 stage = "s0"
                 continue
 
             if stage in ["s0", "s2", "s4", "s6", "s8"]:
-                logging.info("moving up on " + stage)
+                logging.info(__file__+" "+"moving up on " + stage)
                 continue
 
         if trend == 'down':
             if stage == 'null':
                 this_reason = "NOT_MATCH"
-                logging.info("not match")
+                logging.info(__file__+" "+"not match")
                 break
 
             if stage in ["s1", "s3", "s5", "s7"]:
-                logging.info("moving down on " + stage)
+                logging.info(__file__+" "+"moving down on " + stage)
                 continue
 
         if trend == 'up_down':
             if stage == 'null':
-                logging.info("not match")
+                logging.info(__file__+" "+"not match")
                 this_reason = "NOT_MATCH"
                 break
 
             if stage in ["s1"]:
-                logging.info("spot p2 in " + stage + ", middle point:" + str(r2.date) + " " + str(r2.close))
+                logging.info(__file__+" "+"spot p2 in " + stage + ", middle point:" + str(r2.date) + " " + str(r2.close))
                 p2 = r2.close
                 d2 = r2.date.strftime("%Y-%m-%d")
                 stage = "s2"
                 continue
 
             if stage in ["s3"]:
-                logging.info("spot p4 in " + stage + ", middle point:" + str(r2.date) + " " + str(r2.close))
+                logging.info(__file__+" "+"spot p4 in " + stage + ", middle point:" + str(r2.date) + " " + str(r2.close))
                 p4 = r2.close
                 d4 = r2.date.strftime("%Y-%m-%d")
                 stage = "s4"
                 continue
 
             if stage in ["s5"]:
-                logging.info("spot p6 in " + stage + ", middle point:" + str(r2.date) + " " + str(r2.close))
+                logging.info(__file__+" "+"spot p6 in " + stage + ", middle point:" + str(r2.date) + " " + str(r2.close))
                 p6 = r2.close
                 d6 = r2.date.strftime("%Y-%m-%d")
                 stage = "s6"
                 continue
 
             if stage in ["s7"]:
-                logging.info("spot p8 in " + stage + ", middle point:" + str(r2.date) + " " + str(r2.close))
+                logging.info(__file__+" "+"spot p8 in " + stage + ", middle point:" + str(r2.date) + " " + str(r2.close))
                 p8 = r2.close
                 d8 = r2.date.strftime("%Y-%m-%d")
                 stage = "s8"
@@ -228,19 +228,19 @@ def _w_shape(df):
 
         if trend == 'down_up':
             if stage == 'null':
-                logging.info("not match")
+                logging.info(__file__+" "+"not match")
                 this_reason = "NOT_MATCH"
                 break
 
             if stage in ["s0"]:
-                logging.info("spot p1 in " + stage + ", middle point:" + str(r2.date) + " " + str(r2.close))
+                logging.info(__file__+" "+"spot p1 in " + stage + ", middle point:" + str(r2.date) + " " + str(r2.close))
                 stage = "s1"
                 p1 = r2.close
                 d1 = r2.date.strftime("%Y-%m-%d")
                 continue
 
             if stage in ["s2"]:
-                logging.info("spot p3 in " + stage + ", middle point:" + str(r2.date) + " " + str(r2.close))
+                logging.info(__file__+" "+"spot p3 in " + stage + ", middle point:" + str(r2.date) + " " + str(r2.close))
                 p3 = r2.close
                 d3 = r2.date.strftime("%Y-%m-%d")
                 stage = "s3"
@@ -252,7 +252,7 @@ def _w_shape(df):
                     break
 
             if stage in ["s4"]:
-                logging.info("spot p5 in " + stage + ", middle point:" + str(r2.date) + " " + str(r2.close))
+                logging.info(__file__+" "+"spot p5 in " + stage + ", middle point:" + str(r2.date) + " " + str(r2.close))
                 stage = "s5"
                 p5 = r2.close
                 d5 = r2.date.strftime("%Y-%m-%d")
@@ -263,7 +263,7 @@ def _w_shape(df):
                     break
 
             if stage in ["s6"]:
-                logging.info("spot p7 in " + stage + ", middle point:" + str(r2.date) + " " + str(r2.close))
+                logging.info(__file__+" "+"spot p7 in " + stage + ", middle point:" + str(r2.date) + " " + str(r2.close))
                 p7 = r2.close
                 d7 = r2.date.strftime("%Y-%m-%d")
                 stage = "s7"
@@ -366,53 +366,53 @@ def _w_shape_del(df):
             if stage == 'null':
                 p0 = r2.close
                 d0 = r2.date.strftime("%Y-%m-%d")
-                logging.info("init s0" + ", middle point:" + str(r2.date) + " " + str(r2.close))
+                logging.info(__file__+" "+"init s0" + ", middle point:" + str(r2.date) + " " + str(r2.close))
                 stage = "s0"
                 continue
 
             if stage in ["s0", "s2", "s4"]:
-                logging.info("moving up on " + stage)
+                logging.info(__file__+" "+"moving up on " + stage)
                 continue
 
         if trend == 'down':
             if stage == 'null':
                 this_reason = "NOT_MATCH"
-                logging.info("not match")
+                logging.info(__file__+" "+"not match")
                 break
 
             if stage in ["s1", "s3"]:
-                logging.info("moving down on " + stage)
+                logging.info(__file__+" "+"moving down on " + stage)
                 continue
 
         if trend == 'up_down':
             if stage == 'null':
-                logging.info("not match")
+                logging.info(__file__+" "+"not match")
                 this_reason = "NOT_MATCH"
                 break
 
             if stage in ["s1"]:
-                logging.info("spot p2 in " + stage + ", middle point:" + str(r2.date) + " " + str(r2.close))
+                logging.info(__file__+" "+"spot p2 in " + stage + ", middle point:" + str(r2.date) + " " + str(r2.close))
                 p2 = r2.close
                 d2 = r2.date.strftime("%Y-%m-%d")
                 stage = "s2"
                 continue
 
             if stage in ["s3"]:
-                logging.info("spot p4 in " + stage + ", middle point:" + str(r2.date) + " " + str(r2.close))
+                logging.info(__file__+" "+"spot p4 in " + stage + ", middle point:" + str(r2.date) + " " + str(r2.close))
                 p4 = r2.close
                 d4 = r2.date.strftime("%Y-%m-%d")
                 stage = "s4"
                 continue
 
             if stage in ["s5"]:
-                logging.info("spot p6 in " + stage + ", middle point:" + str(r2.date) + " " + str(r2.close))
+                logging.info(__file__+" "+"spot p6 in " + stage + ", middle point:" + str(r2.date) + " " + str(r2.close))
                 p6 = r2.close
                 d6 = r2.date.strftime("%Y-%m-%d")
                 stage = "s6"
                 continue
 
             if stage in ["s7"]:
-                logging.info("spot p8 in " + stage + ", middle point:" + str(r2.date) + " " + str(r2.close))
+                logging.info(__file__+" "+"spot p8 in " + stage + ", middle point:" + str(r2.date) + " " + str(r2.close))
                 p8 = r2.close
                 d8 = r2.date.strftime("%Y-%m-%d")
                 stage = "s8"
@@ -420,19 +420,19 @@ def _w_shape_del(df):
 
         if trend == 'down_up':
             if stage == 'null':
-                logging.info("not match")
+                logging.info(__file__+" "+"not match")
                 this_reason = "NOT_MATCH"
                 break
 
             if stage in ["s0"]:
-                logging.info("spot p1 in " + stage + ", middle point:" + str(r2.date) + " " + str(r2.close))
+                logging.info(__file__+" "+"spot p1 in " + stage + ", middle point:" + str(r2.date) + " " + str(r2.close))
                 stage = "s1"
                 p1 = r2.close
                 d1 = r2.date.strftime("%Y-%m-%d")
                 continue
 
             if stage in ["s2"]:
-                logging.info("spot p3 in " + stage + ", middle point:" + str(r2.date) + " " + str(r2.close))
+                logging.info(__file__+" "+"spot p3 in " + stage + ", middle point:" + str(r2.date) + " " + str(r2.close))
                 p3 = r2.close
                 d3 = r2.date.strftime("%Y-%m-%d")
                 stage = "s3"
@@ -444,7 +444,7 @@ def _w_shape_del(df):
                     break
 
             if stage in ["s4"]:
-                logging.info("spot p5 in " + stage + ", middle point:" + str(r2.date) + " " + str(r2.close))
+                logging.info(__file__+" "+"spot p5 in " + stage + ", middle point:" + str(r2.date) + " " + str(r2.close))
                 stage = "s5"
                 p5 = r2.close
                 d5 = r2.date.strftime("%Y-%m-%d")
@@ -455,7 +455,7 @@ def _w_shape_del(df):
                     break
 
             if stage in ["s6"]:
-                logging.info("spot p7 in " + stage + ", middle point:" + str(r2.date) + " " + str(r2.close))
+                logging.info(__file__+" "+"spot p7 in " + stage + ", middle point:" + str(r2.date) + " " + str(r2.close))
                 p7 = r2.close
                 d7 = r2.date.strftime("%Y-%m-%d")
                 stage = "s7"
@@ -486,8 +486,8 @@ def _w_shape_del(df):
 
 
 def main():
-    logging.info("\n")
-    logging.info("SCRIPT STARTING " + " ".join(sys.argv))
+    logging.info(__file__+" "+"\n")
+    logging.info(__file__+" "+"SCRIPT STARTING " + " ".join(sys.argv))
 
     parser = OptionParser()
 

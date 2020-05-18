@@ -297,7 +297,7 @@ def today_selection(inputF):
 
 
 def main():
-    logging.info("SCRIPT STARTING " + " ".join(sys.argv))
+    logging.info(__file__+" "+"SCRIPT STARTING " + " ".join(sys.argv))
 
     parser = OptionParser()
 
@@ -454,7 +454,7 @@ def main():
         if calc_today:
             # L then H,  down_cnt more then less, long_expect_ear more than less.
             if df_rtn.__len__() == 0:
-                logging.info("empty df for calc_today, stop.")
+                logging.info(__file__+" "+"empty df for calc_today, stop.")
                 exit(0)
 
             df_rtn = df_rtn.sort_values(by=['last_is_h_or_l', 'down_cnt', 'long_expect_ear_perct'], ascending=[False, False, False])

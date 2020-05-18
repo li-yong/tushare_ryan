@@ -59,18 +59,18 @@ def refine_hist_data(df=None, renew=False, debug=False):
     refined_fundamental_merged_csv = "/home/ryan/DATA/result/fundamental.csv"
 
     if finlib.Finlib().is_cached(refined_fundamental_merged_csv, 7) and (not force_run_global) and (not renew):
-        logging.info("file has already been updated in 7 days. " + refined_fundamental_merged_csv)
+        logging.info(__file__+" "+"file has already been updated in 7 days. " + refined_fundamental_merged_csv)
         df_result = pandas.read_csv(refined_fundamental_merged_csv, converters={'code': str})
         return (df_result)
 
     if os.path.isfile(refined_fundamental_merged_csv) and (not renew):
-        logging.info("loading refineded fund from " + refined_fundamental_merged_csv)
+        logging.info(__file__+" "+"loading refineded fund from " + refined_fundamental_merged_csv)
         df_result = pandas.read_csv(refined_fundamental_merged_csv, converters={'code': str})
         return (df_result)
 
     if df == None:
         df = pd.read_csv("/home/ryan/DATA/tmp/fundamental_merged.csv", converters={'code': str})
-        logging.info("loading " + "/home/ryan/DATA/tmp/fundamental_merged.csv")
+        logging.info(__file__+" "+"loading " + "/home/ryan/DATA/tmp/fundamental_merged.csv")
 
     df.fillna(0, inplace=True)
 
@@ -102,10 +102,10 @@ def refine_hist_data(df=None, renew=False, debug=False):
             for j in df_a_stock.columns:
 
                 if i == 0 and (pd.isnull(df_a_stock.iloc[0][j]) or df_a_stock.iloc[0][j] == '--'):
-                    #logging.info("updating code "+code +" row "+ str(i) + " column " + j + " to 0")
+                    #logging.info(__file__+" "+"updating code "+code +" row "+ str(i) + " column " + j + " to 0")
                     df_a_stock.at[0, j] = 0
                 elif df_a_stock.iloc[i][j] == 0:
-                    #logging.info("updating  code "+code+ " row "  +str(i)+" "+j + " to "+str(df_a_stock.iloc[i-1][j]))
+                    #logging.info(__file__+" "+"updating  code "+code+ " row "  +str(i)+" "+j + " to "+str(df_a_stock.iloc[i-1][j]))
                     df_a_stock.at[i, j] = df_a_stock.iloc[i - 1][j]  #update with previous quarter data
 
         df_result = df_result.append(df_a_stock)
@@ -134,7 +134,7 @@ def _combine_all(year_end, quarter_end, debug=False):
 
         for q in range(1, 5):
             if str(y) == year_end and str(q) > quarter_end:
-                logging.info("request quarter is in future. year " + str(y) + " q " + str(q))
+                logging.info(__file__+" "+"request quarter is in future. year " + str(y) + " q " + str(q))
                 continue
 
             #get the df_pro_basic
@@ -160,13 +160,13 @@ def _combine_all(year_end, quarter_end, debug=False):
             merged_quarter_csv = merged_dir + "/merged_all_" + str(y) + str(file_date_calen) + ".csv"
 
             #if finlib.Finlib().is_cached(merged_quarter_csv, 2) and (not force_run_global):
-            #    logging.info("file has already been updated in 1 days. " + merged_quarter_csv)
+            #    logging.info(__file__+" "+"file has already been updated in 1 days. " + merged_quarter_csv)
 
             df_pro_basic_sub = df_pro_basic[df_pro_basic.trade_date.str.match(str(y) + file_date)]
             df_pro_basic_sub = finlib.Finlib().remove_market_from_tscode(df_pro_basic_sub)
 
             y_q = str(y) + "_" + str(q)  #'2017-1'
-            logging.info("y_q " + y_q)  #ryan debug
+            logging.info(__file__+" "+"y_q " + y_q)  #ryan debug
             (df_report, df_profit, df_operation, df_growth, df_debtpaying, df_cashflow) = fetch(y, q)
 
             #df_the_quarter  = df_basic #removed this basic as it is always the newest
@@ -176,7 +176,7 @@ def _combine_all(year_end, quarter_end, debug=False):
 
             for df_s in ('df_report', 'df_profit', 'df_operation', 'df_growth', 'df_debtpaying', 'df_cashflow'):
                 df = pd.DataFrame()  #empty it
-                logging.info("merging " + y_q + " " + df_s)
+                logging.info(__file__+" "+"merging " + y_q + " " + df_s)
 
                 df = eval(df_s)
 
@@ -195,7 +195,7 @@ def _combine_all(year_end, quarter_end, debug=False):
             df_the_quarter.code = df_the_quarter.code.astype(str)
 
             df_the_quarter.to_csv(merged_quarter_csv, encoding='UTF-8', index=False)
-            logging.info("fundamental quarterly merged csv saved, " + merged_quarter_csv + " len " + str(df_the_quarter.__len__()))
+            logging.info(__file__+" "+"fundamental quarterly merged csv saved, " + merged_quarter_csv + " len " + str(df_the_quarter.__len__()))
 
             df_result = df_result.append(df_the_quarter)  #append the merged quarter to the result
             logging.info('merged result ' + str(df_result.__len__()))
@@ -319,7 +319,7 @@ def fetch_pickle():
         finlib.Finlib().get_ag_trading_day()
 
     except:
-        logging.info("exception in t_daily_fundamentals.py  fetch_pickle()")
+        logging.info(__file__+" "+"exception in t_daily_fundamentals.py  fetch_pickle()")
     finally:
         if sys.exc_info() == (None, None, None):
             pass  # no exception
@@ -331,7 +331,7 @@ def fetch_pickle():
 
 def fetch(year, quarter, overwrite=False):
 
-    #logging.info("fetching year "+str(year)+" quarter "+str(quarter))
+    #logging.info(__file__+" "+"fetching year "+str(year)+" quarter "+str(quarter))
     fund_base = "/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals/" + str(year)
 
     csv_report = fund_base + "/report_" + str(year) + "_" + str(quarter) + ".csv"
@@ -346,7 +346,7 @@ def fetch(year, quarter, overwrite=False):
         os.makedirs(fund_base)
 
     if ((not os.path.isfile(csv_report)) or overwrite) and (year >= 2010):
-        logging.info("\nGetting Report, ts.get_report_data" + ". Y " + str(year) + ",Q " + str(quarter))  # 业绩报告（主表）
+        logging.info(__file__+" "+"\nGetting Report, ts.get_report_data" + ". Y " + str(year) + ",Q " + str(quarter))  # 业绩报告（主表）
         try:
             df_report = ts.get_report_data(year, quarter)
             df_report.code = df_report.code.astype(str)  # convert the code from numpy.int to string.
@@ -355,7 +355,7 @@ def fetch(year, quarter, overwrite=False):
         except:
             logging.info(__file__ + ": " + "get exception " + csv_report)
     else:
-        #logging.info("Loading Report"+". Y "+str(year)+ ",Q "+str(quarter))
+        #logging.info(__file__+" "+"Loading Report"+". Y "+str(year)+ ",Q "+str(quarter))
         try:
             df_report = pandas.read_csv(csv_report, converters={'code': str})
             logging.info(__file__ + ": " + "loading " + csv_report)
@@ -363,7 +363,7 @@ def fetch(year, quarter, overwrite=False):
             logging.info(__file__ + ": " + "read exception " + csv_report)
 
     if ((not os.path.isfile(csv_profit)) or overwrite) and (year >= 2010):
-        logging.info("\nGetting Profit, ts.get_profit_data" + ". Y " + str(year) + ",Q " + str(quarter))  # 盈利能力
+        logging.info(__file__+" "+"\nGetting Profit, ts.get_profit_data" + ". Y " + str(year) + ",Q " + str(quarter))  # 盈利能力
         try:
             df_profit = ts.get_profit_data(year, quarter)
             df_profit.code = df_profit.code.astype(str)  # convert the code from numpy.int to string.
@@ -372,7 +372,7 @@ def fetch(year, quarter, overwrite=False):
         except:
             logging.info(__file__ + ": " + "get exception " + csv_profit)
     else:
-        #logging.info("Loading Profit"+". Y "+str(year)+ ",Q "+str(quarter))
+        #logging.info(__file__+" "+"Loading Profit"+". Y "+str(year)+ ",Q "+str(quarter))
         try:
             df_profit = pandas.read_csv(csv_profit, converters={'code': str})
             logging.info(__file__ + ": " + "loading " + csv_profit)
@@ -380,7 +380,7 @@ def fetch(year, quarter, overwrite=False):
             logging.info(__file__ + ": " + "read exception " + csv_profit)
 
     if ((not os.path.isfile(csv_operation)) or overwrite) and (year >= 2010):
-        logging.info("\nGetting Operation, ts.get_operation_data" + ". Y " + str(year) + ",Q " + str(quarter))  #营运能力
+        logging.info(__file__+" "+"\nGetting Operation, ts.get_operation_data" + ". Y " + str(year) + ",Q " + str(quarter))  #营运能力
         try:
             df_operation = ts.get_operation_data(year, quarter)
             df_operation.code = df_operation.code.astype(str)  # convert the code from numpy.int to string.
@@ -389,7 +389,7 @@ def fetch(year, quarter, overwrite=False):
         except:
             logging.info(__file__ + ": " + "get exception " + csv_operation)
     else:
-        #logging.info("Loading Operation"+". Y "+str(year)+ ",Q "+str(quarter))
+        #logging.info(__file__+" "+"Loading Operation"+". Y "+str(year)+ ",Q "+str(quarter))
         try:
             df_operation = pandas.read_csv(csv_operation, converters={'code': str})
             logging.info(__file__ + ": " + "loading " + csv_operation)
@@ -397,7 +397,7 @@ def fetch(year, quarter, overwrite=False):
             logging.info(__file__ + ": " + "read exception " + csv_operation)
 
     if ((not os.path.isfile(csv_growth)) or overwrite) and (year >= 2010):
-        logging.info("\nGetting Growth, ts.get_growth_data" + ". Y " + str(year) + ",Q " + str(quarter))  # 成长能力
+        logging.info(__file__+" "+"\nGetting Growth, ts.get_growth_data" + ". Y " + str(year) + ",Q " + str(quarter))  # 成长能力
         try:
             df_growth = ts.get_growth_data(year, quarter)
             df_growth.code = df_growth.code.astype(str)  # convert the code from numpy.int to string.
@@ -406,7 +406,7 @@ def fetch(year, quarter, overwrite=False):
         except:
             logging.info(__file__ + ": " + "get exception " + csv_growth)
     else:
-        #logging.info("Loading Growth"+". Y "+str(year)+ ",Q "+str(quarter))
+        #logging.info(__file__+" "+"Loading Growth"+". Y "+str(year)+ ",Q "+str(quarter))
         try:
             df_growth = pandas.read_csv(csv_growth, converters={'code': str})
             logging.info(__file__ + ": " + "loading " + csv_growth)
@@ -414,7 +414,7 @@ def fetch(year, quarter, overwrite=False):
             logging.info(__file__ + ": " + "read exception " + csv_growth)
 
     if ((not os.path.isfile(csv_debtpaying)) or overwrite) and (year >= 2010):
-        logging.info("\nGetting Debtpaying, ts.get_debtpaying_data" + ". Y " + str(year) + ",Q " + str(quarter))  # 偿债能力
+        logging.info(__file__+" "+"\nGetting Debtpaying, ts.get_debtpaying_data" + ". Y " + str(year) + ",Q " + str(quarter))  # 偿债能力
         try:
             df_debtpaying = ts.get_debtpaying_data(year, quarter)
             df_debtpaying.code = df_debtpaying.code.astype(str)  # convert the code from numpy.int to string.
@@ -423,7 +423,7 @@ def fetch(year, quarter, overwrite=False):
         except:
             logging.info(__file__ + ": " + "get exception " + csv_debtpaying)
     else:
-        #logging.info("Loading Debtpaying"+". Y "+str(year)+ ",Q "+str(quarter))
+        #logging.info(__file__+" "+"Loading Debtpaying"+". Y "+str(year)+ ",Q "+str(quarter))
         try:
             df_debtpaying = pandas.read_csv(csv_debtpaying, converters={'code': str})
             logging.info(__file__ + ": " + "loading " + csv_debtpaying)
@@ -431,7 +431,7 @@ def fetch(year, quarter, overwrite=False):
             logging.info(__file__ + ": " + "read exception " + csv_debtpaying)
 
     if ((not os.path.isfile(csv_cashflow)) or overwrite) and (year >= 2010):
-        logging.info("\nGetting Cashflow, ts.get_cashflow_data" + ". Y " + str(year) + ",Q " + str(quarter))  # 现金流量
+        logging.info(__file__+" "+"\nGetting Cashflow, ts.get_cashflow_data" + ". Y " + str(year) + ",Q " + str(quarter))  # 现金流量
         try:
             df_cashflow = ts.get_cashflow_data(year, quarter)
             df_cashflow.code = df_cashflow.code.astype(str)  # convert the code from numpy.int to string.
@@ -440,7 +440,7 @@ def fetch(year, quarter, overwrite=False):
         except:
             logging.info(__file__ + ": " + "get exception " + csv_cashflow)
     else:
-        #logging.info("Loading Cashflow"+". Y "+str(year)+ ",Q "+str(quarter))
+        #logging.info(__file__+" "+"Loading Cashflow"+". Y "+str(year)+ ",Q "+str(quarter))
         try:
             df_cashflow = pandas.read_csv(csv_cashflow, converters={'code': str})
             logging.info(__file__ + ": " + "loading " + csv_cashflow)
@@ -569,7 +569,7 @@ def quarterly_fundamental_any(df_basic, year_quarter, debug=False):
     #year_quarter = '2018_1'
 
     if (not force_run_global) and finlib.Finlib().is_cached(dump_csv_q, day=5):
-        logging.info("skip file, it been updated in 5 day. " + dump_csv_q)
+        logging.info(__file__+" "+"skip file, it been updated in 5 day. " + dump_csv_q)
         return
 
     year = re.match("(\d{4})_(\d{1})", year_quarter).group(1)
@@ -643,7 +643,7 @@ def quarterly_fundamental_any(df_basic, year_quarter, debug=False):
     #print "saving df_q_r to "+df_q_r_csv
     #df_q_r.to_csv(df_q_r_csv, encoding='UTF-8')
 
-    logging.info("Fundamental Analysising Based on Quarter Report,  " + year + " " + quarter)
+    logging.info(__file__+" "+"Fundamental Analysising Based on Quarter Report,  " + year + " " + quarter)
 
     new_value_df = pd.DataFrame({
         #'code': df_q_r['code'],
@@ -675,7 +675,7 @@ def quarterly_fundamental_any(df_basic, year_quarter, debug=False):
             esp_ratio = 0
 
         df_q_r.iloc[i, df_q_r.columns.get_loc('esp_ratio')] = esp_ratio
-    logging.info("adding esp_ratio completed")
+    logging.info(__file__+" "+"adding esp_ratio completed")
 
     esp_ratio_perc_weight = 0.2
     pe_weight = 0.2
@@ -738,9 +738,9 @@ def quarterly_fundamental_any(df_basic, year_quarter, debug=False):
         code = df_q_r.iloc[i]['code']
 
         if code is None:
-            logging.info("code is None")
+            logging.info(__file__+" "+"code is None")
 
-        #logging.info("Quarter Analyse on "+code)
+        #logging.info(__file__+" "+"Quarter Analyse on "+code)
         #code_m = finlib.Finlib().add_market_to_code_single(code)
         #price = finlib.Finlib().get_price(code_m)
 
@@ -851,7 +851,7 @@ def quarterly_fundamental_any(df_basic, year_quarter, debug=False):
                        roe_perc * roe_weight + \
                        totalAssets_perc * totalAssets_weight
 
-        logging.info("code " + code + " result " + str(result_value))
+        logging.info(__file__+" "+"code " + code + " result " + str(result_value))
 
         if not np.isnan(result_value):
             df_q_r.iloc[i, df_q_r.columns.get_loc('result_value_quarter_fundation')] = result_value
@@ -948,11 +948,11 @@ def _quarterly_fundamental_any_2(debug=False):
     #This function using same file as input and output,
     # checking cached will result the function not be run, so should not check the file age.
     #if (not force_run_global) and  finlib.Finlib().is_cached(dump_csv_q, day=5):
-    #    logging.info("skip file, it been updated in 5 day. "+dump_csv_q)
+    #    logging.info(__file__+" "+"skip file, it been updated in 5 day. "+dump_csv_q)
     #    return
 
     if not os.path.isfile(dump_csv_q):
-        logging.info("not found source file. " + dump_csv_q)
+        logging.info(__file__+" "+"not found source file. " + dump_csv_q)
         exit(1)
 
     cols_position = ['score_sum', 'result_value_2', 'ps_perc', 'npr_perc', 'net_profits_perc', 'npr_mtp_profit', 'npr_mtp_profit_perc', 'peg_1_perc', 'peg_4_perc']
@@ -1020,7 +1020,7 @@ def _quarterly_fundamental_any_2(debug=False):
         name = df_base_q.iloc[i]['name']
 
         if code is None:
-            logging.info("code is None")
+            logging.info(__file__+" "+"code is None")
 
         ps = df_base_q.iloc[i]['ps']
         npr = df_base_q.iloc[i]['npr']
@@ -1084,7 +1084,7 @@ def _quarterly_fundamental_any_2(debug=False):
                        peg_1_perc * peg_1_weight + \
                        peg_4_perc * peg_4_weight
 
-        logging.info("code " + code + " result " + str(result_value))
+        logging.info(__file__+" "+"code " + code + " result " + str(result_value))
 
         if not np.isnan(result_value):
             df_base_q.iloc[i, df_base_q.columns.get_loc('result_value_2')] = result_value
@@ -1096,10 +1096,10 @@ def _quarterly_fundamental_any_2(debug=False):
 
     #if debug:
     #    df_base_q.to_csv("~/DATA/result/debug.csv", encoding='UTF-8', index=True)
-    #    logging.info("DEBUG Run #2 Fundamental Analysising Based on Quarter Report, result saved to ~/DATA/result/debug.csv")
+    #    logging.info(__file__+" "+"DEBUG Run #2 Fundamental Analysising Based on Quarter Report, result saved to ~/DATA/result/debug.csv")
     #else:
     #    df_base_q.to_csv(dump_csv_q, encoding='UTF-8', index=True)
-    #    logging.info("Run #2 Fundamental Analysising Based on Quarter Report, result saved to "+dump_csv_q)
+    #    logging.info(__file__+" "+"Run #2 Fundamental Analysising Based on Quarter Report, result saved to "+dump_csv_q)
     df_base_q.to_csv(dump_csv_q, encoding='UTF-8', index=True)
     logging.info(__file__ + ": " + "Run #2 Fundamental Analysising Based on Quarter Report, result saved to " + dump_csv_q + " , len " + str(df_base_q.__len__()))
 
@@ -1115,7 +1115,7 @@ def industry_rank(quarterly_fundamental_csv=None):
     if pd.isnull(quarterly_fundamental_csv):
         quarterly_fundamental_csv = dump_csv_q
 
-    #logging.info("reading " + quarterly_fundamental_csv)
+    #logging.info(__file__+" "+"reading " + quarterly_fundamental_csv)
     df = pd.read_csv(quarterly_fundamental_csv, converters={'code': str})
     logging.info(__file__ + ": " + "loading " + quarterly_fundamental_csv)
 
@@ -1222,7 +1222,7 @@ def area_rank(quarterly_fundamental_csv=None):
     if pd.isnull(quarterly_fundamental_csv):
         quarterly_fundamental_csv = dump_csv_q
 
-    #logging.info("reading "+quarterly_fundamental_csv)
+    #logging.info(__file__+" "+"reading "+quarterly_fundamental_csv)
     df = pd.read_csv(quarterly_fundamental_csv, converters={'code': str})
     logging.info(__file__ + ": " + "loading " + quarterly_fundamental_csv)
 
@@ -1330,30 +1330,30 @@ def today_fundamental_any(todayS=None):
     if True:
         for i in range(5):
             todayS = (datetime.datetime.today() - datetime.timedelta(i)).strftime('%Y-%m-%d')
-            logging.info("checking input file required on date " + todayS)
+            logging.info(__file__+" "+"checking input file required on date " + todayS)
 
             today_fund_csv = "/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals/daily/basic_" + todayS + ".csv"
             dump_today = "/home/ryan/DATA/pickle/daily_update_source/" + todayS + "ts_ud.pickle"
 
             if os.path.exists(dump_today):
-                logging.info("dump_today exists on " + todayS)
+                logging.info(__file__+" "+"dump_today exists on " + todayS)
 
                 if os.path.exists(today_fund_csv):
-                    logging.info("based on availble dump_doay and today_fund_csv, todayS now is " + todayS)
+                    logging.info(__file__+" "+"based on availble dump_doay and today_fund_csv, todayS now is " + todayS)
                     break
 
-    logging.info("Fundamental Analysising based on today data " + todayS)
+    logging.info(__file__+" "+"Fundamental Analysising based on today data " + todayS)
 
     #dump_today = "/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals/daily/basic_" + todayS + ".pickle"  #### ONLY THIS IS TMP
     #today_fund_csv = "/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals/daily/fundamentals_" + todayS + ".csv"
     #dump_today = "/home/ryan/DATA/pickle/daily_update_source/"+todayS+"ts_ud.pickle"
 
     if not os.path.isfile(today_fund_csv):
-        logging.info("csv_today file not exist, please run python t_daily_fundamentals.py  --fetch_data_all;. Abort." + today_fund_csv)
+        logging.info(__file__+" "+"csv_today file not exist, please run python t_daily_fundamentals.py  --fetch_data_all;. Abort." + today_fund_csv)
         exit()
 
     if not os.path.isfile(dump_today):
-        logging.info("dump file not exist, please run t_daily_update_csv_from_tushare.py. Abort." + dump_today)
+        logging.info(__file__+" "+"dump file not exist, please run t_daily_update_csv_from_tushare.py. Abort." + dump_today)
         exit()
 
     df_basic = today_all = pd.DataFrame()
@@ -1508,7 +1508,7 @@ def today_fundamental_any(todayS=None):
 
     for i in range(0, today_all.__len__()):
         code = today_all.iloc[i]['code']
-        #logging.info("daily analyse on " +code)
+        #logging.info(__file__+" "+"daily analyse on " +code)
 
         pe = today_all.ix[i]['pe']
         #        fvalues = today_all.ix[i]['fvalues']
@@ -1566,7 +1566,7 @@ def zzz_peg_last_year(year, quarter, debug=False):
 
     fund_peg_csv = "/home/ryan/DATA/result/fundamental_peg.csv"
     if not os.path.isfile(fund_peg_csv):
-        logging.info("not found source peg file to get eps " + fund_peg_csv)
+        logging.info(__file__+" "+"not found source peg file to get eps " + fund_peg_csv)
         exit(1)
     df_base = pd.read_csv(fund_peg_csv, converters={'code': str})
     logging.info(__file__ + ": " + "loading " + fund_peg_csv)
@@ -1595,13 +1595,13 @@ def zzz_peg_last_year(year, quarter, debug=False):
     if os.path.exists(sl_1):
         os.unlink(sl_1)
     os.symlink(output_csv, sl_1)
-    logging.info("make symbol link " + sl_1 + " --> " + output_csv)
+    logging.info(__file__+" "+"make symbol link " + sl_1 + " --> " + output_csv)
 
     sl_2 = "/home/ryan/DATA/result/latest_fundamental_peg_selected.csv"
     if os.path.exists(sl_2):
         os.unlink(sl_2)
     os.symlink(output_csv_2, sl_2)
-    logging.info("make symbol link " + sl_2 + " --> " + output_csv_2)
+    logging.info(__file__+" "+"make symbol link " + sl_2 + " --> " + output_csv_2)
 
     return ()
 
@@ -1617,7 +1617,7 @@ def peg_last_year(year, quarter, debug=False):
     fund_peg_csv += str(year) + finlib.Finlib().get_quarter_date(quarter) + ".csv"
 
     if not os.path.isfile(fund_peg_csv):
-        logging.info("not found source peg file to get eps " + fund_peg_csv)
+        logging.info(__file__+" "+"not found source peg file to get eps " + fund_peg_csv)
         exit(1)
     df_base = pd.read_csv(fund_peg_csv, converters={'code': str})
     logging.info(__file__ + ": " + "loading " + fund_peg_csv)
@@ -1646,13 +1646,13 @@ def peg_last_year(year, quarter, debug=False):
     if os.path.exists(sl_1):
         os.unlink(sl_1)
     os.symlink(output_csv, sl_1)
-    logging.info("make symbol link " + sl_1 + " --> " + output_csv)
+    logging.info(__file__+" "+"make symbol link " + sl_1 + " --> " + output_csv)
 
     sl_2 = "/home/ryan/DATA/result/latest_fundamental_peg_selected.csv"
     if os.path.exists(sl_2):
         os.unlink(sl_2)
     os.symlink(output_csv_2, sl_2)
-    logging.info("make symbol link " + sl_2 + " --> " + output_csv_2)
+    logging.info(__file__+" "+"make symbol link " + sl_2 + " --> " + output_csv_2)
 
     return ()
 
@@ -1663,7 +1663,7 @@ def calc_peg(debug=False):
 
     #for p in a['full_period_list_yearly']:
     for p in a['full_period_list']:
-        logging.info("=== calc_peg" + p + "=== ")
+        logging.info(__file__+" "+"=== calc_peg" + p + "=== ")
 
         if debug:
             p = "20190630"
@@ -1685,7 +1685,7 @@ def calc_peg(debug=False):
         if (not force_run_global) \
                 and os.path.exists(merged_fund_f) \
                 and p < a['fetch_most_recent_report_perid'][0]:
-            logging.info("ignore calc peg for period " + p)
+            logging.info(__file__+" "+"ignore calc peg for period " + p)
             continue
 
         if not os.path.exists(merged_fund_f):
@@ -1748,7 +1748,7 @@ def calc_peg(debug=False):
             close_this = df.iloc[i]['close']
 
             if float(eps_this) <= 0.0:
-                logging.info("eps_this <= 0")
+                logging.info(__file__+" "+"eps_this <= 0")
                 continue
 
             ## getting 4 quarter and 1q  before data for this code
@@ -1756,22 +1756,22 @@ def calc_peg(debug=False):
             df_code_1q = df_1q[df_1q.code == code]
 
             if df_code_4q.empty:
-                logging.info("no code for 4q" + code)
+                logging.info(__file__+" "+"no code for 4q" + code)
                 continue
 
             if df_code_1q.empty:
-                logging.info("no data for 1q" + code)
+                logging.info(__file__+" "+"no data for 1q" + code)
                 continue
 
             eps_last_4 = df_code_4q['eps'].values[0]
             eps_last_1 = df_code_1q['eps'].values[0]
 
             if float(eps_last_4) <= 0.0:
-                logging.info("negative eps of eps_last_4")
+                logging.info(__file__+" "+"negative eps of eps_last_4")
                 continue
 
             if float(eps_last_1) <= 0.0:
-                logging.info("negative eps of eps_last_1")
+                logging.info(__file__+" "+"negative eps of eps_last_1")
                 continue
 
             # earning growth rate (in percent)
@@ -1790,8 +1790,8 @@ def calc_peg(debug=False):
             peg_1 = close_this / egr_1
             df.iloc[i, df.columns.get_loc('peg_1')] = round(peg_1, 2)
 
-            logging.info("egr_1 " + str(egr_1) + ", egr_4 " + str(egr_4))
-            logging.info("peg_1 " + str(peg_1) + ", peg_4 " + str(peg_4))
+            logging.info(__file__+" "+"egr_1 " + str(egr_1) + ", egr_4 " + str(egr_4))
+            logging.info(__file__+" "+"peg_1 " + str(peg_1) + ", peg_4 " + str(peg_4))
 
         pass  #all codes in the year_quarter csv file has been updated. e.g /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals/merged/merged_all_20181231.csv
 
@@ -1810,17 +1810,17 @@ def zzz_calc_peg(debug=False):
     fund_peg_csv = "/home/ryan/DATA/result/fundamental_peg.csv"
 
     if finlib.Finlib().is_cached(fund_peg_csv, 7) and (not force_run_global):
-        logging.info("target file updated in 7 days, not process. " + fund_peg_csv)
+        logging.info(__file__+" "+"target file updated in 7 days, not process. " + fund_peg_csv)
         exit(0)
 
     #j_quartly_report_csv = "/home/ryan/DATA/result/jaqs_quarterly_fundamental.csv" #get quartly price
 
     if not os.path.isfile(refined_fundamental_merged_csv):
-        logging.info("not found source file to get quartly eps " + refined_fundamental_merged_csv)
+        logging.info(__file__+" "+"not found source file to get quartly eps " + refined_fundamental_merged_csv)
         exit(1)
 
     #if not os.path.isfile(j_quartly_report_csv):
-    #logging.info("not found source file to get quartly price "+j_quartly_report_csv)
+    #logging.info(__file__+" "+"not found source file to get quartly price "+j_quartly_report_csv)
     #exit(1)
 
     df_base = pd.read_csv(refined_fundamental_merged_csv, converters={'code': str})
@@ -1855,7 +1855,7 @@ def zzz_calc_peg(debug=False):
     #all_code = df_base['code'].unique()
     df_base_len = df_base.__len__()
     for i in range(df_base.__len__()):
-        logging.info("=== " + str(i) + " of " + str(df_base_len) + " ===")
+        logging.info(__file__+" "+"=== " + str(i) + " of " + str(df_base_len) + " ===")
         code = df_base.iloc[i]['code']
         year_quarter = df_base.iloc[i]['year_quarter']
         name = df_base.iloc[i]['name']
@@ -1868,17 +1868,17 @@ def zzz_calc_peg(debug=False):
         price_q = 0
 
         if float(eps_this) <= 0.0:
-            logging.info("eps_this <= 0")
+            logging.info(__file__+" "+"eps_this <= 0")
             continue
 
         df_base_sub = df_base[df_base.code == code].sort_values('year_quarter').reset_index().drop('index', axis=1)
         df_base_sub = df_base_sub[df_base_sub.year_quarter < year_quarter]
 
         if df_base_sub.__len__() < 4:
-            logging.info("no enough data, need at least 4 quarter entries " + code + " " + year_quarter)
+            logging.info(__file__+" "+"no enough data, need at least 4 quarter entries " + code + " " + year_quarter)
             continue
 
-        logging.info("processing peg of " + year_quarter + " " + code)
+        logging.info(__file__+" "+"processing peg of " + year_quarter + " " + code)
 
         year = re.match("(\d{4})_(\d{1})", year_quarter).group(1)
         quarter = re.match("(\d{4})_(\d{1})", year_quarter).group(2)
@@ -1909,8 +1909,8 @@ def zzz_calc_peg(debug=False):
 
         if df_price_query.__len__() > 0:
             if (df_price_query.__len__() != 1):
-                logging.info("some thing wrong, duplicate date on df_price_query ")
-            #logging.info("found quartly price data, "+code+" "+year_quarter+" "+name)
+                logging.info(__file__+" "+"some thing wrong, duplicate date on df_price_query ")
+            #logging.info(__file__+" "+"found quartly price data, "+code+" "+year_quarter+" "+name)
             price_q = df_price_query['close'].values[0]
             ps = df_price_query['ps'].values[0]
             df_base.iloc[i, df_base.columns.get_loc('close')] = round(price_q, 2)
@@ -1921,22 +1921,22 @@ def zzz_calc_peg(debug=False):
         df_code_1q = df_base_sub[df_base_sub.year_quarter == huanbi_1q_year + "_" + huanbi_1q_quarter]
 
         if df_code_4q.empty:
-            logging.info("no data for " + code + " " + tongbi_4q_year + "_" + tongbi_4q_quarter)
+            logging.info(__file__+" "+"no data for " + code + " " + tongbi_4q_year + "_" + tongbi_4q_quarter)
             continue
 
         if df_code_1q.empty:
-            logging.info("no data for " + code + " " + huanbi_1q_year + "_" + huanbi_1q_quarter)
+            logging.info(__file__+" "+"no data for " + code + " " + huanbi_1q_year + "_" + huanbi_1q_quarter)
             continue
 
         eps_last_4 = df_code_4q['eps'].values[0]
         eps_last_1 = df_code_1q['eps'].values[0]
 
         if float(eps_last_4) <= 0.0:
-            logging.info("eps_last_4 <= 0 ")
+            logging.info(__file__+" "+"eps_last_4 <= 0 ")
             continue
 
         if float(eps_last_1) <= 0.0:
-            logging.info("eps_last_1 <= 0 ")
+            logging.info(__file__+" "+"eps_last_1 <= 0 ")
             continue
 
         #earning growth rate (in percent)
@@ -1955,8 +1955,8 @@ def zzz_calc_peg(debug=False):
         peg_1 = price_q / egr_1
         df_base.iloc[i, df_base.columns.get_loc('peg_1')] = round(peg_1, 2)
 
-        logging.info("egr_1 " + str(egr_1) + ", egr_4 " + str(egr_4))
-        logging.info("peg_1 " + str(peg_1) + ", peg_4 " + str(peg_4))
+        logging.info(__file__+" "+"egr_1 " + str(egr_1) + ", egr_4 " + str(egr_4))
+        logging.info(__file__+" "+"peg_1 " + str(peg_1) + ", peg_4 " + str(peg_4))
 
     df_base.to_csv(fund_peg_csv, encoding='UTF-8', index=False)
     logging.info(__file__ + ": " + "fundmental peg result saved to " + fund_peg_csv + " , len " + str(df_base.__len__()))
@@ -1974,26 +1974,26 @@ def calc_ps(debug=False):
     fund_ps_csv += str(year) + finlib.Finlib().get_quarter_date(quarter) + ".csv"
 
     if not os.path.isfile(dump_csv_d):
-        logging.info("not found source file to get price to save (PS), aera, field etc. " + dump_csv_d)
+        logging.info(__file__+" "+"not found source file to get price to save (PS), aera, field etc. " + dump_csv_d)
         exit(1)
 
     if not os.path.isfile(dump_csv_q):
-        logging.info("not found source file to get price to save (PS), aera, field etc. " + dump_csv_q)
+        logging.info(__file__+" "+"not found source file to get price to save (PS), aera, field etc. " + dump_csv_q)
         exit(1)
 
     if not os.path.isfile(fund_ps_csv):
-        logging.info("not found source file to get price to save (PS), ps  " + fund_ps_csv)
+        logging.info(__file__+" "+"not found source file to get price to save (PS), ps  " + fund_ps_csv)
         exit(1)
 
-    #logging.info("loading "+dump_csv_d)
+    #logging.info(__file__+" "+"loading "+dump_csv_d)
     df_base_d = pd.read_csv(dump_csv_d, converters={'code': str})
     logging.info(__file__ + ": " + "loading " + dump_csv_d)
 
-    #logging.info("loading " + dump_csv_q)
+    #logging.info(__file__+" "+"loading " + dump_csv_q)
     df_base_q = pd.read_csv(dump_csv_q, converters={'code': str})
     logging.info(__file__ + ": " + "loading " + dump_csv_q)
 
-    #logging.info("loading " + fund_ps_csv)
+    #logging.info(__file__+" "+"loading " + fund_ps_csv)
     df_ps = pd.read_csv(fund_ps_csv, converters={'code': str})
     logging.info(__file__ + ": " + "loading " + fund_ps_csv)
 
@@ -2005,7 +2005,7 @@ def calc_ps(debug=False):
 
     base_cols_d = df_base_d.columns.tolist()
     base_cols_q = df_base_q.columns.tolist()
-    logging.info("preprocessing df_base_d and df_base_q")
+    logging.info(__file__+" "+"preprocessing df_base_d and df_base_q")
     for co in ['ps', 'peg_1', 'peg_4', 'egr_1', 'egr_4']:
         if co in base_cols_d:
             df_base_d = df_base_d.drop(co, axis=1)  #remove the co in base if already exists
@@ -2038,7 +2038,7 @@ def calc_ps(debug=False):
     i = 0
     loop_len = cols_position.__len__()
     for co in cols_position:
-        logging.info("remove d " + str(i) + " of " + str(loop_len))
+        logging.info(__file__+" "+"remove d " + str(i) + " of " + str(loop_len))
         #logging.info('remove '+co)
         if co in cols_result_d:
             cols_result_d.remove(co)
@@ -2047,7 +2047,7 @@ def calc_ps(debug=False):
 
     i = 0
     for co in cols_position:
-        logging.info("remove q " + str(i) + " of " + str(loop_len))
+        logging.info(__file__+" "+"remove q " + str(i) + " of " + str(loop_len))
         #logging.info('remove '+co)
         if co in cols_result_q:
             cols_result_q.remove(co)
@@ -2070,7 +2070,7 @@ def main():
     #
     #########################
 
-    logging.info("SCRIPT STARTING " + " ".join(sys.argv))
+    logging.info(__file__+" "+"SCRIPT STARTING " + " ".join(sys.argv))
 
     the_latest_report_date = finlib.Finlib().get_report_publish_status()
     year = the_latest_report_date['completed_quarter_year']  # int 2018
@@ -2136,22 +2136,22 @@ def main():
     update_get_A_stock_instrment = options.update_get_A_stock_instrment_flag
     force_run_f = options.force_run_f
 
-    logging.info("fetch_all_f: " + str(fetch_all_f))
-    logging.info("process_hist_data: " + str(process_hist_data))
-    logging.info("exam_quarterly: " + str(exam_quarterly))
-    logging.info("exam_daily: " + str(exam_daily))
-    logging.info("industry_rank: " + str(industry_rank_f))
-    logging.info("area_rank: " + str(area_rank_f))
-    logging.info("calc_peg: " + str(calc_peg_f))
-    logging.info("calc_ps: " + str(calc_ps_f))
-    logging.info("this_year_quarter: " + str(this_year_quarter))
-    logging.info("calc_fund_2: " + str(calc_fund_2))
-    logging.info("update_get_market: " + str(update_get_market))
-    logging.info("update_get_security: " + str(update_get_security))
-    logging.info("update_get_instrument: " + str(update_get_instrument))
-    logging.info("update_get_A_stock_instrment: " + str(update_get_A_stock_instrment))
-    logging.info("debug: " + str(debug))
-    logging.info("force_run_f: " + str(force_run_f))
+    logging.info(__file__+" "+"fetch_all_f: " + str(fetch_all_f))
+    logging.info(__file__+" "+"process_hist_data: " + str(process_hist_data))
+    logging.info(__file__+" "+"exam_quarterly: " + str(exam_quarterly))
+    logging.info(__file__+" "+"exam_daily: " + str(exam_daily))
+    logging.info(__file__+" "+"industry_rank: " + str(industry_rank_f))
+    logging.info(__file__+" "+"area_rank: " + str(area_rank_f))
+    logging.info(__file__+" "+"calc_peg: " + str(calc_peg_f))
+    logging.info(__file__+" "+"calc_ps: " + str(calc_ps_f))
+    logging.info(__file__+" "+"this_year_quarter: " + str(this_year_quarter))
+    logging.info(__file__+" "+"calc_fund_2: " + str(calc_fund_2))
+    logging.info(__file__+" "+"update_get_market: " + str(update_get_market))
+    logging.info(__file__+" "+"update_get_security: " + str(update_get_security))
+    logging.info(__file__+" "+"update_get_instrument: " + str(update_get_instrument))
+    logging.info(__file__+" "+"update_get_A_stock_instrment: " + str(update_get_A_stock_instrment))
+    logging.info(__file__+" "+"debug: " + str(debug))
+    logging.info(__file__+" "+"force_run_f: " + str(force_run_f))
 
     global force_run_global
     force_run_global = False

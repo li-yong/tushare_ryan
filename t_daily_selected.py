@@ -45,7 +45,7 @@ def stooq_download(code, mkt, days=1):
         pathlib.Path(dir_o).mkdir(parents=True, exist_ok=True)
 
     if finlib.Finlib().is_cached(csv_o, day=days):
-        logging.info("file is updated in " + str(days) + " days. not fetch again. " + csv_o)
+        logging.info(__file__+" "+"file is updated in " + str(days) + " days. not fetch again. " + csv_o)
         return
 
     url_head = 'https://stooq.com/q/d/l/?s='
@@ -61,13 +61,13 @@ def stooq_download(code, mkt, days=1):
     csv_file = open(csv_o, 'wb')
     csv_file.write(url_content)
     csv_file.close()
-    logging.info("fetched to " + csv_o)
+    logging.info(__file__+" "+"fetched to " + csv_o)
 
     df = pd.read_csv(csv_o, skiprows=1, names=['date', 'open', 'high', 'low', 'close', 'volume'], encoding="utf-8")
     df = pd.DataFrame([code] * df.__len__(), columns=['code']).join(df)
 
     df.to_csv(csv_o, encoding='UTF-8', index=False)
-    logging.info("formatted, csv length " + str(df.__len__()))
+    logging.info(__file__+" "+"formatted, csv length " + str(df.__len__()))
     finlib.Finlib().pprint(df.iloc[-1:])
     pass
 
@@ -94,7 +94,7 @@ file.close()
 for market in cfg.keys():
     for code_name_dict in cfg[market]:
         for code in code_name_dict.keys():
-            logging.info("getting info, " + str(code) + " " + code_name_dict[code])
+            logging.info(__file__+" "+"getting info, " + str(code) + " " + code_name_dict[code])
             rst = finlib.Finlib().get_stock_data_info(market=market, code=code)
             df = finlib.Finlib().rgular_df_to_stdard(data_csv=rst['csv'])
             print(df.tail(1))
@@ -172,7 +172,7 @@ def analyze_hsgt_top_10():
         df = pd.read_csv(input_csv, converters={'trade_date': str, 'ts_code': str})
         #df = pd.read_csv(input_csv)
     else:
-        logging.info("abort, no such file " + input_csv)
+        logging.info(__file__+" "+"abort, no such file " + input_csv)
         return ()
 
     #recent 10 days most source in money stocks
@@ -380,11 +380,11 @@ def analyze_moneyflow(mf_ana_date, mf_ana_pre_days=3, mf_ana_test_hold_days=5, p
                     profit = round((p_out - p_in) / p_in * 100, 1)
 
                     if rst['sig'] > 0:
-                        logging.info("buy, hold short " + code + " " + name + " " + str(rst['date']) + " sig " + str(rst['sig']))
+                        logging.info(__file__+" "+"buy, hold short " + code + " " + name + " " + str(rst['date']) + " sig " + str(rst['sig']))
                         operation = "buy, hold short"
 
                     elif rst['sig'] < 0:
-                        logging.info("buy, hold long  " + code + " " + name + " " + str(rst['date']) + " sig " + str(rst['sig']))
+                        logging.info(__file__+" "+"buy, hold long  " + code + " " + name + " " + str(rst['date']) + " sig " + str(rst['sig']))
                         operation = "buy, hold long"
 
                     df_history = df_history.append({
@@ -402,7 +402,7 @@ def analyze_moneyflow(mf_ana_date, mf_ana_pre_days=3, mf_ana_test_hold_days=5, p
                     }, ignore_index=True)
 
                     df_history.to_csv(csv_out_history, encoding='UTF-8', index=False)
-                    logging.info("hit saved to " + csv_out_history)
+                    logging.info(__file__+" "+"hit saved to " + csv_out_history)
                     #pdb.set_trace()
 
                     rst = describe_std(row['code'], row['name'], df_sub, '(sv1+sv2)/sv0', mf_ana_date, force_print=True)
@@ -411,25 +411,25 @@ def analyze_moneyflow(mf_ana_date, mf_ana_pre_days=3, mf_ana_test_hold_days=5, p
                     rst = describe_std(row['code'], row['name'], df_sub, '(bm1-sm1)/bm0', mf_ana_date, force_print=True)
 
                     if rst['hit_today']:
-                        logging.info("today is hit")
+                        logging.info(__file__+" "+"today is hit")
                         df_today = df_today.append({'code': code, 'name': name, 'date': str(rst['date']), 'operation': operation, 'strength': rst['sig'], 'reason': reason}, ignore_index=True)
                         df_today.to_csv(csv_out_today, encoding='UTF-8', index=False)
-                        logging.info("Today hit saved to " + csv_out_today)
+                        logging.info(__file__+" "+"Today hit saved to " + csv_out_today)
 
         else:
-            logging.warning("no such file " + csv_in)
+            logging.warning(__file__+" "+"no such file " + csv_in)
             continue
 
-    logging.info("history profit describe:")
+    logging.info(__file__+" "+"history profit describe:")
     logging.info(df_history['profit'].describe())
-    logging.info("today hit account, len " + str(df_today.__len__()) + " " + csv_out_today)
+    logging.info(__file__+" "+"today hit account, len " + str(df_today.__len__()) + " " + csv_out_today)
 
 
 ### MAIN ####
 if __name__ == '__main__':
 
-    logging.info("\n")
-    logging.info("SCRIPT STARTING " + " ".join(sys.argv))
+    logging.info(__file__+" "+"\n")
+    logging.info(__file__+" "+"SCRIPT STARTING " + " ".join(sys.argv))
 
     parser = OptionParser()
 
@@ -472,16 +472,16 @@ if __name__ == '__main__':
     if mf_ana_date == None:
         mf_ana_date = finlib.Finlib().get_last_trading_day()
 
-    logging.info("fetch_moneyflow_all_f: " + str(fetch_moneyflow_all_f))
-    logging.info("fetch_hsgt_top_10_f: " + str(fetch_hsgt_top_10_f))
-    logging.info("fetch_moneyflow_daily_f: " + str(fetch_moneyflow_daily_f))
-    logging.info("analyze_moneyflow_f: " + str(analyze_moneyflow_f))
-    logging.info("analyze_hsgt_f: " + str(analyze_hsgt_f))
-    logging.info("mf_ana_pre_days: " + str(mf_ana_pre_days))
-    logging.info("mf_ana_test_hold_days: " + str(mf_ana_test_hold_days))
-    logging.info("mf_ana_prime_stock: " + str(mf_ana_prime_stock))
-    logging.info("mf_ana_date: " + str(mf_ana_date))
-    logging.info("debug_f: " + str(debug_f))
+    logging.info(__file__+" "+"fetch_moneyflow_all_f: " + str(fetch_moneyflow_all_f))
+    logging.info(__file__+" "+"fetch_hsgt_top_10_f: " + str(fetch_hsgt_top_10_f))
+    logging.info(__file__+" "+"fetch_moneyflow_daily_f: " + str(fetch_moneyflow_daily_f))
+    logging.info(__file__+" "+"analyze_moneyflow_f: " + str(analyze_moneyflow_f))
+    logging.info(__file__+" "+"analyze_hsgt_f: " + str(analyze_hsgt_f))
+    logging.info(__file__+" "+"mf_ana_pre_days: " + str(mf_ana_pre_days))
+    logging.info(__file__+" "+"mf_ana_test_hold_days: " + str(mf_ana_test_hold_days))
+    logging.info(__file__+" "+"mf_ana_prime_stock: " + str(mf_ana_prime_stock))
+    logging.info(__file__+" "+"mf_ana_date: " + str(mf_ana_date))
+    logging.info(__file__+" "+"debug_f: " + str(debug_f))
 
     set_global(debug=debug_f, force_run=force_run_f)
 

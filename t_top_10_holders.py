@@ -49,7 +49,7 @@ def get_top_10_holder_data():
     # code,name,quarter,amount,changed,props
     # 600519,贵州茅台,2019-03-31,97380.22,1986.03,77.53
 
-    logging.info("getting security")
+    logging.info(__file__+" "+"getting security")
     df_code_name_map = finlib.Finlib().get_A_stock_instrment()
 
     df_summary = pd.DataFrame()
@@ -77,7 +77,7 @@ def get_top_10_holder_data():
         else:
             try:
                 exc_info = sys.exc_info()
-                logging.info("getting top 10 holder of " + code)
+                logging.info(__file__+" "+"getting top 10 holder of " + code)
                 a = ts.top10_holders(code=code)
 
                 df_a_sum = a[0]
@@ -93,7 +93,7 @@ def get_top_10_holder_data():
                 df_a_detail.to_csv(top_10_detail_csv, encoding='UTF-8', index=False)
                 logging.info('top 10 holder summary and detail csv files were saved.')
             except:
-                logging.info("\tcaught exception, top10_holders, code " + code)
+                logging.info(__file__+" "+"\tcaught exception, top10_holders, code " + code)
             finally:
                 pass
                 if exc_info == (None, None, None):
@@ -105,7 +105,7 @@ def get_top_10_holder_data():
 
 
 def load_top_10_holder_data():
-    logging.info("getting security")
+    logging.info(__file__+" "+"getting security")
     df_code_name_map = finlib.Finlib().get_A_stock_instrment()
 
     df_summary = pd.DataFrame()
@@ -131,7 +131,7 @@ def load_top_10_holder_data():
             df_a_sum = pd.read_csv(top_10_summary_csv, converters={'code': str})
             df_a_detail = pd.read_csv(top_10_detail_csv, converters={'code': str})
         else:
-            logging.warn("file is not update more than 3 days. " + top_10_summary_csv + " or " + top_10_detail_csv)
+            logging.warning(__file__+" "+"file is not update more than 3 days. " + top_10_summary_csv + " or " + top_10_detail_csv)
 
         #memory issues
         df_summary = df_summary.append(df_a_sum)
@@ -160,7 +160,7 @@ def analyze_summary(debug=False):
     i = 0
     for code in codes:
         i += 1
-        logging.info("" + code + " " + str(i) + '/' + str(leng))
+        logging.info(__file__+" " + code + " " + str(i) + '/' + str(leng))
 
         df_tmp = df[df['code'] == code]
         df_tmp = df_tmp.reset_index().drop('index', axis=1)
@@ -174,7 +174,7 @@ def analyze_summary(debug=False):
 
     df_result = df_result.reset_index().drop('index', axis=1)
     df_result.to_csv(latest_holder_summary_csv, encoding='UTF-8', index=False)
-    logging.info("latest holder summary saved to " + latest_holder_summary_csv)
+    logging.info(__file__+" "+"latest holder summary saved to " + latest_holder_summary_csv)
     return (df_result)
 
 
@@ -192,7 +192,7 @@ def analyze_detail(debug=False):
 
     i = 0
     for name in names:
-        logging.info("" + name + " " + str(i + 1) + '/' + str(leng))
+        logging.info(__file__+" "+"" + name + " " + str(i + 1) + '/' + str(leng))
 
         df_tmp = df[df['name'] == name]
         df_tmp = df_tmp.reset_index().drop('index', axis=1)
@@ -229,15 +229,15 @@ def analyze_detail(debug=False):
     df_result = df_result.sort_values('investment', ascending=False)
 
     df_result.to_csv(latest_holder_detail_csv, encoding='UTF-8', index=False)
-    logging.info("latest holder detaill saved to " + latest_holder_detail_csv)
+    logging.info(__file__+" "+"latest holder detaill saved to " + latest_holder_detail_csv)
     return (df_result)
 
 
 ### MAIN ####
 def main():
 
-    logging.info("\n")
-    logging.info("SCRIPT STARTING " + " ".join(sys.argv))
+    logging.info(__file__+" "+"\n")
+    logging.info(__file__+" "+"SCRIPT STARTING " + " ".join(sys.argv))
 
     parser = OptionParser()
 
@@ -249,8 +249,8 @@ def main():
     fetch_data_f = options.fetch_data_f
     analyze_f = options.analyze_f
 
-    logging.info("fetch_data_f: " + str(fetch_data_f))
-    logging.info("analyze_f: " + str(analyze_f))
+    logging.info(__file__+" "+"fetch_data_f: " + str(fetch_data_f))
+    logging.info(__file__+" "+"analyze_f: " + str(analyze_f))
 
     if fetch_data_f:
         ########################
