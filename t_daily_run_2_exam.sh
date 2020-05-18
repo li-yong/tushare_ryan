@@ -280,7 +280,7 @@ if [ $full_or_daily == "FULL" ]; then
 fi
 
 if [ $full_or_daily == "DAILY" ]; then
-    rm -fr /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/report/step[4-8]
+    #rm -fr /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/report/step[4-8]
     # 30min. force_run is required.
     #force_run is required because it calculated the dymanic changing data that keep updating. eg. one 20190308, the data is not fixed
     #of 20181231, the daily run keeps calculate rpt_20181231 for every step.

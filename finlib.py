@@ -145,7 +145,7 @@ class Finlib:
 
         #allFiles = glob.glob(path + "/*.csv")
         allFiles = glob.glob(path + "/*201[5-9]*.csv")
-        allFiles.append(glob.glob(path + "/*202[0-9]*.csv"))
+        allFiles.extend(glob.glob(path + "/*202[0-9]*.csv"))
         logging.info(__file__+" "+"load_all_ts_pro, reading files, 500M memory will be consumed, be paticent...")
 
         df_all_ts_pro = pd.DataFrame()
