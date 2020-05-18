@@ -3011,7 +3011,8 @@ class Finlib:
 
     def regular_df_date_to_ymd(self, df):
         if 'date' not in df.columns:
-            logging.fatal("no cloumn date in df")
+            logging.fatal(__file__+" "+"No cloumn date in df")
+            logging.warning(__file__+" "+df.head(2))
             self.pprint(df.head(2))
 
             #exit(0)
@@ -3026,7 +3027,7 @@ class Finlib:
         elif str(df['date'].iloc[0]).count("-") == 0:
             df['date'] = df['date'].apply(lambda _d: str(_d))
         else:
-            logging.fatal("unknown date format " + str(df['date'].iloc[0]))
+            logging.fatal(__file__+" "+"unknown date format " + str(df['date'].iloc[0]))
             exit(0)
 
         return (df)
@@ -3370,7 +3371,7 @@ class Finlib:
         if (dateStr.count("-") == 2):
             dateStr = datetime.strptime(dateStr, '%Y-%m-%d').strftime('%Y%m%d')
         elif (dateStr.count("-") != 0):
-            logging.fatal("unknow date format, " + str(dateStr))
+            logging.fatal(__file__+" "+"unknow date format, " + str(dateStr))
             exit(0)
         return (dateStr)
 
@@ -3384,7 +3385,7 @@ class Finlib:
         dir = os.path.dirname(data_csv_fp)
 
         if not os.path.isfile(data_csv_fp):
-            logging.fatal("file not exist. " + data_csv_fp)
+            logging.fatal(__file__+" "+"file not exist. " + data_csv_fp)
             exit(0)
 
         if dir == base_dir + "/AG":
@@ -3403,7 +3404,7 @@ class Finlib:
         elif dir.__contains__("/home/ryan/DATA"):
             rtn_df = pd.read_csv(data_csv_fp, converters={'code': str, 'date': str}, encoding="utf-8")
         else:
-            logging.fatal("unknown path file " + data_csv_fp)
+            logging.fatal(__file__+" "+"unknown path file " + data_csv_fp)
             exit(0)
 
         if rtn_df.__len__() > 0:
