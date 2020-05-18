@@ -84,6 +84,7 @@ if [ $full_or_daily == "FULL" ]; then
 fi
 
 if [ $full_or_daily == "DAILY" ]; then
+    echo "SKIP"
     #python t_fenghong.py --analyze_one
     #python t_fenghong.py --analyze_two
 fi
@@ -304,6 +305,7 @@ fi
 
 
 if [ $full_or_daily == "DAILY" ]; then
+      echo "SKIP"
     #python t_daily_fundamentals_2.py  --wh_hencow_fcf --force_run #refresh every run.
 fi
 
@@ -326,6 +328,7 @@ fi
 
 
 if [ $full_or_daily == "DAILY" ]; then
+      echo "SKIP"
     #python t_daily_pe_pb_roe_history.py --force_run #refresh every run.
 fi
 
@@ -362,6 +365,7 @@ if [ $full_or_daily == "FULL" ]; then
 fi
 
 if [ $full_or_daily == "DAILY" ]; then
+      echo "SKIP"
     #python t_daily_fundamentals.py --calc_peg
 fi
 
@@ -381,6 +385,7 @@ fi
 
 
 if [ $full_or_daily == "DAILY" ]; then
+      echo "SKIP"
     #python t_daily_fundamentals.py --exam_quarterly --force_run #refresh every run.
 fi
 
@@ -420,6 +425,7 @@ fi
 
 
 if [ $full_or_daily == "DAILY" ]; then
+      echo "SKIP"
     #python t_daily_fundamentals.py --this_year_quarter --force_run #refresh every run.
 fi
 
