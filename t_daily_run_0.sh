@@ -1,3 +1,8 @@
+source /home/ryan/.bashrc
+source /home/ryan/.profile 
+source /etc/bash.bashrc 
+
+
 cd /home/ryan/tushare
 git pull
 
