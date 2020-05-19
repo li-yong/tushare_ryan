@@ -1,4 +1,12 @@
 #!/usr/bin/env bash
+source /home/ryan/.bashrc
+source /home/ryan/.profile 
+source /etc/bash.bashrc 
+
+
+
+
+
 #this script runs on haha_data_source
 
 full_or_daily=$1
