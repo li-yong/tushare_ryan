@@ -3012,7 +3012,7 @@ class Finlib:
     def regular_df_date_to_ymd(self, df):
         if 'date' not in df.columns:
             logging.fatal(__file__+" "+"No cloumn date in df")
-            logging.warning(__file__+" "+df.head(2))
+            logging.warning(__file__+" "+str(df.head(2)))
             self.pprint(df.head(2))
 
             #exit(0)
@@ -3376,7 +3376,7 @@ class Finlib:
         return (dateStr)
 
     #regular df to format: code, name, open,high,low,close,volume
-    def regular_read_csv_to_stdard_df(self, data_csv):
+    def regular_read_csv_to_stdard_df(self, data_csv,add_market=True):
         base_dir = "/home/ryan/DATA/DAY_Global"
         data_csv = str(data_csv)
         rtn_df = pd.DataFrame()
@@ -3392,10 +3392,13 @@ class Finlib:
             rtn_df = pd.read_csv(data_csv_fp, converters={'code': str, 'date': str}, header=None, skiprows=1, names=['code', 'date', 'open', 'high', 'low', 'close', 'volume', 'amount', 'tnv'])
         elif dir in [base_dir + "/stooq/US_INDEX", base_dir + "/stooq/US"]:
             #DOW.csv  SP500.csv, AAPL.csv
+            add_market = False
             rtn_df = pd.read_csv(data_csv_fp, converters={'code': str, 'date': str}, encoding="utf-8")
         elif dir == base_dir + "/US":
+            add_market = False
             rtn_df = pd.read_csv(data_csv_fp, converters={'code': str, 'date': str}, encoding="utf-8")
         elif dir == base_dir + "/HK":
+            add_market = False
             rtn_df = pd.read_csv(data_csv_fp, converters={'code': str, 'date': str}, encoding="utf-8")
         elif dir == base_dir + "/AG_INDEX":
             rtn_df = pd.read_csv(data_csv_fp, skiprows=1, header=None, names=['code', 'date', 'close', 'open', 'high', 'low', 'pre_close', 'change', 'pct_chg', 'vol', 'amount'], converters={'code': str, 'date': str}, encoding="utf-8")
@@ -3411,7 +3414,8 @@ class Finlib:
             rtn_df = self.regular_column_names(rtn_df)
             rtn_df = self.regular_df_date_to_ymd(rtn_df)
 
-            rtn_df = self.add_market_to_code(rtn_df)
+            if add_market:
+                rtn_df = self.add_market_to_code(rtn_df)
 
             rtn_df['code'] = rtn_df['code'].apply(lambda _d: str(_d).upper())
 

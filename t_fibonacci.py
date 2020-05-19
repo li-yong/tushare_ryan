@@ -193,7 +193,7 @@ def main():
             logging.warning(__file__+" "+"file not exist. " + csv_f)
             continue
 
-        df = finlib.Finlib().regular_read_csv_to_stdard_df(csv_f)
+        df = finlib.Finlib().regular_read_csv_to_stdard_df(csv_f,add_market=False)
 
         if (df.__len__() < min_sample_f):
             continue

@@ -726,6 +726,16 @@ if stock_global != 'dev':  #dev == debug, may have mixed type of code, result ze
 df.to_csv(result_csv)
 logging.info(__file__+" "+"Today Talib and PV B no filter length " + str(df.__len__()) + ", result saved to " + result_csv)
 
+
+
+#Comment out below if don't want sql data
+#logging.info(__file__+" "+"Script completed")
+#os._exit(0)
+
+
+
+
+
 ### Filter with DB records
 engine = create_engine('mysql://root:admin888.@_@@127.0.0.1/ryan_stock_db?charset=utf8')
 
