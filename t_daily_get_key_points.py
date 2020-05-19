@@ -403,7 +403,7 @@ def main():
         for code in stock_list['code']:
             inputF = root_dir + "/" + code + ".csv"
 
-            print(str(j) + " of " + looplen + ". " + inputF + " . ")
+            logging.info(__file__+"  "+str(j) + " of " + looplen + ". " + inputF + " . ")
             j += 1
 
             if not os.path.exists(inputF):
