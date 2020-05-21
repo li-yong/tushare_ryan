@@ -165,6 +165,8 @@ if [ $full_or_daily == "FULL" ]; then
 fi
 
 
+python t_daily_fundamentals_2.py --fetch_basic_daily
+
 
 
 ######################################
