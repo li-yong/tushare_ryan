@@ -3340,7 +3340,7 @@ def analyze(fully_a=False, daily_a=True, fast=True):
         # as many date lost on Q1, Q3 report, so only process half-year, and year report.
         # !!!! @todo ryan: parallary compare on yearly report; Q1, Q2, Q3 data can be used in self comparision.
         # !!!!
-        if re.match('\d{4}1231$', e) or daily_a or force_run_global:  #daily_a check the most recent only(small scope), so daily_a check all steps.
+        if re.match('\d{4}1231$', e) or daily_a or fully_a or force_run_global:  #daily_a check the most recent only(small scope), so daily_a check all steps.
             _analyze_step_1(end_date=e)  # field calculate
             _analyze_step_2(end_date=e)  # score
             _analyze_step_3(end_date=e)  # score of score
@@ -3350,7 +3350,7 @@ def analyze(fully_a=False, daily_a=True, fast=True):
             continue
 
 
-    if fully_a:
+    if fully_a or force_run_global:
         _analyze_step_4()  # evaluate the stock score in mutliple years.
         _analyze_step_5()  # 'scoreA'
         _analyze_step_6()  #under valued stock, valuePrice/actualPrice. scoreA,V_C_P, #time consuming.
