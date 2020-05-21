@@ -48,10 +48,6 @@ def check_fibo(df, code, name, begin_date='20180101', show_fig_f=False, save_fig
 
     r = finlib.Finlib().fibonocci(df, cri_percent=5, cri_hit=0.01)
 
-    if r['closest'] in ["NA", "00"]:
-        #print("ignore as it's NA or at the lowest 00 line")
-        return (rtn_dict)
-
     y_axis = np.array(df['close'])
     x_axis = np.array(df['date'])
 
@@ -61,7 +57,8 @@ def check_fibo(df, code, name, begin_date='20180101', show_fig_f=False, save_fig
     #    print("code " + code + ", name " + name
     #          + ", hit " + str(r['hit']))
 
-    if r['hit']:
+    #if r['hit'] or True:
+    if True:
         #print("code " + code + ", name " + name
         #      + ", hit " + str(r['hit'])
         #      + ", price " + str(r['pri_cur'])
@@ -75,7 +72,7 @@ def check_fibo(df, code, name, begin_date='20180101', show_fig_f=False, save_fig
                       + ", tpp " + str(r['long_take_profit_percent'])\
                       + ", slp " + str(r['long_stop_lost_percent'])
 
-        print("suggestion: " + suggestion)
+        logging.info(__file__+" "+"suggestion: " + suggestion)
 
         fig, ax = plt.subplots()
         ax.plot(x_axis, y_axis)
@@ -102,7 +99,11 @@ def check_fibo(df, code, name, begin_date='20180101', show_fig_f=False, save_fig
         ax.text(0.05, 0.95, suggestion, transform=ax.transAxes, fontsize=14, verticalalignment='top', bbox=props)
 
         if save_fig_f:
-            fn = "/home/ryan/DATA/result/fib_plot/" + code + "_" + name + "_" + the_day + ".png"
+            if r['hit']:
+                fn = "/home/ryan/DATA/result/fib_plot/" + code + "_" + name + "_" + the_day + "_hitted.png"
+            else:
+                fn = "/home/ryan/DATA/result/fib_plot/" + code + "_" + name + "_" + the_day + ".png"
+
             fig.savefig(fn, bbox_inches='tight')
             print("figure saved to " + fn + "\n")
 
@@ -111,6 +112,10 @@ def check_fibo(df, code, name, begin_date='20180101', show_fig_f=False, save_fig
 
         plt.close('all')
         plt.clf()
+
+        if r['closest'] in ["NA", "00"]:
+            #logging.ingo(__file__+" "+"ignore as it's NA or at the lowest 00 line")
+            return (rtn_dict)
 
         rtn_dict['code'] = code
         rtn_dict['name'] = name
