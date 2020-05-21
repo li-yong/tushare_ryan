@@ -2462,7 +2462,7 @@ def _analyze_white_horse_ct(ts_code, end_date, basic_df):
     roe_3y = get_ts_field(ts_code=ts_code, ann_date=tmp['ann_date_3y_before'], field='roe', big_memory=big_memory_global)
     roe_4y = get_ts_field(ts_code=ts_code, ann_date=tmp['ann_date_4y_before'], field='roe', big_memory=big_memory_global)
     roe_5y = get_ts_field(ts_code=ts_code, ann_date=tmp['ann_date_5y_before'], field='roe', big_memory=big_memory_global)
-    roe_6y = get_ts_field(ts_code=ts_code, ann_date=tmp['ann_date_6y_before'], field='roe', big_memory=big_memory_global)
+    #roe_6y = get_ts_field(ts_code=ts_code, ann_date=tmp['ann_date_6y_before'], field='roe', big_memory=big_memory_global)
     roe_7y = get_ts_field(ts_code=ts_code, ann_date=tmp['ann_date_7y_before'], field='roe', big_memory=big_memory_global)
     roe_8y = get_ts_field(ts_code=ts_code, ann_date=tmp['ann_date_8y_before'], field='roe', big_memory=big_memory_global)
     roe_9y = get_ts_field(ts_code=ts_code, ann_date=tmp['ann_date_9y_before'], field='roe', big_memory=big_memory_global)
@@ -2470,7 +2470,7 @@ def _analyze_white_horse_ct(ts_code, end_date, basic_df):
 
     roeC = 15
     try:
-        if (this_roe >= roeC and roe_1y >= roeC and roe_1y >= roeC and roe_2y >= roeC and roe_3y >= roeC and roe_4y >= roeC and roe_5y >= roeC and roe_6y >= roeC):
+        if (this_roe >= roeC and roe_1y >= roeC and roe_1y >= roeC and roe_2y >= roeC and roe_3y >= roeC and roe_4y >= roeC and roe_5y >= roeC):
             bonusReason += 'ROE > ' + str(roeC) + ' consecutively (7years). '
             bonusCnt += 1
             logging.info(__file__ + " " + "bonus. " + bonusReason)
