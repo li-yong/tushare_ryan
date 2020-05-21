@@ -3329,8 +3329,12 @@ def analyze(fully_a=False, daily_a=True, fast=True):
 
     for e in period_list:
         logging.info(__file__ + " " + "e is " + str(e))
-        if e < '20151231':
-            logging.info(__file__ + " " + "not process date before 2015" + str(e))
+        if e <= '20151231' and daily_a:
+            logging.info(__file__ + " " + "not process date before 2015 in daily analysis" + str(e))
+            continue
+
+        if e <= '20101231':
+            logging.info(__file__ + " " + "not process date before 2010" + str(e))
             continue
 
         logging.info(__file__+" "+"end_date " + e + ". ")
