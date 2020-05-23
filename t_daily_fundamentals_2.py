@@ -3219,7 +3219,7 @@ def _analyze_step_7():
                     increase = (price_today - price_the_day) * 100 / price_the_day
                     increase = round(increase, 2)
 
-                logging.info(__file__+" "+str(code) + " " + str(c) + ", score: " + str(score) + " inc: " + str(increase) + " from " + str(price_the_day) + " to " + str(price_today))
+                logging.info(__file__ +  " "+str(code) + " " + str(c) + ", score: " + str(score) + " inc: " + str(increase) + " from " + str(price_the_day) + " to " + str(price_today))
                 df_result.iloc[i, df_result.columns.get_loc("inc" + c)] = increase
                 pass  # end of the for loop of the column
 

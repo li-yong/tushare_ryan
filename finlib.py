@@ -498,7 +498,7 @@ class Finlib:
                 # exit(1)
                 return price
 
-            if re.match("\d{4}-\d{2}-\d{2}", pd_tmp['date'].iloc[-1]['date']):
+            if re.match(r".*\d{4}-\d{2}-\d{2}.*", pd_tmp['date'].iloc[-1]):
                 logging.fatal(__file__+" "+"date format expect yyyymmdd but actually yyyy-mm-dd, should read the csv by finlib.regular_read_csv_to_stdard_df, quit now")
                 exit(0)
 
