@@ -917,12 +917,12 @@ def _ts_pro_fetch_end_date(pro_con, ts_code,  query, query_fields, fetch_period_
 
 
 
-        logging.info(ts_code + " " + query + " " + period)
+        logging.info(__file__+" "+ts_code + " " + query + " " + period)
         df_tmp = pro_con.query(query, ts_code=ts_code, fields=query_fields, end_date=period)
         time.sleep(1)
         df_tmp = df_tmp.astype(str)
         df_tmp.to_csv(ind_csv, encoding='UTF-8', index=False)
-        logging.info(__file__+" "+"saved "+ind_csv)
+        logging.info(__file__+" "+__file__+" "+"saved "+ind_csv)
 
 
         #df_sub = pd.concat([df_tmp, df_sub], sort=False)
@@ -3160,7 +3160,7 @@ def _analyze_step_7():
         for c in col_list:
             mat = re.match('(\d{4})(\d{2})', c)
             if mat:
-                logging.info("code "+code+ " period "+c)
+                logging.info(__file__+" "+"code "+code+ " period "+c)
                 year = mat.group(1)
                 month = mat.group(2)
                 score = the_df[c]
@@ -3219,7 +3219,7 @@ def _analyze_step_7():
                     increase = (price_today - price_the_day) * 100 / price_the_day
                     increase = round(increase, 2)
 
-                logging.info(str(code) + " " + str(c) + ", score: " + str(score) + " inc: " + str(increase) + " from " + str(price_the_day) + " to " + str(price_today))
+                logging.info(__file__+" "+str(code) + " " + str(c) + ", score: " + str(score) + " inc: " + str(increase) + " from " + str(price_the_day) + " to " + str(price_today))
                 df_result.iloc[i, df_result.columns.get_loc("inc" + c)] = increase
                 pass  # end of the for loop of the column
 

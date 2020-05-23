@@ -498,8 +498,13 @@ class Finlib:
                 # exit(1)
                 return price
 
+            if re.match("\d{4}-\d{2}-\d{2}", pd_tmp['date'].iloc[-1]['date']):
+                logging.fatal(__file__+" "+"date format expect yyyymmdd but actually yyyy-mm-dd, should read the csv by finlib.regular_read_csv_to_stdard_df, quit now")
+                exit(0)
+
             if (date is not None):
                 df_the_day = pd_tmp[pd_tmp['date'] <= date]
+
                 if df_the_day.__len__() > 0:
                     actual_date = df_the_day.iloc[-1:]['date'].values[0]
                     actual_price = df_the_day.iloc[-1:]['close'].values[0]  # '11.8231'
