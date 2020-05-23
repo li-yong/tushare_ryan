@@ -3326,9 +3326,9 @@ def analyze(fully_a=False, daily_a=True, fast=True):
 
     #if debug_global:
     #    period_list=["20171231"]
-    _analyze_step_7() #ryan debug
-    _analyze_step_8() #ryan debug
-    exit()
+    #_analyze_step_7() #ryan debug
+    #_analyze_step_8() #ryan debug
+    #exit()
 
 
 
