@@ -479,10 +479,16 @@ class Finlib:
         return (mark_date)
 
     def get_price(self, code_m, date=None):  # code_m: SH600519
+        if date is not None:
+            if re.match("\d{4}-\d{2}-\d{2}", date):
+                date = re.sub("-", "", date)
+                date = str(date)
+            logging.info(__file__+" "+"change date to "+date)
+
         # price = 0
         price = 10**10  # change price to a huge number, so will never buy this.
         price_csv = "/home/ryan/DATA/DAY_Global/AG/" + code_m + ".csv"
-        print(price_csv)
+        logging.info(__file__+" "+"getting price. "+str(code_m)+ "  date "+str(date)+" source "+price_csv)
         if os.path.isfile(price_csv):
             #pd_tmp = pd.read_csv(price_csv, converters={'code': str}, header=None, names=['code', 'date', 'o', 'h', 'l', 'c', 'vol', 'amnt', 'tnv'])
             pd_tmp = self.regular_read_csv_to_stdard_df(price_csv)
@@ -499,7 +505,7 @@ class Finlib:
                     actual_price = df_the_day.iloc[-1:]['close'].values[0]  # '11.8231'
 
                     if actual_date != date:
-                        # logging.info(__file__+" "+"request "+code_m+" "+date+", return "+actual_date)
+                        logging.info(__file__+" "+"request "+code_m+" "+date+", return "+actual_date)
                         pass
                     price = actual_price
                 else:
@@ -511,7 +517,7 @@ class Finlib:
         else:
             logging.info('FETAL ERROR, cannot get price, no such file ' + price_csv)
             # exit(1)
-
+        logging.info(__file__+"  "+"price returned "+str(price))
         return price
 
     def get_market(self, force_update=False):
