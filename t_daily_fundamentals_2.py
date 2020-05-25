@@ -3435,6 +3435,8 @@ def extract_white_horse():
         else:
             logging.info(__file__ + " " + "reading " + input_csv)
             df_q = pd.read_csv(input_csv, converters={'end_date': str})
+            df_q = df_q.fillna("Nan")
+
             #df_q = df_q.fillna(0)
             df_q = df_q[df_q['bonusReason'].str.contains('white horse', na=False)]  #filter out the white horse
             logging.info(__file__+" "+"found number of whitehorse "+str(df_q.__len__()))
