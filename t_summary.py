@@ -546,7 +546,7 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
     f_hsgt = "/home/ryan/DATA/result/hsgt_top_10_selected.csv"
 
     #fibonacci
-    f_fib = "/home/ryan/DATA/result/fib.csv"
+    f_fib_ag = " home/ryan/DATA/result/ag_fib.csv"
     f_fib_index = "/home/ryan/DATA/result/selected/ag_index_fib.csv"
 
     #concept_top
@@ -869,9 +869,13 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
         df_hsgt = finlib.Finlib().remove_garbage(df_hsgt, code_filed_name='code', code_format='C2D6')
         logging.info(__file__+" "+"\t df_hsgt length " + str(df_hsgt.__len__()))
 
-        df_fib = finlib.Finlib().regular_read_csv_to_stdard_df(f_fib)
-        df_fib = finlib.Finlib().remove_garbage(df_fib, code_filed_name='code', code_format='C2D6')
-        logging.info(__file__+" "+"\t df_fib length " + str(df_fib.__len__()))
+        df_fib_ag = finlib.Finlib().regular_read_csv_to_stdard_df(f_fib_ag)
+        df_fib_ag = finlib.Finlib().remove_garbage(df_fib_ag, code_filed_name='code', code_format='C2D6')
+        logging.info(__file__+" "+"\t df_fib_ag length " + str(df_fib_ag.__len__()))
+
+        df_fib_ag_selected = finlib.Finlib().regular_read_csv_to_stdard_df(f_fib_ag_selected)
+        df_fib_ag_selected = finlib.Finlib().remove_garbage(df_fib_ag_selected, code_filed_name='code', code_format='C2D6')
+        logging.info(__file__+" "+"\t df_fib_ag_selected length " + str(df_fib_ag_selected.__len__()))
 
         df_fib_index = finlib.Finlib().regular_read_csv_to_stdard_df(f_fib_index)
         logging.info(__file__+" "+"\t df_fib_index length " + str(df_fib_index.__len__()))
@@ -1255,10 +1259,15 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
             df_hsgt = finlib.Finlib().df_filter(df_hsgt)
             arr.append('df_hsgt')
 
-        if 'df_fib' in locals():
-            logging.info(__file__+" "+"filtering df_fib")
-            df_fib = finlib.Finlib().df_filter(df_fib)
-            arr.append('df_fib')
+        if 'df_fib_ag' in locals():
+            logging.info(__file__+" "+"filtering df_fib_ag")
+            df_fib_ag = finlib.Finlib().df_filter(df_fib_ag)
+            arr.append('df_fib_ag')
+
+        if 'df_fib_ag_selected' in locals():
+            logging.info(__file__+" "+"filtering df_fib_ag_selected")
+            df_fib_ag_selected = finlib.Finlib().df_filter(df_fib_ag_selected)
+            arr.append('df_fib_ag_selected')
 
         if 'df_fib_index' in locals():
             logging.info(__file__+" "+"filtering df_fib_index")
