@@ -2440,7 +2440,7 @@ def _analyze_white_horse_ct(ts_code, end_date, basic_df):
         logging.info(__file__ + " " + "stock has been not on market. " + ts_code + " , " + end_date)
         return (dict_rtn)
 
-    if re.match('\d{4}0630$', end_date) or re.match('\d{4}1231$', end_date) or re.match('201[8|7|6]', end_date):
+    if re.match('\d{4}0630$', end_date) or re.match('\d{4}1231$', end_date) or re.match('201[9|8|7|6]', end_date) or  re.match('202[0|1|2|3|4|5]', end_date):
         #if re.match('20180630', end_date) or re.match('20171231', end_date):
         pass
     else:
@@ -3435,6 +3435,7 @@ def extract_white_horse():
             df_q = pd.read_csv(input_csv, converters={'end_date': str})
             #df_q = df_q.fillna(0)
             df_q = df_q[df_q['bonusReason'].str.contains('white horse', na=False)]  #filter out the white horse
+            logging.info(__file__+" "+"found number of whitehorse "+str(df_q.__len__()))
 
             for c in df_q['ts_code'].values:
                 for v in df_stock_list[df_stock_list['ts_code'] == c].index.values:

@@ -321,8 +321,8 @@ fi
 
 
 if [ $full_or_daily == "DAILY" ]; then
-      echo "SKIP"
-    #python t_daily_fundamentals_2.py  --wh_hencow_fcf --force_run #refresh every run.
+    echo "SKIP"
+    python t_daily_fundamentals_2.py  --wh_hencow_fcf --force_run #refresh every run.
 fi
 
 
