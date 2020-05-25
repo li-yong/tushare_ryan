@@ -1464,6 +1464,10 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
     df_dict["df_pv_no_filter_ag_selected"] = {"term": "NA", "price": "NA"}
     df_dict["df_key_points_ag_selected"] = {"term": "NA", "price": "NA"}
 
+    df_dict["df_moneyflow_top_amt_perc"] = {"term": "SHORT TERM", "price": "NA"}
+    df_dict["df_moneyflow_top_amt_perc_selected"] = {"term": "SHORT TERM", "price": "NA"}
+    #df_dict["df_key_points_ag_selected"] = {"term": "NA", "price": "NA"}
+
     if (stock_global in ['AG']) and (not full_combination):  #for AG
 
         df_combined_year = pd.DataFrame()

@@ -274,6 +274,7 @@ def analyze_moneyflow(mf_ana_date, mf_ana_pre_days=3, mf_ana_test_hold_days=5, p
             # b: buy, s:sell, v:volume, m:amount
             # 0: all, 1:extr large, 2:large, 3:middle, 4:small
 
+            df = pd.DataFrame([name] * df.__len__(), columns=['name']).join(df)  # the inserted column on the head
             df = pd.DataFrame([0] * df.__len__(), columns=['bv0']).join(df)  # the inserted column on the head
             df = pd.DataFrame([0] * df.__len__(), columns=['sv0']).join(df)  # the inserted column on the head
             df['bv0'] = df['buy_elg_vol'] + df['buy_lg_vol'] + df['buy_md_vol'] + df['buy_sm_vol']
@@ -372,7 +373,7 @@ def analyze_moneyflow(mf_ana_date, mf_ana_pre_days=3, mf_ana_test_hold_days=5, p
             continue
 
     df_today_snap = df_today_snap.sort_values('(bm1+bm2+sm1+sm2)/(bm0+sm0)', ascending=False, inplace=False)
-    df_today_snap = finlib.Finlib().adjust_column(df = df_today_snap, col_name_list=['code','trade_date'])
+    df_today_snap = finlib.Finlib().adjust_column(df = df_today_snap, col_name_list=['code','name','trade_date'])
     df_today_snap.to_csv(csv_out_today_snap)
     logging.info(__file__ + " " + "saved today_snap to " + csv_out_today_snap + " Len " + str(df_today_snap.__len__()))
 
