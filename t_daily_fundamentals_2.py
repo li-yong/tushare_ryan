@@ -2440,7 +2440,7 @@ def _analyze_white_horse_ct(ts_code, end_date, basic_df):
         logging.info(__file__ + " " + "stock has been not on market. " + ts_code + " , " + end_date)
         return (dict_rtn)
 
-    if re.match('\d{4}0630$', end_date) or re.match('\d{4}1231$', end_date) or re.match('201[9|8|7|6]', end_date) or  re.match('202[0|1|2|3|4|5]', end_date):
+    if re.match('\d{4}0630$', end_date) or re.match('\d{4}1231$', end_date) or re.match('201[9|8|7|6|5]', end_date) or  re.match('202[0|1|2|3|4|5]', end_date):
         #if re.match('20180630', end_date) or re.match('20171231', end_date):
         pass
     else:
@@ -2470,7 +2470,9 @@ def _analyze_white_horse_ct(ts_code, end_date, basic_df):
 
     roeC = 15
     try:
+        #at 2015, 5 years before is 2010, so bigload need load 2010
         if (this_roe >= roeC and roe_1y >= roeC and roe_1y >= roeC and roe_2y >= roeC and roe_3y >= roeC and roe_4y >= roeC and roe_5y >= roeC):
+        #if (this_roe >= roeC and roe_1y >= roeC and roe_1y >= roeC and roe_2y >= roeC and roe_3y >= roeC and roe_4y >= roeC):
             bonusReason += 'ROE > ' + str(roeC) + ' consecutively (7years). '
             bonusCnt += 1
             logging.info(__file__ + " " + "bonus. " + bonusReason)
