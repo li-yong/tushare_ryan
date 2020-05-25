@@ -501,7 +501,7 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
     f_dow_index = "/home/ryan/DATA/pickle/INDEX_US_HK/dow.csv"
     f_nasdqa100_index = "/home/ryan/DATA/pickle/INDEX_US_HK/nasdqa100.csv"
     #ag fib
-    f_fib_ag = "home/ryan/DATA/result/ag_fib.csv"
+    f_fib_ag = "/home/ryan/DATA/result/ag_fib.csv"
 
     #ag_index_fib
     f_fib_ag_index_selected = "/home/ryan/DATA/result/selected/ag_index_fib.csv"
@@ -546,7 +546,7 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
     f_hsgt = "/home/ryan/DATA/result/hsgt_top_10_selected.csv"
 
     #fibonacci
-    f_fib_ag = " home/ryan/DATA/result/ag_fib.csv"
+    #f_fib_ag = "/home/ryan/DATA/result/ag_fib.csv" #previous defined same variable and value
     f_fib_index = "/home/ryan/DATA/result/selected/ag_index_fib.csv"
 
     #concept_top
