@@ -48,21 +48,21 @@ if [ $fetch_or_exam == "EXAM" ]; then
   #-----------  FIB ---------------------------#
     ########### AG, AG_INDEX fib
     # /home/ryan/DATA/result/selected/ag_index_fib.csv
-    python t_fibonacci.py --begin_date "20180101"  --min_sample=500 -x AG_INDEX --selected
+    python t_fibonacci.py --begin_date "20180101"  --min_sample=500 -x AG_INDEX --selected --save_fig
 
     # /home/ryan/DATA/result/selected/ag_fib.csv
-    python t_fibonacci.py --begin_date "20180101"  --min_sample=500 -x AG --selected
+    python t_fibonacci.py --begin_date "20180101"  --min_sample=500 -x AG --selected --save_fig
 
 
     ############ US, US_INDEX, HK fib
     #/home/ryan/DATA/result/selected/us_index_fib.csv
-    python t_fibonacci.py --begin_date "20180101"  --min_sample=500 -x US_INDEX --selected
+    python t_fibonacci.py --begin_date "20180101"  --min_sample=500 -x US_INDEX --selected --save_fig
 
     #/home/ryan/DATA/result/selected/us_fib.csv
-    python t_fibonacci.py --begin_date "20180101"  --min_sample=500 -x US --selected
+    python t_fibonacci.py --begin_date "20180101"  --min_sample=500 -x US --selected --save_fig
 
     #/home/ryan/DATA/result/selected/hk_fib.csv
-    python t_fibonacci.py --begin_date "20180101"  --min_sample=500 -x HK --selected
+    python t_fibonacci.py --begin_date "20180101"  --min_sample=500 -x HK --selected --save_fig
 
 
 

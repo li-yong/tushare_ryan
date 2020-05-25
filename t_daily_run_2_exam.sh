@@ -566,7 +566,7 @@ python t_fibonacci.py --begin_date "20180101"  --save_fig --min_sample=500 -x AG
 python t_fibonacci.py --begin_date "20180101"  --save_fig --min_sample=500 -x AG --selected
 
 # /home/ryan/DATA/result/ag_fib.csv
-python t_fibonacci.py --begin_date "20180101"  --save_fig --min_sample=500 -x AG
+python t_fibonacci.py --begin_date "20180101"  --min_sample=500 -x AG
 
 
 ##############################
