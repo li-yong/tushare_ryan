@@ -113,8 +113,23 @@ python t_daily_hsgt.py --analyze_hsgt
 #input:  /home/ryan/DATA/DAY_Global/AG_MoneyFlow/*.csv
 #output : /home/ryan/DATA/tmp/moneyflow_ana/history_moneyflow_hit.csv
 #         /home/ryan/DATA/tmp/moneyflow_ana/today_moneyflow_hit.csv
+
+#         /home/ryan/DATA/tmp/moneyflow_ana/mf_today_snap.csv
+
 #########################
-python t_daily_hsgt.py --analyze_moneyflow --mf_ana_pre_days 3 --mf_ana_test_hold_days 5
+if [ $full_or_daily == "FULL" ]; then
+  #/home/ryan/DATA/tmp/moneyflow_ana/mf_today_snap.csv #len 1683
+  #/home/ryan/DATA/result/today/mf_today_top5_large_amount.csv #len 5
+  python t_daily_hsgt.py --analyze_moneyflow --mf_ana_pre_days 3 --mf_ana_test_hold_days 5
+fi
+
+#/home/ryan/DATA/tmp/moneyflow_ana/mf_today_snap.csv Len 63
+#/home/ryan/DATA/result/today/mf_today_top5_large_amount.csv Len 5
+python t_daily_hsgt.py --analyze_moneyflow --mf_ana_pre_days 3 --mf_ana_test_hold_days 5 --mf_ana_prime_stock
+
+#/home/ryan/DATA/tmp/moneyflow_ana/mf_today_snap_selected.csv Len 35
+#/home/ryan/DATA/result/selected/mf_today_top5_large_amount.csv Len 5
+python t_daily_hsgt.py --analyze_moneyflow --mf_ana_pre_days 3 --mf_ana_test_hold_days 5 --selected
 
 ######################### merge_local_basic
 #input: /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/basic_daily/basic_*.csv

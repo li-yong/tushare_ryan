@@ -2897,7 +2897,7 @@ class Finlib:
         else:
             logging.error("no such file " + csv)
             exit()
-        return (df)
+        return(df)
 
     def remove_garbage(self, df, code_filed_name, code_format):
         # code_filed_name in code, ts_code
@@ -3502,3 +3502,23 @@ class Finlib:
         }
 
         return (rtn)
+
+    def adjust_column(self, df, col_name_list):
+        # adjust column sequence here
+        #col_name_list = ['code', 'trade_date']
+
+        cols = df.columns.tolist()
+        name_list = list(reversed(col_name_list))
+        for i in name_list:
+            if i in cols:
+                cols.remove(i)
+                cols.insert(0, i)
+            else:
+                logging.info(__file__ + " " + "warning, no column named " + i + " in cols")
+
+        df = df[cols]
+        df = df.fillna(0)
+        df = df.reset_index().drop('index', axis=1)
+
+        return(df)
+
