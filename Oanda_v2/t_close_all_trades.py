@@ -11,7 +11,7 @@ from optparse import OptionParser
 
 
 
-sys.path.append('/home/ryan/repo/trading/oandapybot-ubuntu/logic')
+sys.path.append('/home/ryan/tushare_ryan/Oanda_v2/logic')
 import t_ph_lib
 
 

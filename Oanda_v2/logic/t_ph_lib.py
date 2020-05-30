@@ -9,7 +9,7 @@ import re
 #from datetime import datetime, timedelta
 
 
-sys.path.append("/home/ryan/repo/trading/lib/v20-python-samples/src")
+sys.path.append("/home/ryan/tushare_ryan/Oanda_v2/lib/v20-python-samples/src")
 
 import argparse
 import datetime

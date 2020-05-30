@@ -44,7 +44,7 @@ import calendar
 sys.path.append('/home/ryan/tushare_ryan')
 import finlib
 
-sys.path.append('/home/ryan/repo/trading/oandapybot-ubuntu/logic')
+sys.path.append('/home/ryan/tushare_ryan/Oanda_v2/logic')
 import t_ph_lib
 
 
