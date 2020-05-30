@@ -43,6 +43,10 @@ US:
     - NOW: ServiceNow
     - XLK: 高科技指数ETF-SPDR
     - GOOG: Google
+    - NTAP: NetApp
+    - HAS: Hasbro
+    - MTCH: Match
+    - OKTA: Okta
     #- DJR: 道琼斯股票房地产投资信托
 HK:
     - '03690': 美团点评
