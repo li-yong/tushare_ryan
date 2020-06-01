@@ -3522,3 +3522,7 @@ class Finlib:
 
         return(df)
 
+
+    #input: df [open,high, low, close]
+    #output: {hit:[T|F], high:value, low:value, }
+    def w_shape_exam(self, df):

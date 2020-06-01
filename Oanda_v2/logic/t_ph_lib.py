@@ -329,8 +329,6 @@ class v20C:
 
         pass
 
-
-
     def simple_close_a_trade(self, account, tid,close_reason):
         #if not tid in account.__dict__['trades'].keys():
         if not tid in account.__dict__['trades'].keys():
@@ -368,8 +366,6 @@ class v20C:
         print("Closed Trade " + str(id) + ", reason " + response.__dict__['reason'] + ", status " + str(response.__dict__['status']))
         #    response.__dict__['status']))
 
-
-
     def simple_close_all_trades(self, close_reason):
         account = self.dump_account()
 
@@ -378,8 +374,6 @@ class v20C:
             pass
 
         pass
-
-
 
     def simple_get_candles(self,instrument,granularity,count):
         api=self.api
@@ -457,8 +451,10 @@ class v20C:
 
     def get_history_forex_data(self, year, month, day, next_n_days):
         (inst_dict, code_to_instrument_dict) = self.get_instruments()
-
-        for ins in inst_dict.keys():
+        #inst_dict.keys():  dict_keys(['EUR_HKD', 'EUR_PLN', 'HK33_HKD', 'EUR_CAD', 'EUR_NZD', 'BCO_USD', 'USD_SAR', 'GBP_CAD', 'USD_CAD])
+        #code_to_instrument_dict: {'USDDKK': 'USD_DKK'}
+        for ins in ['USD_CAD']:
+        #for ins in inst_dict.keys():
             instrument = ins
             instrument_file = ins + ".csv"
 
