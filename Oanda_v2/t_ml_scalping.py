@@ -136,7 +136,7 @@ def main():
 
 
             if transaction['state'] == "none":
-                print(__file__ + " " + "make an long order")
+                print(__file__ + " " + "make an long order, price "+str(row['close'])+" date "+row['date'])
                 transaction["state"] = "long"
                 transaction["point_enter"] = cur_close
                 transaction["date_enter"] = row['date']
@@ -151,7 +151,7 @@ def main():
 
 
             if transaction['state'] == "none":
-                print(__file__ + " " + "make an short order")
+                print(__file__ + " " + "make an short order, price " + str(row['close']) + " date " + row['date'])
                 transaction["state"] = "short"
                 transaction["point_enter"] = cur_close
                 transaction["date_enter"] = row['date']
