@@ -490,11 +490,11 @@ class v20C:
                     t = re.sub('\.000000000Z$', '', t)  # '2018-02-01T00:00:00'
                     t = re.sub('T', ' ', t)  # '2018-02-01 00:00:00'
 
-                    o = str(df.iloc[0, df.columns.get_loc('o')])
-                    h = str(df.iloc[0, df.columns.get_loc('h')])
-                    l = str(df.iloc[0, df.columns.get_loc('l')])
-                    c = str(df.iloc[0, df.columns.get_loc('c')])
-                    vol = str(df.iloc[0, df.columns.get_loc('vol')])
+                    o = str(df.iloc[i, df.columns.get_loc('o')])
+                    h = str(df.iloc[i, df.columns.get_loc('h')])
+                    l = str(df.iloc[i, df.columns.get_loc('l')])
+                    c = str(df.iloc[i, df.columns.get_loc('c')])
+                    vol = str(df.iloc[i, df.columns.get_loc('vol')])
 
                     line = code2 + "," + t + "," + o + "," + h + "," + l + "," + c + "," + vol + "\n"
 
