@@ -3527,3 +3527,4 @@ class Finlib:
     #output: {hit:[T|F], high:value, low:value, }
     def w_shape_exam(self, df):
         pass
+

@@ -152,10 +152,10 @@ def main():
     df['close_sma_13'] = close_sma_13
 
     # https://stackoverflow.com/questions/48775841/pandas-ema-not-matching-the-stocks-ema
-    close_ema_2 = df['close'].ewm(span=2, min_periods=0, adjust=False, ignore_na=False).mean  # exponential weighted.
-    close_ema_5 = df['close'].ewm(span=5, min_periods=0, adjust=False, ignore_na=False).mean
-    close_ema_8 = df['close'].ewm(span=8, min_periods=0, adjust=False, ignore_na=False).mean
-    close_ema_13 = df['close'].ewm(span=13, min_periods=0, adjust=False, ignore_na=False).mean
+    close_ema_2 = df['close'].ewm(span=2, min_periods=0, adjust=False, ignore_na=False).mean()  # exponential weighted.
+    close_ema_5 = df['close'].ewm(span=5, min_periods=0, adjust=False, ignore_na=False).mean()
+    close_ema_8 = df['close'].ewm(span=8, min_periods=0, adjust=False, ignore_na=False).mean()
+    close_ema_13 = df['close'].ewm(span=13, min_periods=0, adjust=False, ignore_na=False).mean()
 
     df['close_ema_2'] = close_ema_2
     df['close_ema_5'] = close_ema_5
