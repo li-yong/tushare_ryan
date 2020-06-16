@@ -108,15 +108,19 @@ class Finlib_indicator:
         ATR = TR_s.ewm(span = n, min_periods = n).mean().rename("ATR_"+str(n))
         df = df.join(ATR)
 
+        return df
+
+
+
+    def upper_body_lower_shadow(self,df):
         ###### Upper_shadow, Body, Lower_shadow ####
-        df_a = pd.DataFrame([[0,0,0]] * df.__len__(), columns=['upper_shadow',"body","lower_shadow"])
+        df_a = pd.DataFrame([[0,0,0]] * df.__len__(), columns=['upper_shadow','body','lower_shadow'])
         df = df.merge(df_a, left_index=True, right_index=True)
 
         for i in range(df.__len__()):
             upper_shadow = df.at[i, 'high'] - max(df.at[i, 'open'], df.at[i, 'close'])
             body = abs(df.at[i, 'close'] - df.at[i, 'open'] )
             lower_shadow = min(df.at[i, 'open'], df.at[i, 'close']) - df.at[i, 'low']
-
 
             df.iloc[i, df.columns.get_loc('upper_shadow')] = upper_shadow
             df.iloc[i, df.columns.get_loc('body')] = body
@@ -131,11 +135,12 @@ class Finlib_indicator:
 
     #Keltner Channel
     def KELCH(self, df, n):
-        KelChM = pd.Series(pd.rolling_mean((df['High'] + df['Low'] + df['Close']) / 3, n), name = 'KelChM_' + str(n))
-        KelChU = pd.Series(pd.rolling_mean((4 * df['High'] - 2 * df['Low'] + df['Close']) / 3, n), name = 'KelChU_' + str(n))
-        KelChD = pd.Series(pd.rolling_mean((-2 * df['High'] + 4 * df['Low'] + df['Close']) / 3, n), name = 'KelChD_' + str(n))
-        df = df.join(KelChM)
+        KelChM = ((df['high'] + df['low'] + df['close']) /3 ).rolling(n).mean().rename('KelChM_' + str(n))
+        KelChU = ((4 * df['high'] - 2 * df['low'] + df['close']) / 3).rolling(n).mean().rename('KelChU_' + str(n))
+        KelChD = ((-2 * df['high'] + 4 * df['low'] + df['close']) / 3).rolling(n).mean().rename('KelChD_' + str(n))
+
         df = df.join(KelChU)
+        df = df.join(KelChM)
         df = df.join(KelChD)
         return df
 

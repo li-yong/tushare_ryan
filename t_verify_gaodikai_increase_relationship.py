@@ -13,12 +13,16 @@ df = df.iloc[-300:].reset_index().drop('index', axis=1)
 
 ### ryan debug start
 
+#adding ATR
 df = finlib_indicator.Finlib_indicator().ATR(df,3)
 
+#adding 'upper_shadow','body','lower_shadow'
+df = finlib_indicator.Finlib_indicator().upper_body_lower_shadow(df)
+
+#adding KelChM_U, KelChM_D, KelChM_H
+df = finlib_indicator.Finlib_indicator().KELCH(df,3)
 
 ### ryan debug end
-
-
 
 
 df = pd.DataFrame([''] * df.__len__(), columns=['open_vs_lastclose']).join(df) #today_open - yesterday_close, -1: dikai, 0:pingkai, 1: gaokai
