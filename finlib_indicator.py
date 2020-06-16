@@ -90,21 +90,47 @@ class Finlib_indicator:
 
 
     #Average True Range
-    def ATR(df, n):
-        i = 0
+    def ATR(self, df, n):
+        ### Prepare.  Adding t-1 days' value to t ###
+        df1 = df[['date', 'close', 'volume']]
+        df1 = df1.rename(columns={'date':'date_pre','close': 'close_pre', 'volume':'volume_pre'})
+        df1 = df1.shift(periods=1)
+        df = df.merge(df1, left_index=True, right_index=True)
+        df = df.drop(columns=['date_pre'],axis=1)
+
+        #### ATR  ####
         TR_l = [0]
-        while i < df.index[-1]:
-            TR = max(df.get_value(i + 1, 'high'), df.get_value(i, 'close')) - min(df.get_value(i + 1, 'low'), df.get_value(i, 'close'))
+        for i in range(1, df.__len__()):
+            TR = max(df.at[i, 'high'], df.at[i, 'close_pre']) - min(df.at[i ,'low'], df.at[i, 'close_pre'])
             TR_l.append(TR)
-            i = i + 1
-        TR_s = pd.Series(TR_l)
-        ATR = pd.Series(pd.ewma(TR_s, span = n, min_periods = n), name = 'ATR_' + str(n))
+        TR_s = pd.Series(TR_l).rename("TR")
+        df = df.join(TR_s)
+        ATR = TR_s.ewm(span = n, min_periods = n).mean().rename("ATR_"+str(n))
         df = df.join(ATR)
+
+        ###### Upper_shadow, Body, Lower_shadow ####
+        df_a = pd.DataFrame([[0,0,0]] * df.__len__(), columns=['upper_shadow',"body","lower_shadow"])
+        df = df.merge(df_a, left_index=True, right_index=True)
+
+        for i in range(df.__len__()):
+            upper_shadow = df.at[i, 'high'] - max(df.at[i, 'open'], df.at[i, 'close'])
+            body = abs(df.at[i, 'close'] - df.at[i, 'open'] )
+            lower_shadow = min(df.at[i, 'open'], df.at[i, 'close']) - df.at[i, 'low']
+
+
+            df.iloc[i, df.columns.get_loc('upper_shadow')] = upper_shadow
+            df.iloc[i, df.columns.get_loc('body')] = body
+            df.iloc[i, df.columns.get_loc('lower_shadow')] = lower_shadow
+
+
         return df
 
 
+
+
+
     #Keltner Channel
-    def KELCH(df, n):
+    def KELCH(self, df, n):
         KelChM = pd.Series(pd.rolling_mean((df['High'] + df['Low'] + df['Close']) / 3, n), name = 'KelChM_' + str(n))
         KelChU = pd.Series(pd.rolling_mean((4 * df['High'] - 2 * df['Low'] + df['Close']) / 3, n), name = 'KelChU_' + str(n))
         KelChD = pd.Series(pd.rolling_mean((-2 * df['High'] + 4 * df['Low'] + df['Close']) / 3, n), name = 'KelChD_' + str(n))

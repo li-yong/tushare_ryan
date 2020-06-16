@@ -1,6 +1,6 @@
 import pandas as pd
 import finlib
-
+import finlib_indicator
 
 csv_in = "/home/ryan/DATA/DAY_Global/AG/SH600519.csv"
 csv_in = "/home/ryan/DATA/DAY_Global/AG/SZ000651.csv"
@@ -10,6 +10,16 @@ csv_out = "/home/ryan/DATA/result/tmp/SZ000651_del.csv"
 df = finlib.Finlib().regular_read_csv_to_stdard_df(data_csv=csv_in)
 
 df = df.iloc[-300:].reset_index().drop('index', axis=1)
+
+### ryan debug start
+
+df = finlib_indicator.Finlib_indicator().ATR(df,3)
+
+
+### ryan debug end
+
+
+
 
 df = pd.DataFrame([''] * df.__len__(), columns=['open_vs_lastclose']).join(df) #today_open - yesterday_close, -1: dikai, 0:pingkai, 1: gaokai
 df = pd.DataFrame([''] * df.__len__(), columns=['open_vs_lastclose_perc']).join(df) # (today_open - yesterday_close)/yesterday_close*100
