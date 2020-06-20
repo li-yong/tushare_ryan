@@ -28,11 +28,11 @@ import sys
 import traceback
 from jaqs.data.dataapi import DataApi
 import glob
+import stockstats
 
+import finlib
 import logging
 import yaml
-logging.basicConfig(filename='/home/ryan/del.log', filemode='a', format='%(asctime)s %(message)s', datefmt='%m_%d %H:%M:%S', level=logging.DEBUG)
-logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 import warnings
 
 # warnings.filterwarnings("error")
@@ -144,3 +144,54 @@ class Finlib_indicator:
         df = df.join(KelChD)
         return df
 
+
+    def sma_jincha_sicha_duotou_koutou(self,df,short,middle,long):
+        stock = stockstats.StockDataFrame.retype(df)
+
+
+        df_sma_short = stock['close_'+str(short)+'_sma']
+        df_sma_middle = stock['close_'+str(middle)+'_sma']
+        df_sma_long = stock['close_'+str(long)+'_sma']
+        df_sma_60 = stock['close_'+str(60)+'_sma']
+        df_sma_200 = stock['close_'+str(200)+'_sma']
+
+
+#        print(str(df_sma_short[-1])+" "+str(df_sma_middle[-1])+" "+str(df_sma_long[-1]))
+
+        ma_short = df_sma_short[-1]
+        ma_middle = df_sma_middle[-1]
+        ma_long = df_sma_long[-1]
+
+        ma_short_p1 = df_sma_short[-2]
+        ma_middle_p1 = df_sma_middle[-2]
+        ma_long_p1 = df_sma_long[-2]
+
+        if ma_short > ma_middle and ma_short_p1 < ma_middle_p1:
+            logging.info("short up across middle, jin cha minor")
+        elif ma_short < ma_middle and ma_short_p1 > ma_middle_p1:
+            logging.info("short down across middle, si cha minor")
+
+        if ma_middle > ma_long and ma_middle_p1 < ma_long_p1:
+            logging.info("middle up across long, jin cha major")
+        elif ma_middle < ma_long and ma_middle_p1 > ma_long_p1:
+            logging.info("middle down across long, si cha major")
+
+        if (ma_short >ma_middle > ma_long):
+            logging.info("duo tou pai lie")
+            if df['low'][-1] > ma_short:
+                logging.info("verify strong up trend")
+            logging.info("check back last 30 bars")
+            for i in range(30):
+                if (df_sma_short[-i] > df_sma_middle[-i] > df_sma_long[-i]):
+                    logging.info("duo tou lasts "+str(i)+ "days")
+                    continue
+
+                if (df_sma_short[-i] < df_sma_middle[-i]  < df_sma_long[-i]):
+                    logging.info("latest kong tou pailie is "+str(i) + " days before at "+df.iloc[-i].name)
+                    break
+
+
+
+
+        pass
+        return()

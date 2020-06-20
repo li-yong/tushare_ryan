@@ -26,6 +26,7 @@ import stockstats
 import tabulate
 import os
 import logging
+import finlib_indicator
 
 from optparse import OptionParser
 
@@ -160,6 +161,25 @@ def _kdj(csv_f, period):
     return (rtn)
 
 
+def sma():
+
+    stock_list = finlib.Finlib().get_A_stock_instrment()
+    stock_list = finlib.Finlib().add_market_to_code(stock_list, dot_f=False, tspro_format=False)
+
+    #stock_list = stock_list.head(100) #ryan debug
+
+    cnt = stock_list.__len__()
+    i = 0
+    for c in stock_list['code']:
+        i += 1
+        csv_f = '/home/ryan/DATA/DAY_Global/AG/' + c + ".csv"
+        logging.info("\n"+str(i) + " of " + str(cnt) + " " + c)
+
+        df = finlib.Finlib().regular_read_csv_to_stdard_df(data_csv=csv_f)
+        df = df.iloc[-300:].reset_index().drop('index', axis=1)
+        df1 = finlib_indicator.Finlib_indicator().sma_jincha_sicha_duotou_koutou(df,5,10,20)
+
+
 def kdj(period):
     output_csv = "/home/ryan/DATA/result/kdj_selection_" + period + ".csv"  #head: code, name, date, action(b/s), reason, strength.
     # Term: Middle(because based on Monthly data,
@@ -168,7 +188,7 @@ def kdj(period):
     df_rtn = pd.DataFrame()
 
     stock_list = finlib.Finlib().get_A_stock_instrment()
-    stock_list = finlib.Finlib().add_market_to_code(stock_list, dot_f=False, tspro_format=False)
+    stock_list = finlib.Finlib().add_market_periodto_code(stock_list, dot_f=False, tspro_format=False)
 
     #stock_list = stock_list.head(100) #ryan debug
 
@@ -369,6 +389,11 @@ def calculate(indicator, period):
     if indicator == 'MACD':
         macd(period=period)
 
+    if indicator == 'SMA':
+        sma()
+
+
+
 
 def analyze(indicator):
     dir = "/home/ryan/DATA/result"
@@ -381,6 +406,7 @@ def analyze(indicator):
         input_csv_m = dir + "/kdj_selection_M.csv"
         input_csv_w = dir + "/kdj_selection_W.csv"
         input_csv_d = dir + "/kdj_selection_D.csv"
+
 
     df_m = pd.read_csv(input_csv_m)
     df_m.rename(columns={
@@ -423,7 +449,7 @@ def main():
 
     parser = OptionParser()
 
-    parser.add_option("--indicator", type="str", dest="indicator_f", default=None, help="indicator, one of [KDJ|MACD]")
+    parser.add_option("--indicator", type="str", dest="indicator_f", default=None, help="indicator, one of [KDJ|MACD|SMA]")
 
     parser.add_option("--period", type="str", dest="period_f", default=None, help="period, one of [M|W|D]")
 
@@ -436,7 +462,7 @@ def main():
     analyze_f = options.analyze_f
 
     if indicator == None:
-        print("missing indicator [MACD|KDJ]")
+        print("missing indicator [MACD|KDJ|SMA]")
 
     if analyze_f:
         analyze(indicator=indicator)

@@ -13,6 +13,11 @@ df = df.iloc[-300:].reset_index().drop('index', axis=1)
 
 ### ryan debug start
 
+#stockstats
+df1 = finlib_indicator.Finlib_indicator().stockstats(df)
+
+df2 = finlib_indicator.Finlib_indicator().add_ma_ema(df)
+
 #adding ATR
 df = finlib_indicator.Finlib_indicator().ATR(df,3)
 
@@ -21,6 +26,13 @@ df = finlib_indicator.Finlib_indicator().upper_body_lower_shadow(df)
 
 #adding KelChM_U, KelChM_D, KelChM_H
 df = finlib_indicator.Finlib_indicator().KELCH(df,3)
+
+#adding MA, EMA
+df = finlib_indicator.Finlib_indicator().add_ma_ema(df)
+
+print(df.iloc[-1])
+
+
 
 ### ryan debug end
 
