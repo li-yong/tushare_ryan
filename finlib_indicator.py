@@ -231,7 +231,8 @@ class Finlib_indicator:
     def price_counter(self,df):
         ser_price = df['close'].append(df['open']).append(df['high']).append(df['low'])
         ser_price = ser_price[ser_price>0]
-        #common_prices = collections.Counter(ser_price.apply(lambda _d: round(_d,1))).most_common(10)
+
+        #round determin the precision.
         common_prices = collections.Counter(round(ser_price,0)).most_common()
 
         sum = 0
@@ -259,29 +260,52 @@ class Finlib_indicator:
         v = min(sorted_price_list, key=lambda x: abs(x - current_price))
         idx = sorted_price_list.index(v)
 
-        if idx -3 >= 0:
-            H3 =  new_dict[sorted_price_list[idx-3]]
-            logging.info("H3, price "+str(H3['price'])+ " strength in 300 bars "+str(H3['frequency_perc']))
-        if idx - 2 >= 0:
-            H2 =  new_dict[sorted_price_list[idx-2]]
-            logging.info("H2, price "+str(H2['price'])+ " strength in 300 bars "+str(H2['frequency_perc']))
+        if v > current_price:
+            idx_h1 = idx
+            idx_l1 = idx +1
+        elif v== current_price:
+            idx_h1 = idx-1
+            idx_l1 = idx+1
+        elif v < current_price:
+            idx_h1 = idx-1
+            idx_l1 = idx
 
-        if idx - 1 >= 0:
-            H1 =  new_dict[sorted_price_list[idx-1]]
-            logging.info("H1, price "+str(H1['price'])+ " strength in 300 bars "+str(H1['frequency_perc']))
+        if idx_h1 -4  >= 0:
+            H5 =  new_dict[sorted_price_list[idx_h1-4]]
+            logging.info("H5, price "+str(H5['price'])+ ", strength in "+str(df.__len__())+" bars "+str(H5['frequency_percent']))
+        if idx_h1 -3  >= 0:
+            H4 =  new_dict[sorted_price_list[idx_h1-3]]
+            logging.info("H4, price "+str(H4['price'])+ ", strength in "+str(df.__len__())+" bars "+str(H4['frequency_percent']))
+        if idx_h1 -2  >= 0:
+            H3 =  new_dict[sorted_price_list[idx_h1-2]]
+            logging.info("H3, price "+str(H3['price'])+ ", strength in "+str(df.__len__())+" bars "+str(H3['frequency_percent']))
+        if idx_h1 -1  >= 0:
+            H2 =  new_dict[sorted_price_list[idx_h1-1]]
+            logging.info("H2, price "+str(H2['price'])+ ", strength in "+str(df.__len__())+" bars "+str(H2['frequency_percent']))
+        if idx_h1 >= 0:
+            H1 =  new_dict[sorted_price_list[idx_h1]]
+            logging.info("H1, price "+str(H1['price'])+ ", strength in "+str(df.__len__())+" bars "+str(H1['frequency_percent']))
 
 
-        if idx +1 <= sorted_price_list.__len__():
-            L1 = new_dict[sorted_price_list[idx + 1]]
-            logging.info("L1, price "+str(L1['price'])+ " strength in 300 bars "+str(L1['frequency_perc']))
+        if idx_l1 <= sorted_price_list.__len__():
+            L1 = new_dict[sorted_price_list[idx_l1]]
+            logging.info("L1, price "+str(L1['price'])+ ", strength in "+str(df.__len__())+" bars "+str(L1['frequency_percent']))
 
-        if idx + 2 <= sorted_price_list.__len__():
-            L2 = new_dict[sorted_price_list[idx + 2]]
-            logging.info("L2, price "+str(L2['price'])+ " strength in 300 bars "+str(L2['frequency_perc']))
+        if idx_l1 + 1 <= sorted_price_list.__len__():
+            L2 = new_dict[sorted_price_list[idx_l1 + 1]]
+            logging.info("L2, price "+str(L2['price'])+ ", strength in "+str(df.__len__())+" bars "+str(L2['frequency_percent']))
 
-        if idx + 3 <= sorted_price_list.__len__():
-            L3 = new_dict[sorted_price_list[idx + 3]]
-            logging.info("L3, price "+str(L3['price'])+ " strength in 300 bars "+str(L3['frequency_perc']))
+        if idx_l1 +2 <= sorted_price_list.__len__():
+            L3 = new_dict[sorted_price_list[idx_l1 + 2]]
+            logging.info("L3, price "+str(L3['price'])+ ", strength in "+str(df.__len__())+" bars "+str(L3['frequency_percent']))
+
+        if idx_l1 +3 <= sorted_price_list.__len__():
+            L4 = new_dict[sorted_price_list[idx_l1 + 3]]
+            logging.info("L4, price "+str(L4['price'])+ ", strength in "+str(df.__len__())+" bars "+str(L4['frequency_percent']))
+
+        if idx_l1 +4 <= sorted_price_list.__len__():
+            L5 = new_dict[sorted_price_list[idx_l1 + 4]]
+            logging.info("L5, price "+str(L5['price'])+ ", strength in "+str(df.__len__())+" bars "+str(L5['frequency_percent']))
 
 
         pass
