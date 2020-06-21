@@ -18,7 +18,11 @@ df1 = finlib_indicator.Finlib_indicator().sma_jincha_sicha_duotou_koutou(df,5,10
 
 df2 = finlib_indicator.Finlib_indicator().add_ma_ema(df)
 
-df3 =  finlib_indicator.Finlib_indicator().price_counter(df)
+######################################################
+#H1, price 59.0, freq perc in 300 bars 96.4 freq 10.2
+#L1, price 58.0, freq perc in 300 bars 100.0 freq 12.0
+######################################################
+rtn_dict =  finlib_indicator.Finlib_indicator().price_counter(df)
 
 #adding ATR
 df = finlib_indicator.Finlib_indicator().ATR(df,3)
