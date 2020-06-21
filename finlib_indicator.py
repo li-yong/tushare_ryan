@@ -156,11 +156,12 @@ class Finlib_indicator:
         df['ema_60'] = stock['close_' + str(60) + '_ema']
         df['ema_200'] = stock['close_' + str(200) + '_ema']
 
+        df = df.reset_index()  # after retype, 'date' column was changed to index. reset 'date' to a column
         return(df)
 
 
     def sma_jincha_sicha_duotou_koutou(self, df, short=5, middle=10, long=20):
-        df = self.add_ma_ema(short=short, middle=middle, long=long)
+        df = self.add_ma_ema(df=df, short=short, middle=middle, long=long)
 
         rtn_dict = {
             "short_period": short,
@@ -195,15 +196,15 @@ class Finlib_indicator:
         df_sma_middle = df['sma_middle_'+str(middle)]
         df_sma_long = df['sma_long_'+str(long)]
         df_sma_60 = df['sma_60']
-        df_sma_200 = df['sma_120']
+        df_sma_200 = df['sma_200']
 
-        rtn_dict['date'] = df['date'][-1]
-        rtn_dict['code'] = df['code'][-1]
-        sma_short = rtn_dict['sma_short'] = df_sma_short[-1]
-        sma_middle = rtn_dict['sma_middle'] = df_sma_middle[-1]
-        sma_long = rtn_dict['sma_long'] = df_sma_long[-1]
-        sma_60 = rtn_dict['sma_60'] = df_sma_60[-1]
-        sma_120 = rtn_dict['sma_200'] = df_sma_200[-1]
+        rtn_dict['date'] = df['date'].iloc[-1]
+        rtn_dict['code'] = df['code'].iloc[-1]
+        sma_short = rtn_dict['sma_short'] = df_sma_short.iloc[-1]
+        sma_middle = rtn_dict['sma_middle'] = df_sma_middle.iloc[-1]
+        sma_long = rtn_dict['sma_long'] = df_sma_long.iloc[-1]
+        sma_60 = rtn_dict['sma_60'] = df_sma_60.iloc[-1]
+        sma_200 = rtn_dict['sma_200'] = df_sma_200.iloc[-1]
 
         print("stockstats sma short,middle,long " + str(sma_short) + " " + str(sma_middle) + " " + str(sma_long))
 
@@ -211,19 +212,19 @@ class Finlib_indicator:
         df_ema_middle = df['ema_middle_'+str(middle)]
         df_ema_long = df['ema_long_'+str(long)]
         df_ema_60 = df['ema_60']
-        df_ema_200 = df['ema_120']
-        print("stockstats ema short,middle,long " + str(df_ema_short[-1]) + " " + str(df_ema_middle[-1]) + " " + str(df_ema_long[-1]))
-        ema_short = rtn_dict['ema_short'] = df_ema_short[-1]
-        ema_middle = rtn_dict['ema_middle'] = df_ema_middle[-1]
-        ema_long = rtn_dict['ema_long'] = df_ema_long[-1]
+        df_ema_200 = df['ema_200']
+        print("stockstats ema short,middle,long " + str(df_ema_short) + " " + str(df_ema_middle) + " " + str(df_ema_long))
+        ema_short = rtn_dict['ema_short'] = df_ema_short.iloc[-1]
+        ema_middle = rtn_dict['ema_middle'] = df_ema_middle.iloc[-1]
+        ema_long = rtn_dict['ema_long'] = df_ema_long.iloc[-1]
 
-        ema_60 = rtn_dict['ema_60'] = df_ema_60[-1]
-        ema_200 = rtn_dict['ema_200'] = df_ema_200[-1]
+        ema_60 = rtn_dict['ema_60'] = df_ema_60.iloc[-1]
+        ema_200 = rtn_dict['ema_200'] = df_ema_200.iloc[-1]
 
 
-        sma_short_p1 = df_sma_short[-2]
-        sma_middle_p1 = df_sma_middle[-2]
-        sma_long_p1 = df_sma_long[-2]
+        sma_short_p1 = df_sma_short.iloc[-2]
+        sma_middle_p1 = df_sma_middle.iloc[-2]
+        sma_long_p1 = df_sma_long.iloc[-2]
 
         #middle tier start
         ma_short = sma_short
@@ -291,9 +292,9 @@ class Finlib_indicator:
                     continue
 
                 if (df_sma_short[-i] < df_sma_middle[-i] < df_sma_long[-i]):
-                    logging.info("latest kong tou pailie is " + str(i) + " days before at " + df.iloc[-i].name)
+                    logging.info("latest kong tou pailie is " + str(i) + " days before at " + df.iloc[-i]['date'])
                     rtn_dict['last_kongtou_pailie_n_days_before'] = i
-                    rtn_dict['last_kongtou_pailie_date'] = df.iloc[-i].name
+                    rtn_dict['last_kongtou_pailie_date'] = df.iloc[-i]['date']
                     break
 
         if (ma_short < ma_middle < ma_long):  #more interesting enter when price is up break
@@ -311,9 +312,9 @@ class Finlib_indicator:
                     continue
 
                 if (df_sma_short[-i] > df_sma_middle[-i] > df_sma_long[-i]):
-                    logging.info("latest duo tou pailie is " + str(i) + " days before at " + df.iloc[-i].name)
+                    logging.info("latest duo tou pailie is " + str(i) + " days before at " + df.iloc[-i]['date'])
                     rtn_dict['last_duotou_pailie_n_days_before'] = i
-                    rtn_dict['last_duotou_pailie_date'] = df.iloc[-i].name
+                    rtn_dict['last_duotou_pailie_date'] = df.iloc[-i]['date']
                     break
 
         return (rtn_dict)

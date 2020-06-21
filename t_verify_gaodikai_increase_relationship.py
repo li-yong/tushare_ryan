@@ -16,7 +16,6 @@ df = df.iloc[-300:].reset_index().drop('index', axis=1)
 #stockstats
 rtn_dict_1 = finlib_indicator.Finlib_indicator().sma_jincha_sicha_duotou_koutou(df,5,10,20)
 
-df2 = finlib_indicator.Finlib_indicator().add_ma_ema(df)
 
 ######################################################
 #H1, price 59.0, freq perc in 300 bars 96.4 freq 10.2
