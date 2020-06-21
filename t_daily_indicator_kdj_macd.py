@@ -177,7 +177,30 @@ def sma():
 
         df = finlib.Finlib().regular_read_csv_to_stdard_df(data_csv=csv_f)
         df = df.iloc[-300:].reset_index().drop('index', axis=1)
+
+        finlib_indicator.Finlib_indicator().price_counter()
+
         df1 = finlib_indicator.Finlib_indicator().sma_jincha_sicha_duotou_koutou(df,5,10,20)
+
+
+def price_counter():
+
+    stock_list = finlib.Finlib().get_A_stock_instrment()
+    stock_list = finlib.Finlib().add_market_to_code(stock_list, dot_f=False, tspro_format=False)
+
+    #stock_list = stock_list.head(100) #ryan debug
+
+    cnt = stock_list.__len__()
+    i = 0
+    for c in stock_list['code']:
+        i += 1
+        csv_f = '/home/ryan/DATA/DAY_Global/AG/' + c + ".csv"
+        logging.info("\n"+str(i) + " of " + str(cnt) + " " + c)
+
+        df = finlib.Finlib().regular_read_csv_to_stdard_df(data_csv=csv_f)
+        df = df.iloc[-300:].reset_index().drop('index', axis=1)
+
+        finlib_indicator.Finlib_indicator().price_counter(df)
 
 
 def kdj(period):
@@ -391,6 +414,9 @@ def calculate(indicator, period):
 
     if indicator == 'SMA':
         sma()
+    if indicator == 'PriceCounter':
+        price_counter()
+
 
 
 
@@ -449,7 +475,7 @@ def main():
 
     parser = OptionParser()
 
-    parser.add_option("--indicator", type="str", dest="indicator_f", default=None, help="indicator, one of [KDJ|MACD|SMA]")
+    parser.add_option("--indicator", type="str", dest="indicator_f", default=None, help="indicator, one of [KDJ|MACD|SMA|PriceCounter]")
 
     parser.add_option("--period", type="str", dest="period_f", default=None, help="period, one of [M|W|D]")
 
@@ -462,7 +488,7 @@ def main():
     analyze_f = options.analyze_f
 
     if indicator == None:
-        print("missing indicator [MACD|KDJ|SMA]")
+        print("missing indicator [MACD|KDJ|SMA|PriceCounter]")
 
     if analyze_f:
         analyze(indicator=indicator)

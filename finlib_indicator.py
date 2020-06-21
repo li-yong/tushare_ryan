@@ -12,6 +12,8 @@ import pandas as pd
 import time
 import numpy as np
 import tabulate
+import collections
+import stat
 
 # import matplotlib.pyplot as plt
 # from pandas.plotting import register_matplotlib_converters
@@ -70,7 +72,9 @@ class Finlib_indicator:
         close_ema_2 = df['close'].ewm(span=2, min_periods=0, adjust=False, ignore_na=False).mean()  # exponential weighted.
         close_ema_5 = df['close'].ewm(span=5, min_periods=0, adjust=False, ignore_na=False).mean()
         close_ema_8 = df['close'].ewm(span=8, min_periods=0, adjust=False, ignore_na=False).mean()
+        close_ema_10 = df['close'].ewm(span=10, min_periods=0, adjust=False, ignore_na=False).mean()
         close_ema_13 = df['close'].ewm(span=13, min_periods=0, adjust=False, ignore_na=False).mean()
+        close_ema_20 = df['close'].ewm(span=20, min_periods=0, adjust=False, ignore_na=False).mean()
 
         #ema long
         close_ema_9 = df['close'].ewm(span=9, min_periods=0, adjust=False, ignore_na=False).mean()
@@ -85,6 +89,9 @@ class Finlib_indicator:
         df['close_ema_9'] = close_ema_9
         df['close_ema_21'] = close_ema_21
         df['close_ema_55'] = close_ema_55
+
+        df['close_ema_10'] = close_ema_10
+        df['close_ema_20'] = close_ema_20
 
         return (df)
 
@@ -148,6 +155,7 @@ class Finlib_indicator:
     def sma_jincha_sicha_duotou_koutou(self,df,short,middle,long):
         stock = stockstats.StockDataFrame.retype(df)
 
+        trend_short = trend_middle = trend_long = 'NA'
 
         df_sma_short = stock['close_'+str(short)+'_sma']
         df_sma_middle = stock['close_'+str(middle)+'_sma']
@@ -156,7 +164,15 @@ class Finlib_indicator:
         df_sma_200 = stock['close_'+str(200)+'_sma']
 
 
-#        print(str(df_sma_short[-1])+" "+str(df_sma_middle[-1])+" "+str(df_sma_long[-1]))
+        print("stockstats sma short,middle,long "+str(df_sma_short[-1])+" "+str(df_sma_middle[-1])+" "+str(df_sma_long[-1]))
+
+
+        df_ema_short = stock['close_'+str(short)+'_ema']
+        df_ema_middle = stock['close_'+str(middle)+'_ema']
+        df_ema_long = stock['close_'+str(long)+'_ema']
+        print("stockstats ema short,middle,long "+str(df_ema_short[-1])+" "+str(df_ema_middle[-1])+" "+str(df_ema_long[-1]))
+
+
 
         ma_short = df_sma_short[-1]
         ma_middle = df_sma_middle[-1]
@@ -176,7 +192,21 @@ class Finlib_indicator:
         elif ma_middle < ma_long and ma_middle_p1 > ma_long_p1:
             logging.info("middle down across long, si cha major")
 
+
+
+
+        if ma_short > ma_middle*1.05 :
+            trend_short='up'
+        elif ma_short*1.05 < ma_middle:
+            trend_short = 'down'
+
+        if ma_middle > ma_long*1.05:
+            trend_middle = 'up'
+        elif ma_middle*1.05 < ma_long:
+            trend_middle = 'down'
+
         if (ma_short >ma_middle > ma_long):
+            trend_long = 'up'
             logging.info("duo tou pai lie")
             if df['low'][-1] > ma_short:
                 logging.info("verify strong up trend")
@@ -190,8 +220,91 @@ class Finlib_indicator:
                     logging.info("latest kong tou pailie is "+str(i) + " days before at "+df.iloc[-i].name)
                     break
 
-
+        if (ma_short < ma_middle < ma_long):  #more interesting enter when price is up break
+            trend_long = 'down'
+            logging.info("kong tou pai lie")
 
 
         pass
         return()
+
+    def price_counter(self,df):
+        ser_price = df['close'].append(df['open']).append(df['high']).append(df['low'])
+        ser_price = ser_price[ser_price>0]
+        #common_prices = collections.Counter(ser_price.apply(lambda _d: round(_d,1))).most_common(10)
+        common_prices = collections.Counter(round(ser_price,0)).most_common()
+
+        sum = 0
+        occu_list = []
+        for i in common_prices:
+            sum += i[1]
+            occu_list.append(i[1])
+
+        new_list = []
+        new_dict = {}
+
+        for i in common_prices:
+            price =  i[0]
+            frequency_percent = round(stats.percentileofscore(occu_list,i[1]),1)
+            new_dict[price] = {'price':price, 'frequency_percent':frequency_percent, 'occurrence':i[1], 'sum':sum}
+
+        sorted_price_list = list(collections.OrderedDict(sorted(new_dict.items(), reverse=True)).keys()) #[71,70,...44]
+        print(sorted_price_list)
+        pass
+
+
+        current_price = df['close'].iloc[-1]
+        logging.info("current price "+str(current_price))
+
+        v = min(sorted_price_list, key=lambda x: abs(x - current_price))
+        idx = sorted_price_list.index(v)
+
+        if idx -3 >= 0:
+            H3 =  new_dict[sorted_price_list[idx-3]]
+            logging.info("H3, price "+str(H3['price'])+ " strength in 300 bars "+str(H3['frequency_perc']))
+        if idx - 2 >= 0:
+            H2 =  new_dict[sorted_price_list[idx-2]]
+            logging.info("H2, price "+str(H2['price'])+ " strength in 300 bars "+str(H2['frequency_perc']))
+
+        if idx - 1 >= 0:
+            H1 =  new_dict[sorted_price_list[idx-1]]
+            logging.info("H1, price "+str(H1['price'])+ " strength in 300 bars "+str(H1['frequency_perc']))
+
+
+        if idx +1 <= sorted_price_list.__len__():
+            L1 = new_dict[sorted_price_list[idx + 1]]
+            logging.info("L1, price "+str(L1['price'])+ " strength in 300 bars "+str(L1['frequency_perc']))
+
+        if idx + 2 <= sorted_price_list.__len__():
+            L2 = new_dict[sorted_price_list[idx + 2]]
+            logging.info("L2, price "+str(L2['price'])+ " strength in 300 bars "+str(L2['frequency_perc']))
+
+        if idx + 3 <= sorted_price_list.__len__():
+            L3 = new_dict[sorted_price_list[idx + 3]]
+            logging.info("L3, price "+str(L3['price'])+ " strength in 300 bars "+str(L3['frequency_perc']))
+
+
+        pass
+
+
+
+
+
+
+
+
+'''
+         {58.0: {'price': 58.0,
+          'frequency_rank': 1,
+          'frequency_perc': 100.0,
+          'occurrence': 141,
+          'sum': 1176,
+          'occurrence_perc': 12.0},
+          
+         59.0: {'price': 59.0,
+          'frequency_rank': 2,
+          'frequency_perc': 96.42857142857143,
+          'occurrence': 120,
+          'sum': 1176,
+          'occurrence_perc': 10.2},
+'''

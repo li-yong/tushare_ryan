@@ -14,9 +14,11 @@ df = df.iloc[-300:].reset_index().drop('index', axis=1)
 ### ryan debug start
 
 #stockstats
-df1 = finlib_indicator.Finlib_indicator().stockstats(df)
+df1 = finlib_indicator.Finlib_indicator().sma_jincha_sicha_duotou_koutou(df,5,10,20)
 
 df2 = finlib_indicator.Finlib_indicator().add_ma_ema(df)
+
+df3 =  finlib_indicator.Finlib_indicator().price_counter(df)
 
 #adding ATR
 df = finlib_indicator.Finlib_indicator().ATR(df,3)
