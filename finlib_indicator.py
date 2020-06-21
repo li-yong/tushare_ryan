@@ -143,27 +143,28 @@ class Finlib_indicator:
     def add_ma_ema(self, df, short=5, middle=10, long=20):
         stock = stockstats.StockDataFrame.retype(df)
 
-        df['sma_short_'+str(short)] =  stock['close_' + str(short) + '_sma']
-        df['sma_middle_'+str(middle)] =  stock['close_' + str(middle) + '_sma']
-        df['sma_long_'+str(long)] =  stock['close_' + str(long) + '_sma']
-        df['sma_60'] =  stock['close_' + str(60) + '_sma']
+        df['sma_short_' + str(short)] = stock['close_' + str(short) + '_sma']
+        df['sma_middle_' + str(middle)] = stock['close_' + str(middle) + '_sma']
+        df['sma_long_' + str(long)] = stock['close_' + str(long) + '_sma']
+        df['sma_60'] = stock['close_' + str(60) + '_sma']
         df['sma_200'] = stock['close_' + str(200) + '_sma']
 
-
-        df['ema_short_'+str(short)] =  stock['close_' + str(short) + '_ema']
-        df['ema_middle_'+str(middle)] =  stock['close_' + str(middle) + '_ema']
-        df['ema_long_'+str(long)] = stock['close_' + str(long) + '_ema']
+        df['ema_short_' + str(short)] = stock['close_' + str(short) + '_ema']
+        df['ema_middle_' + str(middle)] = stock['close_' + str(middle) + '_ema']
+        df['ema_long_' + str(long)] = stock['close_' + str(long) + '_ema']
         df['ema_60'] = stock['close_' + str(60) + '_ema']
         df['ema_200'] = stock['close_' + str(200) + '_ema']
 
         df = df.reset_index()  # after retype, 'date' column was changed to index. reset 'date' to a column
-        return(df)
-
+        return (df)
 
     def sma_jincha_sicha_duotou_koutou(self, df, short=5, middle=10, long=20):
         df = self.add_ma_ema(df=df, short=short, middle=middle, long=long)
 
         rtn_dict = {
+            'code': None,
+            'date': None,
+            'close': None,
             "short_period": short,
             "middle_period": middle,
             "long_period": long,
@@ -192,14 +193,16 @@ class Finlib_indicator:
             'last_duotou_pailie_date': None,
         }
 
-        df_sma_short = df['sma_short_'+str(short)]
-        df_sma_middle = df['sma_middle_'+str(middle)]
-        df_sma_long = df['sma_long_'+str(long)]
+        df_sma_short = df['sma_short_' + str(short)]
+        df_sma_middle = df['sma_middle_' + str(middle)]
+        df_sma_long = df['sma_long_' + str(long)]
         df_sma_60 = df['sma_60']
         df_sma_200 = df['sma_200']
 
         rtn_dict['date'] = df['date'].iloc[-1]
         rtn_dict['code'] = df['code'].iloc[-1]
+        rtn_dict['close'] = df['close'].iloc[-1]
+
         sma_short = rtn_dict['sma_short'] = df_sma_short.iloc[-1]
         sma_middle = rtn_dict['sma_middle'] = df_sma_middle.iloc[-1]
         sma_long = rtn_dict['sma_long'] = df_sma_long.iloc[-1]
@@ -208,9 +211,9 @@ class Finlib_indicator:
 
         print("stockstats sma short,middle,long " + str(sma_short) + " " + str(sma_middle) + " " + str(sma_long))
 
-        df_ema_short = df['ema_short_'+str(short)]
-        df_ema_middle = df['ema_middle_'+str(middle)]
-        df_ema_long = df['ema_long_'+str(long)]
+        df_ema_short = df['ema_short_' + str(short)]
+        df_ema_middle = df['ema_middle_' + str(middle)]
+        df_ema_long = df['ema_long_' + str(long)]
         df_ema_60 = df['ema_60']
         df_ema_200 = df['ema_200']
         print("stockstats ema short,middle,long " + str(df_ema_short) + " " + str(df_ema_middle) + " " + str(df_ema_long))
@@ -220,7 +223,6 @@ class Finlib_indicator:
 
         ema_60 = rtn_dict['ema_60'] = df_ema_60.iloc[-1]
         ema_200 = rtn_dict['ema_200'] = df_ema_200.iloc[-1]
-
 
         sma_short_p1 = df_sma_short.iloc[-2]
         sma_middle_p1 = df_sma_middle.iloc[-2]
@@ -237,32 +239,29 @@ class Finlib_indicator:
         ma_long_p1 = sma_long_p1
         #middle tier end
 
-
         if ma_short > ma_middle and ma_short_p1 < ma_middle_p1:
             logging.info("short up across middle, jin cha minor")
             rtn_dict['jincha_minor'] = True
-            rtn_dict['jincha_minor_strength'] = round( 2 * ((ma_short - ma_middle)/(ma_short+ma_middle) + (ma_middle_p1 - ma_short_p1)/(ma_middle_p1 + ma_short_p1)), 2)
+            rtn_dict['jincha_minor_strength'] = round(2 * ((ma_short - ma_middle) / (ma_short + ma_middle) + (ma_middle_p1 - ma_short_p1) / (ma_middle_p1 + ma_short_p1)), 2)
         elif ma_short < ma_middle and ma_short_p1 > ma_middle_p1:
             logging.info("short down across middle, si cha minor")
             rtn_dict['sicha_minor'] = True
-            rtn_dict['sicha_minor_strength'] = round( 2 * ((ma_middle -ma_short)/(ma_short+ma_middle) + (ma_short_p1-ma_middle_p1)/(ma_middle_p1 + ma_short_p1)), 2)
-
+            rtn_dict['sicha_minor_strength'] = round(2 * ((ma_middle - ma_short) / (ma_short + ma_middle) + (ma_short_p1 - ma_middle_p1) / (ma_middle_p1 + ma_short_p1)), 2)
 
         if ma_middle > ma_long and ma_middle_p1 < ma_long_p1:
             logging.info("middle up across long, jin cha major")
             rtn_dict['jincha_major'] = True
-            rtn_dict['jincha_major_strength'] = round( 2 * ((ma_middle -ma_long)/(ma_long+ma_middle) + (ma_long_p1-ma_middle_p1)/(ma_middle_p1 + ma_long_p1)), 2)
+            rtn_dict['jincha_major_strength'] = round(2 * ((ma_middle - ma_long) / (ma_long + ma_middle) + (ma_long_p1 - ma_middle_p1) / (ma_middle_p1 + ma_long_p1)), 2)
 
         elif ma_middle < ma_long and ma_middle_p1 > ma_long_p1:
             logging.info("middle down across long, si cha major")
             rtn_dict['sicha_major'] = True
-            rtn_dict['sicha_major_strength'] = round( 2 * ((ma_long - ma_middle)/(ma_long+ma_middle) + (ma_middle_p1 - ma_long_p1)/(ma_middle_p1 + ma_long_p1)), 2)
-
+            rtn_dict['sicha_major_strength'] = round(2 * ((ma_long - ma_middle) / (ma_long + ma_middle) + (ma_middle_p1 - ma_long_p1) / (ma_middle_p1 + ma_long_p1)), 2)
 
         if ma_short > ma_middle * 1.05:
             trend_short = 'up'
             rtn_dict['trend_short'] = 'up'
-            rtn_dict['trend_short_strength'] = round( ma_short/ma_middle ,2)
+            rtn_dict['trend_short_strength'] = round(ma_short / ma_middle, 2)
         elif ma_short * 1.05 < ma_middle:
             trend_short = 'down'
             rtn_dict['trend_short'] = 'down'
@@ -319,146 +318,13 @@ class Finlib_indicator:
 
         return (rtn_dict)
 
-
-    def sma_jincha_sicha_duotou_koutou_ori_del(self, df, short, middle, long):
-        stock = stockstats.StockDataFrame.retype(df)
-        rtn_dict = {
-            "short_period": short,
-            "middle_period": middle,
-            "long_period": long,
-            'jincha_minor': None,
-            'jincha_minor': None,
-            'sicha_minor': None,
-            'jincha_major': None,
-            'sicha_major': None,
-            'trend_short': None,
-            'trend_short': None,
-            'trend_middle': None,
-            'trend_middle': None,
-            'duotou_pailie': None,
-            'trend_long': None,
-            'very_strong_up_trend': None,
-            'duotou_pailie_last_bars': None,
-            'last_kongtou_pailie_n_days_before': None,
-            'last_kongtou_pailie_date': None,
-            'kongtou_pailie': None,
-            'trend_long': None,
-            'very_strong_down_trend': None,
-            'kongtou_pailie_last_bars': None,
-            'last_duotou_pailie_n_days_before': None,
-            'last_duotou_pailie_date': None,
-        }
-
-        df_sma_short = stock['close_' + str(short) + '_sma']
-        df_sma_middle = stock['close_' + str(middle) + '_sma']
-        df_sma_long = stock['close_' + str(long) + '_sma']
-        df_sma_60 = stock['close_' + str(60) + '_sma']
-        df_sma_200 = stock['close_' + str(200) + '_sma']
-
-        rtn_dict['date'] = df['date'][-1]
-        rtn_dict['code'] = df['code'][-1]
-        rtn_dict['sma_short'] = df_sma_short[-1]
-        rtn_dict['sma_middle'] = df_sma_middle[-1]
-        rtn_dict['sma_long'] = df_sma_long[-1]
-        rtn_dict['sma_60'] = df_sma_60[-1]
-        rtn_dict['sma_200'] = df_sma_200[-1]
-
-        print("stockstats sma short,middle,long " + str(df_sma_short[-1]) + " " + str(df_sma_middle[-1]) + " " + str(df_sma_long[-1]))
-
-        df_ema_short = stock['close_' + str(short) + '_ema']
-        df_ema_middle = stock['close_' + str(middle) + '_ema']
-        df_ema_long = stock['close_' + str(long) + '_ema']
-        print("stockstats ema short,middle,long " + str(df_ema_short[-1]) + " " + str(df_ema_middle[-1]) + " " + str(df_ema_long[-1]))
-        rtn_dict['ema_short'] = df_ema_short
-        rtn_dict['ema_middle'] = df_ema_middle
-        rtn_dict['ema_long'] = df_ema_long
-
-        ma_short = df_sma_short[-1]
-        ma_middle = df_sma_middle[-1]
-        ma_long = df_sma_long[-1]
-
-        ma_short_p1 = df_sma_short[-2]
-        ma_middle_p1 = df_sma_middle[-2]
-        ma_long_p1 = df_sma_long[-2]
-
-        if ma_short > ma_middle and ma_short_p1 < ma_middle_p1:
-            logging.info("short up across middle, jin cha minor")
-            rtn_dict['jincha_minor'] = True
-        elif ma_short < ma_middle and ma_short_p1 > ma_middle_p1:
-            logging.info("short down across middle, si cha minor")
-            rtn_dict['sicha_minor'] = True
-
-        if ma_middle > ma_long and ma_middle_p1 < ma_long_p1:
-            logging.info("middle up across long, jin cha major")
-            rtn_dict['jincha_major'] = True
-        elif ma_middle < ma_long and ma_middle_p1 > ma_long_p1:
-            logging.info("middle down across long, si cha major")
-            rtn_dict['sicha_major'] = True
-
-        if ma_short > ma_middle * 1.05:
-            trend_short = 'up'
-            rtn_dict['trend_short'] = 'up'
-        elif ma_short * 1.05 < ma_middle:
-            trend_short = 'down'
-            rtn_dict['trend_short'] = 'down'
-
-        if ma_middle > ma_long * 1.05:
-            trend_middle = 'up'
-            rtn_dict['trend_middle'] = 'up'
-        elif ma_middle * 1.05 < ma_long:
-            trend_middle = 'down'
-            rtn_dict['trend_middle'] = 'down'
-
-        if (ma_short > ma_middle > ma_long):
-            rtn_dict['duotou_pailie'] = True
-            rtn_dict['trend_long'] = 'up'
-            logging.info("duo tou pai lie")
-            if df['low'][-1] > ma_short:
-                logging.info("verify strong up trend")
-                rtn_dict['very_strong_up_trend'] = True
-            logging.info("check back last 30 bars")
-            for i in range(30):
-                if (df_sma_short[-i] > df_sma_middle[-i] > df_sma_long[-i]):
-                    logging.info("duo tou lasts " + str(i) + "days")
-                    rtn_dict['duotou_pailie_last_bars'] = i
-                    continue
-
-                if (df_sma_short[-i] < df_sma_middle[-i] < df_sma_long[-i]):
-                    logging.info("latest kong tou pailie is " + str(i) + " days before at " + df.iloc[-i].name)
-                    rtn_dict['last_kongtou_pailie_n_days_before'] = i
-                    rtn_dict['last_kongtou_pailie_date'] = df.iloc[-i].name
-                    break
-
-        if (ma_short < ma_middle < ma_long):  #more interesting enter when price is up break
-            rtn_dict['kongtou_pailie'] = True
-            rtn_dict['trend_long'] = 'down'
-            logging.info("kong tou pai lie")
-            if df['high'][-1] < ma_short:
-                logging.info("verify strong down trend")
-                rtn_dict['very_strong_down_trend'] = True
-            logging.info("check back last 30 bars")
-            for i in range(30):
-                if (df_sma_short[-i] < df_sma_middle[-i] < df_sma_long[-i]):
-                    logging.info("kong tou lasts " + str(i) + "days")
-                    rtn_dict['kongtou_pailie_last_bars'] = i
-                    continue
-
-                if (df_sma_short[-i] > df_sma_middle[-i] > df_sma_long[-i]):
-                    logging.info("latest duo tou pailie is " + str(i) + " days before at " + df.iloc[-i].name)
-                    rtn_dict['last_duotou_pailie_n_days_before'] = i
-                    rtn_dict['last_duotou_pailie_date'] = df.iloc[-i].name
-                    break
-
-        return (rtn_dict)
-
-
-    def price_counter(self, df):
+    def price_counter(self, df, accuracy=0):
         rtn_dict = {}
         ser_price = df['close'].append(df['open']).append(df['high']).append(df['low'])
         ser_price = ser_price[ser_price > 0]
 
         #round determin the precision.
-        common_prices = collections.Counter(round(ser_price, 0)).most_common()
+        common_prices = collections.Counter(round(ser_price, accuracy)).most_common()
 
         sum = 0
         occu_list = []
@@ -481,7 +347,7 @@ class Finlib_indicator:
 
         current_price = df['close'].iloc[-1]
         logging.info("current price " + str(current_price))
-        rtn_dict['current_price'] = current_price
+        rtn_dict['close'] = current_price
 
         v = min(sorted_price_list, key=lambda x: abs(x - current_price))
         idx = sorted_price_list.index(v)
@@ -499,47 +365,57 @@ class Finlib_indicator:
         if idx_h1 - 4 >= 0:
             H5 = new_dict[sorted_price_list[idx_h1 - 4]]
             rtn_dict['H5'] = H5
+            rtn_dict['H5_frequency_percent'] = H5['frequency_percent']
             logging.info("H5, price " + str(H5['price']) + ", freq perc in " + str(df.__len__()) + " bars " + str(H5['frequency_percent']) + " freq " + str(H5['occurrence_percent']))
         if idx_h1 - 3 >= 0:
             H4 = new_dict[sorted_price_list[idx_h1 - 3]]
             rtn_dict['H4'] = H4
+            rtn_dict['H4_frequency_percent'] = H4['frequency_percent']
             logging.info("H4, price " + str(H4['price']) + ", freq perc in " + str(df.__len__()) + " bars " + str(H4['frequency_percent']) + " freq " + str(H4['occurrence_percent']))
         if idx_h1 - 2 >= 0:
             H3 = new_dict[sorted_price_list[idx_h1 - 2]]
             rtn_dict['H3'] = H3
+            rtn_dict['H3_frequency_percent'] = H3['frequency_percent']
             logging.info("H3, price " + str(H3['price']) + ", freq perc in " + str(df.__len__()) + " bars " + str(H3['frequency_percent']) + " freq " + str(H3['occurrence_percent']))
         if idx_h1 - 1 >= 0:
             H2 = new_dict[sorted_price_list[idx_h1 - 1]]
             rtn_dict['H2'] = H2
+            rtn_dict['H2_frequency_percent'] = H2['frequency_percent']
             logging.info("H2, price " + str(H2['price']) + ", freq perc in " + str(df.__len__()) + " bars " + str(H2['frequency_percent']) + " freq " + str(H2['occurrence_percent']))
         if idx_h1 >= 0:
             H1 = new_dict[sorted_price_list[idx_h1]]
             rtn_dict['H1'] = H1
+            rtn_dict['H1_frequency_percent'] = H1['frequency_percent']
             logging.info("H1, price " + str(H1['price']) + ", freq perc in " + str(df.__len__()) + " bars " + str(H1['frequency_percent']) + " freq " + str(H1['occurrence_percent']))
 
         if idx_l1 <= sorted_price_list.__len__():
             L1 = new_dict[sorted_price_list[idx_l1]]
             rtn_dict['L1'] = L1
+            rtn_dict['L1_frequency_percent'] = L1['frequency_percent']
             logging.info("L1, price " + str(L1['price']) + ", freq perc in " + str(df.__len__()) + " bars " + str(L1['frequency_percent']) + " freq " + str(L1['occurrence_percent']))
 
         if idx_l1 + 1 <= sorted_price_list.__len__():
             L2 = new_dict[sorted_price_list[idx_l1 + 1]]
             rtn_dict['L2'] = L2
+            rtn_dict['L2_frequency_percent'] = L2['frequency_percent']
             logging.info("L2, price " + str(L2['price']) + ", freq perc in " + str(df.__len__()) + " bars " + str(L2['frequency_percent']) + "  freq " + str(L2['occurrence_percent']))
 
         if idx_l1 + 2 <= sorted_price_list.__len__():
             L3 = new_dict[sorted_price_list[idx_l1 + 2]]
             rtn_dict['L3'] = L3
+            rtn_dict['L3_frequency_percent'] = L3['frequency_percent']
             logging.info("L3, price " + str(L3['price']) + ", freq perc in " + str(df.__len__()) + " bars " + str(L3['frequency_percent']) + " freq " + str(L3['occurrence_percent']))
 
         if idx_l1 + 3 <= sorted_price_list.__len__():
             L4 = new_dict[sorted_price_list[idx_l1 + 3]]
             rtn_dict['L4'] = L4
+            rtn_dict['L4_frequency_percent'] = L4['frequency_percent']
             logging.info("L4, price " + str(L4['price']) + ", freq perc in " + str(df.__len__()) + " bars " + str(L4['frequency_percent']) + " freq " + str(L4['occurrence_percent']))
 
         if idx_l1 + 4 <= sorted_price_list.__len__():
             L5 = new_dict[sorted_price_list[idx_l1 + 4]]
             rtn_dict['L5'] = L5
+            rtn_dict['L5_frequency_percent'] = L5['frequency_percent']
             logging.info("L5, price " + str(L5['price']) + ", freq perc in " + str(df.__len__()) + " bars " + str(L5['frequency_percent']) + " freq " + str(L5['occurrence_percent']))
 
         pass
