@@ -115,17 +115,40 @@ class Finlib_indicator:
 
     def upper_body_lower_shadow(self, df):
         ###### Upper_shadow, Body, Lower_shadow ####
-        df_a = pd.DataFrame([[0, 0, 0]] * df.__len__(), columns=['upper_shadow', 'body', 'lower_shadow'])
+        df_a = pd.DataFrame([[0, 0, 0]] * df.__len__(), columns=['upper_shadow_len', 'body_len', 'lower_shadow_len',
+                                                                 'guangtou','guangjiao',
+                                                                 'small_body','cross_star',
+                                                                 'long_upper_shadow','long_lower_shadow',
+                                                                 ])
         df = df.merge(df_a, left_index=True, right_index=True)
 
+        threshold_small = 1.0/20
+        threshold_large = 5
         for i in range(df.__len__()):
-            upper_shadow = df.at[i, 'high'] - max(df.at[i, 'open'], df.at[i, 'close'])
-            body = abs(df.at[i, 'close'] - df.at[i, 'open'])
-            lower_shadow = min(df.at[i, 'open'], df.at[i, 'close']) - df.at[i, 'low']
+            upper_shadow_len = df.at[i, 'high'] - max(df.at[i, 'open'], df.at[i, 'close'])
+            body_len = abs(df.at[i, 'close'] - df.at[i, 'open'])+0.00001 #prevent 0
+            lower_shadow_len = min(df.at[i, 'open'], df.at[i, 'close']) - df.at[i, 'low']
 
-            df.iloc[i, df.columns.get_loc('upper_shadow')] = upper_shadow
-            df.iloc[i, df.columns.get_loc('body')] = body
-            df.iloc[i, df.columns.get_loc('lower_shadow')] = lower_shadow
+            if body_len / df.at[i, 'open'] < 0.001:
+                df.iloc[i, df.columns.get_loc('small_body')] = True
+
+            if upper_shadow_len/body_len < threshold_small:
+                df.iloc[i, df.columns.get_loc('guangtou')] = True
+            if lower_shadow_len/body_len < threshold_small:
+                df.iloc[i, df.columns.get_loc('guangjiao')] = True
+
+            if upper_shadow_len/body_len > threshold_large:
+                df.iloc[i, df.columns.get_loc('long_upper_shadow')] = True
+            if lower_shadow_len/body_len > threshold_large:
+                df.iloc[i, df.columns.get_loc('long_lower_shadow')] = True
+            if  body_len < 0.001 and upper_shadow_len > body_len and lower_shadow_len > body_len:
+                df.iloc[i, df.columns.get_loc('cross_star')] = True
+
+
+
+            df.iloc[i, df.columns.get_loc('upper_shadow_len')] = upper_shadow_len
+            df.iloc[i, df.columns.get_loc('body_len')] = body_len
+            df.iloc[i, df.columns.get_loc('lower_shadow_len')] = lower_shadow_len
 
         return df
 
