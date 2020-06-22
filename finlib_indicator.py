@@ -113,9 +113,13 @@ class Finlib_indicator:
 
         return df
 
+
+    #not recommend long df, the shorter the faster
+    # df.__len__ == 7 recommend
     def upper_body_lower_shadow(self, df):
         ###### Upper_shadow, Body, Lower_shadow ####
-        df_a = pd.DataFrame([[0, 0, 0]] * df.__len__(), columns=['upper_shadow_len', 'body_len', 'lower_shadow_len',
+        unit = [[0]*3+[False]*6]
+        df_a = pd.DataFrame( unit * df.__len__(), columns=['upper_shadow_len', 'body_len', 'lower_shadow_len',
                                                                  'guangtou','guangjiao',
                                                                  'small_body','cross_star',
                                                                  'long_upper_shadow','long_lower_shadow',
@@ -129,8 +133,15 @@ class Finlib_indicator:
             body_len = abs(df.at[i, 'close'] - df.at[i, 'open'])+0.00001 #prevent 0
             lower_shadow_len = min(df.at[i, 'open'], df.at[i, 'close']) - df.at[i, 'low']
 
-            if body_len / df.at[i, 'open'] < 0.001:
+
+            df.iloc[i, df.columns.get_loc('upper_shadow_len')] = upper_shadow_len
+            df.iloc[i, df.columns.get_loc('body_len')] = body_len
+            df.iloc[i, df.columns.get_loc('lower_shadow_len')] = lower_shadow_len
+
+            if body_len / (df.at[i, 'open']+0.001) < 0.001:
                 df.iloc[i, df.columns.get_loc('small_body')] = True
+                if  upper_shadow_len > body_len and lower_shadow_len > body_len:
+                    df.iloc[i, df.columns.get_loc('cross_star')] = True
 
             if upper_shadow_len/body_len < threshold_small:
                 df.iloc[i, df.columns.get_loc('guangtou')] = True
@@ -141,14 +152,44 @@ class Finlib_indicator:
                 df.iloc[i, df.columns.get_loc('long_upper_shadow')] = True
             if lower_shadow_len/body_len > threshold_large:
                 df.iloc[i, df.columns.get_loc('long_lower_shadow')] = True
-            if  body_len < 0.001 and upper_shadow_len > body_len and lower_shadow_len > body_len:
-                df.iloc[i, df.columns.get_loc('cross_star')] = True
+
+        #yun xian
+
+        df_a = pd.DataFrame( [[False,False]] * df.__len__(), columns=['yunxian_buy','yunxian_sell'])
+        df = df.merge(df_a, left_index=True, right_index=True)
+
+        for i in range(21, df.__len__()):
+            print("i is "+str(i))
+            df_tmp = df.iloc[:i]
+            junxian_dict = self.sma_jincha_sicha_duotou_koutou(df_tmp, short=5, middle=10, long=20)
+
+            #yunxian_buy: down trend, down_bar large bar.
+            if (junxian_dict['kongtou_pailie']):
+                if df.iloc[i-1]['open']>df.iloc[i-1]['close']:
+                        if (not df.iloc[i-1]['long_upper_shadow'] ):
+                            if (not df.iloc[i-1]['long_lower_shadow'] ):
+                                if (not df.iloc[i-1]['small_body'] ):
+                                    if df.iloc[i-1]['tr'] > 1.0* df.iloc[i-2]['atr_short_5']:
+                                            # increase_bar,
+                                            if df.iloc[i]['open']< df.iloc[i]['close']:
+                                                if df.iloc[i]['low'] > df.iloc[i-1]['low']:
+                                                    if df.iloc[i]['high'] < df.iloc[i-1]['high'] :
+                                                        df.iloc[i, df.columns.get_loc('yunxian_buy')] = True
+                                                        print("buy point")
 
 
-
-            df.iloc[i, df.columns.get_loc('upper_shadow_len')] = upper_shadow_len
-            df.iloc[i, df.columns.get_loc('body_len')] = body_len
-            df.iloc[i, df.columns.get_loc('lower_shadow_len')] = lower_shadow_len
+            #yunxian_sell: up trend, up_bar large bar.
+            if (junxian_dict['duotou_pailie']):
+                if df.iloc[i-1]['open']<df.iloc[i-1]['close']:
+                        if (not df.iloc[i-1]['long_upper_shadow'] ):
+                            if (not df.iloc[i-1]['long_lower_shadow'] ):
+                                if (not df.iloc[i-1]['small_body'] ):
+                                    if df.iloc[i-1]['tr'] > 1.0* df.iloc[i-2]['atr_short_5']:
+                                            if df.iloc[i]['open']< df.iloc[i]['close']:# decrease_bar,
+                                                if df.iloc[i]['low'] > df.iloc[i-1]['low']:
+                                                    if df.iloc[i]['high'] < df.iloc[i-1]['high'] :
+                                                        df.iloc[i, df.columns.get_loc('yunxian_sell')] = True
+                                                        print("sell point")
 
         return df
 
@@ -164,25 +205,41 @@ class Finlib_indicator:
         return df
 
     def add_ma_ema(self, df, short=5, middle=10, long=20):
+        #if(df.__len__() < long):
+        #    logging.fatal("df don't have enough bars , must large than long "+str(long)+" , "+str(df.__len__()))
+        #    exit(1)
+
         stock = stockstats.StockDataFrame.retype(df)
 
         df['sma_short_' + str(short)] = stock['close_' + str(short) + '_sma']
         df['sma_middle_' + str(middle)] = stock['close_' + str(middle) + '_sma']
         df['sma_long_' + str(long)] = stock['close_' + str(long) + '_sma']
-        df['sma_60'] = stock['close_' + str(60) + '_sma']
-        df['sma_200'] = stock['close_' + str(200) + '_sma']
 
         df['ema_short_' + str(short)] = stock['close_' + str(short) + '_ema']
         df['ema_middle_' + str(middle)] = stock['close_' + str(middle) + '_ema']
         df['ema_long_' + str(long)] = stock['close_' + str(long) + '_ema']
-        df['ema_60'] = stock['close_' + str(60) + '_ema']
-        df['ema_200'] = stock['close_' + str(200) + '_ema']
 
         df = df.reset_index()  # after retype, 'date' column was changed to index. reset 'date' to a column
         return (df)
 
+    def add_tr_atr(self, df, short=5, middle=10, long=20):
+        stock = stockstats.StockDataFrame.retype(df)
+
+        df['tr'] = stock['tr']
+
+        df['atr_short_' + str(short)] = stock[ 'atr_'+str(short)]
+        df['atr_middle_' + str(middle)] = stock[ 'atr_'+str(middle)]
+        df['atr_long_' + str(long)] = stock[ 'atr_'+str(long)]
+
+        df = df.reset_index()  # after retype, 'date' column was changed to index. reset 'date' to a column
+        return (df)
+
+    #########################################################
+    #must call fristly: df = self.add_ma_ema(df=df, short=short, middle=middle, long=long)
+    #look back last 30 days, recommended df len is 30
+    #########################################################
     def sma_jincha_sicha_duotou_koutou(self, df, short=5, middle=10, long=20):
-        df = self.add_ma_ema(df=df, short=short, middle=middle, long=long)
+
 
         rtn_dict = {
             'code': None,
@@ -219,8 +276,6 @@ class Finlib_indicator:
         df_sma_short = df['sma_short_' + str(short)]
         df_sma_middle = df['sma_middle_' + str(middle)]
         df_sma_long = df['sma_long_' + str(long)]
-        df_sma_60 = df['sma_60']
-        df_sma_200 = df['sma_200']
 
         rtn_dict['date'] = df['date'].iloc[-1]
         rtn_dict['code'] = df['code'].iloc[-1]
@@ -229,23 +284,16 @@ class Finlib_indicator:
         sma_short = rtn_dict['sma_short'] = df_sma_short.iloc[-1]
         sma_middle = rtn_dict['sma_middle'] = df_sma_middle.iloc[-1]
         sma_long = rtn_dict['sma_long'] = df_sma_long.iloc[-1]
-        sma_60 = rtn_dict['sma_60'] = df_sma_60.iloc[-1]
-        sma_200 = rtn_dict['sma_200'] = df_sma_200.iloc[-1]
 
-        print("stockstats sma short,middle,long " + str(sma_short) + " " + str(sma_middle) + " " + str(sma_long))
+        #print("stockstats sma short,middle,long " + str(sma_short) + " " + str(sma_middle) + " " + str(sma_long))
 
         df_ema_short = df['ema_short_' + str(short)]
         df_ema_middle = df['ema_middle_' + str(middle)]
         df_ema_long = df['ema_long_' + str(long)]
-        df_ema_60 = df['ema_60']
-        df_ema_200 = df['ema_200']
-        print("stockstats ema short,middle,long " + str(df_ema_short) + " " + str(df_ema_middle) + " " + str(df_ema_long))
+        #print("stockstats ema short,middle,long " + str(df_ema_short) + " " + str(df_ema_middle) + " " + str(df_ema_long))
         ema_short = rtn_dict['ema_short'] = df_ema_short.iloc[-1]
         ema_middle = rtn_dict['ema_middle'] = df_ema_middle.iloc[-1]
         ema_long = rtn_dict['ema_long'] = df_ema_long.iloc[-1]
-
-        ema_60 = rtn_dict['ema_60'] = df_ema_60.iloc[-1]
-        ema_200 = rtn_dict['ema_200'] = df_ema_200.iloc[-1]
 
         sma_short_p1 = df_sma_short.iloc[-2]
         sma_middle_p1 = df_sma_middle.iloc[-2]
@@ -303,17 +351,17 @@ class Finlib_indicator:
             rtn_dict['duotou_pailie'] = True
             rtn_dict['trend_long'] = 'up'
             logging.info("duo tou pai lie")
-            if df['low'][-1] > ma_short:
+            if df.iloc[-1]['low'] > ma_short:
                 logging.info("verify strong up trend")
                 rtn_dict['very_strong_up_trend'] = True
             logging.info("check back last 30 bars")
             for i in range(30):
-                if (df_sma_short[-i] > df_sma_middle[-i] > df_sma_long[-i]):
+                if (df_sma_short.iloc[-i] > df_sma_middle.iloc[-i] > df_sma_long.iloc[-i]):
                     logging.info("duo tou lasts " + str(i) + "days")
                     rtn_dict['duotou_pailie_last_bars'] = i
                     continue
 
-                if (df_sma_short[-i] < df_sma_middle[-i] < df_sma_long[-i]):
+                if (df_sma_short.iloc[-i] < df_sma_middle.iloc[-i] < df_sma_long.iloc[-i]):
                     logging.info("latest kong tou pailie is " + str(i) + " days before at " + df.iloc[-i]['date'])
                     rtn_dict['last_kongtou_pailie_n_days_before'] = i
                     rtn_dict['last_kongtou_pailie_date'] = df.iloc[-i]['date']
@@ -323,17 +371,17 @@ class Finlib_indicator:
             rtn_dict['kongtou_pailie'] = True
             rtn_dict['trend_long'] = 'down'
             logging.info("kong tou pai lie")
-            if df['high'][-1] < ma_short:
+            if df.iloc[-1]['high'] < ma_short:
                 logging.info("verify strong down trend")
                 rtn_dict['very_strong_down_trend'] = True
             logging.info("check back last 30 bars")
             for i in range(30):
-                if (df_sma_short[-i] < df_sma_middle[-i] < df_sma_long[-i]):
+                if (df_sma_short.iloc[-i] < df_sma_middle.iloc[-i] < df_sma_long.iloc[-i]):
                     logging.info("kong tou lasts " + str(i) + "days")
                     rtn_dict['kongtou_pailie_last_bars'] = i
                     continue
 
-                if (df_sma_short[-i] > df_sma_middle[-i] > df_sma_long[-i]):
+                if (df_sma_short.iloc[-i] > df_sma_middle.iloc[-i] > df_sma_long.iloc[-i]):
                     logging.info("latest duo tou pailie is " + str(i) + " days before at " + df.iloc[-i]['date'])
                     rtn_dict['last_duotou_pailie_n_days_before'] = i
                     rtn_dict['last_duotou_pailie_date'] = df.iloc[-i]['date']
@@ -341,6 +389,17 @@ class Finlib_indicator:
 
         return (rtn_dict)
 
+    #########################################################
+    # recommended df len is 300.
+    #
+    #         {58.0: {'price': 58.0,
+    #          'frequency_rank': 1,
+    #          'frequency_perc': 100.0,
+    #          'occurrence': 141,
+    #          'sum': 1176,
+    #          'occurrence_perc': 12.0}
+    #
+    #########################################################
     def price_counter(self, df, accuracy=0):
         rtn_dict = {}
         ser_price = df['close'].append(df['open']).append(df['high']).append(df['low'])
@@ -445,18 +504,3 @@ class Finlib_indicator:
         return (rtn_dict)
 
 
-'''
-         {58.0: {'price': 58.0,
-          'frequency_rank': 1,
-          'frequency_perc': 100.0,
-          'occurrence': 141,
-          'sum': 1176,
-          'occurrence_perc': 12.0},
-          
-         59.0: {'price': 59.0,
-          'frequency_rank': 2,
-          'frequency_perc': 96.42857142857143,
-          'occurrence': 120,
-          'sum': 1176,
-          'occurrence_perc': 10.2},
-'''

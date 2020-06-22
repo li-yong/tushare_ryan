@@ -16,7 +16,16 @@ df = df.iloc[-300:].reset_index().drop('index', axis=1)
 ######################################################
 #'code', 'date', 'close', 'short_period', 'middle_period', 'long_period', 'jincha_minor', 'jincha_minor_strength', 'sicha_minor', 'sicha_minor_strength', 'jincha_major
 ######################################################
-analyzer_ma_dict = finlib_indicator.Finlib_indicator().sma_jincha_sicha_duotou_koutou(df,5,10,20)
+#df = finlib_indicator.Finlib_indicator().add_tr_atr(df,5,10,20)
+df = finlib_indicator.Finlib_indicator().add_ma_ema(df=df, short=5, middle=10, long=20)
+df = finlib_indicator.Finlib_indicator().add_tr_atr(df=df, short=5, middle=10, long=20)
+df_a = finlib_indicator.Finlib_indicator().upper_body_lower_shadow(df)
+
+yb = df_a[df_a['yunxian_buy']]
+ys = df_a[df_a['yunxian_sell']]
+
+pass
+junxian_dict = finlib_indicator.Finlib_indicator().sma_jincha_sicha_duotou_koutou(df,5,10,20)
 
 
 ######################################################
