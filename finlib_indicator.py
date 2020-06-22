@@ -158,13 +158,17 @@ class Finlib_indicator:
         df_a = pd.DataFrame( [[False,False]] * df.__len__(), columns=['yunxian_buy','yunxian_sell'])
         df = df.merge(df_a, left_index=True, right_index=True)
 
-        for i in range(21, df.__len__()):
+        if df.__len__() < 30:
+            logging.info("bar number too small (<30) to calculate yunxian "+str( df.__len__() ))
+
+        #check yunxian for the latest 5 bars
+        for i in range(df.__len__() - 5, df.__len__()):
             print("i is "+str(i))
             df_tmp = df.iloc[:i]
-            junxian_dict = self.sma_jincha_sicha_duotou_koutou(df_tmp, short=5, middle=10, long=20)
+            junxian_seri = self.sma_jincha_sicha_duotou_koutou(df_tmp, short=5, middle=10, long=20).iloc[-1]
 
             #yunxian_buy: down trend, down_bar large bar.
-            if (junxian_dict['kongtou_pailie']):
+            if (junxian_seri['kongtou_pailie']):
                 if df.iloc[i-1]['open']>df.iloc[i-1]['close']:
                         if (not df.iloc[i-1]['long_upper_shadow'] ):
                             if (not df.iloc[i-1]['long_lower_shadow'] ):
@@ -179,7 +183,7 @@ class Finlib_indicator:
 
 
             #yunxian_sell: up trend, up_bar large bar.
-            if (junxian_dict['duotou_pailie']):
+            if (junxian_seri['duotou_pailie']):
                 if df.iloc[i-1]['open']<df.iloc[i-1]['close']:
                         if (not df.iloc[i-1]['long_upper_shadow'] ):
                             if (not df.iloc[i-1]['long_lower_shadow'] ):
@@ -387,7 +391,11 @@ class Finlib_indicator:
                     rtn_dict['last_duotou_pailie_date'] = df.iloc[-i]['date']
                     break
 
-        return (rtn_dict)
+        d = {}
+        for k in rtn_dict.keys():
+            d[k] = [rtn_dict[k]]
+
+        return (pd.DataFrame(d))
 
     #########################################################
     # recommended df len is 300.

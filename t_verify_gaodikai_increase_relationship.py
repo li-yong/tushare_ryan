@@ -19,13 +19,24 @@ df = df.iloc[-300:].reset_index().drop('index', axis=1)
 #df = finlib_indicator.Finlib_indicator().add_tr_atr(df,5,10,20)
 df = finlib_indicator.Finlib_indicator().add_ma_ema(df=df, short=5, middle=10, long=20)
 df = finlib_indicator.Finlib_indicator().add_tr_atr(df=df, short=5, middle=10, long=20)
-df_a = finlib_indicator.Finlib_indicator().upper_body_lower_shadow(df)
 
-yb = df_a[df_a['yunxian_buy']]
-ys = df_a[df_a['yunxian_sell']]
 
-pass
-junxian_dict = finlib_indicator.Finlib_indicator().sma_jincha_sicha_duotou_koutou(df,5,10,20)
+df_bar_style = finlib_indicator.Finlib_indicator().upper_body_lower_shadow(df)
+
+df_today_bar_style = df_bar_style[-1:]  #<<<<<< TODAY BAR_STYLE
+#         date      code  open  ...  long_lower_shadow  yunxian_buy  yunxian_sell
+#299  20200619  SZ000651  58.5  ...              False        False         False
+
+if df_today_bar_style.iloc[-1]['yunxian_buy']:
+    print("today hit yunxian_buy")
+elif df_today_bar_style.iloc[-1]['yunxian_sell']:
+    print("today hit yunxian_sell")
+
+yb = df_bar_style[df_bar_style['yunxian_buy']]
+ys = df_bar_style[df_bar_style['yunxian_sell']]
+
+
+df_today_junxian_style = finlib_indicator.Finlib_indicator().sma_jincha_sicha_duotou_koutou(df,5,10,20)    #<<<<<< TODAY JUNXIAN
 
 
 ######################################################
