@@ -454,58 +454,58 @@ class Finlib_indicator:
 
         if idx_h1 - 4 >= 0:
             H5 = new_dict[sorted_price_list[idx_h1 - 4]]
-            rtn_dict['H5'] = H5
-            rtn_dict['H5_frequency_percent'] = H5['frequency_percent']
+            rtn_dict['h5'] = H5
+            rtn_dict['h5_frequency_percent'] = H5['frequency_percent']
             logging.info("H5, price " + str(H5['price']) + ", freq perc in " + str(df.__len__()) + " bars " + str(H5['frequency_percent']) + " freq " + str(H5['occurrence_percent']))
         if idx_h1 - 3 >= 0:
             H4 = new_dict[sorted_price_list[idx_h1 - 3]]
-            rtn_dict['H4'] = H4
-            rtn_dict['H4_frequency_percent'] = H4['frequency_percent']
+            rtn_dict['h4'] = H4
+            rtn_dict['h4_frequency_percent'] = H4['frequency_percent']
             logging.info("H4, price " + str(H4['price']) + ", freq perc in " + str(df.__len__()) + " bars " + str(H4['frequency_percent']) + " freq " + str(H4['occurrence_percent']))
         if idx_h1 - 2 >= 0:
             H3 = new_dict[sorted_price_list[idx_h1 - 2]]
-            rtn_dict['H3'] = H3
-            rtn_dict['H3_frequency_percent'] = H3['frequency_percent']
+            rtn_dict['h3'] = H3
+            rtn_dict['h3_frequency_percent'] = H3['frequency_percent']
             logging.info("H3, price " + str(H3['price']) + ", freq perc in " + str(df.__len__()) + " bars " + str(H3['frequency_percent']) + " freq " + str(H3['occurrence_percent']))
         if idx_h1 - 1 >= 0:
             H2 = new_dict[sorted_price_list[idx_h1 - 1]]
-            rtn_dict['H2'] = H2
-            rtn_dict['H2_frequency_percent'] = H2['frequency_percent']
+            rtn_dict['h2'] = H2
+            rtn_dict['h2_frequency_percent'] = H2['frequency_percent']
             logging.info("H2, price " + str(H2['price']) + ", freq perc in " + str(df.__len__()) + " bars " + str(H2['frequency_percent']) + " freq " + str(H2['occurrence_percent']))
         if idx_h1 >= 0:
             H1 = new_dict[sorted_price_list[idx_h1]]
-            rtn_dict['H1'] = H1
-            rtn_dict['H1_frequency_percent'] = H1['frequency_percent']
+            rtn_dict['h1'] = H1
+            rtn_dict['h1_frequency_percent'] = H1['frequency_percent']
             logging.info("H1, price " + str(H1['price']) + ", freq perc in " + str(df.__len__()) + " bars " + str(H1['frequency_percent']) + " freq " + str(H1['occurrence_percent']))
 
         if idx_l1 <= sorted_price_list.__len__():
             L1 = new_dict[sorted_price_list[idx_l1]]
-            rtn_dict['L1'] = L1
-            rtn_dict['L1_frequency_percent'] = L1['frequency_percent']
+            rtn_dict['l1'] = L1
+            rtn_dict['l1_frequency_percent'] = L1['frequency_percent']
             logging.info("L1, price " + str(L1['price']) + ", freq perc in " + str(df.__len__()) + " bars " + str(L1['frequency_percent']) + " freq " + str(L1['occurrence_percent']))
 
         if idx_l1 + 1 <= sorted_price_list.__len__():
             L2 = new_dict[sorted_price_list[idx_l1 + 1]]
-            rtn_dict['L2'] = L2
-            rtn_dict['L2_frequency_percent'] = L2['frequency_percent']
+            rtn_dict['l2'] = L2
+            rtn_dict['l2_frequency_percent'] = L2['frequency_percent']
             logging.info("L2, price " + str(L2['price']) + ", freq perc in " + str(df.__len__()) + " bars " + str(L2['frequency_percent']) + "  freq " + str(L2['occurrence_percent']))
 
         if idx_l1 + 2 <= sorted_price_list.__len__():
             L3 = new_dict[sorted_price_list[idx_l1 + 2]]
-            rtn_dict['L3'] = L3
-            rtn_dict['L3_frequency_percent'] = L3['frequency_percent']
+            rtn_dict['l3'] = L3
+            rtn_dict['l3_frequency_percent'] = L3['frequency_percent']
             logging.info("L3, price " + str(L3['price']) + ", freq perc in " + str(df.__len__()) + " bars " + str(L3['frequency_percent']) + " freq " + str(L3['occurrence_percent']))
 
         if idx_l1 + 3 <= sorted_price_list.__len__():
             L4 = new_dict[sorted_price_list[idx_l1 + 3]]
-            rtn_dict['L4'] = L4
-            rtn_dict['L4_frequency_percent'] = L4['frequency_percent']
+            rtn_dict['l4'] = L4
+            rtn_dict['l4_frequency_percent'] = L4['frequency_percent']
             logging.info("L4, price " + str(L4['price']) + ", freq perc in " + str(df.__len__()) + " bars " + str(L4['frequency_percent']) + " freq " + str(L4['occurrence_percent']))
 
         if idx_l1 + 4 <= sorted_price_list.__len__():
             L5 = new_dict[sorted_price_list[idx_l1 + 4]]
-            rtn_dict['L5'] = L5
-            rtn_dict['L5_frequency_percent'] = L5['frequency_percent']
+            rtn_dict['l5'] = L5
+            rtn_dict['l5_frequency_percent'] = L5['frequency_percent']
             logging.info("L5, price " + str(L5['price']) + ", freq perc in " + str(df.__len__()) + " bars " + str(L5['frequency_percent']) + " freq " + str(L5['occurrence_percent']))
 
         pass

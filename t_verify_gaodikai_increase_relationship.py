@@ -13,50 +13,6 @@ df = df.iloc[-300:].reset_index().drop('index', axis=1)
 
 ### ryan debug start
 
-######################################################
-#'code', 'date', 'close', 'short_period', 'middle_period', 'long_period', 'jincha_minor', 'jincha_minor_strength', 'sicha_minor', 'sicha_minor_strength', 'jincha_major
-######################################################
-#df = finlib_indicator.Finlib_indicator().add_tr_atr(df,5,10,20)
-df = finlib_indicator.Finlib_indicator().add_ma_ema(df=df, short=5, middle=10, long=20)
-df = finlib_indicator.Finlib_indicator().add_tr_atr(df=df, short=5, middle=10, long=20)
-
-
-df_bar_style = finlib_indicator.Finlib_indicator().upper_body_lower_shadow(df)
-yb = df_bar_style[df_bar_style['yunxian_buy']]
-ys = df_bar_style[df_bar_style['yunxian_sell']]
-
-######################################################
-# Bar Style
-#         date      code  open  ...  long_lower_shadow  yunxian_buy  yunxian_sell
-#299  20200619  SZ000651  58.5  ...              False        False         False
-######################################################
-df_today_bar_style = df_bar_style[-1:]  #<<<<<< TODAY BAR_STYLE
-
-if df_today_bar_style.iloc[-1]['yunxian_buy']:
-    print("today hit yunxian_buy")
-elif df_today_bar_style.iloc[-1]['yunxian_sell']:
-    print("today hit yunxian_sell")
-
-######################################################
-# Junxian Style. Only One Row
-#
-#      code      date  close  ...  ema_short  ema_middle   ema_long
-#0  SZ000651  20200619  58.84  ...  58.433884    58.61309  58.362801
-######################################################
-df_today_junxian_style = finlib_indicator.Finlib_indicator().sma_jincha_sicha_duotou_koutou(df,5,10,20)    #<<<<<< TODAY JUNXIAN
-
-
-######################################################
-#H1, price 59.0, freq perc in 300 bars 96.4 freq 10.2
-#L1, price 58.0, freq perc in 300 bars 100.0 freq 12.0
-######################################################
-analyzer_price_dict = finlib_indicator.Finlib_indicator().price_counter(df)
-#adding KelChM_U, KelChM_D, KelChM_H
-df = finlib_indicator.Finlib_indicator().KELCH(df,3)
-print(df.iloc[-1])
-
-
-
 ### ryan debug end
 
 
