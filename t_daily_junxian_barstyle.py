@@ -1,18 +1,20 @@
 import pandas as pd
 import finlib
 import finlib_indicator
+import os
+import logging
+from optparse import OptionParser
 
+def verify_a_stock(df):
+    #df must have column (code, date, open, low,high,close)
 
-def verify_a_stock():
     csv_in = "/home/ryan/DATA/DAY_Global/AG/SH600519.csv"
     csv_in = "/home/ryan/DATA/DAY_Global/AG/SZ000651.csv"
     #csv_in = "/home/ryan/DATA/DAY_Global/AG_INDEX/000001.SH.csv"
     csv_out = "/home/ryan/DATA/result/tmp/SZ000651_del.csv"
 
-    df = finlib.Finlib().regular_read_csv_to_stdard_df(data_csv=csv_in)
-
-    df = df.iloc[-300:].reset_index().drop('index', axis=1)
-
+    #df = finlib.Finlib().regular_read_csv_to_stdard_df(data_csv=csv_in)
+    #df = df.iloc[-300:].reset_index().drop('index', axis=1)
     ###################################
     # Prepare
     ###################################
@@ -73,7 +75,7 @@ def verify_a_stock():
     ######################################################
     # Get a stock report
     ######################################################
-    df_a_stock_report = df_today_bar_style.merge(df_today_junxian_style, left_index=True, right_index=True).merge(df_today_price_dict, left_index=True, right_index=True)
+    df_a_stock_report = df_today_bar_style.merge(df_today_junxian_style, left_index=True, right_index=True, suffixes=('', '_x')).merge(df_today_price_dict, left_index=True, right_index=True, suffixes=('', '_x'))
 
     ######################################################
     #115 columns. Adjust column sequence
@@ -83,75 +85,76 @@ def verify_a_stock():
     lp = str(df_a_stock_report.iloc[0]['long_period'])
 
     col = ['code', 'date', 'open', 'low', 'high',  'close', 'volume', 'short_period', 'middle_period', 'long_period']
-    col.append(['very_strong_down_trend', 'very_strong_up_trend'])
+
+    col.extend(['very_strong_down_trend', 'very_strong_up_trend'])
 
     #####################  junxian
-    col.append(['trend_short', 'trend_short_strength'])
-    col.append(['trend_middle', 'trend_middle_strength'])
-    col.append(['trend_long'])
-    col.append(['duotou_pailie',   'duotou_pailie_last_bars', 'last_kongtou_pailie_date', 'last_kongtou_pailie_n_days_before'])
-    col.append(['kongtou_pailie',  'kongtou_pailie_last_bars','last_duotou_pailie_date',  'last_duotou_pailie_n_days_before'])
-    col.append(['jincha_minor', 'jincha_minor_strength'])
-    col.append(['jincha_major', 'jincha_major_strength'])
-    col.append(['sicha_minor', 'sicha_minor_strength'])
-    col.append(['sicha_major', 'sicha_major_strength'])
+    col.extend(['trend_short', 'trend_short_strength'])
+    col.extend(['trend_middle', 'trend_middle_strength'])
+    col.extend(['trend_long'])
+    col.extend(['duotou_pailie',   'duotou_pailie_last_bars', 'last_kongtou_pailie_date', 'last_kongtou_pailie_n_days_before'])
+    col.extend(['kongtou_pailie',  'kongtou_pailie_last_bars','last_duotou_pailie_date',  'last_duotou_pailie_n_days_before'])
+    col.extend(['jincha_minor', 'jincha_minor_strength'])
+    col.extend(['jincha_major', 'jincha_major_strength'])
+    col.extend(['sicha_minor', 'sicha_minor_strength'])
+    col.extend(['sicha_major', 'sicha_major_strength'])
 
 
     ##################### Bar
-    col.append(['yunxian_buy','yunxian_sell'])
-    col.append(['guangtou','guangjiao','small_body','cross_star'])
-    col.append(['long_upper_shadow','long_lower_shadow' ])
-    col.append(['upper_shadow_len','body_len','lower_shadow_len'])
+    col.extend(['yunxian_buy','yunxian_sell'])
+    col.extend(['guangtou','guangjiao','small_body','cross_star'])
+    col.extend(['long_upper_shadow','long_lower_shadow' ])
+    col.extend(['upper_shadow_len','body_len','lower_shadow_len'])
 
     ##################### SMA, EMA, tr, etc
-    col.append(['sma_short_'+sp,'sma_middle_'+mp,'sma_long_'+lp,'ema_short_'+sp,'ema_middle_'+mp,'ema_long_'+lp])
-    col.append(['tr', 'atr_short_'+sp, 'atr_middle_'+mp, 'atr_long_'+lp])
+    col.extend(['sma_short_'+sp,'sma_middle_'+mp,'sma_long_'+lp,'ema_short_'+sp,'ema_middle_'+mp,'ema_long_'+lp])
+    col.extend(['tr', 'atr_short_'+sp, 'atr_middle_'+mp, 'atr_long_'+lp])
 
     ##################### price frequence
-    col.append(['price_occurence_sum'])
-    col.append(['l5_price'])
-    col.append(['l4_price'])
-    col.append(['l3_price'])
-    col.append(['l2_price'])
-    col.append(['l1_price'])
-    col.append(['h1_price'])
-    col.append(['h2_price'])
-    col.append(['h3_price'])
-    col.append(['h4_price'])
-    col.append(['h5_price'])
+    col.extend(['price_occurence_sum'])
+    col.extend(['l5_price'])
+    col.extend(['l4_price'])
+    col.extend(['l3_price'])
+    col.extend(['l2_price'])
+    col.extend(['l1_price'])
+    col.extend(['h1_price'])
+    col.extend(['h2_price'])
+    col.extend(['h3_price'])
+    col.extend(['h4_price'])
+    col.extend(['h5_price'])
 
-    col.append(['l5_frequency_percent'])
-    col.append(['l4_frequency_percent'])
-    col.append(['l3_frequency_percent'])
-    col.append(['l2_frequency_percent'])
-    col.append(['l1_frequency_percent'])
-    col.append(['h1_frequency_percent'])
-    col.append(['h2_frequency_percent'])
-    col.append(['h3_frequency_percent'])
-    col.append(['h4_frequency_percent'])
-    col.append(['h5_frequency_percent'])
+    col.extend(['l5_frequency_percent'])
+    col.extend(['l4_frequency_percent'])
+    col.extend(['l3_frequency_percent'])
+    col.extend(['l2_frequency_percent'])
+    col.extend(['l1_frequency_percent'])
+    col.extend(['h1_frequency_percent'])
+    col.extend(['h2_frequency_percent'])
+    col.extend(['h3_frequency_percent'])
+    col.extend(['h4_frequency_percent'])
+    col.extend(['h5_frequency_percent'])
 
-    col.append(['l5_occurrence'])
-    col.append(['l4_occurrence'])
-    col.append(['l3_occurrence'])
-    col.append(['l2_occurrence'])
-    col.append(['l1_occurrence'])
-    col.append(['h1_occurrence'])
-    col.append(['h2_occurrence'])
-    col.append(['h3_occurrence'])
-    col.append(['h4_occurrence'])
-    col.append(['h5_occurrence'])
+    col.extend(['l5_occurrence'])
+    col.extend(['l4_occurrence'])
+    col.extend(['l3_occurrence'])
+    col.extend(['l2_occurrence'])
+    col.extend(['l1_occurrence'])
+    col.extend(['h1_occurrence'])
+    col.extend(['h2_occurrence'])
+    col.extend(['h3_occurrence'])
+    col.extend(['h4_occurrence'])
+    col.extend(['h5_occurrence'])
 
-    col.append(['l5_occurrence_percent'])
-    col.append(['l4_occurrence_percent'])
-    col.append(['l3_occurrence_percent'])
-    col.append(['l2_occurrence_percent'])
-    col.append(['l1_occurrence_percent'])
-    col.append(['h1_occurrence_percent'])
-    col.append(['h2_occurrence_percent'])
-    col.append(['h3_occurrence_percent'])
-    col.append(['h4_occurrence_percent'])
-    col.append(['h5_occurrence_percent'])
+    col.extend(['l5_occurrence_percent'])
+    col.extend(['l4_occurrence_percent'])
+    col.extend(['l3_occurrence_percent'])
+    col.extend(['l2_occurrence_percent'])
+    col.extend(['l1_occurrence_percent'])
+    col.extend(['h1_occurrence_percent'])
+    col.extend(['h2_occurrence_percent'])
+    col.extend(['h3_occurrence_percent'])
+    col.extend(['h4_occurrence_percent'])
+    col.extend(['h5_occurrence_percent'])
 
 
     df_a_stock_report = finlib.Finlib().adjust_column(df=df_a_stock_report, col_name_list=col)
@@ -159,7 +162,90 @@ def verify_a_stock():
 
 
 def main():
-    
+
+    parser = OptionParser()
+
+    parser.add_option("-b", "--begin_date", type="string", action="store", dest="begin_date_f", default="2018-01-01", help="begin date to use Fibo")
+
+    parser.add_option("--min_sample", type="int", action="store", dest="min_sample_f", default=200, help="minimal samples number of input to analysis")
+
+    parser.add_option("-d", "--debug", action="store_true", dest="debug_f", default=False, help="debug ")
+
+    parser.add_option("--save_fig", action="store_true", dest="save_fig_f", default=False, help="save the matplot figure ")
+
+    parser.add_option("--show_fig", action="store_true", dest="show_fig_f", default=False, help="display the matplot figure ")
+
+    parser.add_option("--log_price", action="store_true", dest="log_price_f", default=False, help="log for y-axis price ")
+
+    parser.add_option("-x", "--stock_global", dest="stock_global", help="[CH(US)|KG(HK)|KH(HK)|MG(US)|US(US)|AG(AG)|dev(debug)], source is /home/ryan/DATA/DAY_global/xx/")
+
+    parser.add_option("--selected", action="store_true", dest="selected", default=False, help="only check stocks defined in /home/ryan/tushare_ryan/select.yml")
+
+    #df_rtn = pd.DataFrame()
+    df_rtn = pd.DataFrame(columns=["code", "name"])
+
+    (options, args) = parser.parse_args()
+    debug_f = options.debug_f
+    begin_date_f = options.begin_date_f
+    show_fig_f = options.show_fig_f
+    save_fig_f = options.save_fig_f
+    min_sample_f = options.min_sample_f
+    log_price_f = options.log_price_f
+    selected = options.selected
+    stock_global = options.stock_global
+
+    rst = finlib.Finlib().get_stock_configuration(selected=selected, stock_global=stock_global)
+    out_dir = rst['out_dir']
+    csv_dir = rst['csv_dir']
+    stock_list = rst['stock_list']
+    out_f = out_dir + "/" + stock_global.lower() + "_junxian_barstyle.csv"  #/home/ryan/DATA/result/selected/us_index_fib.csv
+
+    if not os.path.isdir(out_dir):
+        os.mkdir(out_dir)
+
+    i = 0
+
+    for index, row in stock_list.iterrows():
+        i += 1
+        logging.info(str(i) + " of " + str(stock_list.__len__()))
+        name, code = row['name'], row['code']
+
+        csv_f = csv_dir + "/" + code + ".csv"
+        logging.info(csv_f)
+
+        if not os.path.isfile(csv_f):
+            logging.warning(__file__+" "+"file not exist. " + csv_f)
+            continue
+
+        df = finlib.Finlib().regular_read_csv_to_stdard_df(csv_f,add_market=False)
+
+        if (df.__len__() < min_sample_f):
+            continue
+
+
+        code_name_map = stock_list
+
+        code = df.iloc[0]['code']
+        name = code_name_map[code_name_map['code'] == code].iloc[0]['name']
+
+        #have to matching df and series index
+        df = df.iloc[-min_sample_f:].reset_index().drop('index', axis=1)
+        df['name']  = pd.Series([name]*df.__len__(),name='name')
+
+
+
+        df_t = verify_a_stock(df=df)
+
+        #print(df_t)
+        if not df_t.empty:
+            df_rtn = pd.concat([df_rtn, df_t], sort=False).reset_index().drop('index', axis=1)
+
+    df_rtn.to_csv(out_f, encoding='UTF-8', index=False)
+    print(df_rtn)
+    print("output saved to " + out_f)
+
+    exit(0)
+
 
 
 ### MAIN ####
