@@ -4,6 +4,9 @@ import finlib_indicator
 import os
 import logging
 from optparse import OptionParser
+import tabulate
+
+
 
 def verify_a_stock(df):
     #df must have column (code, date, open, low,high,close)
@@ -161,11 +164,47 @@ def verify_a_stock(df):
     return(df_a_stock_report)
 
 
+
+def show_result(file):
+    file = "/home/ryan/DATA/result/selected/ag_junxian_barstyle.csv"
+    file = "/home/ryan/DATA/result/ag_junxian_barstyle.csv"
+
+    df = pd.read_csv(file,converters={'code': str}, encoding="utf-8")
+
+    col = ['code','name', 'date', 'close', 'duotou_pailie', 'jincha_minor','jincha_major']
+    col.extend(['yunxian_buy','yunxian_sell','very_strong_up_trend','very_strong_down_trend'])
+
+    df_1 = df[col]
+
+    df_yunxian_sell = df_1[df_1['yunxian_sell']==True].reset_index().drop('index', axis=1)
+    df_yunxian_buy = df_1[df_1['yunxian_buy']==True].reset_index().drop('index', axis=1)
+    df_duotou_pailie = df_1[df_1['duotou_pailie']==True].reset_index().drop('index', axis=1)
+    df_jincha_minor = df_1[df_1['jincha_minor']==True].reset_index().drop('index', axis=1)
+    df_jincha_major = df_1[df_1['jincha_major']==True].reset_index().drop('index', axis=1)
+    df_very_strong_up_trend = df_1[df_1['very_strong_up_trend']==True].reset_index().drop('index', axis=1)
+    df_very_strong_down_trend = df_1[df_1['very_strong_down_trend']==True].reset_index().drop('index', axis=1)
+
+    print("\ndf_yunxian_sell")
+    print(tabulate.tabulate(df_yunxian_sell, headers='keys', tablefmt='psql'))
+
+    print("\ndf_yunxian_buy")
+    print(tabulate.tabulate(df_yunxian_buy, headers='keys', tablefmt='psql'))
+    print("\ndf_jincha_minor")
+    print(tabulate.tabulate(df_jincha_minor, headers='keys', tablefmt='psql'))
+    print("\ndf_jincha_major")
+    print(tabulate.tabulate(df_jincha_major, headers='keys', tablefmt='psql'))
+
+    print("\ndf_very_strong_up_trend")
+    print(tabulate.tabulate(df_very_strong_up_trend, headers='keys', tablefmt='psql'))
+
+    print("\ndf_duotou_pailie")
+    print(tabulate.tabulate(df_duotou_pailie, headers='keys', tablefmt='psql'))
+
 def main():
 
     parser = OptionParser()
 
-    parser.add_option("-b", "--begin_date", type="string", action="store", dest="begin_date_f", default="2018-01-01", help="begin date to use Fibo")
+    parser.add_option("-s", "--show_result",   action="store_true", dest="show_result_f", default="False", help="show previous calculated result")
 
     parser.add_option("--min_sample", type="int", action="store", dest="min_sample_f", default=200, help="minimal samples number of input to analysis")
 
@@ -186,6 +225,7 @@ def main():
 
     (options, args) = parser.parse_args()
     debug_f = options.debug_f
+    show_result_f = options.show_result_f
     begin_date_f = options.begin_date_f
     show_fig_f = options.show_fig_f
     save_fig_f = options.save_fig_f
@@ -199,6 +239,11 @@ def main():
     csv_dir = rst['csv_dir']
     stock_list = rst['stock_list']
     out_f = out_dir + "/" + stock_global.lower() + "_junxian_barstyle.csv"  #/home/ryan/DATA/result/selected/us_index_fib.csv
+
+    if show_result_f:
+        show_result(file=out_f)
+        exit()
+
 
     if not os.path.isdir(out_dir):
         os.mkdir(out_dir)
@@ -250,4 +295,7 @@ def main():
 
 ### MAIN ####
 if __name__ == '__main__':
+
+
+
     main()
