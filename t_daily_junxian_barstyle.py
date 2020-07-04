@@ -166,8 +166,8 @@ def verify_a_stock(df):
 
 
 def show_result(file):
-    file = "/home/ryan/DATA/result/selected/ag_junxian_barstyle.csv"
-    file = "/home/ryan/DATA/result/ag_junxian_barstyle.csv"
+    #file = "/home/ryan/DATA/result/selected/ag_junxian_barstyle.csv"
+    #file = "/home/ryan/DATA/result/ag_junxian_barstyle.csv"
 
     df = pd.read_csv(file,converters={'code': str}, encoding="utf-8")
 
@@ -204,7 +204,7 @@ def main():
 
     parser = OptionParser()
 
-    parser.add_option("-s", "--show_result",   action="store_true", dest="show_result_f", default="False", help="show previous calculated result")
+    parser.add_option("-s", "--show_result",   action="store_true", dest="show_result_f", default=False, help="show previous calculated result")
 
     parser.add_option("--min_sample", type="int", action="store", dest="min_sample_f", default=200, help="minimal samples number of input to analysis")
 
@@ -226,7 +226,6 @@ def main():
     (options, args) = parser.parse_args()
     debug_f = options.debug_f
     show_result_f = options.show_result_f
-    begin_date_f = options.begin_date_f
     show_fig_f = options.show_fig_f
     save_fig_f = options.save_fig_f
     min_sample_f = options.min_sample_f

@@ -104,6 +104,27 @@ if [ $fetch_or_exam == "EXAM" ]; then
     python t_daily_pattern_Hit_Price_Volume.py --bool_calc_std_mean --bool_perc_std_mean --bool_pv_hit -m 7 -x AG --selected
 
 
+
+  #--------------- Yunxian ---------------------------#
+    ############ US 
+    #/home/ryan/DATA/result/selected/us_junxian_barstyle.csv
+    python t_daily_junxian_barstyle.py -x US --selected
+
+
+    ############ HK 
+    #/home/ryan/DATA/result/selected/hk_junxian_barstyle.csv
+    python t_daily_junxian_barstyle.py -x HK --selected
+
+
+    ############ AG
+    #/home/ryan/DATA/result/selected/ag_junxian_barstyle.csv
+    python t_daily_junxian_barstyle.py -x AG --selected
+
+
+
+
+
+
   python t_summary.py  --select  --action=generate_report
 
   #python t_summary.py -x HK --action generate_report
