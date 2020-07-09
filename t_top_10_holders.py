@@ -38,7 +38,7 @@ latest_holder_summary_csv = "/home/ryan/DATA/result/top_10_holder_summary_latest
 latest_holder_detail_csv = "/home/ryan/DATA/result/top_10_holder_detail_latest.csv"
 
 
-def get_top_10_holder_data():
+def get_top_10_holder_data(stock_list=None):
     #code,name_x,quarter,name,hold,h_pro,sharetype,status
     # 600519,贵州茅台,2019-03-31,中国贵州茅台酒厂(集团)有限责任公司,77877.20,61.99,流通A股,未变
     # 600519,贵州茅台,2019-03-31,香港中央结算有限公司,12078.66,9.62,流通A股,2083.28
@@ -50,7 +50,11 @@ def get_top_10_holder_data():
     # 600519,贵州茅台,2019-03-31,97380.22,1986.03,77.53
 
     logging.info(__file__+" "+"getting security")
-    df_code_name_map = finlib.Finlib().get_A_stock_instrment()
+    if(stock_list is None):
+        df_code_name_map = finlib.Finlib().get_A_stock_instrment()
+    else:
+        df_code_name_map = finlib.Finlib().remove_market_from_tscode(stock_list)
+
 
     df_summary = pd.DataFrame()
     df_detail = pd.DataFrame()
@@ -80,7 +84,10 @@ def get_top_10_holder_data():
                 logging.info(__file__+" "+"getting top 10 holder of " + code)
                 a = ts.top10_holders(code=code)
 
+                #a[0].columns ['quarter', 'amount', 'changed', 'props']
                 df_a_sum = a[0]
+
+                #a1.columns: ['quarter', 'name', 'hold', 'h_pro', 'sharetype', 'status']
                 df_a_detail = a[1]
 
                 df_a_sum = pd.DataFrame([name] * df_a_sum.__len__(), columns=['name']).join(df_a_sum)  #
@@ -104,9 +111,12 @@ def get_top_10_holder_data():
                 #sys.exc_clear()  #python3: AttributeError: module 'sys' has no attribute 'exc_clear'
 
 
-def load_top_10_holder_data():
+def load_top_10_holder_data(stock_list=None, debug=False):
     logging.info(__file__+" "+"getting security")
-    df_code_name_map = finlib.Finlib().get_A_stock_instrment()
+    if stock_list is None:
+        df_code_name_map = finlib.Finlib().get_A_stock_instrment()
+    else:
+        df_code_name_map = finlib.Finlib().remove_market_from_tscode(stock_list)
 
     df_summary = pd.DataFrame()
     df_detail = pd.DataFrame()
@@ -178,14 +188,14 @@ def analyze_summary(debug=False):
     return (df_result)
 
 
-def analyze_detail(debug=False):
+def analyze_detail(stock_list=None,debug=False):
     df_result = pd.DataFrame(columns=['name', 'investment', 'hold_stocks'])
     df_details = pd.read_csv(top_10_holder_detail_csv, converters={'code': str})
     if debug:
         df_details = df_details.head(1000)  # debug
 
     df = df_details
-    df = df[df['quarter'] > '2019']
+    df = df[df['quarter'] >= '2020-03-31']  #ryan @todo: date be the latest released report
 
     names = df['name'].unique()
     leng = names.__len__()
@@ -205,7 +215,7 @@ def analyze_detail(debug=False):
             code_name = df_tmp.iloc[j]['name_x']
             h_pro = df_tmp.iloc[j]['h_pro']
             hold_stocks += code + "_" + code_name + "_" + str(h_pro) + " "
-            logging.info(__file__+" "+'\t ' + code + " " + code_name)
+            logging.info(__file__+" "+'\t '+name+" " + code + " " + code_name+" "+df_tmp.iloc[j]['quarter']+" "+str(j+1)+" of "+str(df_tmp.__len__()))
 
             hold = df_tmp.iloc[j]['hold']  #单位万股
 
@@ -245,35 +255,62 @@ def main():
 
     parser.add_option("-a", "--analyze", action="store_true", dest="analyze_f", default=False, help="analyze top_10_holder")
 
+    parser.add_option("-d", "--debug", action="store_true", dest="debug_f", default=False, help="debug ")
+
+    parser.add_option("-x", "--stock_global", dest="stock_global", help="[CH(US)|KG(HK)|KH(HK)|MG(US)|US(US)|AG(AG)|dev(debug)], source is /home/ryan/DATA/DAY_global/xx/")
+    parser.add_option("--selected", action="store_true", dest="selected", default=False, help="only check stocks defined in /home/ryan/tushare_ryan/select.yml")
+
+
     (options, args) = parser.parse_args()
     fetch_data_f = options.fetch_data_f
     analyze_f = options.analyze_f
+    debug_f = options.debug_f
+    selected = options.selected
+    stock_global = options.stock_global
+
 
     logging.info(__file__+" "+"fetch_data_f: " + str(fetch_data_f))
     logging.info(__file__+" "+"analyze_f: " + str(analyze_f))
+    logging.info(__file__+" "+"debug_f: " + str(debug_f))
+    logging.info(__file__+" "+"stock_global: " + str(stock_global))
+    logging.info(__file__+" "+"selected: " + str(selected))
+
+
+    #### load stock list start
+    rst = finlib.Finlib().get_stock_configuration(selected=selected, stock_global=stock_global)
+    out_dir = rst['out_dir']
+    csv_dir = rst['csv_dir']
+    stock_list = rst['stock_list']
+    out_f = out_dir + "/" + stock_global.lower() + "_junxian_barstyle.csv"  #/home/ryan/DATA/result/selected/us_index_fib.csv
+
+    #### load stock list end
+
 
     if fetch_data_f:
         ########################
         # download reference data from tushare.
         #########################
-        get_top_10_holder_data()
+        get_top_10_holder_data(stock_list=stock_list)
 
     elif analyze_f:
         ########################
         # load reference data from tushare.
         #########################
-        (df_summary, df_detail) = load_top_10_holder_data()
+        (df_summary, df_detail) = load_top_10_holder_data(stock_list=stock_list,debug=debug_f)
 
         ########################
         # analyze the fenghong of each time, rows are not merged by code
         #########################
-        df_result = analyze_summary()
+        df_result = analyze_summary(debug=debug_f)
 
         ########################
         # Merge fenghong by code, give score
         #########################
         #df_result = analyze_detail(debug=True)
-        df_result = analyze_detail(debug=False)
+        df_result = analyze_detail(debug=debug_f)
+    else:
+        logging.error("have to specify an action, fetch_data|analyze ")
+        exit(1)
 
     logging.info(__file__+" "+'script completed')
     os._exit(0)
