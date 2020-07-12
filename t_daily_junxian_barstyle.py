@@ -165,7 +165,7 @@ def verify_a_stock(df):
 
 
 
-def show_result(file):
+def show_result(file, dir, filebase):
     #file = "/home/ryan/DATA/result/selected/ag_junxian_barstyle.csv"
     #file = "/home/ryan/DATA/result/ag_junxian_barstyle.csv"
 
@@ -177,28 +177,46 @@ def show_result(file):
     df_1 = df[col]
 
     df_yunxian_sell = df_1[df_1['yunxian_sell']==True].reset_index().drop('index', axis=1)
+    df_yunxian_sell.to_csv(dir+"/"+filebase+"_yunxian_sell.csv", encoding='UTF-8', index=False)
+
     df_yunxian_buy = df_1[df_1['yunxian_buy']==True].reset_index().drop('index', axis=1)
+    df_yunxian_buy.to_csv(dir+"/"+filebase+"_yunxian_buy.csv", encoding='UTF-8', index=False)
+
     df_duotou_pailie = df_1[df_1['duotou_pailie']==True].reset_index().drop('index', axis=1)
+    df_duotou_pailie.to_csv(dir+"/"+filebase+"_duotou_pailie.csv", encoding='UTF-8', index=False)
+
     df_jincha_minor = df_1[df_1['jincha_minor']==True].reset_index().drop('index', axis=1)
+    df_jincha_minor.to_csv(dir+"/"+filebase+"_jincha_minor.csv", encoding='UTF-8', index=False)
+
     df_jincha_major = df_1[df_1['jincha_major']==True].reset_index().drop('index', axis=1)
+    df_jincha_minor.to_csv(dir+"/"+filebase+"_jincha_minor.csv", encoding='UTF-8', index=False)
+
     df_very_strong_up_trend = df_1[df_1['very_strong_up_trend']==True].reset_index().drop('index', axis=1)
+    df_very_strong_up_trend.to_csv(dir+"/"+filebase+"_very_strong_up_trend.csv", encoding='UTF-8', index=False)
+
     df_very_strong_down_trend = df_1[df_1['very_strong_down_trend']==True].reset_index().drop('index', axis=1)
+    df_very_strong_down_trend.to_csv(dir+"/"+filebase+"_very_strong_down_trend.csv", encoding='UTF-8', index=False)
 
-    print("\ndf_yunxian_sell")
-    print(tabulate.tabulate(df_yunxian_sell, headers='keys', tablefmt='psql'))
 
-    print("\ndf_yunxian_buy")
-    print(tabulate.tabulate(df_yunxian_buy, headers='keys', tablefmt='psql'))
-    print("\ndf_jincha_minor")
-    print(tabulate.tabulate(df_jincha_minor, headers='keys', tablefmt='psql'))
-    print("\ndf_jincha_major")
-    print(tabulate.tabulate(df_jincha_major, headers='keys', tablefmt='psql'))
+    logging.info("\ndf_yunxian_sell")
+    logging.info(tabulate.tabulate(df_yunxian_sell, headers='keys', tablefmt='psql'))
 
-    print("\ndf_very_strong_up_trend")
-    print(tabulate.tabulate(df_very_strong_up_trend, headers='keys', tablefmt='psql'))
+    logging.info("\ndf_yunxian_buy")
+    logging.info(tabulate.tabulate(df_yunxian_buy, headers='keys', tablefmt='psql'))
+    logging.info("\ndf_jincha_minor")
+    logging.info(tabulate.tabulate(df_jincha_minor, headers='keys', tablefmt='psql'))
+    logging.info("\ndf_jincha_major")
+    logging.info(tabulate.tabulate(df_jincha_major, headers='keys', tablefmt='psql'))
 
-    print("\ndf_duotou_pailie")
-    print(tabulate.tabulate(df_duotou_pailie, headers='keys', tablefmt='psql'))
+    logging.info("\ndf_very_strong_up_trend")
+    logging.info(tabulate.tabulate(df_very_strong_up_trend, headers='keys', tablefmt='psql'))
+
+    logging.info("\ndf_duotou_pailie")
+    logging.info(tabulate.tabulate(df_duotou_pailie, headers='keys', tablefmt='psql'))
+
+
+
+
 
 def main():
 
@@ -240,7 +258,7 @@ def main():
     out_f = out_dir + "/" + stock_global.lower() + "_junxian_barstyle.csv"  #/home/ryan/DATA/result/selected/us_index_fib.csv
 
     if show_result_f:
-        show_result(file=out_f)
+        show_result(file=out_f, dir=out_dir, filebase= stock_global.lower() + "_junxian_barstyle")
         exit()
 
 
