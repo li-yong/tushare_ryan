@@ -588,6 +588,21 @@ python t_daily_fundamentals_2.py  --concept_top
 rm -f /home/ryan/DATA/result/selected/talib_and_pv_no_db_filter_AG.csv
 python t_daily_pattern_Hit_Price_Volume.py --bool_calc_std_mean --bool_perc_std_mean --bool_pv_hit -m 7 -x AG --selected
 
+
+#######################################
+# output: /home/ryan/DATA/result/ag_junxian_barstyle.csv
+#######################################
+python t_daily_junxian_barstyle.py -x AG
+
+
+#######################################
+# output: /home/ryan/DATA/result/
+#(base) ryan@haha_brain_2:~/DATA/result$ ls *bar*
+#ag_junxian_barstyle.csv                ag_junxian_barstyle_jincha_major.csv  ag_junxian_barstyle_very_strong_down_trend.csv  ag_junxian_barstyle_yunxian_buy.csv
+#ag_junxian_barstyle_duotou_pailie.csv  ag_junxian_barstyle_jincha_minor.csv  ag_junxian_barstyle_very_strong_up_trend.csv    ag_junxian_barstyle_yunxian_sell.csv
+#######################################
+python t_daily_junxian_barstyle.py -x AG --show_result
+
 #rm -f /home/ryan/DATA/result/today/talib_and_pv_no_db_filter_AG.csv
 #python t_daily_pattern_Hit_Price_Volume.py --bool_calc_std_mean --bool_perc_std_mean --bool_pv_hit -m 7 -x AG
 
