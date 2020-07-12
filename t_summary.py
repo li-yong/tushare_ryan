@@ -581,6 +581,159 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
             arr.append('df_fib_us_index_selected')
         else:
             logging.info(__file__+" "+"NOT found file " + f_fib_us_index_selected)
+#---
+        f_ = "/home/ryan/DATA/result/selected/ag_junxian_barstyle_yunxian_sell.csv"
+        if finlib.Finlib().is_cached(f_, day=2):
+            df_yunxian_sell_selected = finlib.Finlib().regular_read_csv_to_stdard_df(f_)
+            arr.append('df_yunxian_sell_selected')
+        else:
+            logging.info(__file__+" "+"NOT found file " + f_)
+
+        f_ = "/home/ryan/DATA/result/selected/ag_junxian_barstyle_yunxian_buy.csv"
+        if finlib.Finlib().is_cached(f_, day=2):
+            df_yunxian_buy_selected = finlib.Finlib().regular_read_csv_to_stdard_df(f_)
+            arr.append('df_yunxian_buy_selected')
+        else:
+            logging.info(__file__+" "+"NOT found file " + f_)
+
+
+        f_ = "/home/ryan/DATA/result/selected/ag_junxian_barstyle_duotou_pailie.csv"
+        if finlib.Finlib().is_cached(f_, day=2):
+            df_duotou_pailie_selected = finlib.Finlib().regular_read_csv_to_stdard_df(f_)
+            arr.append('df_duotou_pailie_selected')
+        else:
+            logging.info(__file__+" "+"NOT found file " + f_)
+
+        f_ = "/home/ryan/DATA/result/selected/ag_junxian_barstyle_jincha_minor.csv"
+        if finlib.Finlib().is_cached(f_, day=2):
+            df_jincha_minor_selected = finlib.Finlib().regular_read_csv_to_stdard_df(f_)
+            arr.append('df_jincha_minor_selected')
+        else:
+            logging.info(__file__+" "+"NOT found file " + f_)
+
+        f_ = "/home/ryan/DATA/result/selected/ag_junxian_barstyle_jincha_major.csv"
+        if finlib.Finlib().is_cached(f_, day=2):
+            df_jincha_major_selected = finlib.Finlib().regular_read_csv_to_stdard_df(f_)
+            arr.append('df_jincha_major_selected')
+        else:
+            logging.info(__file__+" "+"NOT found file " + f_)
+
+
+        f_ = "/home/ryan/DATA/result/selected/ag_junxian_barstyle_very_strong_up_trend.csv"
+        if finlib.Finlib().is_cached(f_, day=2):
+            df_very_strong_up_trend_selected = finlib.Finlib().regular_read_csv_to_stdard_df(f_)
+            arr.append('df_very_strong_up_trend_selected')
+        else:
+            logging.info(__file__+" "+"NOT found file " + f_)
+
+        f_ = "/home/ryan/DATA/result/selected/ag_junxian_barstyle_very_strong_down_trend.csv"
+        if finlib.Finlib().is_cached(f_, day=2):
+            df_very_strong_down_trend_selected = finlib.Finlib().regular_read_csv_to_stdard_df(f_)
+            arr.append('df_very_strong_down_trend_selected')
+        else:
+            logging.info(__file__+" "+"NOT found file " + f_)
+
+#us
+            # ---
+            f_ = "/home/ryan/DATA/result/selected/us_junxian_barstyle_yunxian_sell.csv"
+            if finlib.Finlib().is_cached(f_, day=2):
+                df_yunxian_sell_selected_us = finlib.Finlib().regular_read_csv_to_stdard_df(f_)
+                arr.append('df_yunxian_sell_selected_us')
+            else:
+                logging.info(__file__ + " " + "NOT found file " + f_)
+
+            f_ = "/home/ryan/DATA/result/selected/us_junxian_barstyle_yunxian_buy.csv"
+            if finlib.Finlib().is_cached(f_, day=2):
+                df_yunxian_buy_selected_us = finlib.Finlib().regular_read_csv_to_stdard_df(f_)
+                arr.append('df_yunxian_buy_selected_us')
+            else:
+                logging.info(__file__ + " " + "NOT found file " + f_)
+
+            f_ = "/home/ryan/DATA/result/selected/us_junxian_barstyle_duotou_pailie.csv"
+            if finlib.Finlib().is_cached(f_, day=2):
+                df_duotou_pailie_selected_us = finlib.Finlib().regular_read_csv_to_stdard_df(f_)
+                arr.append('df_duotou_pailie_selected_us')
+            else:
+                logging.info(__file__ + " " + "NOT found file " + f_)
+
+            f_ = "/home/ryan/DATA/result/selected/us_junxian_barstyle_jincha_minor.csv"
+            if finlib.Finlib().is_cached(f_, day=2):
+                df_jincha_minor_selected_us = finlib.Finlib().regular_read_csv_to_stdard_df(f_)
+                arr.append('df_jincha_minor_selected_us')
+            else:
+                logging.info(__file__ + " " + "NOT found file " + f_)
+
+            f_ = "/home/ryan/DATA/result/selected/us_junxian_barstyle_jincha_major.csv"
+            if finlib.Finlib().is_cached(f_, day=2):
+                df_jincha_major_selected_us = finlib.Finlib().regular_read_csv_to_stdard_df(f_)
+                arr.append('df_jincha_major_selected_us')
+            else:
+                logging.info(__file__ + " " + "NOT found file " + f_)
+
+            f_ = "/home/ryan/DATA/result/selected/us_junxian_barstyle_very_strong_up_trend.csv"
+            if finlib.Finlib().is_cached(f_, day=2):
+                df_very_strong_up_trend_selected_us = finlib.Finlib().regular_read_csv_to_stdard_df(f_)
+                arr.append('df_very_strong_up_trend_selected_us')
+            else:
+                logging.info(__file__ + " " + "NOT found file " + f_)
+
+            f_ = "/home/ryan/DATA/result/selected/us_junxian_barstyle_very_strong_down_trend.csv"
+            if finlib.Finlib().is_cached(f_, day=2):
+                df_very_strong_down_trend_selected_us = finlib.Finlib().regular_read_csv_to_stdard_df(f_)
+                arr.append('df_very_strong_down_trend_selected_us')
+            else:
+                logging.info(__file__ + " " + "NOT found file " + f_)
+
+            #hk
+            # ---
+            f_ = "/home/ryan/DATA/result/selected/hk_junxian_barstyle_yunxian_sell.csv"
+            if finlib.Finlib().is_cached(f_, day=2):
+                df_yunxian_sell_selected_hk = finlib.Finlib().regular_read_csv_to_stdard_df(f_)
+                arr.append('df_yunxian_sell_selected_hk')
+            else:
+                logging.info(__file__ + " " + "NOT found file " + f_)
+
+            f_ = "/home/ryan/DATA/result/selected/hk_junxian_barstyle_yunxian_buy.csv"
+            if finlib.Finlib().is_cached(f_, day=2):
+                df_yunxian_buy_selected_hk = finlib.Finlib().regular_read_csv_to_stdard_df(f_)
+                arr.append('df_yunxian_buy_selected_hk')
+            else:
+                logging.info(__file__ + " " + "NOT found file " + f_)
+
+            f_ = "/home/ryan/DATA/result/selected/hk_junxian_barstyle_duotou_pailie.csv"
+            if finlib.Finlib().is_cached(f_, day=2):
+                df_duotou_pailie_selected_hk = finlib.Finlib().regular_read_csv_to_stdard_df(f_)
+                arr.append('df_duotou_pailie_selected_hk')
+            else:
+                logging.info(__file__ + " " + "NOT found file " + f_)
+
+            f_ = "/home/ryan/DATA/result/selected/hk_junxian_barstyle_jincha_minor.csv"
+            if finlib.Finlib().is_cached(f_, day=2):
+                df_jincha_minor_selected_hk = finlib.Finlib().regular_read_csv_to_stdard_df(f_)
+                arr.append('df_jincha_minor_selected_hk')
+            else:
+                logging.info(__file__ + " " + "NOT found file " + f_)
+
+            f_ = "/home/ryan/DATA/result/selected/hk_junxian_barstyle_jincha_major.csv"
+            if finlib.Finlib().is_cached(f_, day=2):
+                df_jincha_major_selected_hk = finlib.Finlib().regular_read_csv_to_stdard_df(f_)
+                arr.append('df_jincha_major_selected_hk')
+            else:
+                logging.info(__file__ + " " + "NOT found file " + f_)
+
+            f_ = "/home/ryan/DATA/result/selected/hk_junxian_barstyle_very_strong_up_trend.csv"
+            if finlib.Finlib().is_cached(f_, day=2):
+                df_very_strong_up_trend_selected_hk = finlib.Finlib().regular_read_csv_to_stdard_df(f_)
+                arr.append('df_very_strong_up_trend_selected_hk')
+            else:
+                logging.info(__file__ + " " + "NOT found file " + f_)
+
+            f_ = "/home/ryan/DATA/result/selected/hk_junxian_barstyle_very_strong_down_trend.csv"
+            if finlib.Finlib().is_cached(f_, day=2):
+                df_very_strong_down_trend_selected_hk = finlib.Finlib().regular_read_csv_to_stdard_df(f_)
+                arr.append('df_very_strong_down_trend_selected_hk')
+            else:
+                logging.info(__file__ + " " + "NOT found file " + f_)
 
         ########## us
         if finlib.Finlib().is_cached(f_key_points_us_selected, day=2):
@@ -1600,6 +1753,34 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
     df_dict["df_jincha_major"] = {"term": "SHORT TERM", "price": "NA"}
     df_dict["df_very_strong_up_trend"] = {"term": "SHORT TERM", "price": "NA"}
     df_dict["df_very_strong_down_trend"] = {"term": "SHORT TERM", "price": "NA"}
+
+    df_dict["df_yunxian_sell_selected"] = {"term": "SHORT TERM", "price": "NA"}
+    df_dict["df_yunxian_buy_selected"] = {"term": "SHORT TERM", "price": "NA"}
+    df_dict["df_duotou_pailie_selected"] = {"term": "SHORT TERM", "price": "NA"}
+    df_dict["df_jincha_minor_selected"] = {"term": "SHORT TERM", "price": "NA"}
+    df_dict["df_jincha_major_selected"] = {"term": "SHORT TERM", "price": "NA"}
+    df_dict["df_very_strong_up_trend_selected"] = {"term": "SHORT TERM", "price": "NA"}
+    df_dict["df_very_strong_down_trend_selected"] = {"term": "SHORT TERM", "price": "NA"}
+
+
+    df_dict["df_yunxian_sell_selected_hk"] = {"term": "SHORT TERM", "price": "NA"}
+    df_dict["df_yunxian_buy_selected_hk"] = {"term": "SHORT TERM", "price": "NA"}
+    df_dict["df_duotou_pailie_selected_hk"] = {"term": "SHORT TERM", "price": "NA"}
+    df_dict["df_jincha_minor_selected_hk"] = {"term": "SHORT TERM", "price": "NA"}
+    df_dict["df_jincha_major_selected_hk"] = {"term": "SHORT TERM", "price": "NA"}
+    df_dict["df_very_strong_up_trend_selected_hk"] = {"term": "SHORT TERM", "price": "NA"}
+    df_dict["df_very_strong_down_trend_selected_hk"] = {"term": "SHORT TERM", "price": "NA"}
+
+
+    df_dict["df_yunxian_sell_selected_us"] = {"term": "SHORT TERM", "price": "NA"}
+    df_dict["df_yunxian_buy_selected_us"] = {"term": "SHORT TERM", "price": "NA"}
+    df_dict["df_duotou_pailie_selected_us"] = {"term": "SHORT TERM", "price": "NA"}
+    df_dict["df_jincha_minor_selected_us"] = {"term": "SHORT TERM", "price": "NA"}
+    df_dict["df_jincha_major_selected_us"] = {"term": "SHORT TERM", "price": "NA"}
+    df_dict["df_very_strong_up_trend_selected_us"] = {"term": "SHORT TERM", "price": "NA"}
+    df_dict["df_very_strong_down_trend_selected_us"] = {"term": "SHORT TERM", "price": "NA"}
+
+
 
 
     #df_dict["df_key_points_ag_selected"] = {"term": "NA", "price": "NA"}
