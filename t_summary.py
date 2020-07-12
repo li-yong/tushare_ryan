@@ -1098,7 +1098,94 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
 
         else:
             logging.info(__file__+" "+"ERROR: NOT found file " + f_pv_db_sell_filter)
-            #exit(0)
+#====
+        f_yunxian_buy = '/home/ryan/DATA/result/selected/ag_junxian_barstyle_yunxian_buy.csv'
+        logging.info(__file__ + " " + "loading f_yunxian_buy, " + f_yunxian_buy)
+        if (os.path.isfile(f_yunxian_buy)) and os.stat(f_yunxian_buy).st_size >= 10:  # > 10 bytes
+            df_yunxian_buy = finlib.Finlib().regular_read_csv_to_stdard_df(f_yunxian_buy)
+
+            df_yunxian_buy = finlib.Finlib().remove_garbage(df_yunxian_buy, code_filed_name='code', code_format='C2D6')
+            logging.info(__file__ + " " + "\t df_yunxian_buy length " + str(df_yunxian_buy.__len__()))
+
+            df_yunxian_buy = df_yunxian_buy.drop_duplicates()
+            df_yunxian_buy = df_yunxian_buy.reset_index().drop('index', axis=1)
+        else:
+            logging.info(__file__ + " " + "no such file " + f_yunxian_buy)
+
+    #===
+        f_duotou_pailie = '/home/ryan/DATA/result/selected/ag_junxian_barstyle_duotou_pailie.csv'
+        logging.info(__file__ + " " + "loading f_yunxian_sell, " + f_duotou_pailie)
+        if (os.path.isfile(f_duotou_pailie)) and os.stat(f_duotou_pailie).st_size >= 10:  # > 10 bytes
+            df_duotou_pailie = finlib.Finlib().regular_read_csv_to_stdard_df(f_duotou_pailie)
+
+            df_duotou_pailie = finlib.Finlib().remove_garbage(df_duotou_pailie, code_filed_name='code', code_format='C2D6')
+            logging.info(__file__ + " " + "\t df_duotou_pailie length " + str(df_duotou_pailie.__len__()))
+
+            df_duotou_pailie = df_duotou_pailie.drop_duplicates()
+            df_duotou_pailie = df_duotou_pailie.reset_index().drop('index', axis=1)
+        else:
+            logging.info(__file__ + " " + "no such file " + f_duotou_pailie)
+
+
+    #====
+        f_jincha_minor = '/home/ryan/DATA/result/selected/ag_junxian_barstyle_jincha_minor.csv'
+        logging.info(__file__ + " " + "loading f_yunxian_sell, " + f_jincha_minor)
+        if (os.path.isfile(f_jincha_minor)) and os.stat(f_jincha_minor).st_size >= 10:  # > 10 bytes
+            df_jincha_minor = finlib.Finlib().regular_read_csv_to_stdard_df(f_jincha_minor)
+
+            df_jincha_minor = finlib.Finlib().remove_garbage(df_jincha_minor, code_filed_name='code', code_format='C2D6')
+            logging.info(__file__ + " " + "\t df_jincha_minor length " + str(df_jincha_minor.__len__()))
+
+            df_jincha_minor = df_jincha_minor.drop_duplicates()
+            df_jincha_minor = df_jincha_minor.reset_index().drop('index', axis=1)
+        else:
+            logging.info(__file__ + " " + "no such file " + f_jincha_minor)
+
+
+    ##===
+        f_jincha_major = '/home/ryan/DATA/result/selected/ag_junxian_barstyle_jincha_major.csv'
+        logging.info(__file__ + " " + "loading f_yunxian_sell, " + f_jincha_major)
+        if (os.path.isfile(f_jincha_major)) and os.stat(f_jincha_major).st_size >= 10:  # > 10 bytes
+            df_jincha_major = finlib.Finlib().regular_read_csv_to_stdard_df(f_jincha_major)
+
+            df_jincha_major = finlib.Finlib().remove_garbage(df_jincha_major, code_filed_name='code', code_format='C2D6')
+            logging.info(__file__ + " " + "\t df_jincha_major length " + str(df_jincha_major.__len__()))
+
+            df_jincha_major = df_jincha_major.drop_duplicates()
+            df_jincha_major = df_jincha_major.reset_index().drop('index', axis=1)
+        else:
+            logging.info(__file__ + " " + "no such file " + f_jincha_major)
+
+
+    #====
+        f_very_strong_up_trend = '/home/ryan/DATA/result/selected/ag_junxian_barstyle_very_strong_up_trend.csv'
+        logging.info(__file__ + " " + "loading f_very_strong_up_trend, " + f_very_strong_up_trend)
+        if (os.path.isfile(f_very_strong_up_trend)) and os.stat(f_very_strong_up_trend).st_size >= 10:  # > 10 bytes
+            df_very_strong_up_trend = finlib.Finlib().regular_read_csv_to_stdard_df(f_very_strong_up_trend)
+
+            df_very_strong_up_trend = finlib.Finlib().remove_garbage(df_very_strong_up_trend, code_filed_name='code', code_format='C2D6')
+            logging.info(__file__ + " " + "\t df_very_strong_up_trend length " + str(df_very_strong_up_trend.__len__()))
+
+            df_very_strong_up_trend = df_very_strong_up_trend.drop_duplicates()
+            df_very_strong_up_trend = df_very_strong_up_trend.reset_index().drop('index', axis=1)
+        else:
+            logging.info(__file__ + " " + "no such file " + f_very_strong_up_trend)
+
+
+
+    #====
+        f_very_strong_down_trend = '/home/ryan/DATA/result/selected/ag_junxian_barstyle_very_strong_down_trend.csv'
+        logging.info(__file__ + " " + "loading f_very_strong_down_trend, " + f_very_strong_down_trend)
+        if (os.path.isfile(f_very_strong_down_trend)) and os.stat(f_very_strong_down_trend).st_size >= 10:  # > 10 bytes
+            df_very_strong_down_trend = finlib.Finlib().regular_read_csv_to_stdard_df(f_very_strong_down_trend)
+
+            df_very_strong_down_trend = finlib.Finlib().remove_garbage(df_very_strong_down_trend, code_filed_name='code', code_format='C2D6')
+            logging.info(__file__ + " " + "\t df_very_strong_down_trend length " + str(df_very_strong_down_trend.__len__()))
+
+            df_very_strong_down_trend = df_very_strong_down_trend.drop_duplicates()
+            df_very_strong_down_trend = df_very_strong_down_trend.reset_index().drop('index', axis=1)
+        else:
+            logging.info(__file__ + " " + "no such file " + f_very_strong_down_trend)
 
     elif stock_global in ['HK', 'KG']:
 
@@ -1278,6 +1365,45 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
             logging.info(__file__+" "+"filtering df_concept_top")
             df_concept_top = finlib.Finlib().df_filter(df_concept_top)
             arr.append('df_concept_top')
+
+        if 'df_yunxian_sell' in locals():
+            logging.info(__file__+" "+"filtering df_yunxian_sell")
+            df_concept_top = finlib.Finlib().df_filter(df_yunxian_sell)
+            arr.append('df_yunxian_sell')
+
+        if 'df_yunxian_buy' in locals():
+            logging.info(__file__+" "+"filtering df_yunxian_buy")
+            df_concept_top = finlib.Finlib().df_filter(df_yunxian_buy)
+            arr.append('df_yunxian_buy')
+
+        if 'df_duotou_pailie' in locals():
+            logging.info(__file__+" "+"filtering df_duotou_pailie")
+            df_concept_top = finlib.Finlib().df_filter(df_duotou_pailie)
+            arr.append('df_duotou_pailie')
+
+        if 'df_jincha_minor' in locals():
+            logging.info(__file__+" "+"filtering df_jincha_minor")
+            df_concept_top = finlib.Finlib().df_filter(df_jincha_minor)
+            arr.append('df_jincha_minor')
+
+        if 'df_jincha_major' in locals():
+            logging.info(__file__+" "+"filtering df_jincha_major")
+            df_jincha_major = finlib.Finlib().df_filter(df_jincha_major)
+            arr.append('df_jincha_major')
+
+        if 'df_very_strong_up_trend' in locals():
+            logging.info(__file__+" "+"filtering df_very_strong_up_trend")
+            df_concept_top = finlib.Finlib().df_filter(df_very_strong_up_trend)
+            arr.append('df_very_strong_up_trend')
+
+        if 'df_very_strong_down_trend' in locals():
+            logging.info(__file__+" "+"filtering df_very_strong_down_trend")
+            df_concept_top = finlib.Finlib().df_filter(df_very_strong_down_trend)
+            arr.append('df_very_strong_down_trend')
+
+
+
+
 
     ##################################################
     # AG: refine df
@@ -1466,6 +1592,16 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
 
     df_dict["df_moneyflow_top_amt_perc"] = {"term": "SHORT TERM", "price": "NA"}
     df_dict["df_moneyflow_top_amt_perc_selected"] = {"term": "SHORT TERM", "price": "NA"}
+
+    df_dict["df_yunxian_sell"] = {"term": "SHORT TERM", "price": "NA"}
+    df_dict["df_yunxian_buy"] = {"term": "SHORT TERM", "price": "NA"}
+    df_dict["df_duotou_pailie"] = {"term": "SHORT TERM", "price": "NA"}
+    df_dict["df_jincha_minor"] = {"term": "SHORT TERM", "price": "NA"}
+    df_dict["df_jincha_major"] = {"term": "SHORT TERM", "price": "NA"}
+    df_dict["df_very_strong_up_trend"] = {"term": "SHORT TERM", "price": "NA"}
+    df_dict["df_very_strong_down_trend"] = {"term": "SHORT TERM", "price": "NA"}
+
+
     #df_dict["df_key_points_ag_selected"] = {"term": "NA", "price": "NA"}
 
     if (stock_global in ['AG']) and (not full_combination):  #for AG

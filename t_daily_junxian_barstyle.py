@@ -189,7 +189,7 @@ def show_result(file, dir, filebase):
     df_jincha_minor.to_csv(dir+"/"+filebase+"_jincha_minor.csv", encoding='UTF-8', index=False)
 
     df_jincha_major = df_1[df_1['jincha_major']==True].reset_index().drop('index', axis=1)
-    df_jincha_minor.to_csv(dir+"/"+filebase+"_jincha_minor.csv", encoding='UTF-8', index=False)
+    df_jincha_major.to_csv(dir+"/"+filebase+"_jincha_major.csv", encoding='UTF-8', index=False)
 
     df_very_strong_up_trend = df_1[df_1['very_strong_up_trend']==True].reset_index().drop('index', axis=1)
     df_very_strong_up_trend.to_csv(dir+"/"+filebase+"_very_strong_up_trend.csv", encoding='UTF-8', index=False)
