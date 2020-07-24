@@ -1127,7 +1127,7 @@ def industry_rank(quarterly_fundamental_csv=None):
         df_a_ind = df_a_ind.sort_values('score_sum', ascending=False).reset_index().drop('index', axis=1)
         df_a_ind = pd.DataFrame([df_a_ind.__len__()] * df_a_ind.__len__(), columns=['peers']).join(df_a_ind)
 
-        logging.info(industry + " len " + str(df_a_ind.__len__()))
+        logging.info(str(industry) + " len " + str(df_a_ind.__len__()))
         #max_row = df_a_ind.loc[df_a_ind['result_value_quarter_fundation'].idxmax()].copy()
         #max_row.set_value('peers', df_a_ind.__len__())
         #df_result = df_result.append(max_row)
