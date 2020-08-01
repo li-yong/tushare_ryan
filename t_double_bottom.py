@@ -156,7 +156,7 @@ plt.plot_date(x_date, df['close'], 'o', markersize=1.5, color='red', alpha=0.7) 
 plt.plot_date(x_date, y_pol, '-', markersize=1.0, color='black', alpha=0.9)
 
 for position in suspected_bottoms:
-    pass
+    print("vline:"+str(x_date[position]))
     plt.axvline(x=x_date[position], linestyle='-.', color='r')
 
 plt.axhline(threshold, linestyle='--', color='b')
