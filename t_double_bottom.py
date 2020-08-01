@@ -13,16 +13,19 @@ import time
 import finlib
 import re
 import logging
-
+import tabulate
 
 logging.getLogger('matplotlib.font_manager').disabled = True
 
 data_csv = "/home/ryan/DATA/DAY_Global/AG/SH600519.csv"
 data_csv = "/home/ryan/DATA/DAY_Global/AG/SZ000651.csv"
 df = finlib.Finlib().regular_read_csv_to_stdard_df(data_csv=data_csv)
-df = df.tail(210).reset_index().drop('index', axis=1)
+df = df.tail(210)
+df = df[ (df['low'] > 0) & (df['high'] > 0) & (df['open'] > 0) & (df['close'] > 0) ]
+df = df.reset_index().drop('index', axis=1)
 # use numerical integer index instead of date
-print(df.tail(5))
+print(tabulate.tabulate(df.tail(5), headers='keys', tablefmt='psql'))
+
 
 #reduce data length show in plot
 df['date'] = df['date'].apply(lambda _d: datetime.datetime.strptime(str(_d), '%Y%m%d'))
@@ -41,7 +44,7 @@ y_pol = np.polyval(pol, x)
 
 #___ plotting ___
 plt.figure(figsize=(150, 2), dpi= 120, facecolor='w', edgecolor='k')
-plt.xticks(rotation=90)
+#plt.xticks(rotation=90)
 
 # plot stock data
 plt.plot_date(x_date, y_data, 'o', markersize=1.5, color='grey', alpha=0.7)
@@ -49,7 +52,7 @@ plt.plot_date(x_date, y_data, 'o', markersize=1.5, color='grey', alpha=0.7)
 # plot polynomial fit
 plt.plot_date(x_date, y_pol, '-', markersize=1.0, color='black', alpha=0.9)
 plt.legend(['stock data', 'polynomial fit'])
-plt.show()
+#plt.show()
 
 # ___ detection of local minimums and maximums ___
 data = y_pol
@@ -59,12 +62,21 @@ l_max = (np.diff(np.sign(np.diff(data))) < 0).nonzero()[0] + 1      # local max
 # +1 due to the fact that diff reduces the original index number
 
 # plot
-plt.figure(figsize=(15, 2), dpi= 120, facecolor='w', edgecolor='k')
-plt.plot(x, data, color='grey')
-plt.plot(x[l_min], data[l_min], "o", label="min", color='r')        # minima
-plt.plot(x[l_max], data[l_max], "o", label="max", color='b')        # maxima
+x_min_list=[]
+x_max_list=[]
+
+for i in l_min:
+    x_min_list.append(x_date[i])
+
+for i in l_max:
+    x_max_list.append(x_date[i])
+
+plt.figure(figsize=(150, 2), dpi= 120, facecolor='w', edgecolor='k')
+plt.plot_date(x_date, data, color='grey')
+plt.plot_date(x_min_list, data[l_min], "o", label="min", color='r')        # minima
+plt.plot_date(x_max_list, data[l_max], "o", label="max", color='b')        # maxima
 plt.title('Local minima and maxima')
-plt.show()
+#plt.show()
 
 print('l_min: ', l_min)
 
@@ -78,6 +90,7 @@ dict_i = dict()
 dict_x = dict()
 
 df_len = len(df.index)  # number of rows in dataset
+
 
 for element in l_min:  # x coordinates of suspected minimums
     l_bound = element - delta  # lower bound (left)
@@ -132,27 +145,28 @@ for key_i in y_dict.keys():
 # ___ plotting ___
 plt.figure(figsize=(20, 10), dpi=120, facecolor='w', edgecolor='k')
 # plot stock data
-plt.plot(x_data, y_data, 'o', markersize=1.5, color='magenta', alpha=0.7)
+plt.plot_date(x_date, y_data, 'o', markersize=1.5, color='magenta', alpha=0.7)
 
 # we can plot also all the other prices to get a price range for given day just for information
-plt.plot(x_data, df['high'], 'o', markersize=1.5, color='blue', alpha=0.7)
-plt.plot(x_data, df['open'], 'o', markersize=1.5, color='grey', alpha=0.7)
-plt.plot(x_data, df['close'], 'o', markersize=1.5, color='red',
-         alpha=0.7)  # Adj Close should be more accurate indication (accounts for dividends and stock splits)
-#plt.plot(x_data, df['Adj Close'], 'o', markersize=1.5, color='green', alpha=0.4)
+plt.plot_date(x_date, df['high'], 'o', markersize=1.5, color='blue', alpha=0.7)
+plt.plot_date(x_date, df['open'], 'o', markersize=1.5, color='grey', alpha=0.7)
+plt.plot_date(x_date, df['close'], 'o', markersize=1.5, color='red', alpha=0.7)  # Adj Close should be more accurate indication (accounts for dividends and stock splits)
 
 # plot polynomial fit
-plt.plot(x, y_pol, '-', markersize=1.0, color='black', alpha=0.9)
+plt.plot_date(x_date, y_pol, '-', markersize=1.0, color='black', alpha=0.9)
 
 for position in suspected_bottoms:
-    plt.axvline(x=position, linestyle='-.', color='r')
+    pass
+    plt.axvline(x=x_date[position], linestyle='-.', color='r')
 
 plt.axhline(threshold, linestyle='--', color='b')
 
 for key in dict_x.keys():
     # print('dict key value: ', dict_i[key])
     for value in dict_x[key]:
-        plt.axvline(x=value, linestyle='-', color='lightblue', alpha=0.2)
+        print(value)
+        if value in range(x_date.__len__()):
+            plt.axvline(x=x_date[value], linestyle='-', color='lightblue', alpha=0.2)
 
 plt.show()
 
