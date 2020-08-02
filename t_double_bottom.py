@@ -17,23 +17,49 @@ import tabulate
 
 logging.getLogger('matplotlib.font_manager').disabled = True
 
+
+stock_list_pri = finlib.Finlib().prime_stock_list()
+stock_list_all = finlib.Finlib().get_A_stock_instrment()
+stock_list_all = finlib.Finlib().add_market_to_code(df=stock_list_all)
+
+
+#for i  in range(stock_list_pri.__len__()):
+#    code = stock_list_pri.iloc[i]['code']
+#    name = stock_list_pri.iloc[i]['name']
+#    csv= '/home/ryan/DATA/DAY_Global/AG/'+code+".csv"
+    #df = finlib.Finlib().regular_read_csv_to_stdard_df(data_csv=csv, add_market=False)
+#    pass
+
+
+#for i  in range(stock_list_all.__len__()):
+#    code = stock_list_all.iloc[i]['code']
+#    name = stock_list_all.iloc[i]['name']
+#    csv= '/home/ryan/DATA/DAY_Global/AG/'+code+".csv"
+#    df = finlib.Finlib().regular_read_csv_to_stdard_df(data_csv=csv, add_market=True)
+#    pass
+
+
+
 data_csv = "/home/ryan/DATA/DAY_Global/AG/SH600519.csv"
 data_csv = "/home/ryan/DATA/DAY_Global/AG/SZ000651.csv"
 df = finlib.Finlib().regular_read_csv_to_stdard_df(data_csv=data_csv)
-df = df.tail(210)
+df = df.tail(90) #.head(120) #ryan_debug
+
+
 df = df[ (df['low'] > 0) & (df['high'] > 0) & (df['open'] > 0) & (df['close'] > 0) ]
 df = df.reset_index().drop('index', axis=1)
 # use numerical integer index instead of date
 print(tabulate.tabulate(df.tail(5), headers='keys', tablefmt='psql'))
 
-
-#reduce data length show in plot
 df['date'] = df['date'].apply(lambda _d: datetime.datetime.strptime(str(_d), '%Y%m%d'))
-x_date = df['date'].to_list()
 
-# discrete dataset
-x_data = list(range(df.__len__()))      # [0..209]
-y_data = df['low']
+mean_window = 1 #ryan_debug
+
+y_data = df['close'].rolling(window=mean_window).mean().dropna()
+data_len = y_data.__len__()
+
+x_date = df['date'][mean_window-1:].to_list()
+x_data = list(range(data_len))      # [0..209]
 
 # x values for the polynomial fit, 200 points
 x = np.linspace(0, max(x_data), max(x_data) + 1)
@@ -42,47 +68,80 @@ x = np.linspace(0, max(x_data), max(x_data) + 1)
 pol = np.polyfit(x_data, y_data, 17)
 y_pol = np.polyval(pol, x)
 
+
 #___ plotting ___
-plt.figure(figsize=(150, 2), dpi= 120, facecolor='w', edgecolor='k')
+plt.figure(figsize=(150, 10), dpi= 120, facecolor='w', edgecolor='k')
+legend_list=[]
 #plt.xticks(rotation=90)
 
 # plot stock data
 plt.plot_date(x_date, y_data, 'o', markersize=1.5, color='grey', alpha=0.7)
-
+legend_list.append('stock data')
 # plot polynomial fit
 plt.plot_date(x_date, y_pol, '-', markersize=1.0, color='black', alpha=0.9)
-plt.legend(['stock data', 'polynomial fit'])
+legend_list.append('polynomial fit')
+
 #plt.show()
 
+
+########################################
 # ___ detection of local minimums and maximums ___
-data = y_pol
-min_max = np.diff(np.sign(np.diff(data))).nonzero()[0] + 1          # local min & max
-l_min = (np.diff(np.sign(np.diff(data))) > 0).nonzero()[0] + 1      # local min
-l_max = (np.diff(np.sign(np.diff(data))) < 0).nonzero()[0] + 1      # local max
+########################################
+min_max = np.diff(np.sign(np.diff(y_pol))).nonzero()[0] + 1          # local min & max
+l_min = (np.diff(np.sign(np.diff(y_pol))) > 0).nonzero()[0] + 1      # local min
+l_max = (np.diff(np.sign(np.diff(y_pol))) < 0).nonzero()[0] + 1      # local max
 # +1 due to the fact that diff reduces the original index number
 
 # plot
 x_min_list=[]
+y_min_list=[]
+y_min_pol_list=[]
+
 x_max_list=[]
+y_max_list=[]
+y_max_pol_list=[]
+
 
 for i in l_min:
     x_min_list.append(x_date[i])
+    y_min_list.append(y_data[i])
+    y_min_pol_list.append(y_pol[i])
+    plt.annotate(x_date[i].strftime("%m-%d")+" "+str(round(y_pol[i],2)), (x_date[i], y_pol[i]),  label="min", color='r')
 
 for i in l_max:
     x_max_list.append(x_date[i])
+    y_max_list.append(y_data[i])
+    y_max_pol_list.append(y_pol[i])
+    plt.annotate(x_date[i].strftime("%m-%d")+" "+str(round(y_pol[i])), (x_date[i], y_pol[i]), label="min", color='b')
 
-plt.figure(figsize=(150, 2), dpi= 120, facecolor='w', edgecolor='k')
-plt.plot_date(x_date, data, color='grey')
-plt.plot_date(x_min_list, data[l_min], "o", label="min", color='r')        # minima
-plt.plot_date(x_max_list, data[l_max], "o", label="max", color='b')        # maxima
-plt.title('Local minima and maxima')
-#plt.show()
-
-print('l_min: ', l_min)
 
 # print('corresponding LOW values for suspected indeces: ')
-# print(df.low.iloc[l_min])
+print(df.low.iloc[l_min])
 
+
+#plt.figure(figsize=(150, 2), dpi= 120, facecolor='w', edgecolor='k')
+#plt.plot_date(x_date, y_pol, color='grey')
+#legend_list.append('polyfit_2')
+
+#plt.plot_date(x_min_list, y_pol[l_min], "o", label="min", color='r')        # minima
+#plt.plot_date( y_pol[l_min], "o", label="min", color='r')        # minima
+#legend_list.append('min_p')
+#plt.plot_date(x_max_list, y_pol[l_max], "o", label="max", color='b')        # maxima
+#plt.plot_date( y_pol[l_max], "o", label="max", color='b')        # maxima
+#legend_list.append('max_p')
+
+plt.title('Local minima and maxima')
+
+# I choose using fitted ploynomial number as breakthough vaule
+
+
+#plt.show()
+
+
+
+########################################
+# Extend range
+########################################
 # extend the suspected x range:
 delta = 10  # how many ticks to the left and to the right from local minimum on x axis
 
@@ -143,17 +202,21 @@ for key_i in y_dict.keys():
             suspected_bottoms.append(key_i)
 
 # ___ plotting ___
-plt.figure(figsize=(20, 10), dpi=120, facecolor='w', edgecolor='k')
+#plt.figure(figsize=(20, 10), dpi=120, facecolor='w', edgecolor='k')
+
 # plot stock data
-plt.plot_date(x_date, y_data, 'o', markersize=1.5, color='magenta', alpha=0.7)
+#plt.plot_date(x_date, y_data, 'o', markersize=1.5, color='magenta', alpha=0.7)
+#legend_list.append('stock_data_2')
 
 # we can plot also all the other prices to get a price range for given day just for information
-plt.plot_date(x_date, df['high'], 'o', markersize=1.5, color='blue', alpha=0.7)
-plt.plot_date(x_date, df['open'], 'o', markersize=1.5, color='grey', alpha=0.7)
-plt.plot_date(x_date, df['close'], 'o', markersize=1.5, color='red', alpha=0.7)  # Adj Close should be more accurate indication (accounts for dividends and stock splits)
+#plt.plot_date(x_date, df['high'], 'o', markersize=1.5, color='blue', alpha=0.7)
+#plt.plot_date(x_date, df['open'], 'o', markersize=1.5, color='grey', alpha=0.7)
+#plt.plot_date(x_date, df['close'], 'o', markersize=1.5, color='red', alpha=0.7)  # Adj Close should be more accurate indication (accounts for dividends and stock splits)
 
 # plot polynomial fit
-plt.plot_date(x_date, y_pol, '-', markersize=1.0, color='black', alpha=0.9)
+#plt.plot_date(x_date, y_pol, '-', markersize=1.0, color='black', alpha=0.9)
+#legend_list.append('poly_fit_3')
+plt.legend(legend_list)
 
 for position in suspected_bottoms:
     print("vline:"+str(x_date[position]))
@@ -164,7 +227,6 @@ plt.axhline(threshold, linestyle='--', color='b')
 for key in dict_x.keys():
     # print('dict key value: ', dict_i[key])
     for value in dict_x[key]:
-        print(value)
         if value in range(x_date.__len__()):
             plt.axvline(x=x_date[value], linestyle='-', color='lightblue', alpha=0.2)
 
