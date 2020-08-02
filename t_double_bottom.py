@@ -27,6 +27,9 @@ def draw_a_stock(df,code,name):
     mean_window = 1 #ryan_debug
     predict_ext_win = 1 ## of days to predict
 
+
+    show_plot = False
+
     df = df[ (df['low'] > 0) & (df['high'] > 0) & (df['open'] > 0) & (df['close'] > 0) ]
     df = df.reset_index().drop('index', axis=1)
     # use numerical integer index instead of date
@@ -103,28 +106,41 @@ def draw_a_stock(df,code,name):
 
 
     #fit the chart left minimal
-    pol_min = np.polyfit(l_min[:2], y_min_pol_list[:2], 1)
-    y_pol_min = np.polyval(pol_min, np.linspace(0, data_len-1+predict_ext_win, data_len+predict_ext_win))
-    plt.plot_date(x_date_ext, y_pol_min, '-', color='blue')
+    pol_min_left = np.polyfit(l_min[:2], y_min_pol_list[:2], 1)
+    y_pol_min_left = np.polyval(pol_min_left, np.linspace(0, data_len-1+predict_ext_win, data_len+predict_ext_win))
+    plt.plot_date(x_date_ext, y_pol_min_left, '-', color='blue')
 
-    pol_max = np.polyfit(l_max[:2], y_max_pol_list[:2], 1)
-    y_pol_max = np.polyval(pol_max, np.linspace(0, data_len-1+predict_ext_win, data_len+predict_ext_win))
-    plt.plot_date(x_date_ext, y_pol_max, '-', color='blue')
+    pol_max_left = np.polyfit(l_max[:2], y_max_pol_list[:2], 1)
+    y_pol_max_left = np.polyval(pol_max_left, np.linspace(0, data_len-1+predict_ext_win, data_len+predict_ext_win))
+    plt.plot_date(x_date_ext, y_pol_max_left, '-', color='blue')
 
 
     #fit the chart right minimal
-    pol_min = np.polyfit(l_min[-2:], y_min_pol_list[-2:], 1)
-    y_pol_min = np.polyval(pol_min, np.linspace(0, data_len-1+predict_ext_win, data_len+predict_ext_win))
-    plt.plot_date(x_date_ext, y_pol_min, '-', color='green', markersize=0.5)
+    pol_min_right = np.polyfit(l_min[-2:], y_min_pol_list[-2:], 1)
+    y_pol_min_right = np.polyval(pol_min_right, np.linspace(0, data_len-1+predict_ext_win, data_len+predict_ext_win))
+    plt.plot_date(x_date_ext, y_pol_min_right, '-', color='green', markersize=0.5)
 
-    pol_max = np.polyfit(l_max[-2:], y_max_pol_list[-2:], 1)
-    y_pol_max = np.polyval(pol_max, np.linspace(0, data_len-1+predict_ext_win, data_len+predict_ext_win))
-    plt.plot_date(x_date_ext, y_pol_max, '-', color='green', markersize=0.5)
+    pol_max_right = np.polyfit(l_max[-2:], y_max_pol_list[-2:], 1)
+    y_pol_max_right = np.polyval(pol_max_right, np.linspace(0, data_len-1+predict_ext_win, data_len+predict_ext_win))
+    plt.plot_date(x_date_ext, y_pol_max_right, '-', color='green', markersize=0.5)
+
+
+    pol_min_right_3 = np.polyfit(l_min[:3], y_min_pol_list[:3], 1)
+    slop_3_degree_min = np.arctan(pol_min_right_3[0]) * 180 / np.pi
+    if (slop_3_degree_min > 30):
+        show_plot =True
+        print("a very good right min slop")
+
+    pol_max_right_3 = np.polyfit(l_max[:3], y_max_pol_list[:3], 1)
+    slop_3_degree_max = np.arctan(pol_max_right_3[0]) * 180 / np.pi
+    if (slop_3_degree_max > 30):
+        show_plot = True
+        print("a very good right max slop")
 
 
 
     # print('corresponding LOW values for suspected indeces: ')
-    print(df.low.iloc[l_min])
+    #print(df.low.iloc[l_min])
 
 
     #plt.figure(figsize=(150, 2), dpi= 120, facecolor='w', edgecolor='k')
@@ -138,7 +154,7 @@ def draw_a_stock(df,code,name):
     #plt.plot_date( y_pol[l_max], "o", label="max", color='b')        # maxima
     #legend_list.append('max_p')
 
-    plt.title(code+" "+name+" ")
+    plt.title(code+" "+name+" "+x_date[-1].strftime("%Y-%m-%d")+" "+str(round(y_data.iloc[-1], 2)))
 
     # I choose using fitted ploynomial number as breakthough vaule
 
@@ -238,7 +254,9 @@ def draw_a_stock(df,code,name):
             if value in range(x_date.__len__()):
                 plt.axvline(x=x_date[value], linestyle='-', color='lightblue', alpha=0.2)
 
-    plt.show()
+
+    if show_plot:
+        plt.show()
 
     # print('dict_x: ', dict_x)   # this dictionary is holding the values of the suspected low price
     # print('y_dict:', y_dict)
@@ -250,6 +268,8 @@ def main():
     stock_list_pri = finlib.Finlib().prime_stock_list()
     stock_list_all = finlib.Finlib().get_A_stock_instrment()
     stock_list_all = finlib.Finlib().add_market_to_code(df=stock_list_all)
+
+    #stock_list_pri = stock_list_pri[stock_list_pri['code']=="SZ002032"]
 
     for i  in range(stock_list_pri.__len__()):
         code = stock_list_pri.iloc[i]['code']
