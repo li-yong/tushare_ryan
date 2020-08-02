@@ -21,23 +21,24 @@ plt.rcParams['font.family'] = ['AaTEST (Non-Commercial Use)']
 
 
 def draw_a_stock(df, code, name, show_fig_f=False, save_fig_f=False, min_sample=500):
-    #  data_csv = "/home/ryan/DATA/DAY_Global/AG/SH600519.csv"
-    #   data_csv = "/home/ryan/DATA/DAY_Global/AG/SZ000651.csv"
-    #    df = finlib.Finlib().regular_read_csv_to_stdard_df(data_csv=data_csv)
-    df = df.tail(90)  #.head(70) #ryan_debug
-    mean_window = 1  #ryan_debug
-    predict_ext_win = 1  ## of days to predict
-
-    hitted = False
     rtn_dict = {}
+    rtn_dict['hit']=False
 
     if df.__len__() < min_sample:
         return (rtn_dict)
 
+    df = df.tail(min_sample)  #.head(70) #ryan_debug
+    mean_window = 1  #ryan_debug
+    predict_ext_win = 1  ## of days to predict
+
     df = df[(df['low'] > 0) & (df['high'] > 0) & (df['open'] > 0) & (df['close'] > 0)]
     df = df.reset_index().drop('index', axis=1)
     # use numerical integer index instead of date
-    print(tabulate.tabulate(df.tail(5), headers='keys', tablefmt='psql'))
+    print(tabulate.tabulate(df.tail(2), headers='keys', tablefmt='psql'))
+
+    if df.__len__() < min_sample:
+        return (rtn_dict)
+
 
     df['date'] = df['date'].apply(lambda _d: datetime.datetime.strptime(str(_d), '%Y%m%d'))
 
@@ -57,9 +58,12 @@ def draw_a_stock(df, code, name, show_fig_f=False, save_fig_f=False, min_sample=
     pol = np.polyfit(x_data, y_data, 17)
     y_pol = np.polyval(pol, np.linspace(0, data_len - 1, data_len))
     y_pol_ext = np.polyval(pol, np.linspace(0, data_len - 1 + predict_ext_win, data_len + predict_ext_win))
+    rtn_dict['y_pol']=round(y_pol[-1],2)
+    rtn_dict['y_data'] = round(y_data.iloc[-1], 2)
 
     #___ plotting ___
-    plt.figure(figsize=(150, 10), dpi=120, facecolor='w', edgecolor='k')
+    plt.figure(figsize=(25, 10), facecolor='w', edgecolor='k')
+    #plt.figure(figsize=(150, 10), dpi=120, facecolor='w', edgecolor='k')
     legend_list = []
     #plt.xticks(rotation=90)
 
@@ -104,6 +108,7 @@ def draw_a_stock(df, code, name, show_fig_f=False, save_fig_f=False, min_sample=
     #fit the chart left minimal
     pol_min_left = np.polyfit(l_min[:2], y_min_pol_list[:2], 1)
     y_pol_min_left = np.polyval(pol_min_left, np.linspace(0, data_len - 1 + predict_ext_win, data_len + predict_ext_win))
+    rtn_dict['pol_min_left_2'] = round(y_pol_min_left[-1],2)
     plt.plot_date(x_date_ext, y_pol_min_left, '-', color='blue')
 
     pol_max_left = np.polyfit(l_max[:2], y_max_pol_list[:2], 1)
@@ -121,6 +126,7 @@ def draw_a_stock(df, code, name, show_fig_f=False, save_fig_f=False, min_sample=
 
     pol_min_right_3 = np.polyfit(l_min[:3], y_min_pol_list[:3], 1)
     slop_3_degree_min = np.arctan(pol_min_right_3[0]) * 180 / np.pi
+    plt.annotate("min 3p deg: "+str(round(slop_3_degree_min, 2)),xy=(10, 20), xycoords='figure points')
     if (slop_3_degree_min > 30):
         print("a very good right min slop degree " + str(round(slop_3_degree_min, 2)))
         rtn_dict['hit'] = True
@@ -128,6 +134,7 @@ def draw_a_stock(df, code, name, show_fig_f=False, save_fig_f=False, min_sample=
 
     pol_max_right_3 = np.polyfit(l_max[:3], y_max_pol_list[:3], 1)
     slop_3_degree_max = np.arctan(pol_max_right_3[0]) * 180 / np.pi
+    plt.annotate("max 3p deg: " + str(round(slop_3_degree_max, 2)),xy=(10, 10), xycoords='figure points')
     if (slop_3_degree_max > 30):
         rtn_dict['hit'] = True
         print("a very good right max slop degree " + str(round(slop_3_degree_max, 2)))
@@ -147,7 +154,7 @@ def draw_a_stock(df, code, name, show_fig_f=False, save_fig_f=False, min_sample=
     #plt.plot_date( y_pol[l_max], "o", label="max", color='b')        # maxima
     #legend_list.append('max_p')
 
-    plt.title(code + " " + name + " " + x_date[-1].strftime("%Y-%m-%d") + " " + str(round(y_data.iloc[-1], 2)))
+    plt.title(code + " " + name + " " + the_day + " " + str(round(y_data.iloc[-1], 2)))
 
     # I choose using fitted ploynomial number as breakthough vaule
 
@@ -264,6 +271,7 @@ def draw_a_stock(df, code, name, show_fig_f=False, save_fig_f=False, min_sample=
     rtn_dict['code'] = code
     rtn_dict['name'] = name
     rtn_dict['date'] = the_day
+    '''
     rtn_dict['cur_price'] = r['pri_cur']
     rtn_dict['p_max'] = r['p_max']
     rtn_dict['p_min'] = r['p_min']
@@ -279,6 +287,7 @@ def draw_a_stock(df, code, name, show_fig_f=False, save_fig_f=False, min_sample=
     rtn_dict['l_cnt'] = r['current_hit_cnt']['l_cnt']
     rtn_dict['o_cnt'] = r['current_hit_cnt']['o_cnt']
     rtn_dict['c_cnt'] = r['current_hit_cnt']['c_cnt']
+    '''
 
     return (rtn_dict)
 
