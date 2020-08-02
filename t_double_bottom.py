@@ -62,7 +62,7 @@ x_date = df['date'][mean_window-1:].to_list()
 x_data = list(range(data_len))      # [0..209]
 
 # x values for the polynomial fit, 200 points
-x = np.linspace(0, max(x_data), max(x_data) + 1)
+x = np.linspace(0, data_len-1, data_len)
 
 # polynomial fit of degree xx
 pol = np.polyfit(x_data, y_data, 17)
@@ -92,6 +92,7 @@ l_min = (np.diff(np.sign(np.diff(y_pol))) > 0).nonzero()[0] + 1      # local min
 l_max = (np.diff(np.sign(np.diff(y_pol))) < 0).nonzero()[0] + 1      # local max
 # +1 due to the fact that diff reduces the original index number
 
+
 # plot
 x_min_list=[]
 y_min_list=[]
@@ -113,6 +114,12 @@ for i in l_max:
     y_max_list.append(y_data[i])
     y_max_pol_list.append(y_pol[i])
     plt.annotate(x_date[i].strftime("%m-%d")+" "+str(round(y_pol[i])), (x_date[i], y_pol[i]), label="min", color='b')
+
+
+
+#fit the minimal
+pol = np.polyfit(x_min_list, y_min_pol_list, 1)
+y_pol = np.polyval(pol, x)
 
 
 # print('corresponding LOW values for suspected indeces: ')
