@@ -19,6 +19,9 @@ import os
 logging.getLogger('matplotlib.font_manager').disabled = True
 plt.rcParams['font.family'] = ['AaTEST (Non-Commercial Use)']
 
+from pandas.plotting import register_matplotlib_converters
+register_matplotlib_converters()
+
 
 def draw_a_stock(df, code, name, show_fig_f=False, save_fig_f=False, min_sample=500):
     rtn_dict = {}
@@ -62,7 +65,7 @@ def draw_a_stock(df, code, name, show_fig_f=False, save_fig_f=False, min_sample=
     rtn_dict['y_data'] = round(y_data.iloc[-1], 2)
 
     #___ plotting ___
-    plt.figure(figsize=(25, 10), facecolor='w', edgecolor='k')
+    plt.figure(figsize=(25, 15), facecolor='w', edgecolor='k')
     #plt.figure(figsize=(150, 10), dpi=120, facecolor='w', edgecolor='k')
     legend_list = []
     #plt.xticks(rotation=90)
@@ -97,48 +100,72 @@ def draw_a_stock(df, code, name, show_fig_f=False, save_fig_f=False, min_sample=
         x_min_list.append(x_date[i])
         y_min_list.append(y_data[i])
         y_min_pol_list.append(y_pol[i])
-        plt.annotate(x_date[i].strftime("%m-%d") + " " + str(round(y_pol[i], 2)), (x_date[i], y_pol[i]), label="min", color='r')
+        plt.annotate(x_date[i].strftime("%m-%d") + " " + str(round(y_pol[i], 2)), xy=(x_date[i], y_pol[i]), label="min", color='r')
 
     for i in l_max:
         x_max_list.append(x_date[i])
         y_max_list.append(y_data[i])
         y_max_pol_list.append(y_pol[i])
-        plt.annotate(x_date[i].strftime("%m-%d") + " " + str(round(y_pol[i])), (x_date[i], y_pol[i]), label="min", color='b')
+        plt.annotate(x_date[i].strftime("%m-%d") + " " + str(round(y_pol[i])), xy=(x_date[i], y_pol[i]), label="min", color='b')
 
     #fit the chart left minimal
-    pol_min_left = np.polyfit(l_min[:2], y_min_pol_list[:2], 1)
-    y_pol_min_left = np.polyval(pol_min_left, np.linspace(0, data_len - 1 + predict_ext_win, data_len + predict_ext_win))
-    rtn_dict['pol_min_left_2'] = round(y_pol_min_left[-1],2)
+    pol_min_left_2 = np.polyfit(l_min[:2], y_min_pol_list[:2], 1)
+    slop_2_degree_min_left = round(np.arctan(pol_min_left_2[0]) * 180 / np.pi,2)
+    y_pol_min_left = np.polyval(pol_min_left_2, np.linspace(0, data_len - 1 + predict_ext_win, data_len + predict_ext_win))
     plt.plot_date(x_date_ext, y_pol_min_left, '-', color='blue')
+    rtn_dict['pol_min_left_2'] = round(y_pol_min_left[-1],2) #the value is: line connecting two min points at today's value.
+    rtn_dict['slop_min_degree_left_2'] = slop_2_degree_min_left
+    plt.annotate("min 2p left, est:" + str(rtn_dict['pol_min_left_2'])+" deg"+str(slop_2_degree_min_left), xy=(x_date[-1], rtn_dict['pol_min_left_2']))
+    #plt.annotate("min 2p left deg: " + str(slop_2_degree_min), xy=(10, 0), xycoords='figure points')
 
-    pol_max_left = np.polyfit(l_max[:2], y_max_pol_list[:2], 1)
-    y_pol_max_left = np.polyval(pol_max_left, np.linspace(0, data_len - 1 + predict_ext_win, data_len + predict_ext_win))
+    pol_max_left_2 = np.polyfit(l_max[:2], y_max_pol_list[:2], 1)
+    slop_2_degree_max_left = round(np.arctan(pol_min_left_2[0]) * 180 / np.pi,2)
+    y_pol_max_left = np.polyval(pol_max_left_2, np.linspace(0, data_len - 1 + predict_ext_win, data_len + predict_ext_win))
     plt.plot_date(x_date_ext, y_pol_max_left, '-', color='blue')
+    rtn_dict['pol_max_left_2'] = round(y_pol_max_left[-1], 2)  # the value is: line connecting two min points at today's value.
+    rtn_dict['slop_max_degree_left_2'] = slop_2_degree_max_left
+    plt.annotate("max 2p left, est: " + str(rtn_dict['pol_max_left_2'])+" deg:"+str(slop_2_degree_max_left), xy=(x_date[-1], rtn_dict['pol_max_left_2']))
+    #plt.annotate("max 2p left deg: " + str(slop_2_degree_max), xy=(10, 10), xycoords='figure points')
+
 
     #fit the chart right minimal
-    pol_min_right = np.polyfit(l_min[-2:], y_min_pol_list[-2:], 1)
-    y_pol_min_right = np.polyval(pol_min_right, np.linspace(0, data_len - 1 + predict_ext_win, data_len + predict_ext_win))
+    pol_min_right_2 = np.polyfit(l_min[-2:], y_min_pol_list[-2:], 1)
+    slop_2_degree_min = round(np.arctan(pol_min_right_2[0]) * 180 / np.pi,2)
+    y_pol_min_right = np.polyval(pol_min_right_2, np.linspace(0, data_len - 1 + predict_ext_win, data_len + predict_ext_win))
     plt.plot_date(x_date_ext, y_pol_min_right, '-', color='green', markersize=0.5)
+    rtn_dict['pol_min_right_2'] = round(y_pol_min_right[-1],2) #the value is: line connecting two min points at today's value.
+    rtn_dict['slop_min_degree_2'] = slop_2_degree_min
+    plt.annotate("min 2p est: " + str(rtn_dict['pol_min_right_2'])+" deg:"+str(slop_2_degree_min), xy=(x_date[-1], rtn_dict['pol_min_right_2']))
 
-    pol_max_right = np.polyfit(l_max[-2:], y_max_pol_list[-2:], 1)
-    y_pol_max_right = np.polyval(pol_max_right, np.linspace(0, data_len - 1 + predict_ext_win, data_len + predict_ext_win))
+
+    pol_max_right_2 = np.polyfit(l_max[-2:], y_max_pol_list[-2:], 1)
+    slop_max_degree_2 = round(np.arctan(pol_max_right_2[0]) * 180 / np.pi,2)
+    y_pol_max_right = np.polyval(pol_max_right_2, np.linspace(0, data_len - 1 + predict_ext_win, data_len + predict_ext_win))
     plt.plot_date(x_date_ext, y_pol_max_right, '-', color='green', markersize=0.5)
+    rtn_dict['pol_max_right_2'] = round(y_pol_max_right[-1],2) #the value is: line connecting two max points at today's value.
+    rtn_dict['slop_max_degree_2'] = slop_max_degree_2
+    plt.annotate("max 2p est: " + str(rtn_dict['pol_max_right_2'])+" deg:"+str(slop_max_degree_2),xy=(x_date[-1], rtn_dict['pol_max_right_2']))
 
     pol_min_right_3 = np.polyfit(l_min[:3], y_min_pol_list[:3], 1)
-    slop_3_degree_min = np.arctan(pol_min_right_3[0]) * 180 / np.pi
-    plt.annotate("min 3p deg: "+str(round(slop_3_degree_min, 2)),xy=(10, 20), xycoords='figure points')
-    if (slop_3_degree_min > 30):
-        print("a very good right min slop degree " + str(round(slop_3_degree_min, 2)))
+    slop_min_degree_3 = round(np.arctan(pol_min_right_3[0]) * 180 / np.pi,2)
+    rtn_dict['pol_min_right_3'] = round(pol_min_right_3[-1], 2)
+    rtn_dict['slop_min_degree_3'] = round(slop_min_degree_3, 2)
+    plt.annotate("min 3p est: " + str(rtn_dict['pol_min_right_3'])+" deg:"+str(slop_min_degree_3),xy=(x_date[-1], rtn_dict['pol_min_right_3']))
+    if (slop_min_degree_3 > 30):
+        print("a very good right min slop degree " + str(slop_min_degree_3))
         rtn_dict['hit'] = True
-        rtn_dict['min_slop_degree_3'] = round(slop_3_degree_min, 2)
+
 
     pol_max_right_3 = np.polyfit(l_max[:3], y_max_pol_list[:3], 1)
-    slop_3_degree_max = np.arctan(pol_max_right_3[0]) * 180 / np.pi
-    plt.annotate("max 3p deg: " + str(round(slop_3_degree_max, 2)),xy=(10, 10), xycoords='figure points')
-    if (slop_3_degree_max > 30):
+    slop_max_degree_3 = round(np.arctan(pol_max_right_3[0]) * 180 / np.pi,2)
+    rtn_dict['pol_max_right_3'] = round(pol_max_right_3[-1], 2)
+    rtn_dict['slop_max_degree_3'] = round(slop_max_degree_3, 2)
+    plt.annotate("max 3p est: " + str(rtn_dict['pol_max_right_3'])+" deg:"+str(slop_max_degree_3),xy=(x_date[-1], rtn_dict['pol_max_right_3']))
+    #plt.annotate("max 3p deg: " + str(round(slop_max_degree_3, 2)),xy=(10, 50), xycoords='figure points')
+    if (slop_max_degree_3 > 30):
         rtn_dict['hit'] = True
-        print("a very good right max slop degree " + str(round(slop_3_degree_max, 2)))
-        rtn_dict['max_slop_degree_3'] = round(slop_3_degree_max, 2)
+        print("a very good right max slop degree " + str(round(slop_max_degree_3, 2)))
+        rtn_dict['max_slop_degree_3'] = round(slop_max_degree_3, 2)
 
     # print('corresponding LOW values for suspected indeces: ')
     #print(df.low.iloc[l_min])
