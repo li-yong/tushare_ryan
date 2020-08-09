@@ -320,8 +320,13 @@ def get_beneish_element(ts_code, ann_date, df_all_ts_pro):
     dict['fix_assets']=fix_assets
     
     # Depreciation  折旧|daa,折旧与摊销, depr_fa_coga_dpba, 固定资产折旧、油气资产折耗、生产性生物资产折旧
+
+    daa =  finlib.Finlib().get_ts_field(ts_code=ts_code, ann_date=ann_date, field='daa', big_memory=big_memory_global, df_all_ts_pro=df_all_ts_pro,fund_base_merged=fund_base_merged)
+    dict['daa']=daa
+    
     depr_fa_coga_dpba =  finlib.Finlib().get_ts_field(ts_code=ts_code, ann_date=ann_date, field='depr_fa_coga_dpba', big_memory=big_memory_global, df_all_ts_pro=df_all_ts_pro,fund_base_merged=fund_base_merged)
     dict['depr_fa_coga_dpba']=depr_fa_coga_dpba
+    
     
     # Total Assets 总资产|total_assets, 资产总计
     total_assets =  finlib.Finlib().get_ts_field(ts_code=ts_code, ann_date=ann_date, field='total_assets', big_memory=big_memory_global, df_all_ts_pro=df_all_ts_pro,fund_base_merged=fund_base_merged)
@@ -357,7 +362,127 @@ def get_beneish_element(ts_code, ann_date, df_all_ts_pro):
     
     return(dict)
 
+def beneish_calc(ts_code,ann_date,df_all_ts_pro): 
+    dict_rtn = {}
+    #turn_days,营业周期
+    dt = get_beneish_element(ts_code=ts_code, ann_date=ann_date,df_all_ts_pro=df_all_ts_pro)
+    dt_1 = get_beneish_element(ts_code=ts_code, ann_date='20181231',df_all_ts_pro=df_all_ts_pro)
+    
+    
+    dict_rtn['dt'] = dt
+    dict_rtn['dt_1'] = dt_1
+ 
 
+ 
+    dt_1 = {'c_fr_sale_sg': 93823,
+ 'total_cogs': 52155,
+ 'accounts_receiv': 1174,
+ 'total_cur_assets': 73717,
+ 'fix_assets': 2532,
+ 'daa': 1696,
+ 'total_assets': 86291,
+ 'sga_exp': 32426,
+ 'n_income': 5741,
+ 'n_cashflow_act': 8416,
+ 'total_cur_liab': 26297,
+ 'total_ncl': 1232}
+ 
+ 
+    dt = {'c_fr_sale_sg': 93685,
+ 'total_cogs': 49193,
+ 'accounts_receiv': 1373,
+ 'total_cur_assets': 67991,
+ 'fix_assets': 2058,
+ 'daa': 1716,
+ 'total_assets': 84832,
+ 'sga_exp': 33013,
+ 'n_income': 9888,
+ 'n_cashflow_act': 2877,
+ 'total_cur_liab': 26275,
+ 'total_ncl': 1470}
+ 
+    
+    #DSRI Days Sales in Receivables Index, 应收账款周转指数
+    # DSRI = (Net Receivablest / Salest) / Net Receivablest-1 / Salest-1)
+    _1 = dt['accounts_receiv']/dt['c_fr_sale_sg']
+    _2 = dt_1['accounts_receiv']/dt_1['c_fr_sale_sg']
+    DSRI = _1/_2
+    dict_rtn['DSRI'] = DSRI
+    
+    #GMI Gross Margin Index, 毛利率指数
+    #GMI = [(Salest-1 - COGSt-1) / Salest-1] / [(Salest - COGSt) / Salest]    
+    _1 = (dt['c_fr_sale_sg'] - dt['total_cogs'])/- dt['c_fr_sale_sg']
+    _2 = (dt_1['c_fr_sale_sg'] - dt_1['total_cogs'])/- dt_1['c_fr_sale_sg']
+    GMI = _1/_2   
+    dict_rtn['GMI'] = GMI
+    
+    #AQI Asset Quality Index,  资产质量指数
+    #AQI = [1 - (Current Assetst + PP&Et + Securitiest) / Total Assetst] / [1 - ((Current Assetst-1 + PP&Et-1 + Securitiest-1) / Total Assetst-1)]
+    _1 = (dt['total_assets']-dt['fix_assets']-dt['total_cur_assets'])/dt['total_assets']
+    _2 = (dt_1['total_assets']-dt_1['fix_assets']-dt_1['total_cur_assets'])/dt_1['total_assets']
+    AQI = _1/_2    
+    dict_rtn['AQI'] = AQI
+    
+    
+    #SGI Sales Growth Index, 销售增长指数
+    #SGI = Salest / Salest-1
+    SGI = dt['c_fr_sale_sg']/dt_1['c_fr_sale_sg']
+    dict_rtn['SGI'] = SGI
+    
+    #DEPI Depreciation Index, 折旧指数
+    #DEPI = (Depreciationt-1/ (PP&Et-1 + Depreciationt-1)) / (Depreciationt / (PP&Et + Depreciationt))
+    _1 = dt['daa']/(dt['daa']+dt['fix_assets'])    
+    _2 = dt_1['daa']/(dt_1['daa']+dt_1['fix_assets'])
+    DEPI = _1/_2 
+    dict_rtn['DEPI'] = DEPI
+    
+    #SGAI Sales, General and Administrative Expenses Index,销售费用指数
+    #SGAI = (SG&A Expenset / Salest) / (SG&A Expenset-1 / Salest-1)
+    _1 = dt['sga_exp']/dt['c_fr_sale_sg']
+    _2 = dt_1['sga_exp']/dt_1['c_fr_sale_sg']
+    SGAI = _1/_2
+    dict_rtn['SGAI'] = SGAI
+    
+    #TATA Total Accruals to Total Assets, 应计总数与总资产比率
+    #TATA = (Income from Continuing Operationst - Cash Flows from Operationst) / Total Assetst
+    TATA = (dt_1['n_income']-dt_1['n_cashflow_act'])/dt_1['total_assets']    
+    dict_rtn['TATA'] = TATA
+    
+    #LVGI  Leverage Index,
+    #LVGI = [(Current Liabilitiest + Total Long Term Debtt) / Total Assetst] / [(Current Liabilitiest-1 + Total Long Term Debtt-1) / Total Assetst-1]
+    _1 = (dt['total_ncl']+dt['total_cur_liab'])/dt['total_assets']
+    _2 = (dt_1['total_ncl']+dt_1['total_cur_liab'])/dt_1['total_assets']
+    LVGI = _1/_2 
+    dict_rtn['LVGI'] = LVGI
+    
+    
+    logging.info("DSRI:"+str(round(DSRI,2)))
+    logging.info("GMI:"+str(round(GMI,2)))
+    logging.info("AQI:"+str(round(AQI,2)))
+    logging.info("SGI:"+str(round(SGI,2)))
+    logging.info("DEPI:"+str(round(DEPI,2)))
+    logging.info("SGAI:"+str(round(SGAI,2)))
+    logging.info("TATA:"+str(round(TATA,2)))
+    logging.info("LVGI:"+str(round(LVGI,2)))
+    logging.info("          ")
+    
+    M_5v= -6.065+ .823*DSRI + .906*GMI + .593*AQI + .717*SGI + .107*DEPI
+    M_8v= -4.84 + .920* DSRI + .528* GMI + .404* AQI + .892* SGI + .115* DEPI -.172* SGAI  + 4.679*TATA - .327* LVGI
+    dict_rtn['M_5v'] = M_5v
+    dict_rtn['M_8v'] = M_8v
+    
+    logging.info("M_5v:"+str(round(M_5v,2)))
+    logging.info("M_8v:"+str(round(M_8v,2)))
+    
+    if M_8v > 3 :
+         logging.info("WARNNING: M_8v great than 3"+ str(ts_code) + " "+str(ann_date) + " "+str(round(M_8v,2)))
+         
+    if M_5v > 3 :
+         logging.info("WARNNING: M_5v great than 3"+ str(ts_code) + " "+str(ann_date) + " "+str(round(M_5v,2))) 
+         
+    return(dict_rtn)
+    
+    
 def main():
     ########################
     #
@@ -518,40 +643,8 @@ def main():
     
     #M = -4.84 + 0.92 DSRI + 0.528 GMI + 0.404 AQI + 0.892 SGI + 0.115 DEPI – 0.172 SGAI + 4.679 TATA – 0.327 LVGI
     
-    
-    
-    #turn_days,营业周期
-    dict = get_beneish_element(ts_code=ts_code, ann_date=ann_date,df_all_ts_pro=df_all_ts_pro)
-    pass
-    
-    
-    #DSRI Days Sales in Receivables Index, 应收账款周转指数
-    # DSRI = (Net Receivablest / Salest) / Net Receivablest-1 / Salest-1)
-       
-    
-    #GMI Gross Margin Index, 毛利率指数
-    #GMI = [(Salest-1 - COGSt-1) / Salest-1] / [(Salest - COGSt) / Salest]    
-    
-    #AQI Asset Quality Index,  资产质量指数
-    #AQI = [1 - (Current Assetst + PP&Et + Securitiest) / Total Assetst] / [1 - ((Current Assetst-1 + PP&Et-1 + Securitiest-1) / Total Assetst-1)]
-    
-    #SGI Sales Growth Index, 销售增长指数
-    #SGI = Salest / Salest-1
-    
-    #DEPI Depreciation Index, 折旧指数
-    #DEPI = (Depreciationt-1/ (PP&Et-1 + Depreciationt-1)) / (Depreciationt / (PP&Et + Depreciationt))
-    
-    #SGAI Sales, General and Administrative Expenses Index,销售费用指数
-    #SGAI = (SG&A Expenset / Salest) / (SG&A Expenset-1 / Salest-1)
-    
-    
-    #TATA Total Accruals to Total Assets, 应计总数与总资产比率
-    #TATA = (Income from Continuing Operationst - Cash Flows from Operationst) / Total Assetst
-    
-    #LVGI  Leverage Index,
-    #LVGI = [(Current Liabilitiest + Total Long Term Debtt) / Total Assetst] / [(Current Liabilitiest-1 + Total Long Term Debtt-1) / Total Assetst-1]
-    
-    
+    dict_rtn = beneish_calc(ts_code=ts_code,ann_date=ann_date,df_all_ts_pro=df_all_ts_pro)
+
 
     logging.info('script completed')
     os._exit(0)
