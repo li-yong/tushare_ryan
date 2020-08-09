@@ -278,7 +278,7 @@ def set_global(debug=False, big_memory=False, force_run=False):
 
     query_fields_cashflow = 'ts_code,update_flag,end_date,net_profit,amort_intang_assets,ann_date,beg_bal_cash,beg_bal_cash_equ,c_cash_equ_beg_period,c_cash_equ_end_period,c_disp_withdrwl_invest,c_fr_oth_operate_a,c_fr_sale_sg,c_inf_fr_operate_a,c_paid_for_taxes,c_paid_goods_s,c_paid_invest,c_paid_to_for_empl,c_pay_acq_const_fiolta,c_pay_claims_orig_inco,c_pay_dist_dpcp_int_exp,c_prepay_amt_borr,c_recp_borrow,c_recp_cap_contrib,c_recp_return_invest,comp_type,conv_copbonds_due_within_1y,conv_debt_into_cap,decr_def_inc_tax_assets,decr_deferred_exp,decr_inventories,decr_oper_payable,depr_fa_coga_dpba,eff_fx_flu_cash,end_bal_cash,end_bal_cash_equ,f_ann_date,fa_fnc_leases,finan_exp,free_cashflow,ifc_cash_incr,im_n_incr_cash_equ,im_net_cashflow_oper_act,incl_cash_rec_saims,incl_dvd_profit_paid_sc_ms,incr_acc_exp,incr_def_inc_tax_liab,incr_oper_payable,invest_loss,loss_disp_fiolta,loss_fv_chg,loss_scr_fa,lt_amort_deferred_exp,n_cap_incr_repur,n_cash_flows_fnc_act,n_cashflow_act,n_cashflow_inv_act,n_depos_incr_fi,n_disp_subs_oth_biz,n_inc_borr_oth_fi,n_incr_cash_cash_equ,n_incr_clt_loan_adv,n_incr_dep_cbob,n_incr_disp_faas,n_incr_disp_tfa,n_incr_insured_dep,n_incr_loans_cb,n_incr_loans_oth_bank,n_incr_pledge_loan,n_recp_disp_fiolta,n_recp_disp_sobu,n_reinsur_prem,oth_cash_pay_oper_act,oth_cash_recp_ral_fnc_act,oth_cashpay_ral_fnc_act,oth_pay_ral_inv_act,oth_recp_ral_inv_act,others,pay_comm_insur_plcy,pay_handling_chrg,prem_fr_orig_contr,proc_issue_bonds,prov_depr_assets,recp_tax_rends,report_type,st_cash_out_act,stot_cash_in_fnc_act,stot_cashout_fnc_act,stot_inflows_inv_act,stot_out_inv_act,uncon_invest_loss'
 
-    query_fields_fina_indicator = 'ts_code,update_flag,end_date,eps,roe,debt_to_assets,total_revenue_ps,netprofit_margin,adminexp_of_gr,ann_date,ar_turn,assets_to_eqt,assets_turn,assets_yoy,basic_eps_yoy,bps,bps_yoy,ca_to_assets,ca_turn,capital_rese_ps,cash_ratio,cfps,cfps_yoy,cogs_of_sales,current_exint,current_ratio,currentdebt_to_debt,debt_to_eqt,diluted2_eps,dp_assets_to_eqt,dt_eps,dt_eps_yoy,dt_netprofit_yoy,ebit,ebit_of_gr,ebit_ps,ebitda,ebt_yoy,eqt_to_debt,eqt_to_interestdebt,eqt_to_talcapital,eqt_yoy,equity_yoy,expense_of_sales,extra_item,fa_turn,fcfe,fcfe_ps,fcff,fcff_ps,finaexp_of_gr,fixed_assets,gc_of_gr,gross_margin,grossprofit_margin,impai_ttm,int_to_talcap,interestdebt,invest_capital,longdeb_to_debt,nca_to_assets,netdebt,netprofit_yoy,networking_capital,noncurrent_exint,npta,ocf_to_debt,ocf_to_shortdebt,ocf_yoy,ocfps,op_income,op_of_gr,op_yoy,or_yoy,profit_dedt,profit_to_gr,profit_to_op,q_dt_roe,q_gc_to_gr,q_npta,q_ocf_to_sales,q_op_qoq,q_roe,q_saleexp_to_gr,q_sales_yoy,quick_ratio,retained_earnings,retainedps,revenue_ps,roa,roa2_yearly,roa_dp,roa_yearly,roe_dt,roe_waa,roe_yearly,roe_yoy,roic,saleexp_to_gr,surplus_rese_ps,tangasset_to_intdebt,tangible_asset,tangibleasset_to_debt,tangibleasset_to_netdebt,tbassets_to_totalassets,tr_yoy,turn_days,undist_profit_ps,working_capital, rd_exp'
+    query_fields_fina_indicator = 'ts_code,update_flag,end_date,eps,roe,debt_to_assets,total_revenue_ps,netprofit_margin,adminexp_of_gr,ann_date,ar_turn,assets_to_eqt,assets_turn,assets_yoy,basic_eps_yoy,bps,bps_yoy,ca_to_assets,ca_turn,capital_rese_ps,cash_ratio,cfps,cfps_yoy,cogs_of_sales,current_exint,current_ratio,currentdebt_to_debt,debt_to_eqt,diluted2_eps,dp_assets_to_eqt,dt_eps,dt_eps_yoy,dt_netprofit_yoy,ebit,ebit_of_gr,ebit_ps,ebitda,ebt_yoy,eqt_to_debt,eqt_to_interestdebt,eqt_to_talcapital,eqt_yoy,equity_yoy,expense_of_sales,extra_item,fa_turn,fcfe,fcfe_ps,fcff,fcff_ps,finaexp_of_gr,fixed_assets,gc_of_gr,gross_margin,grossprofit_margin,impai_ttm,int_to_talcap,interestdebt,invest_capital,longdeb_to_debt,nca_to_assets,netdebt,netprofit_yoy,networking_capital,noncurrent_exint,npta,ocf_to_debt,ocf_to_shortdebt,ocf_yoy,ocfps,op_income,op_of_gr,op_yoy,or_yoy,profit_dedt,profit_to_gr,profit_to_op,q_dt_roe,q_gc_to_gr,q_npta,q_ocf_to_sales,q_op_qoq,q_roe,q_saleexp_to_gr,q_sales_yoy,quick_ratio,retained_earnings,retainedps,revenue_ps,roa,roa2_yearly,roa_dp,roa_yearly,roe_dt,roe_waa,roe_yearly,roe_yoy,roic,saleexp_to_gr,surplus_rese_ps,tangasset_to_intdebt,tangible_asset,tangibleasset_to_debt,tangibleasset_to_netdebt,tbassets_to_totalassets,tr_yoy,turn_days,undist_profit_ps,working_capital,rd_exp,daa'
 
     query_fields_forecast = 'ts_code,end_date,ann_date,change_reason,first_ann_date,last_parent_net,net_profit_max,net_profit_min,p_change_max,p_change_min,summary,type'
 
@@ -322,8 +322,10 @@ def get_beneish_element(ts_code, ann_date, df_all_ts_pro):
     # Depreciation  折旧|daa,折旧与摊销, depr_fa_coga_dpba, 固定资产折旧、油气资产折耗、生产性生物资产折旧
 
     daa =  finlib.Finlib().get_ts_field(ts_code=ts_code, ann_date=ann_date, field='daa', big_memory=big_memory_global, df_all_ts_pro=df_all_ts_pro,fund_base_merged=fund_base_merged)
-    dict['daa']=daa
-    
+    depr_fa_coga_dpba =  finlib.Finlib().get_ts_field(ts_code=ts_code, ann_date=ann_date, field='depr_fa_coga_dpba', big_memory=big_memory_global, df_all_ts_pro=df_all_ts_pro,fund_base_merged=fund_base_merged)
+    dict['daa']=daa  #daa is None
+    dict['daa']=depr_fa_coga_dpba  #ryan debug
+
     depr_fa_coga_dpba =  finlib.Finlib().get_ts_field(ts_code=ts_code, ann_date=ann_date, field='depr_fa_coga_dpba', big_memory=big_memory_global, df_all_ts_pro=df_all_ts_pro,fund_base_merged=fund_base_merged)
     dict['depr_fa_coga_dpba']=depr_fa_coga_dpba
     
@@ -359,54 +361,63 @@ def get_beneish_element(ts_code, ann_date, df_all_ts_pro):
     # Long-Term Debt  长期债务 | total_ncl, 非流动负债合计
     total_ncl =  finlib.Finlib().get_ts_field(ts_code=ts_code, ann_date=ann_date, field='total_ncl', big_memory=big_memory_global, df_all_ts_pro=df_all_ts_pro,fund_base_merged=fund_base_merged)
     dict['total_ncl']=total_ncl
-    
+    print(dict)
     return(dict)
 
 def beneish_calc(ts_code,ann_date,df_all_ts_pro): 
     dict_rtn = {}
     #turn_days,营业周期
+
+    current_date = datetime.datetime.strptime(ann_date, "%Y%m%d")
+
     dt = get_beneish_element(ts_code=ts_code, ann_date=ann_date,df_all_ts_pro=df_all_ts_pro)
-    dt_1 = get_beneish_element(ts_code=ts_code, ann_date='20181231',df_all_ts_pro=df_all_ts_pro)
+    dt_1 = get_beneish_element(ts_code=ts_code, ann_date=str(current_date.year -1 )+ '1231',df_all_ts_pro=df_all_ts_pro)
     
     
     dict_rtn['dt'] = dt
     dict_rtn['dt_1'] = dt_1
  
 
- 
-    dt_1 = {'c_fr_sale_sg': 93823,
- 'total_cogs': 52155,
- 'accounts_receiv': 1174,
- 'total_cur_assets': 73717,
- 'fix_assets': 2532,
- 'daa': 1696,
- 'total_assets': 86291,
- 'sga_exp': 32426,
- 'n_income': 5741,
- 'n_cashflow_act': 8416,
- 'total_cur_liab': 26297,
- 'total_ncl': 1232}
- 
- 
-    dt = {'c_fr_sale_sg': 93685,
- 'total_cogs': 49193,
- 'accounts_receiv': 1373,
- 'total_cur_assets': 67991,
- 'fix_assets': 2058,
- 'daa': 1716,
- 'total_assets': 84832,
- 'sga_exp': 33013,
- 'n_income': 9888,
- 'n_cashflow_act': 2877,
- 'total_cur_liab': 26275,
- 'total_ncl': 1470}
- 
+
+ #    dt_1 = {'c_fr_sale_sg': 93823,
+ # 'total_cogs': 52155,
+ # 'accounts_receiv': 1174,
+ # 'total_cur_assets': 73717,
+ # 'fix_assets': 2532,
+ # 'daa': 1696,
+ # 'total_assets': 86291,
+ # 'sga_exp': 32426,
+ # 'n_income': 5741,
+ # 'n_cashflow_act': 8416,
+ # 'total_cur_liab': 26297,
+ # 'total_ncl': 1232}
+ #
+ #
+ #    dt = {'c_fr_sale_sg': 93685,
+ # 'total_cogs': 49193,
+ # 'accounts_receiv': 1373,
+ # 'total_cur_assets': 67991,
+ # 'fix_assets': 2058,
+ # 'daa': 1716,
+ # 'total_assets': 84832,
+ # 'sga_exp': 33013,
+ # 'n_income': 9888,
+ # 'n_cashflow_act': 2877,
+ # 'total_cur_liab': 26275,
+ # 'total_ncl': 1470}
+
     
     #DSRI Days Sales in Receivables Index, 应收账款周转指数
     # DSRI = (Net Receivablest / Salest) / Net Receivablest-1 / Salest-1)
-    _1 = dt['accounts_receiv']/dt['c_fr_sale_sg']
-    _2 = dt_1['accounts_receiv']/dt_1['c_fr_sale_sg']
-    DSRI = _1/_2
+    if (dt['accounts_receiv'] == 0.0 )   or\
+            (dt_1['accounts_receiv'] == 0.0 )  or\
+            (dt['c_fr_sale_sg'] == 0.0 ) or\
+            (dt_1['c_fr_sale_sg'] == 0.0 ):
+        DSRI = 0
+    else:
+        _1 = dt['accounts_receiv']/dt['c_fr_sale_sg']
+        _2 = dt_1['accounts_receiv']/dt_1['c_fr_sale_sg']
+        DSRI = _1/_2
     dict_rtn['DSRI'] = DSRI
     
     #GMI Gross Margin Index, 毛利率指数
@@ -605,8 +616,9 @@ def main():
     fund_base_merged = None
 
     df = pro.income(ts_code=ts_code, period=ann_date, fields='ts_code,ann_date,revenue')
-    df = pro.fina_indicator(ts_code=ts_code, period=ann_date, fields='ts_code,ann_date,rd_exp')
-    pass
+    df = pro.fina_indicator(ts_code=ts_code, period=ann_date, fields='ts_code,ann_date,rd_exp,daa')
+    #df = pro.fina_indicator(ts_code=ts_code, period=ann_date, fields='ts_code,ann_date,daa')
+    print(1)
 
     #
     # df_1 = pro.index_basic(market='SSE')
@@ -636,12 +648,6 @@ def main():
     #净利润/营业总收入, return percent number.  49.48 == 49.48%  == net_profit*100.0/n_cashflow_act
     profit_to_gr =  finlib.Finlib().get_ts_field(ts_code=ts_code, ann_date=ann_date, field='profit_to_gr', big_memory=big_memory, df_all_ts_pro=df_all_ts_pro,fund_base_merged=fund_base_merged)
 
-
-
-    
-    #M = -6.065 + 0.823 DSRI + 0.906 GMI + 0.593 AQI + 0.717 SGI + 0.107 DEPI
-    
-    #M = -4.84 + 0.92 DSRI + 0.528 GMI + 0.404 AQI + 0.892 SGI + 0.115 DEPI – 0.172 SGAI + 4.679 TATA – 0.327 LVGI
     
     dict_rtn = beneish_calc(ts_code=ts_code,ann_date=ann_date,df_all_ts_pro=df_all_ts_pro)
 
