@@ -293,7 +293,7 @@ def set_global(debug=False, big_memory=False, force_run=False):
     ###end
 
 
-def get_ts_field(ts_code, ann_date, field, big_memory):
+def get_ts_field_DEL(ts_code, ann_date, field, big_memory):
 
     if big_memory:
         df = df_all_ts_pro
@@ -2337,13 +2337,13 @@ def _analyze_xiaoxiong_ct(ts_code, end_date, basic_df):
     ann_date_4q_before = tmp['ann_date_4q_before']
     ann_date_8q_before = tmp['ann_date_8q_before']
 
-    this_revenue = get_ts_field(ts_code=ts_code, ann_date=ann_date_this, field='revenue', big_memory=big_memory_global)
-    this_revenue_4q_before = get_ts_field(ts_code=ts_code, ann_date=ann_date_4q_before, field='revenue', big_memory=big_memory_global)
-    this_revenue_8q_before = get_ts_field(ts_code=ts_code, ann_date=ann_date_8q_before, field='revenue', big_memory=big_memory_global)
+    this_revenue = finlib.Finlib().get_ts_field(ts_code=ts_code, ann_date=ann_date_this, field='revenue', big_memory=big_memory_global, df_all_ts_pro=df_all_ts_pro,fund_base_merged=fund_base_merged)
+    this_revenue_4q_before =  finlib.Finlib().get_ts_field(ts_code=ts_code, ann_date=ann_date_4q_before, field='revenue', big_memory=big_memory_global, df_all_ts_pro=df_all_ts_pro,fund_base_merged=fund_base_merged)
+    this_revenue_8q_before =  finlib.Finlib().get_ts_field(ts_code=ts_code, ann_date=ann_date_8q_before, field='revenue', big_memory=big_memory_global, df_all_ts_pro=df_all_ts_pro,fund_base_merged=fund_base_merged)
 
-    this_accounts_receiv = get_ts_field(ts_code=ts_code, ann_date=ann_date_this, field='accounts_receiv', big_memory=big_memory_global)
-    this_accounts_receiv_4q_before = get_ts_field(ts_code=ts_code, ann_date=ann_date_4q_before, field='accounts_receiv', big_memory=big_memory_global)
-    this_accounts_receiv_8q_before = get_ts_field(ts_code=ts_code, ann_date=ann_date_8q_before, field='accounts_receiv', big_memory=big_memory_global)
+    this_accounts_receiv =  finlib.Finlib().get_ts_field(ts_code=ts_code, ann_date=ann_date_this, field='accounts_receiv', big_memory=big_memory_global, df_all_ts_pro=df_all_ts_pro,fund_base_merged=fund_base_merged)
+    this_accounts_receiv_4q_before =  finlib.Finlib().get_ts_field(ts_code=ts_code, ann_date=ann_date_4q_before, field='accounts_receiv', big_memory=big_memory_global, df_all_ts_pro=df_all_ts_pro,fund_base_merged=fund_base_merged)
+    this_accounts_receiv_8q_before =  finlib.Finlib().get_ts_field(ts_code=ts_code, ann_date=ann_date_8q_before, field='accounts_receiv', big_memory=big_memory_global, df_all_ts_pro=df_all_ts_pro,fund_base_merged=fund_base_merged)
 
     try:
         rule_1_year_1 = (this_revenue - this_revenue_4q_before) - (this_accounts_receiv - this_accounts_receiv_4q_before)
@@ -2359,9 +2359,9 @@ def _analyze_xiaoxiong_ct(ts_code, end_date, basic_df):
     except:
         pass
 
-    this_inventories = get_ts_field(ts_code=ts_code, ann_date=ann_date_this, field='inventories', big_memory=big_memory_global)
-    this_inventories_4q_before = get_ts_field(ts_code=ts_code, ann_date=ann_date_4q_before, field='inventories', big_memory=big_memory_global)
-    this_inventories_8q_before = get_ts_field(ts_code=ts_code, ann_date=ann_date_8q_before, field='inventories', big_memory=big_memory_global)
+    this_inventories =  finlib.Finlib().get_ts_field(ts_code=ts_code, ann_date=ann_date_this, field='inventories', big_memory=big_memory_global, df_all_ts_pro=df_all_ts_pro,fund_base_merged=fund_base_merged)
+    this_inventories_4q_before =  finlib.Finlib().get_ts_field(ts_code=ts_code, ann_date=ann_date_4q_before, field='inventories', big_memory=big_memory_global, df_all_ts_pro=df_all_ts_pro,fund_base_merged=fund_base_merged)
+    this_inventories_8q_before =  finlib.Finlib().get_ts_field(ts_code=ts_code, ann_date=ann_date_8q_before, field='inventories', big_memory=big_memory_global, df_all_ts_pro=df_all_ts_pro,fund_base_merged=fund_base_merged)
 
     try:
         rule_2_year_1 = (this_revenue - this_revenue_4q_before) - (this_inventories - this_inventories_4q_before)
@@ -2376,8 +2376,8 @@ def _analyze_xiaoxiong_ct(ts_code, end_date, basic_df):
     except:
         pass
 
-    this_total_cur_liab = get_ts_field(ts_code=ts_code, ann_date=ann_date_this, field='total_cur_liab', big_memory=big_memory_global)
-    this_total_cur_assets = get_ts_field(ts_code=ts_code, ann_date=ann_date_this, field='total_cur_assets', big_memory=big_memory_global)
+    this_total_cur_liab =  finlib.Finlib().get_ts_field(ts_code=ts_code, ann_date=ann_date_this, field='total_cur_liab', big_memory=big_memory_global, df_all_ts_pro=df_all_ts_pro,fund_base_merged=fund_base_merged)
+    this_total_cur_assets =  finlib.Finlib().get_ts_field(ts_code=ts_code, ann_date=ann_date_this, field='total_cur_assets', big_memory=big_memory_global, df_all_ts_pro=df_all_ts_pro,fund_base_merged=fund_base_merged)
 
     try:
         rule_3_year_1 = (this_total_cur_assets * 1.0 / (this_total_cur_liab + 1))
@@ -2391,9 +2391,9 @@ def _analyze_xiaoxiong_ct(ts_code, end_date, basic_df):
     except:
         pass
 
-    this_c_inf_fr_operate_a = get_ts_field(ts_code=ts_code, ann_date=ann_date_this, field='c_inf_fr_operate_a', big_memory=big_memory_global)  #经营活动现金流入小计
-    this_st_cash_out_act = get_ts_field(ts_code=ts_code, ann_date=ann_date_this, field='st_cash_out_act', big_memory=big_memory_global)  #经营活动现金流出小计
-    this_net_profit = get_ts_field(ts_code=ts_code, ann_date=ann_date_this, field='net_profit', big_memory=big_memory_global)  #净利润 (元，下同)
+    this_c_inf_fr_operate_a =  finlib.Finlib().get_ts_field(ts_code=ts_code, ann_date=ann_date_this, field='c_inf_fr_operate_a', big_memory=big_memory_global, df_all_ts_pro=df_all_ts_pro,fund_base_merged=fund_base_merged)  #经营活动现金流入小计
+    this_st_cash_out_act =  finlib.Finlib().get_ts_field(ts_code=ts_code, ann_date=ann_date_this, field='st_cash_out_act', big_memory=big_memory_global, df_all_ts_pro=df_all_ts_pro,fund_base_merged=fund_base_merged)  #经营活动现金流出小计
+    this_net_profit =  finlib.Finlib().get_ts_field(ts_code=ts_code, ann_date=ann_date_this, field='net_profit', big_memory=big_memory_global, df_all_ts_pro=df_all_ts_pro,fund_base_merged=fund_base_merged)  #净利润 (元，下同)
 
     try:
         rule_4_year_1 = (this_c_inf_fr_operate_a - this_st_cash_out_act) - this_net_profit
@@ -2405,7 +2405,7 @@ def _analyze_xiaoxiong_ct(ts_code, end_date, basic_df):
     except:
         pass
 
-    this_free_cashflow = get_ts_field(ts_code=ts_code, ann_date=ann_date_this, field='free_cashflow', big_memory=big_memory_global)
+    this_free_cashflow =  finlib.Finlib().get_ts_field(ts_code=ts_code, ann_date=ann_date_this, field='free_cashflow', big_memory=big_memory_global, df_all_ts_pro=df_all_ts_pro,fund_base_merged=fund_base_merged)
     try:
         if this_free_cashflow > 0:  #bigger is better
             bonusReason += 'Free cashflow > 0. '
@@ -2452,21 +2452,21 @@ def _analyze_white_horse_ct(ts_code, end_date, basic_df):
     tmp = finlib.Finlib().get_year_month_quarter(year=year, month=month)
 
     #### White Horse Stock of  Chang tou xue yuan
-    this_roe = get_ts_field(ts_code=ts_code, ann_date=tmp['ann_date'], field='roe', big_memory=big_memory_global)
+    this_roe =  finlib.Finlib().get_ts_field(ts_code=ts_code, ann_date=tmp['ann_date'], field='roe', big_memory=big_memory_global, df_all_ts_pro=df_all_ts_pro,fund_base_merged=fund_base_merged)
     #this_fund = finlib.Finlib().get_jaqs_field(ts_code=ts_code)
     this_fund = get_jaqs_field(ts_code=ts_code, date=end_date, big_memory=big_memory_global)
     this_pb = this_fund['pb']
 
-    roe_1y = get_ts_field(ts_code=ts_code, ann_date=tmp['ann_date_1y_before'], field='roe', big_memory=big_memory_global)
-    roe_2y = get_ts_field(ts_code=ts_code, ann_date=tmp['ann_date_2y_before'], field='roe', big_memory=big_memory_global)
-    roe_3y = get_ts_field(ts_code=ts_code, ann_date=tmp['ann_date_3y_before'], field='roe', big_memory=big_memory_global)
-    roe_4y = get_ts_field(ts_code=ts_code, ann_date=tmp['ann_date_4y_before'], field='roe', big_memory=big_memory_global)
-    roe_5y = get_ts_field(ts_code=ts_code, ann_date=tmp['ann_date_5y_before'], field='roe', big_memory=big_memory_global)
-    #roe_6y = get_ts_field(ts_code=ts_code, ann_date=tmp['ann_date_6y_before'], field='roe', big_memory=big_memory_global)
-    roe_7y = get_ts_field(ts_code=ts_code, ann_date=tmp['ann_date_7y_before'], field='roe', big_memory=big_memory_global)
-    roe_8y = get_ts_field(ts_code=ts_code, ann_date=tmp['ann_date_8y_before'], field='roe', big_memory=big_memory_global)
-    roe_9y = get_ts_field(ts_code=ts_code, ann_date=tmp['ann_date_9y_before'], field='roe', big_memory=big_memory_global)
-    roe_10y = get_ts_field(ts_code=ts_code, ann_date=tmp['ann_date_10y_before'], field='roe', big_memory=big_memory_global)
+    roe_1y =  finlib.Finlib().get_ts_field(ts_code=ts_code, ann_date=tmp['ann_date_1y_before'], field='roe', big_memory=big_memory_global, df_all_ts_pro=df_all_ts_pro,fund_base_merged=fund_base_merged)
+    roe_2y =  finlib.Finlib().get_ts_field(ts_code=ts_code, ann_date=tmp['ann_date_2y_before'], field='roe', big_memory=big_memory_global, df_all_ts_pro=df_all_ts_pro,fund_base_merged=fund_base_merged)
+    roe_3y =  finlib.Finlib().get_ts_field(ts_code=ts_code, ann_date=tmp['ann_date_3y_before'], field='roe', big_memory=big_memory_global, df_all_ts_pro=df_all_ts_pro,fund_base_merged=fund_base_merged)
+    roe_4y =  finlib.Finlib().get_ts_field(ts_code=ts_code, ann_date=tmp['ann_date_4y_before'], field='roe', big_memory=big_memory_global, df_all_ts_pro=df_all_ts_pro,fund_base_merged=fund_base_merged)
+    roe_5y =  finlib.Finlib().get_ts_field(ts_code=ts_code, ann_date=tmp['ann_date_5y_before'], field='roe', big_memory=big_memory_global, df_all_ts_pro=df_all_ts_pro,fund_base_merged=fund_base_merged)
+    #roe_6y =  finlib.Finlib().get_ts_field(ts_code=ts_code, ann_date=tmp['ann_date_6y_before'], field='roe', big_memory=big_memory_global, df_all_ts_pro=df_all_ts_pro,fund_base_merged=fund_base_merged)
+    roe_7y =  finlib.Finlib().get_ts_field(ts_code=ts_code, ann_date=tmp['ann_date_7y_before'], field='roe', big_memory=big_memory_global, df_all_ts_pro=df_all_ts_pro,fund_base_merged=fund_base_merged)
+    roe_8y =  finlib.Finlib().get_ts_field(ts_code=ts_code, ann_date=tmp['ann_date_8y_before'], field='roe', big_memory=big_memory_global, df_all_ts_pro=df_all_ts_pro,fund_base_merged=fund_base_merged)
+    roe_9y =  finlib.Finlib().get_ts_field(ts_code=ts_code, ann_date=tmp['ann_date_9y_before'], field='roe', big_memory=big_memory_global, df_all_ts_pro=df_all_ts_pro,fund_base_merged=fund_base_merged)
+    roe_10y =  finlib.Finlib().get_ts_field(ts_code=ts_code, ann_date=tmp['ann_date_10y_before'], field='roe', big_memory=big_memory_global, df_all_ts_pro=df_all_ts_pro,fund_base_merged=fund_base_merged)
 
     roeC = 15
     try:

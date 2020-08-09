@@ -3522,6 +3522,53 @@ class Finlib:
 
         return(df)
 
+    def get_ts_field(self, ts_code, ann_date, field, big_memory=False,df_all_ts_pro=None,fund_base_merged="/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/merged"):
+        #if big_memory==True, must provide df_all_ts_pro.
+
+        if fund_base_merged == None:
+            fund_base_merged = "/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/merged"
+
+        if big_memory:
+            df = df_all_ts_pro
+            df = df[df['ts_code'] == ts_code]
+            if (df.__len__() == 0):
+                logging.info(__file__ + " " + "no ts_code in df_all_ts_pro " + ts_code)
+                return
+
+            df = df[df['end_date'] == ann_date]
+            if (df.__len__() == 0):
+                logging.info(__file__ + " " + "no end_date in df_all_ts_pro " + ts_code + " " + ann_date)
+                return
+
+            data_in_field = df[field].values[0]
+            df = None
+            return (data_in_field)
+        else:
+            f = fund_base_merged + "/" + "merged_all_" + ann_date + ".csv"
+
+            if not os.path.exists(f):
+                logging.info(__file__ + " " + "file not exists, " + f)
+                return
+
+            df = pd.read_csv(f, converters={'end_date': str})
+
+            if not field in df.columns:
+                logging.info(__file__ + " " + "field not in the file, " + field + " " + f)
+                return
+
+            df = df[df['ts_code'] == ts_code]
+
+            if (df.__len__() == 0):
+                logging.info(__file__ + " " + "no ts_code in file " + ts_code + " " + f)
+                return
+
+            data_in_field = df[field].values[
+                0]  # always return the first one. suppose the 1st is the most updated one if multiple lines for the code+ann_date
+
+            return(data_in_field)
+
+
+
 
     #input: df [open,high, low, close]
     #output: {hit:[T|F], high:value, low:value, }
