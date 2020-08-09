@@ -482,8 +482,8 @@ def beneish_calc(ts_code,ann_date,df_all_ts_pro):
     dict_rtn['M_5v'] = M_5v
     dict_rtn['M_8v'] = M_8v
     
-    logging.info("M_5v:"+str(round(M_5v,2)))
-    logging.info("M_8v:"+str(round(M_8v,2)))
+    logging.info(str(ts_code)+ " "+str(ann_date)   +" M_5v:"+str(round(M_5v,2)))
+    logging.info(str(ts_code)+ " "+str(ann_date)   +" M_8v:"+str(round(M_8v,2)))
     
     if M_8v > 3 :
          logging.info("WARNNING: M_8v great than 3"+ str(ts_code) + " "+str(ann_date) + " "+str(round(M_8v,2)))
@@ -553,6 +553,10 @@ def main():
 
     parser.add_option("--disclosure_date_notify_day", type="int", dest="disclosure_date_notify_day_f", default=None, help="generate stock list that will be disclosured in the give days.")
 
+    parser.add_option("-x", "--stock_global", dest="stock_global", help="[CH(US)|KG(HK)|KH(HK)|MG(US)|US(US)|AG(AG)|dev(debug)], source is /home/ryan/DATA/DAY_global/xx/ ")
+
+    parser.add_option("--selected", action="store_true", dest="selected", default=False, help="only check stocks defined in /home/ryan/tushare_ryan/select.yml")
+
     #parser.add_option("-v", "--verify_fund_increase", action="store_true",
     #                  dest="verify_fund_increase_f", default=False,
     #                  help="verify quartly score and buy and increase to today")
@@ -578,6 +582,9 @@ def main():
     force_run_f = options.force_run_f
     disclosure_date_notify_day_f = options.disclosure_date_notify_day_f
 
+    selected = options.selected
+    stock_global = options.stock_global
+
     #verify_fund_increase_f = options.verify_fund_increase_f
 
     logging.info(__file__ + " " + "fetch_all_f: " + str(fetch_all_f))
@@ -601,6 +608,7 @@ def main():
     logging.info(__file__ + " " + "disclosure_date_notify_day_f: " + str(disclosure_date_notify_day_f))
     #logging.info(__file__+" "+"disclosure_date_notify_day_f: " + str(disclosure_date_notify_day_f))
 
+
     set_global(debug=debug_f, big_memory=big_memory_f, force_run=force_run_f)
 
 
@@ -609,7 +617,9 @@ def main():
 
 
     ts_code='600519.SH'
+    ts_code='000651.SZ'
     ann_date = '20191231'
+    ann_date = finlib.Finlib().get_year_month_quarter()['ann_date_1y_before']
     field = 'accounts_receiv'
     big_memory = False
     df_all_ts_pro = None
@@ -648,8 +658,27 @@ def main():
     #净利润/营业总收入, return percent number.  49.48 == 49.48%  == net_profit*100.0/n_cashflow_act
     profit_to_gr =  finlib.Finlib().get_ts_field(ts_code=ts_code, ann_date=ann_date, field='profit_to_gr', big_memory=big_memory, df_all_ts_pro=df_all_ts_pro,fund_base_merged=fund_base_merged)
 
-    
-    dict_rtn = beneish_calc(ts_code=ts_code,ann_date=ann_date,df_all_ts_pro=df_all_ts_pro)
+
+
+    ##### Benneish start
+    rst = finlib.Finlib().get_stock_configuration(selected=selected, stock_global=stock_global)
+    out_dir = rst['out_dir']
+    csv_dir = rst['csv_dir']
+    stock_list = rst['stock_list']
+    out_f = out_dir + "/" + stock_global.lower() + "_curve_shape.csv"  # /home/ryan/DATA/result/selected/us_index_fib.csv
+
+    if not os.path.isdir(out_dir):
+        os.mkdir(out_dir)
+
+    i = 0
+    stock_list = finlib.Finlib().add_market_to_code(df=stock_list, dot_f=True, tspro_format=True)
+    for index, row in stock_list.iterrows():
+        i += 1
+        print(str(i) + " of " + str(stock_list.__len__()) + " ", end="")
+        name, ts_code = row['name'], row['code']
+        logging.info(str(ts_code)+" "+name)
+        #ts_code: 600519.SH
+        dict_rtn = beneish_calc(ts_code=ts_code,ann_date=ann_date,df_all_ts_pro=df_all_ts_pro)
 
 
     logging.info('script completed')
