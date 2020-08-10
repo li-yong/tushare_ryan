@@ -364,7 +364,7 @@ def get_beneish_element(ts_code, ann_date, df_all_ts_pro):
     print(dict)
     return(dict)
 
-def beneish_calc(ts_code,ann_date,df_all_ts_pro): 
+def beneish_calc(ts_code,name, ann_date,df_all_ts_pro):
     dict_rtn = {}
     #turn_days,营业周期
 
@@ -482,8 +482,8 @@ def beneish_calc(ts_code,ann_date,df_all_ts_pro):
     dict_rtn['M_5v'] = M_5v
     dict_rtn['M_8v'] = M_8v
     
-    logging.info(str(ts_code)+ " "+str(ann_date)   +" M_5v:"+str(round(M_5v,2)))
-    logging.info(str(ts_code)+ " "+str(ann_date)   +" M_8v:"+str(round(M_8v,2)))
+    logging.info(str(ts_code)+ " "+name+" "+str(ann_date)   +" M_5v:"+str(round(M_5v,2)))
+    logging.info(str(ts_code)+ " "+name+" "+str(ann_date)   +" M_8v:"+str(round(M_8v,2)))
     
     if M_8v > 3 :
          logging.info("WARNNING: M_8v great than 3"+ str(ts_code) + " "+str(ann_date) + " "+str(round(M_8v,2)))
@@ -678,7 +678,7 @@ def main():
         name, ts_code = row['name'], row['code']
         logging.info(str(ts_code)+" "+name)
         #ts_code: 600519.SH
-        dict_rtn = beneish_calc(ts_code=ts_code,ann_date=ann_date,df_all_ts_pro=df_all_ts_pro)
+        dict_rtn = beneish_calc(ts_code=ts_code,name=name,ann_date=ann_date,df_all_ts_pro=df_all_ts_pro)
 
 
     logging.info('script completed')
