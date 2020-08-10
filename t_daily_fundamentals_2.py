@@ -1103,7 +1103,7 @@ def merge_individual_bash_basic(fast_fetch=False):
             os.makedirs(tmp_dir)
 
         cmd = "cd " + fund_base_source + ";"
-        cmd = "mkdir -p  ~/tmp/pro_basic"
+        cmd = "mkdir -p  ~/tmp/pro_basic;"
 
         cmd += "for i in `awk -F',' '{print $1}' basic.csv  | uniq|grep -v ts_code` ; do "
         cmd += "echo ${i}_basic.csv;  head -1 basic.csv > ~/tmp/pro_basic/${i}_basic.csv;"
