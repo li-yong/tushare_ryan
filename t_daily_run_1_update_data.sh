@@ -140,6 +140,15 @@ fi
 ######################################
 #
 # output:
+# /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/market/pro_basic.csv
+#
+######################################
+
+python t_daily_fundamentals_2.py --fetch_pro_basic
+
+######################################
+#
+# output:
 # /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/invidual/*.csv
 #
 ######################################
@@ -165,6 +174,13 @@ if [ $full_or_daily == "FULL" ]; then
 fi
 
 
+######################################
+#
+# output:
+# /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/basic_daily/basic_yyyymmdd.csv
+# /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/basic_daily/basic_20200710.csv
+#
+#####################################
 python t_daily_fundamentals_2.py --fetch_basic_daily
 
 
