@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-source /home/ryan/.bashrc
-source /home/ryan/.profile 
-source /etc/bash.bashrc 
+#source /home/ryan/.bashrc
+#source /home/ryan/.profile
+#source /etc/bash.bashrc
 
 
 

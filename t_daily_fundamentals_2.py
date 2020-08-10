@@ -274,79 +274,27 @@ def set_global(debug=False, big_memory=False, force_run=False):
     field_csv = "/home/ryan/tushare_ryan/tushare_api_fields.csv"
     df_field = pd.read_csv(field_csv, encoding="utf-8", dtype=str)
 
-    #query_fields_income = 'ts_code,update_flag,end_date,basic_eps,total_revenue,revenue,oth_b_income,n_income_attr_p,distable_profit,admin_exp,ann_date,ass_invest_income,assets_impair_loss,biz_tax_surchg,comm_exp,comm_income,comp_type,compens_payout,compens_payout_refu,compr_inc_attr_m_s,compr_inc_attr_p,diluted_eps,div_payt,ebit,ebitda,f_ann_date,fin_exp,forex_gain,fv_value_chg_gain,income_tax,insur_reser_refu,insurance_exp,int_exp,int_income,invest_income,minority_gain,n_asset_mg_income,n_commis_income,n_income,n_oth_b_income,n_oth_income,n_sec_tb_income,n_sec_uw_income,nca_disploss,non_oper_exp,non_oper_income,oper_cost,oper_exp,operate_profit,oth_compr_income,other_bus_cost,out_prem,prem_earned,prem_income,prem_refund,reins_cost_refund,reins_exp,reins_income,report_type,reser_insur_liab,sell_exp,t_compr_income,total_cogs,total_profit,undist_profit,une_prem_reser'
     query_fields_income = ','.join(list(df_field[df_field['API'] == 'income']['FIELD_NAME']))
 
-    #query_fields_balancesheet = 'ts_code,update_flag,end_date,total_assets,total_liab,money_cap,undistr_porfit,invest_real_estate,fa_avail_for_sale,lt_borr,st_borr,cb_borr,acc_exp,acc_receivable,accounts_receiv,acct_payable,acting_trading_sec,acting_uw_sec,adv_receipts,agency_bus_liab,amor_exp,ann_date,bond_payable,cap_rese,cash_reser_cb,cip,client_depos,client_prov,comm_payable,comp_type,const_materials,decr_in_disbur,defer_inc_non_cur_liab,defer_tax_assets,defer_tax_liab,deferred_inc,depos,depos_ib_deposits,depos_in_oth_bfi,depos_oth_bfi,depos_received,deriv_assets,deriv_liab,div_payable,div_receiv,estimated_liab,f_ann_date,fix_assets,fixed_assets_disp,forex_differ,goodwill,hfs_assets,hfs_sales,htm_invest,indem_payable,indep_acct_assets,indept_acc_liab,int_payable,int_receiv,intan_assets,inventories,invest_as_receiv,invest_loss_unconf,lending_funds,loan_oth_bank,loanto_oth_bank_fi,lt_amor_exp,lt_eqt_invest,lt_payable,lt_payroll_payable,lt_rec,minority_int,nca_within_1y,non_cur_liab_due_1y,notes_payable,notes_receiv,oil_and_gas_assets,ordin_risk_reser,oth_assets,oth_comp_income,oth_cur_assets,oth_cur_liab,oth_eqt_tools,oth_eqt_tools_p_shr,oth_liab,oth_nca,oth_ncl,oth_payable,oth_receiv,payable_to_reinsurer,payables,payroll_payable,ph_invest,ph_pledge_loans,pledge_borr,policy_div_payable,prec_metals,prem_receiv_adva,premium_receiv,prepayment,produc_bio_assets,pur_resale_fa,r_and_d,refund_cap_depos,refund_depos,reinsur_receiv,reinsur_res_receiv,report_type,reser_lins_liab,reser_lthins_liab,reser_outstd_claims,reser_une_prem,rr_reins_lins_liab,rr_reins_lthins_liab,rr_reins_outstd_cla,rr_reins_une_prem,rsrv_insur_cont,sett_rsrv,sold_for_repur_fa,special_rese,specific_payables,st_bonds_payable,st_fin_payable,surplus_rese,taxes_payable,time_deposits,total_cur_assets,total_cur_liab,total_hldr_eqy_exc_min_int,total_hldr_eqy_inc_min_int,total_liab_hldr_eqy,total_nca,total_ncl,total_share,trad_asset,trading_fl,transac_seat_fee,treasury_share'
     query_fields_balancesheet = ','.join(list(df_field[df_field['API'] == 'balancesheet']['FIELD_NAME']))
 
-    #query_fields_cashflow = 'ts_code,update_flag,end_date,net_profit,amort_intang_assets,ann_date,beg_bal_cash,beg_bal_cash_equ,c_cash_equ_beg_period,c_cash_equ_end_period,c_disp_withdrwl_invest,c_fr_oth_operate_a,c_fr_sale_sg,c_inf_fr_operate_a,c_paid_for_taxes,c_paid_goods_s,c_paid_invest,c_paid_to_for_empl,c_pay_acq_const_fiolta,c_pay_claims_orig_inco,c_pay_dist_dpcp_int_exp,c_prepay_amt_borr,c_recp_borrow,c_recp_cap_contrib,c_recp_return_invest,comp_type,conv_copbonds_due_within_1y,conv_debt_into_cap,decr_def_inc_tax_assets,decr_deferred_exp,decr_inventories,decr_oper_payable,depr_fa_coga_dpba,eff_fx_flu_cash,end_bal_cash,end_bal_cash_equ,f_ann_date,fa_fnc_leases,finan_exp,free_cashflow,ifc_cash_incr,im_n_incr_cash_equ,im_net_cashflow_oper_act,incl_cash_rec_saims,incl_dvd_profit_paid_sc_ms,incr_acc_exp,incr_def_inc_tax_liab,incr_oper_payable,invest_loss,loss_disp_fiolta,loss_fv_chg,loss_scr_fa,lt_amort_deferred_exp,n_cap_incr_repur,n_cash_flows_fnc_act,n_cashflow_act,n_cashflow_inv_act,n_depos_incr_fi,n_disp_subs_oth_biz,n_inc_borr_oth_fi,n_incr_cash_cash_equ,n_incr_clt_loan_adv,n_incr_dep_cbob,n_incr_disp_faas,n_incr_disp_tfa,n_incr_insured_dep,n_incr_loans_cb,n_incr_loans_oth_bank,n_incr_pledge_loan,n_recp_disp_fiolta,n_recp_disp_sobu,n_reinsur_prem,oth_cash_pay_oper_act,oth_cash_recp_ral_fnc_act,oth_cashpay_ral_fnc_act,oth_pay_ral_inv_act,oth_recp_ral_inv_act,others,pay_comm_insur_plcy,pay_handling_chrg,prem_fr_orig_contr,proc_issue_bonds,prov_depr_assets,recp_tax_rends,report_type,st_cash_out_act,stot_cash_in_fnc_act,stot_cashout_fnc_act,stot_inflows_inv_act,stot_out_inv_act,uncon_invest_loss'
     query_fields_cashflow = ','.join(list(df_field[df_field['API'] == 'cashflow']['FIELD_NAME']))
 
-    #query_fields_fina_indicator = 'ts_code,update_flag,end_date,eps,roe,debt_to_assets,total_revenue_ps,netprofit_margin,adminexp_of_gr,ann_date,ar_turn,assets_to_eqt,assets_turn,assets_yoy,basic_eps_yoy,bps,bps_yoy,ca_to_assets,ca_turn,capital_rese_ps,cash_ratio,cfps,cfps_yoy,cogs_of_sales,current_exint,current_ratio,currentdebt_to_debt,debt_to_eqt,diluted2_eps,dp_assets_to_eqt,dt_eps,dt_eps_yoy,dt_netprofit_yoy,ebit,ebit_of_gr,ebit_ps,ebitda,ebt_yoy,eqt_to_debt,eqt_to_interestdebt,eqt_to_talcapital,eqt_yoy,equity_yoy,expense_of_sales,extra_item,fa_turn,fcfe,fcfe_ps,fcff,fcff_ps,finaexp_of_gr,fixed_assets,gc_of_gr,gross_margin,grossprofit_margin,impai_ttm,int_to_talcap,interestdebt,invest_capital,longdeb_to_debt,nca_to_assets,netdebt,netprofit_yoy,networking_capital,noncurrent_exint,npta,ocf_to_debt,ocf_to_shortdebt,ocf_yoy,ocfps,op_income,op_of_gr,op_yoy,or_yoy,profit_dedt,profit_to_gr,profit_to_op,q_dt_roe,q_gc_to_gr,q_npta,q_ocf_to_sales,q_op_qoq,q_roe,q_saleexp_to_gr,q_sales_yoy,quick_ratio,retained_earnings,retainedps,revenue_ps,roa,roa2_yearly,roa_dp,roa_yearly,roe_dt,roe_waa,roe_yearly,roe_yoy,roic,saleexp_to_gr,surplus_rese_ps,tangasset_to_intdebt,tangible_asset,tangibleasset_to_debt,tangibleasset_to_netdebt,tbassets_to_totalassets,tr_yoy,turn_days,undist_profit_ps,working_capital,rd_exp,daa'
     query_fields_fina_indicator = ','.join(list(df_field[df_field['API'] == 'fina_indicator']['FIELD_NAME']))
 
-    #query_fields_forecast = 'ts_code,end_date,ann_date,change_reason,first_ann_date,last_parent_net,net_profit_max,net_profit_min,p_change_max,p_change_min,summary,type'
     query_fields_forecast = ','.join(list(df_field[df_field['API'] == 'forecast']['FIELD_NAME']))
 
-    #query_fields_dividend = 'ts_code,end_date,ann_date,cash_div,cash_div_tax,div_listdate,div_proc,ex_date,imp_ann_date,pay_date,record_date,stk_bo_rate,stk_co_rate,stk_div'
     query_fields_dividend = ','.join(list(df_field[df_field['API'] == 'dividend']['FIELD_NAME']))
 
-    #query_fields_express = 'ts_code,end_date,ann_date,bps,diluted_eps,diluted_roe,eps_last_year,growth_assets,growth_bps,is_audit,n_income,np_last_year,op_last_year,open_bps,open_net_assets,operate_profit,or_last_year,perf_summary,remark,revenue,total_assets,total_hldr_eqy_exc_min_int,total_profit,tp_last_year,yoy_dedu_np,yoy_eps,yoy_equity,yoy_net_profit,yoy_op,yoy_roe,yoy_sales,yoy_tp'
     query_fields_express = ','.join(list(df_field[df_field['API'] == 'express']['FIELD_NAME']))
 
-    #query_fields_fina_audit = 'ts_code,end_date,ann_date,audit_agency,audit_result,audit_sign'
     query_fields_fina_audit = ','.join(list(df_field[df_field['API'] == 'fina_audit']['FIELD_NAME']))
 
-    #query_fields_fina_mainbz = 'ts_code,update_flag,end_date,bz_cost,bz_item,bz_profit,bz_sales,curr_type'
     query_fields_fina_mainbz = ','.join(list(df_field[df_field['API'] == 'fina_mainbz']['FIELD_NAME']))
 
-    #query_fields_disclosure_date = 'ts_code,ann_date,end_date,pre_date,actual_date,modify_date'
     query_fields_disclosure_date = ','.join(list(df_field[df_field['API'] == 'disclosure_date']['FIELD_NAME']))
-
-
     ###end
 
-
-def get_ts_field_DEL(ts_code, ann_date, field, big_memory):
-
-    if big_memory:
-        df = df_all_ts_pro
-        df = df[df['ts_code'] == ts_code]
-        if (df.__len__() == 0):
-            logging.info(__file__ + " " + "no ts_code in df_all_ts_pro " + ts_code)
-            return
-
-        df = df[df['end_date'] == ann_date]
-        if (df.__len__() == 0):
-            logging.info(__file__ + " " + "no end_date in df_all_ts_pro " + ts_code + " " + ann_date)
-            return
-
-        data_in_field = df[field].values[0]
-        df = None
-        return (data_in_field)
-    else:
-        f = fund_base_merged + "/" + "merged_all_" + ann_date + ".csv"
-
-        if not os.path.exists(f):
-            logging.info(__file__ + " " + "file not exists, " + f)
-            return
-
-        df = pd.read_csv(f, converters={'end_date': str})
-
-        if not field in df.columns:
-            logging.info(__file__ + " " + "filed not in the file, " + field + " " + f)
-            return
-
-        df = df[df['ts_code'] == ts_code]
-
-        if (df.__len__() == 0):
-            logging.info(__file__ + " " + "no ts_code in file " + ts_code + " " + f)
-            return
-
-        data_in_field = df[field].values[0]  #always return the first one. suppose the 1st is the most updated one if multiple lines for the code+ann_date
-
-        return (data_in_field)
 
 
 '''
