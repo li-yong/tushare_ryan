@@ -3521,6 +3521,9 @@ def _fetch_pro_basic():
     ts.set_token(myToken)
     pro = ts.pro_api()
 
+    if not os.path.isdir(fund_base_source):
+        os.mkdir(fund_base_source)
+
     dir = fund_base_source + "/market"
 
     if not os.path.isdir(dir):
