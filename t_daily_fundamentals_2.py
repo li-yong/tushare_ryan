@@ -271,31 +271,20 @@ def set_global(debug=False, big_memory=False, force_run=False):
     ]
 
     ####start
-    field_csv = "/home/ryan/tushare_ryan/tushare_api_fields.csv"
-    df_field = pd.read_csv(field_csv, encoding="utf-8", dtype=str)
 
-    query_fields_income = ','.join(list(df_field[df_field['API'] == 'income']['FIELD_NAME']))
-
-    query_fields_balancesheet = ','.join(list(df_field[df_field['API'] == 'balancesheet']['FIELD_NAME']))
-
-    query_fields_cashflow = ','.join(list(df_field[df_field['API'] == 'cashflow']['FIELD_NAME']))
-
-    query_fields_fina_indicator = ','.join(list(df_field[df_field['API'] == 'fina_indicator']['FIELD_NAME']))
-
-    query_fields_forecast = ','.join(list(df_field[df_field['API'] == 'forecast']['FIELD_NAME']))
-
-    query_fields_dividend = ','.join(list(df_field[df_field['API'] == 'dividend']['FIELD_NAME']))
-
-    query_fields_express = ','.join(list(df_field[df_field['API'] == 'express']['FIELD_NAME']))
-
-    query_fields_fina_audit = ','.join(list(df_field[df_field['API'] == 'fina_audit']['FIELD_NAME']))
-
-    query_fields_fina_mainbz = ','.join(list(df_field[df_field['API'] == 'fina_mainbz']['FIELD_NAME']))
-
-    query_fields_disclosure_date = ','.join(list(df_field[df_field['API'] == 'disclosure_date']['FIELD_NAME']))
+    query_fields_income = finlib.Finlib().get_tspro_query_fields('income')
+    query_fields_balancesheet = finlib.Finlib().get_tspro_query_fields('balancesheet')
+    query_fields_cashflow = finlib.Finlib().get_tspro_query_fields('cashflow')
+    query_fields_fina_indicator = finlib.Finlib().get_tspro_query_fields('fina_indicator')
+    query_fields_forecast = finlib.Finlib().get_tspro_query_fields('forecast')
+    query_fields_dividend = finlib.Finlib().get_tspro_query_fields('dividend')
+    query_fields_express = finlib.Finlib().get_tspro_query_fields('express')
+    query_fields_fina_audit = finlib.Finlib().get_tspro_query_fields('fina_audit')
+    query_fields_fina_mainbz = finlib.Finlib().get_tspro_query_fields('fina_mainbz')
+    query_fields_disclosure_date = finlib.Finlib().get_tspro_query_fields('disclosure_date')
     ###end
 
-
+    print(21)
 
 '''
 def zzz_get_jaqs_field(ts_code, date=None, big_memory=False): #date: YYYYMMDD, code:600519, read from ~/DATA/DAY_JAQS/SH600519.csv
@@ -507,7 +496,7 @@ def load_fund_result(mini_score=80):
 def fetch(fast_fetch=False):
     ts.set_token(myToken)
     pro = ts.pro_api()
-
+    
     time_series = finlib.Finlib().get_year_month_quarter()
     fetch_period_list = []
 

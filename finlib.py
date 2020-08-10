@@ -3568,7 +3568,23 @@ class Finlib:
             return(data_in_field)
 
 
+    def get_tspro_query_fields(self,api):
+        myToken = '4cc9a1cd78bf41e759dddf92c919cdede5664fa3f1204de572d8221b'
+        ts.set_token(myToken)
+        field_csv = "/home/ryan/tushare_ryan/tushare_api_fields.csv"
+        df_field = pd.read_csv(field_csv, encoding="utf-8", dtype=str)
 
+        _a = df_field[df_field['API'] == api]['FIELD_NAME']
+        logging.info(api+" fields, loading pre-defined from file. Fields count " + str(_a.__len__()))
+
+        _c = ts.pro_api().query(api, ts_code='600519.SH', period='20191231').columns.to_series().reset_index()[
+            'index']
+        logging.info(api+" fields, fetching default returned fields from tushare. Fields count " + str(_c.__len__()))
+
+        _d = _a.append(_c).drop_duplicates()
+        logging.info(api+" fields, finally combined fields, count " + str(_d.__len__()))
+        rtn_fields = ','.join(list(_d))
+        return (rtn_fields)
 
     #input: df [open,high, low, close]
     #output: {hit:[T|F], high:value, low:value, }
