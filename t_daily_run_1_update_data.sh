@@ -155,13 +155,13 @@ python t_daily_fundamentals_2.py --fetch_pro_basic
 #----
 # a full fetch. fetch everything.
 #----
-#python t_daily_fundamentals_2.py --fetch_data_all --force_run
+#python t_daily_fundamentals_2.py --fetch_data_all --force_run #<<< force_run is MUST to fetch history data.
 
 #----
 #full fetch. but files that has been updated in 5 days
 # (which should also be the most recent Quarter) will not be check again.
 #----
-# python t_daily_fundamentals_2.py --fetch_data_all  #time consuming.
+# python t_daily_fundamentals_2.py --fetch_data_all  #time consuming.  <<<< DON"T USE THIS. USE force_run
 
 #----
 # # fast_fetch fetch
@@ -170,6 +170,7 @@ python t_daily_fundamentals_2.py --fetch_pro_basic
 #----
 if [ $full_or_daily == "FULL" ]; then
   echo "daily update tushare pro fundamentals";
+  #python t_daily_fundamentals_2.py --fetch_data_all --force_run   #if everything stock/period need be refetch.
   python t_daily_fundamentals_2.py --fetch_data_all --fast_fetch  #most time, update most recent q.  #time consuming.
 fi
 
@@ -182,7 +183,6 @@ fi
 #
 #####################################
 python t_daily_fundamentals_2.py --fetch_basic_daily
-
 
 
 ######################################
