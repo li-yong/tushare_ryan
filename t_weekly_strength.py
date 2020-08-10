@@ -165,7 +165,11 @@ def get_beneish_element(ann_date):
     return(df)
 
 def beneish_calc(ts_code,name, ann_date, dt, dt_1):
-    dict_rtn = {}
+    dict_rtn = {'ts_code':ts_code,
+                'name':name,
+                'ann_date':ann_date,
+               }
+
     #turn_days,营业周期
 
 
@@ -199,61 +203,100 @@ def beneish_calc(ts_code,name, ann_date, dt, dt_1):
     
     #DSRI Days Sales in Receivables Index, 应收账款周转指数
     # DSRI = (Net Receivablest / Salest) / Net Receivablest-1 / Salest-1)
-    if (dt['accounts_receiv'] == 0.0 )   or\
-            (dt_1['accounts_receiv'] == 0.0 )  or\
-            (dt['c_fr_sale_sg'] == 0.0 ) or\
-            (dt_1['c_fr_sale_sg'] == 0.0 ):
+    if (dt['c_fr_sale_sg'] == 0.0 ) or (dt_1['c_fr_sale_sg'] == 0.0 ):
         DSRI = 0
     else:
         _1 = dt['accounts_receiv']/dt['c_fr_sale_sg']
         _2 = dt_1['accounts_receiv']/dt_1['c_fr_sale_sg']
-        DSRI = _1/_2
+        if _2 == 0:
+            DSRI = 0
+        else:
+            DSRI = _1 / _2
     dict_rtn['DSRI'] = DSRI
     
     #GMI Gross Margin Index, 毛利率指数
-    #GMI = [(Salest-1 - COGSt-1) / Salest-1] / [(Salest - COGSt) / Salest]    
-    _1 = (dt['c_fr_sale_sg'] - dt['total_cogs'])/- dt['c_fr_sale_sg']
-    _2 = (dt_1['c_fr_sale_sg'] - dt_1['total_cogs'])/- dt_1['c_fr_sale_sg']
-    GMI = _1/_2   
+    #GMI = [(Salest-1 - COGSt-1) / Salest-1] / [(Salest - COGSt) / Salest]
+    if dt['c_fr_sale_sg'] == 0.0 or dt_1['c_fr_sale_sg'] ==0.0:
+        GMI=0
+    else:
+        _1 = (dt['c_fr_sale_sg'] - dt['total_cogs'])/dt['c_fr_sale_sg']
+        _2 = (dt_1['c_fr_sale_sg'] - dt_1['total_cogs'])/dt_1['c_fr_sale_sg']
+        if _2 == 0:
+            GMI = 0
+        else:
+            GMI = _1 / _2
     dict_rtn['GMI'] = GMI
     
     #AQI Asset Quality Index,  资产质量指数
     #AQI = [1 - (Current Assetst + PP&Et + Securitiest) / Total Assetst] / [1 - ((Current Assetst-1 + PP&Et-1 + Securitiest-1) / Total Assetst-1)]
-    _1 = (dt['total_assets']-dt['fix_assets']-dt['total_cur_assets'])/dt['total_assets']
-    _2 = (dt_1['total_assets']-dt_1['fix_assets']-dt_1['total_cur_assets'])/dt_1['total_assets']
-    AQI = _1/_2    
+    if dt['total_assets'] == 0.0 or dt_1['total_assets'] ==0.0:
+        AQI=0
+    else:
+        _1 = (dt['total_assets']-dt['fix_assets']-dt['total_cur_assets'])/dt['total_assets']
+        _2 = (dt_1['total_assets']-dt_1['fix_assets']-dt_1['total_cur_assets'])/dt_1['total_assets']
+        if _2 == 0:
+            AQI = 0
+        else:
+            AQI = _1 / _2
     dict_rtn['AQI'] = AQI
     
     
     #SGI Sales Growth Index, 销售增长指数
     #SGI = Salest / Salest-1
-    SGI = dt['c_fr_sale_sg']/dt_1['c_fr_sale_sg']
+    if dt_1['c_fr_sale_sg'] == 0.0:
+        SGI = 0
+    else:
+        SGI = dt['c_fr_sale_sg']/dt_1['c_fr_sale_sg']
     dict_rtn['SGI'] = SGI
     
     #DEPI Depreciation Index, 折旧指数
     #DEPI = (Depreciationt-1/ (PP&Et-1 + Depreciationt-1)) / (Depreciationt / (PP&Et + Depreciationt))
-    _1 = dt['daa']/(dt['daa']+dt['fix_assets'])    
-    _2 = dt_1['daa']/(dt_1['daa']+dt_1['fix_assets'])
-    DEPI = _1/_2 
+    # _1 = dt['daa']/(dt['daa']+dt['fix_assets'])
+    if (dt['depr_fa_coga_dpba']+dt['fix_assets'])==0.0 or (dt_1['depr_fa_coga_dpba']+dt_1['fix_assets']) ==0:
+        DEPI=0
+    else:
+        _1 = dt['depr_fa_coga_dpba']/(dt['depr_fa_coga_dpba']+dt['fix_assets'])
+        # _2 = dt_1['daa']/(dt_1['daa']+dt_1['fix_assets'])
+        _2 = dt_1['depr_fa_coga_dpba']/(dt_1['depr_fa_coga_dpba']+dt_1['fix_assets'])
+        if _2 == 0:
+            DEPI = 0
+        else:
+            DEPI = _1 / _2
     dict_rtn['DEPI'] = DEPI
     
     #SGAI Sales, General and Administrative Expenses Index,销售费用指数
     #SGAI = (SG&A Expenset / Salest) / (SG&A Expenset-1 / Salest-1)
-    _1 = dt['sga_exp']/dt['c_fr_sale_sg']
-    _2 = dt_1['sga_exp']/dt_1['c_fr_sale_sg']
-    SGAI = _1/_2
+    if dt['c_fr_sale_sg'] == 0 or dt_1['c_fr_sale_sg']==0:
+        SGAI=0
+    else:
+        _1 = dt['sga_exp']/dt['c_fr_sale_sg']
+        _2 = dt_1['sga_exp']/dt_1['c_fr_sale_sg']
+        if _2 ==0:
+            SGAI = 0
+        else:
+            SGAI = _1/_2
     dict_rtn['SGAI'] = SGAI
     
     #TATA Total Accruals to Total Assets, 应计总数与总资产比率
     #TATA = (Income from Continuing Operationst - Cash Flows from Operationst) / Total Assetst
-    TATA = (dt_1['n_income']-dt_1['n_cashflow_act'])/dt_1['total_assets']    
-    dict_rtn['TATA'] = TATA
-    
+
+    if dt_1['total_assets']  ==0:
+        TATA=0
+    else:
+        TATA = (dt_1['n_income']-dt_1['n_cashflow_act'])/dt_1['total_assets']
+        dict_rtn['TATA'] = TATA
+
     #LVGI  Leverage Index,
     #LVGI = [(Current Liabilitiest + Total Long Term Debtt) / Total Assetst] / [(Current Liabilitiest-1 + Total Long Term Debtt-1) / Total Assetst-1]
-    _1 = (dt['total_ncl']+dt['total_cur_liab'])/dt['total_assets']
-    _2 = (dt_1['total_ncl']+dt_1['total_cur_liab'])/dt_1['total_assets']
-    LVGI = _1/_2 
+    if dt['total_assets']==0 or dt['total_assets']==0:
+        LVGI=0
+    else:
+        _1 = (dt['total_ncl']+dt['total_cur_liab'])/dt['total_assets']
+        _2 = (dt_1['total_ncl']+dt_1['total_cur_liab'])/dt_1['total_assets']
+        if _2 ==0:
+            LVGI = 0
+        else:
+            LVGI = _1/_2
     dict_rtn['LVGI'] = LVGI
     
     
@@ -380,7 +423,7 @@ def main():
     out_dir = rst['out_dir']
     csv_dir = rst['csv_dir']
     stock_list = rst['stock_list']
-    out_f = out_dir + "/" + stock_global.lower() + "_curve_shape.csv"  # /home/ryan/DATA/result/selected/us_index_fib.csv
+    out_f = out_dir + "/" + stock_global.lower() + "_beneish.csv"  # /home/ryan/DATA/result/selected/us_index_fib.csv
 
     if not os.path.isdir(out_dir):
         os.mkdir(out_dir)
@@ -388,21 +431,41 @@ def main():
     df = get_beneish_element(ann_date=ann_date)
     current_date = datetime.datetime.strptime(ann_date, "%Y%m%d")
     df_1 = get_beneish_element(ann_date=str(current_date.year - 1) + '1231')
+    df_rst = pd.DataFrame()
 
     i = 0
     stock_list = finlib.Finlib().add_market_to_code(df=stock_list, dot_f=True, tspro_format=True)
 
     for index, row in stock_list.iterrows():
         i += 1
-        print(str(i) + " of " + str(stock_list.__len__()) + " ", end="")
         name, ts_code = row['name'], row['code']
-        logging.info(str(ts_code)+" "+name)
+        logging.info(str(i) + " of " + str(stock_list.__len__()) + " "+str(ts_code)+" "+name)
+
         #ts_code: 600519.SH
 
-        dt =  df[df['ts_code'] == ts_code].reset_index().drop('index', axis=1).iloc[0].to_dict()
-        dt_1 =  df_1[df_1['ts_code'] == ts_code].reset_index().drop('index', axis=1).iloc[0].to_dict()
+        #ts_code = '600036.SH' #ryan debug
+        if ts_code in df['ts_code'].to_list():
+            dt =  df[df['ts_code'] == ts_code].reset_index().drop('index', axis=1).iloc[0].to_dict()
+        else:
+            continue
+
+        if ts_code in df_1['ts_code'].to_list():
+            dt_1 =  df_1[df_1['ts_code'] == ts_code].reset_index().drop('index', axis=1).iloc[0].to_dict()
+        else:
+            continue
 
         dict_rtn = beneish_calc(ts_code=ts_code,name=name,ann_date=ann_date,dt=dt, dt_1=dt_1)
+        df_new = pd.DataFrame().from_dict({0:dict_rtn}).T.reset_index().drop('index',axis=1)
+        df_rst = df_rst.append(df_new).reset_index().drop('index',axis=1)
+
+        print(1)
+    df_rst.head(2)
+    cols = ['ts_code', 'name', 'ann_date', 'M_8v','M_5v','DSRI', 'GMI', 'AQI', 'SGI','DEPI','SGAI','TATA','LVGI']
+    df_rst = df_rst[cols]
+    df_rst = df_rst.sort_values(by='M_8v')
+    df_rst.to_csv(out_f, encoding='UTF-8', index=False)
+    logging.info("saved beneish output to "+out_f)
+
 
 
     logging.info('script completed')
