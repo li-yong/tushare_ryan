@@ -735,12 +735,12 @@ def _ts_pro_fetch(pro_con, stock_list, fast_fetch, query, query_fields, fetch_pe
             elif 'ann_date' in df_tmp.columns:
                 field = 'ann_date'
 
-            #if (not force_run_global) and fast_fetch:
-            df_tmp = df_tmp[df_tmp[field] == fetch_most_recent_report_perid]
+            if (not force_run_global) and fast_fetch:
+                df_tmp = df_tmp[df_tmp[field] == fetch_most_recent_report_perid]
             if df_tmp.__len__() > 1 and "update_flag" in df_tmp.columns:
                 df_tmp = df_tmp[df_tmp['update_flag'] == "1"]
                 if df_tmp.__len__() > 1:
-                    df_tmp = df_tmp.iloc[0]
+                    df_tmp = df_tmp.iloc[-1]
 
             df_tmp = df_tmp.reset_index().drop('index', axis=1)
 
