@@ -628,17 +628,17 @@ def _ts_pro_fetch(pro_con, stock_list, fast_fetch, query, query_fields, fetch_pe
                 logging.info(__file__ + " " + "not fetch as file already exists " + ind_csv + ". p_cnt " + str(p_cnt) + " stock_cnd " + str(stock_cnt) + " total " + total + " query " + query)
                 continue
 
-            weekday = datetime.datetime.today().weekday()
-            #on Friday, the most recent Q fund data will be updated.
-            if (not force_run_global) \
-                    and os.path.exists(ind_csv) \
-                    and os.stat(ind_csv).st_size > 0:
-                #and weekday != 5:
-                #and os.stat(ind_csv).st_size > 0 \
-                #and period < fetch_most_recent_report_perid:
-                already_fetch_p.append(period)
-                logging.info(__file__ + " " + "file have data already, not fetch out of FRIDAY. " + ind_csv + ". p_cnt " + str(p_cnt) + " stock_cnd " + str(stock_cnt) + " total " + total + " query " + query)
-                continue
+            # weekday = datetime.datetime.today().weekday()
+            # #on Friday, the most recent Q fund data will be updated.
+            # if (not force_run_global) \
+            #         and os.path.exists(ind_csv) \
+            #         and os.stat(ind_csv).st_size > 0:
+            #     #and weekday != 5:
+            #     #and os.stat(ind_csv).st_size > 0 \
+            #     #and period < fetch_most_recent_report_perid:
+            #     already_fetch_p.append(period)
+            #     logging.info(__file__ + " " + "file have data already, not fetch out of FRIDAY. " + ind_csv + ". p_cnt " + str(p_cnt) + " stock_cnd " + str(stock_cnt) + " total " + total + " query " + query)
+            #     continue
 
             if not finlib.Finlib().is_on_market(ts_code, period, basic_df):
                 #logging.info()
@@ -651,6 +651,7 @@ def _ts_pro_fetch(pro_con, stock_list, fast_fetch, query, query_fields, fetch_pe
 
             logging.info(__file__ + " " + "handling " + file_csv)
 
+            #if (not force_run_global)  and finlib.Finlib().is_cached(file_csv, day=6):
             if finlib.Finlib().is_cached(file_csv, day=6):
                 logging.info(__file__ + " " + "file has been updated in 6 days, not fetch again " + file_csv)
                 continue
@@ -723,6 +724,8 @@ def _ts_pro_fetch(pro_con, stock_list, fast_fetch, query, query_fields, fetch_pe
                 field = 'period'
             elif 'ann_date' in df_tmp.columns:
                 field = 'ann_date'
+            else:
+                continue #when getting df_tmp failed and df_tmp is None.
 
             if (not force_run_global) and fast_fetch:
                 df_tmp = df_tmp[df_tmp[field] == fetch_most_recent_report_perid]
