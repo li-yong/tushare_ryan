@@ -171,7 +171,17 @@ python t_daily_fundamentals_2.py --fetch_pro_basic
 if [ $full_or_daily == "FULL" ]; then
   echo "daily update tushare pro fundamentals";
   #python t_daily_fundamentals_2.py --fetch_data_all --force_run   #if everything stock/period need be refetch.
-  python t_daily_fundamentals_2.py --fetch_data_all --fast_fetch  #most time, update most recent q.  #time consuming.
+  #python t_daily_fundamentals_2.py --fetch_data_all --fast_fetch  #most time, update most recent q.  #time consuming.
+  
+  #separate --fetch_data_all
+  python t_daily_fundamentals_2.py --fetch_basic_daily --fast_fetch
+  python t_daily_fundamentals_2.py --fetch_pro_concept --fast_fetch
+  python t_daily_fundamentals_2.py --fetch_pro_repurchase --fast_fetch
+  python t_daily_fundamentals_2.py --fetch_cctv_news --fast_fetch
+  python t_daily_fundamentals_2.py --fetch_pro_basic --fast_fetch
+  python t_daily_fundamentals_2.py --fetch_cctv_news --fast_fetch
+  python t_daily_fundamentals_2.py --fetch_pro_fund --fast_fetch  #pro fundation tables.
+  python t_daily_fundamentals_2.py --fetch_basic_quarterly --fast_fetch
 fi
 
 
