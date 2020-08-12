@@ -587,7 +587,7 @@ def _ts_pro_fetch(pro_con, stock_list, fast_fetch, query, query_fields, fetch_pe
         p_cnt = 0
 
         #fetch_period_list = fetch_period_list[0:1] #this line result in only fetch default period in tushare. (no period in parameter when fetch)
-        fetch_period_list = finlib.Finlib().get_year_month_quarter()['ann_date_1y_before'] #this line result in only fetch default period in tushare. (no period in parameter when fetch)
+        fetch_period_list = [finlib.Finlib().get_year_month_quarter()['ann_date_1y_before']] #this line result in only fetch default period in tushare. (no period in parameter when fetch)
 
         for period in fetch_period_list:
             p_cnt += 1
