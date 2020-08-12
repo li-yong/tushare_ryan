@@ -284,7 +284,6 @@ def set_global(debug=False, big_memory=False, force_run=False):
     query_fields_disclosure_date = finlib.Finlib().get_tspro_query_fields('disclosure_date')
     ###end
 
-    print(21)
 
 '''
 def zzz_get_jaqs_field(ts_code, date=None, big_memory=False): #date: YYYYMMDD, code:600519, read from ~/DATA/DAY_JAQS/SH600519.csv
@@ -582,10 +581,12 @@ def _ts_pro_fetch(pro_con, stock_list, fast_fetch, query, query_fields, fetch_pe
         #fetch_period_list.sort(reverse=False) #20161231 -> 20171231 -> 20181231.
         fetch_period_list.sort(reverse=True)  #20181231 -> 20171231 -> 20161231
         all_per_cnt = fetch_period_list.__len__()
-
+        fetch_period_flag = False #the 1st time, fetch use no period, so get a bunch of records.
         already_fetch_p = []
 
         p_cnt = 0
+
+        fetch_period_list = fetch_period_list[0:1] #this line result in only fetch default period in tushare. (no period in parameter when fetch)
 
         for period in fetch_period_list:
             p_cnt += 1
@@ -661,6 +662,7 @@ def _ts_pro_fetch(pro_con, stock_list, fast_fetch, query, query_fields, fetch_pe
 
             time.sleep(60.0 / 45)
 
+
             #signal.alarm(5)
             df_tmp = pd.DataFrame()
             if query in ['income', 'balancesheet', 'cashflow', 'fina_indicator', 'fina_audit', 'disclosure_date', 'express', 'fina_mainbz']:
@@ -669,7 +671,12 @@ def _ts_pro_fetch(pro_con, stock_list, fast_fetch, query, query_fields, fetch_pe
                         continue
                     else:
                         try:
-                            df_tmp = pro_con.query(query, ts_code=ts_code, fields=query_fields, period=period)
+                            if fetch_period_flag:
+                                logging.info("query "+str(query)+" tscode "+str(ts_code)+" period "+str(period))
+                                df_tmp = pro_con.query(query, ts_code=ts_code, fields=query_fields, period=period)
+                            else: #the 1st fetch
+                                logging.info("query "+str(query)+" tscode "+str(ts_code)+" period is None")
+                                df_tmp = pro_con.query(query, ts_code=ts_code, fields=query_fields)
                         except Exception as e:
                             logging.exception("Exception occurred")
                 else:
@@ -677,36 +684,78 @@ def _ts_pro_fetch(pro_con, stock_list, fast_fetch, query, query_fields, fetch_pe
                         continue
                     else:
                         try:
-                            df_tmp = pro_con.query(query, ts_code=ts_code, fields=query_fields, period=period)
+                            if fetch_period_flag:
+                                logging.info("query "+str(query)+" tscode "+str(ts_code)+" period "+str(period))
+                                df_tmp = pro_con.query(query, ts_code=ts_code, fields=query_fields, period=period)
+                            else: #the 1st fetch
+                                logging.info("query "+str(query)+" tscode "+str(ts_code)+" period is None")
+                                df_tmp = pro_con.query(query, ts_code=ts_code, fields=query_fields) ## Income,balance, most useful api
                         except Exception as e:
                             logging.exception("Exception occurred")
             elif query in ['forecast']:
                 if fast_fetch:
                     if (str(period).__contains__("1231")):
                         try:
-                            df_tmp = pro_con.query(query, ts_code=ts_code, fields=query_fields, period=period)
+                            if fetch_period_flag:
+                                logging.info("query "+str(query)+" tscode "+str(ts_code)+" period "+str(period))
+                                df_tmp = pro_con.query(query, ts_code=ts_code, fields=query_fields, period=period)
+                            else: #the 1st fetch
+                                logging.info("query "+str(query)+" tscode "+str(ts_code)+" period is None")
+                                df_tmp = pro_con.query(query, ts_code=ts_code, fields=query_fields)
                         except Exception as e:
                             logging.exception("Exception occurred")
                     else:
                         continue
                 else:
                     try:
-                        df_tmp = pro_con.query(query, ts_code=ts_code, fields=query_fields)
+                        logging.info("query " + str(query) + " tscode " + str(ts_code))
+                        if fetch_period_flag:
+                            logging.info("query " + str(query) + " tscode " + str(ts_code) + " period " + str(period))
+                            df_tmp = pro_con.query(query, ts_code=ts_code, fields=query_fields, period=period)
+                        else:  # the 1st fetch
+                            logging.info("query " + str(query) + " tscode " + str(ts_code) + " period is None")
+                            df_tmp = pro_con.query(query, ts_code=ts_code,fields=query_fields)
                     except Exception as e:
                         logging.exception("Exception occurred")
             elif query in ['dividend']:
                 if fast_fetch:
                     if (str(period).__contains__("1231")):
                         try:
-                            df_tmp = pro_con.query(query, ts_code=ts_code, fields=query_fields, period=period)
+                            logging.info("query " + str(query) + " tscode " + str(ts_code))
+                            if fetch_period_flag:
+                                logging.info(
+                                    "query " + str(query) + " tscode " + str(ts_code) + " period " + str(period))
+                                df_tmp = pro_con.query(query, ts_code=ts_code, fields=query_fields, period=period)
+                            else:  # the 1st fetch
+                                logging.info("query " + str(query) + " tscode " + str(ts_code) + " period is None")
+                                df_tmp = pro_con.query(query, ts_code=ts_code, fields=query_fields)
                         except Exception as e:
                             logging.exception("Exception occurred")
                     else:
                         continue
                 else:
                     try:
-                        df_tmp = pro_con.query(query, ts_code=ts_code, fields=query_fields)
-                        #df_tmp = pro_con.query(query, ts_code=ts_code, fields=query_fields, end_date=period)
+                        if fetch_period_flag:
+
+                            logging.info("query " + str(query) + " tscode " + str(ts_code))
+                            if fetch_period_flag:
+                                logging.info(
+                                    "query " + str(query) + " tscode " + str(ts_code) + " period " + str(period))
+                                df_tmp = pro_con.query(query, ts_code=ts_code, fields=query_fields, period=period)
+                            else:  # the 1st fetch
+                                logging.info("query " + str(query) + " tscode " + str(ts_code) + " period is None")
+                                df_tmp = pro_con.query(query, ts_code=ts_code, fields=query_fields)
+
+                        else:  # the 1st fetch
+
+                            logging.info("query " + str(query) + " tscode " + str(ts_code))
+                            if fetch_period_flag:
+                                logging.info(
+                                    "query " + str(query) + " tscode " + str(ts_code) + " period " + str(period))
+                                df_tmp = pro_con.query(query, ts_code=ts_code, fields=query_fields, period=period)
+                            else:  # the 1st fetch
+                                logging.info("query " + str(query) + " tscode " + str(ts_code) + " period is None")
+                                df_tmp = pro_con.query(query, ts_code=ts_code, fields=query_fields)
                     except Exception as e:
                         logging.exception("Exception occurred")
 
@@ -729,12 +778,7 @@ def _ts_pro_fetch(pro_con, stock_list, fast_fetch, query, query_fields, fetch_pe
 
             if (not force_run_global) and fast_fetch:
                 df_tmp = df_tmp[df_tmp[field] == fetch_most_recent_report_perid]
-            if df_tmp.__len__() > 1 and "update_flag" in df_tmp.columns:
-                df_tmp = df_tmp[df_tmp['update_flag'] == "1"]
-                #if df_tmp.__len__() > 1:
-                #    df_tmp = df_tmp.iloc[-1]
 
-            df_tmp = df_tmp.reset_index().drop('index', axis=1)
 
             name = stock_list[stock_list['code'] == ts_code]['name'].values[0]
             df_tmp = pd.DataFrame([name] * df_tmp.__len__(), columns=['name']).join(df_tmp)
@@ -755,11 +799,21 @@ def _ts_pro_fetch(pro_con, stock_list, fast_fetch, query, query_fields, fetch_pe
                     continue
                 logging.info(__file__ + " " + "end date is " + ed)
 
+                if ed in fetch_period_list:
+                    fetch_period_list.remove(ed)
+                    fetch_period_flag = True #next fetching will use period
+                    logging.info("removed "+str(ed)+" from fetch_period_list")
+
                 if ed in already_fetch_p:
                     #print("already fetched " + ed)
                     continue
 
                 df_tmp_sub = df_tmp[df_tmp[field] == ed]
+
+                if df_tmp_sub.__len__() > 1 and "update_flag" in df_tmp_sub.columns:
+                    df_tmp_sub = df_tmp[df_tmp['update_flag'] == "1"]
+                    # if df_tmp_sub.__len__() > 1:
+                    #    df_tmp_sub = df_tmp_sub.iloc[-1]
                 df_tmp_sub = df_tmp_sub.reset_index().drop('index', axis=1)
 
                 dir_sub = fund_base_source + "/individual/" + ed
@@ -777,6 +831,8 @@ def _ts_pro_fetch(pro_con, stock_list, fast_fetch, query, query_fields, fetch_pe
                 if not ed in already_fetch_p:
                     already_fetch_p.append(ed)
                     #logging.info(__file__+" "+"append "+ed +" to already_fetch_p")
+
+
 
             # df_tmp.to_csv(ind_csv, encoding='UTF-8', index=False)
 

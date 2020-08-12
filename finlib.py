@@ -3575,13 +3575,13 @@ class Finlib:
         df_field = pd.read_csv(field_csv, encoding="utf-8", dtype=str)
 
         _a = df_field[df_field['API'] == api]['FIELD_NAME']
-        logging.info(api+" file count " + str(_a.__len__()))
+        logging.info(api+" file field count " + str(_a.__len__()))
 
         _c = ts.pro_api().query(api, ts_code='600519.SH', period='20191231').columns.to_series().reset_index()['index']
-        logging.info(api+" tushare count " + str(_c.__len__()))
+        logging.info(api+" tushare field count " + str(_c.__len__()))
 
         _d = _a.append(_c).drop_duplicates()
-        logging.info(api+" finally count " + str(_d.__len__()))
+        logging.info(api+" finally field count " + str(_d.__len__()))
         rtn_fields = ','.join(list(_d))
         return (rtn_fields)
 
