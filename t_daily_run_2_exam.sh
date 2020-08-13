@@ -271,6 +271,13 @@ if [ $full_or_daily == "DAILY" ]; then
 fi
 
 
+######################### beneish
+#input: merged/*.csv
+#output:/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/merged/*.csv
+#########################
+if [ $full_or_daily == "FULL" ]; then
+  python t_yearly_beneish.py
+fi
 
 ######################### analyze
 #input: merged/*.csv
