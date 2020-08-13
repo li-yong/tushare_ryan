@@ -180,8 +180,9 @@ if [ $full_or_daily == "FULL" ]; then
   python t_daily_fundamentals_2.py --fetch_cctv_news --fast_fetch
   python t_daily_fundamentals_2.py --fetch_pro_basic --fast_fetch
   python t_daily_fundamentals_2.py --fetch_cctv_news --fast_fetch
-  python t_daily_fundamentals_2.py --fetch_pro_fund --fast_fetch  #pro fundation tables. 10 tables.
   python t_daily_fundamentals_2.py --fetch_basic_quarterly --fast_fetch
+
+  python t_daily_fundamentals_2.py --fetch_pro_fund --fast_fetch  #pro fundation tables. 10 tables.
 fi
 
 

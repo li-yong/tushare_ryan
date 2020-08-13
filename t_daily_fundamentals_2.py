@@ -153,18 +153,6 @@ def set_global(debug=False, big_memory=False, force_run=False):
     global col_list_fina_audit
     global col_list_fina_mainbz
     global col_list_disclosure_date
-
-    global query_fields_income
-    global query_fields_balancesheet
-    global query_fields_cashflow
-    global query_fields_fina_indicator
-    global query_fields_forecast
-    global query_fields_dividend
-    global query_fields_express
-    global query_fields_fina_audit
-    global query_fields_fina_mainbz
-    global query_fields_disclosure_date
-
     global df_all_ts_pro
     global df_all_jaqs
     global big_memory_global
@@ -197,6 +185,10 @@ def set_global(debug=False, big_memory=False, force_run=False):
         big_memory_global = True
         df_all_jaqs = finlib.Finlib().load_all_jaqs()
         df_all_ts_pro = finlib.Finlib().load_all_ts_pro(debug=debug, overwrite=True)
+    else:
+        df_all_jaqs=None
+        df_all_ts_pro=None
+
 
     csv_income = fund_base_source + "/income.csv"
     csv_balancesheet = fund_base_source + "/balancesheet.csv"
@@ -270,7 +262,18 @@ def set_global(debug=False, big_memory=False, force_run=False):
         'end_date',
     ]
 
-    ####start
+
+def set_global_pro_fetch_field():
+    global query_fields_income
+    global query_fields_balancesheet
+    global query_fields_cashflow
+    global query_fields_fina_indicator
+    global query_fields_forecast
+    global query_fields_dividend
+    global query_fields_express
+    global query_fields_fina_audit
+    global query_fields_fina_mainbz
+    global query_fields_disclosure_date
 
     query_fields_income = finlib.Finlib().get_tspro_query_fields('income')
     query_fields_balancesheet = finlib.Finlib().get_tspro_query_fields('balancesheet')
@@ -282,64 +285,7 @@ def set_global(debug=False, big_memory=False, force_run=False):
     query_fields_fina_audit = finlib.Finlib().get_tspro_query_fields('fina_audit')
     query_fields_fina_mainbz = finlib.Finlib().get_tspro_query_fields('fina_mainbz')
     query_fields_disclosure_date = finlib.Finlib().get_tspro_query_fields('disclosure_date')
-    ###end
 
-
-'''
-def zzz_get_jaqs_field(ts_code, date=None, big_memory=False): #date: YYYYMMDD, code:600519, read from ~/DATA/DAY_JAQS/SH600519.csv
-  #date : None, then return the latest record.
-
-    code_in_number_only = re.match("(\d{6})\.(.*)", ts_code).group(1)
-    #market = re.match("(\d{6})\.(.*)", ts_code).group(2)
-
-    #self.append_market_to_code_single_dot(code = code_in_number_only) #'600519.SH'
-    codeInFmtMktCode = finlib.Finlib().add_market_to_code_single(code=code_in_number_only) #'SH600519'
-    #self.add_market_to_code(df=pd.DataFrame({'code':code_in_number_only}, index=[0]), dot_f=True, tspro_format=True) #0  600519.SH
-
-    if big_memory:
-        df = df_all_jaqs[df_all_jaqs['code']==code_in_number_only]
-    else:
-        f = "/home/ryan/DATA/DAY_JAQS/"+codeInFmtMktCode+'.csv'
-        if not os.path.exists(f):
-            logging.info('file not exist '+f)
-            return
-        df = pd.read_csv(f, converters={'code':str, 'trade_date':str})
-
-    if date == None:
-        df = df.tail(1)
-    else:
-        date_Y_M_D = finlib.Finlib().get_last_trading_day(date)
-        date = datetime.strptime(date_Y_M_D, '%Y-%m-%d').strftime('%Y%m%d')
-        df = df[df['trade_date'] == date]
-
-        if df.__len__() == 0:
-            logging.info('code '+ts_code+' has no record at date '+ date+". Use latest known date.")
-            df = df.tail(1)
-        elif df.__len__() > 0:
-            df = df.head(1)  # if multiple records, only use the 1st one.
-
-    dict_rtn = {'pe':0,'pe_ttm':0,'pb':0,'ps':0}
-
-    if df['pe'].__len__()>0:
-      dict_rtn['pe']=df['pe'].values[0]
-
-
-    if df['pe_ttm'].__len__() > 0:
-        dict_rtn['pe_ttm']=df['pe_ttm'].values[0]
-
-
-    if df['pb'].__len__() > 0:
-        dict_rtn['pb']=df['pb'].values[0]
-
-
-    if df['ps'].__len__() > 0:
-        dict_rtn['ps']=df['ps'].values[0]
-
-
-    dict_rtn['all']=df.reset_index().drop('index', axis=1)
-    df = None
-    return(dict_rtn)
-'''
 
 
 def get_jaqs_field(ts_code, date=None, big_memory=False):  #date: YYYYMMDD, code:600519, read from ~/DATA/DAY_JAQS/SH600519.csv
@@ -1915,7 +1861,7 @@ def _extract_latest(csv_input, csv_output, feature, col_name_list, ts_code=None,
     logging.info(__file__ + ": " + "saved to " + csv_output + " . len " + str(df_result.__len__()))
 
 
-def _analyze_step_1(end_date):
+def _analyze_step_1(end_date, beneish_df):
 
     logging.info(__file__ + " " + "=== analyze step 1 ===")
     #end_date in format 20171231
@@ -2029,6 +1975,33 @@ def _analyze_step_1(end_date):
         #ryan debug end
         '''
 
+        # profit_to_gr
+        dict = _analyze_profit_to_gr(ts_code=ts_code, end_date=end_date, basic_df=basic_df)
+        garbageReason += dict['garbageReason']
+        bonusReason += dict['bonusReason']
+        bonusCnt += dict['bonusCnt']
+        garbageCnt += dict['garbageCnt']
+        if dict['stopProcess']:
+            df.iloc[i, df.columns.get_loc('stopProcess')] = 1
+
+        # beneish
+        if (not ts_code in beneish_df['ts_code']):
+            garbageReason += 'No beneish score found'
+            garbageCnt += 1
+            df.iloc[i, df.columns.get_loc('stopProcess')] = 1
+        else:
+            M_8v = beneish_df[beneish_df['ts_code'] == ts_code]['M_8v']
+            M_5v = beneish_df[beneish_df['ts_code'] == ts_code]['M_5v']
+
+            if M_8v > 0:
+                garbageReason += 'beneish M8v > 0'
+                garbageCnt += 1
+                df.iloc[i, df.columns.get_loc('stopProcess')] = 1
+
+            if M_8v <= -2:
+                bonusReason += 'beneish M8v < -2'
+                bonusCnt += 1
+
         dict = _analyze_xiaoxiong_ct(ts_code=ts_code, end_date=end_date, basic_df=basic_df)
 
         garbageReason += dict['garbageReason']
@@ -2043,6 +2016,8 @@ def _analyze_step_1(end_date):
         bonusCnt += dict['bonusCnt']
         garbageCnt += dict['garbageCnt']
         ####xiao xiong end
+        
+
 
         #audit_result
         #标准无保留意见|带强调事项段的无保留意见
@@ -2494,6 +2469,179 @@ def _analyze_white_horse_ct(ts_code, end_date, basic_df):
                 bonusReason += 'white horse '
                 bonusCnt += 1
                 logging.info(__file__ + " " + "bonus. " + bonusReason + ' ' + ts_code + " " + end_date)
+
+    except:
+        pass
+
+    dict_rtn['garbageCnt'] = garbageCnt
+    dict_rtn['bonusCnt'] = bonusCnt
+    dict_rtn['bonusReason'] = bonusReason
+    dict_rtn['garbageReason'] = garbageReason
+
+    return (dict_rtn)
+
+
+def _analyze_profit_to_gr(ts_code, end_date, basic_df):
+    logging.info(__file__ + " " + "=== analyze _analyze_profit_to_gr ===")
+    # changtou bai ma gu
+    garbageReason = ""
+    bonusReason = ""
+    bonusCnt = 0
+    garbageCnt = 0
+    stopProcess = False
+
+    dict_rtn = {}
+    dict_rtn['garbageCnt'] = garbageCnt
+    dict_rtn['bonusCnt'] = bonusCnt
+    dict_rtn['bonusReason'] = bonusReason
+    dict_rtn['garbageReason'] = garbageReason
+    dict_rtn['stopProcess'] = stopProcess
+    
+
+    if not finlib.Finlib().is_on_market(ts_code, end_date, basic_df):
+        logging.info(__file__ + " " + "stock has been not on market. " + ts_code + " , " + end_date)
+        return (dict_rtn)
+
+    if re.match('\d{4}0630$', end_date) or re.match('\d{4}1231$', end_date) or re.match('201[9|8|7|6|5]', end_date) or  re.match('202[0|1|2|3|4|5]', end_date):
+        #if re.match('20180630', end_date) or re.match('20171231', end_date):
+        pass
+    else:
+        return (dict_rtn)
+
+    year = int(re.match('(\d{4})(\d{2})(\d{2})$', end_date).group(1))
+    month = int(re.match('(\d{4})(\d{2})(\d{2})$', end_date).group(2))
+
+    tmp = finlib.Finlib().get_year_month_quarter(year=year, month=month)
+
+    #### White Horse Stock of  Chang tou xue yuan
+    this_profit_to_gr =  finlib.Finlib().get_ts_field(ts_code=ts_code, ann_date=tmp['ann_date'], field='profit_to_gr', big_memory=big_memory_global, df_all_ts_pro=df_all_ts_pro,fund_base_merged=fund_base_merged)
+    profit_to_gr_1y =  finlib.Finlib().get_ts_field(ts_code=ts_code, ann_date=tmp['ann_date_1y_before'], field='profit_to_gr', big_memory=big_memory_global, df_all_ts_pro=df_all_ts_pro,fund_base_merged=fund_base_merged)
+    profit_to_gr_2y =  finlib.Finlib().get_ts_field(ts_code=ts_code, ann_date=tmp['ann_date_2y_before'], field='profit_to_gr', big_memory=big_memory_global, df_all_ts_pro=df_all_ts_pro,fund_base_merged=fund_base_merged)
+
+
+    this_n_cashflow_act =  finlib.Finlib().get_ts_field(ts_code=ts_code, ann_date=tmp['ann_date'], field='n_cashflow_act', big_memory=big_memory_global, df_all_ts_pro=df_all_ts_pro,fund_base_merged=fund_base_merged)
+    n_cashflow_act_1y =  finlib.Finlib().get_ts_field(ts_code=ts_code, ann_date=tmp['ann_date_1y_before'], field='n_cashflow_act', big_memory=big_memory_global, df_all_ts_pro=df_all_ts_pro,fund_base_merged=fund_base_merged)
+    n_cashflow_act_2y =  finlib.Finlib().get_ts_field(ts_code=ts_code, ann_date=tmp['ann_date_2y_before'], field='n_cashflow_act', big_memory=big_memory_global, df_all_ts_pro=df_all_ts_pro,fund_base_merged=fund_base_merged)
+
+
+    try:
+        if (this_profit_to_gr > profit_to_gr_1y and profit_to_gr_1y > profit_to_gr_2y):
+            bonusReason += 'profit_to_gr continue increase consecutively 3 years.'
+            bonusCnt += 1
+            logging.info(__file__ + " " + "bonus. " + bonusReason)
+
+        if (this_n_cashflow_act > n_cashflow_act_1y and n_cashflow_act_1y > n_cashflow_act_2y):
+            bonusReason += 'n_cashflow_act continue increase consecutively 3 years.'
+            bonusCnt += 1
+            logging.info(__file__ + " " + "bonus. " + bonusReason)
+            
+        if this_profit_to_gr > 70:
+            bonusReason += 'profit/gross income > 70%.'
+            bonusCnt += 1
+            logging.info(__file__ + " " + "bonus. " + bonusReason)
+                     
+            
+        if this_profit_to_gr < 0:
+            garbageReason += 'profit_to_gr < 0.'
+            garbageCnt += 1
+            stopProcess = True
+            logging.info(__file__ + " " + "garbage. " + garbageReason)
+        
+        if this_profit_to_gr > 100:
+            garbageReason += 'profit bigger than gross income.'
+            garbageCnt += 1
+            stopProcess = True
+            logging.info(__file__ + " " + "garbage. " + garbageReason)
+ 
+        if this_profit_to_gr < 30:
+            garbageReason += 'profit/gross income < 30%.'
+            garbageCnt += 1
+            stopProcess = True
+            logging.info(__file__ + " " + "garbage. " + garbageReason)
+
+    except:
+        pass
+
+    dict_rtn['garbageCnt'] = garbageCnt
+    dict_rtn['bonusCnt'] = bonusCnt
+    dict_rtn['bonusReason'] = bonusReason
+    dict_rtn['garbageReason'] = garbageReason
+    dict_rtn['stopProcess'] = stopProcess
+
+    return (dict_rtn)
+
+
+def _analyze_beneish(ts_code, end_date, basic_df):
+    logging.info(__file__ + " " + "=== analyze _analyze_profit_to_gr ===")
+    # changtou bai ma gu
+    garbageReason = ""
+    bonusReason = ""
+    bonusCnt = 0
+    garbageCnt = 0
+
+    dict_rtn = {}
+    dict_rtn['garbageCnt'] = garbageCnt
+    dict_rtn['bonusCnt'] = bonusCnt
+    dict_rtn['bonusReason'] = bonusReason
+    dict_rtn['garbageReason'] = garbageReason
+
+    if not finlib.Finlib().is_on_market(ts_code, end_date, basic_df):
+        logging.info(__file__ + " " + "stock has been not on market. " + ts_code + " , " + end_date)
+        return (dict_rtn)
+
+    if re.match('\d{4}0630$', end_date) or re.match('\d{4}1231$', end_date) or re.match('201[9|8|7|6|5]', end_date) or  re.match('202[0|1|2|3|4|5]', end_date):
+        #if re.match('20180630', end_date) or re.match('20171231', end_date):
+        pass
+    else:
+        return (dict_rtn)
+
+    year = int(re.match('(\d{4})(\d{2})(\d{2})$', end_date).group(1))
+    month = int(re.match('(\d{4})(\d{2})(\d{2})$', end_date).group(2))
+
+    tmp = finlib.Finlib().get_year_month_quarter(year=year, month=month)
+
+    #### White Horse Stock of  Chang tou xue yuan
+    this_profit_to_gr =  finlib.Finlib().get_ts_field(ts_code=ts_code, ann_date=tmp['ann_date'], field='profit_to_gr', big_memory=big_memory_global, df_all_ts_pro=df_all_ts_pro,fund_base_merged=fund_base_merged)
+    profit_to_gr_1y =  finlib.Finlib().get_ts_field(ts_code=ts_code, ann_date=tmp['ann_date_1y_before'], field='profit_to_gr', big_memory=big_memory_global, df_all_ts_pro=df_all_ts_pro,fund_base_merged=fund_base_merged)
+    profit_to_gr_2y =  finlib.Finlib().get_ts_field(ts_code=ts_code, ann_date=tmp['ann_date_2y_before'], field='profit_to_gr', big_memory=big_memory_global, df_all_ts_pro=df_all_ts_pro,fund_base_merged=fund_base_merged)
+
+
+    this_n_cashflow_act =  finlib.Finlib().get_ts_field(ts_code=ts_code, ann_date=tmp['ann_date'], field='n_cashflow_act', big_memory=big_memory_global, df_all_ts_pro=df_all_ts_pro,fund_base_merged=fund_base_merged)
+    n_cashflow_act_1y =  finlib.Finlib().get_ts_field(ts_code=ts_code, ann_date=tmp['ann_date_1y_before'], field='n_cashflow_act', big_memory=big_memory_global, df_all_ts_pro=df_all_ts_pro,fund_base_merged=fund_base_merged)
+    n_cashflow_act_2y =  finlib.Finlib().get_ts_field(ts_code=ts_code, ann_date=tmp['ann_date_2y_before'], field='n_cashflow_act', big_memory=big_memory_global, df_all_ts_pro=df_all_ts_pro,fund_base_merged=fund_base_merged)
+
+
+    try:
+        if (this_profit_to_gr > profit_to_gr_1y and profit_to_gr_1y > profit_to_gr_2y):
+            bonusReason += 'profit_to_gr continue increase consecutively 3 years.'
+            bonusCnt += 1
+            logging.info(__file__ + " " + "bonus. " + bonusReason)
+
+        if (this_n_cashflow_act > n_cashflow_act_1y and n_cashflow_act_1y > n_cashflow_act_2y):
+            bonusReason += 'n_cashflow_act continue increase consecutively 3 years.'
+            bonusCnt += 1
+            logging.info(__file__ + " " + "bonus. " + bonusReason)
+            
+        if profit_to_gr > 70:
+            bonusReason += 'profit/gross income > 70%.'
+            bonusCnt += 1
+            logging.info(__file__ + " " + "bonus. " + bonusReason)
+                     
+            
+        if profit_to_gr < 0:
+            garbageReason += 'profit_to_gr < 0.'
+            garbageCnt += 1
+            logging.info(__file__ + " " + "garbage. " + garbageReason)
+        
+        if profit_to_gr > 100:
+            garbageReason += 'profit bigger than gross income.'
+            garbageCnt += 1
+            logging.info(__file__ + " " + "garbage. " + garbageReason)
+ 
+        if profit_to_gr < 30:
+            garbageReason += 'profit/gross income < 30%.'
+            garbageCnt += 1
+            logging.info(__file__ + " " + "garbage. " + garbageReason)
 
     except:
         pass
@@ -3361,12 +3509,18 @@ def analyze(fully_a=False, daily_a=True, fast=True):
         logging.info(__file__+" "+"end_date " + e + ". ")
 
         #continue
+        
+        #beneish
+        beneish_csv = '/home/ryan/DATA/result/ag_beneish.csv'
+        #ts_code,name,ann_date,M_8v,M_5v,DSRI,GMI,AQI,SGI,DEPI,SGAI,TATA,LVGI
+        beneish_df = pd.read_csv(beneish_csv, converters={'ann_date': str}) 
+        
 
         # as many date lost on Q1, Q3 report, so only process half-year, and year report.
         # !!!! @todo ryan: parallary compare on yearly report; Q1, Q2, Q3 data can be used in self comparision.
         # !!!!
         if re.match('\d{4}1231$', e) or daily_a or fully_a or force_run_global:  #daily_a check the most recent only(small scope), so daily_a check all steps.
-            _analyze_step_1(end_date=e)  # field calculate
+            _analyze_step_1(end_date=e, beneish_df=beneish_df)  # field calculate
             _analyze_step_2(end_date=e)  # score
             _analyze_step_3(end_date=e)  # score of score
 
@@ -3381,45 +3535,6 @@ def analyze(fully_a=False, daily_a=True, fast=True):
         _analyze_step_6()  #under valued stock, valuePrice/actualPrice. scoreA,V_C_P, #time consuming.
         _analyze_step_7()  #time consuming
         _analyze_step_8()
-
-
-'''
-    if fully_a: #run quartly after quartly report released. month 4/31, 7/31, 10/31, 1/31
-        for e in period_list:
-            if e < '2010':
-                continue
-
-            logging.info(__file__+" "+"end_date " + e + ". ")
-
-            #as many date lost on Q1, Q3 report, so only process half-year, and year report.
-
-            #if True:
-            #if re.match('\d{4}0630$', e) or re.match('\d{4}1231$', e) or re.match('201[8]', e) :
-            if re.match('\d{4}1231$', e) or re.match('201[8]', e) :
-            #if  re.match('201[8]', e) or re.match('201[7|6|5|4|3|2]1231', e):
-            #if re.match('20181231', e) or re.match('20171231', e):
-            #if re.match('\d{4}1231$', e):
-
-                _analyze_step_1(end_date=e, overwrite=overwrite)  # field calculate
-                _analyze_step_2(end_date=e, overwrite=overwrite)  # score
-                _analyze_step_3(end_date=e, overwrite=overwrite)  # score of score
-            else:
-                logging.info(__file__+" "+"not handle Q1, Q3 report, "+e)
-                continue
-
-
-        _analyze_step_4(overwrite=overwrite) #evaluate the stock score in mutliple years.
-        _analyze_step_5(overwrite=overwrite) #'scoreA'
-        _analyze_step_6(overwrite=overwrite) #under valued stock, valuePrice/actualPrice. scoreA,V_C_P,
-        _analyze_step_7(overwrite=overwrite)
-        _analyze_step_8(overwrite=overwrite)
-
-    if daily_a:
-        _analyze_step_5(overwrite=overwrite)
-        _analyze_step_6(overwrite=overwrite)
-        _analyze_step_7(overwrite=overwrite)
-        _analyze_step_8(overwrite=overwrite)
-'''
 
 
 def extract_white_horse():
@@ -4004,6 +4119,18 @@ def main():
 
     set_global(debug=debug_f, big_memory=big_memory_f, force_run=force_run_f)
 
+    if options.fetch_pro_basic_f or \
+            options.fetch_stk_holdertrade_f or \
+            options.fetch_f or \
+            options.fetch_basic_quarterly_f or \
+            options.fetch_basic_daily_f or \
+            options.fetch_pro_concept_f or \
+            options.fetch_pro_repurchase_f or \
+            options.fetch_cctv_news_f or \
+            options.concept_top_f or \
+            options.fetch_all_f:
+        set_global_pro_fetch_field()
+
     if options.fetch_pro_basic_f:
         _fetch_pro_basic()
 
@@ -4031,7 +4158,7 @@ def main():
     if options.concept_top_f:
         concept_top()
 
-    if fetch_all_f:
+    if options.fetch_all_f:
         ##############
         #fast first
         ##############
