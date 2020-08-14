@@ -279,6 +279,19 @@ if [ $full_or_daily == "FULL" ]; then
   python t_yearly_beneish.py
 fi
 
+
+######################### beneish
+#input: daily price
+#output: /home/ryan/DATA/result/selected/ag_curve_shape.csv
+#########################
+if [ $full_or_daily == "FULL" ]; then
+  python t_double_bottom.py --save_fig  -x AG  --min_sample 90
+fi
+
+
+python t_double_bottom.py --save_fig  -x AG  --min_sample 90 --selected
+
+
 ######################### analyze
 #input: merged/*.csv
 #output:step1: report/step1/rpt_"+end_date+".csv", "ts_code,name,, stopProcess,bonus cnt, garbage cnt, bonusReason, garbageReason,curAssliaM"

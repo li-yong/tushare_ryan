@@ -268,11 +268,16 @@ def draw_a_stock(df, code, name, show_fig_f=False, save_fig_f=False, min_sample=
             if value in range(x_date.__len__()):
                 plt.axvline(x=x_date[value], linestyle='-', color='lightblue', alpha=0.2)
 
+    dir = "/home/ryan/DATA/result/curv_plot"
+
+    if not os.path.isdir(dir):
+        os.mkdir(dir)
+
     if save_fig_f:
         if rtn_dict['hit']:
-            fn = "/home/ryan/DATA/result/curv_plot/" + code + "_" + name + "_" + the_day + "_hitted.png"
+            fn = dir+"/" + code + "_" + name + "_" + the_day + "_hitted.png"
         else:
-            fn = "/home/ryan/DATA/result/curv_plot/" + code + "_" + name + "_" + the_day + ".png"
+            fn = dir+"/" + code + "_" + name + "_" + the_day + ".png"
 
         plt.savefig(fn, bbox_inches='tight')
         print("figure saved to " + fn + "\n")

@@ -126,6 +126,11 @@ if [ $fetch_or_exam == "EXAM" ]; then
 
 
 
+ #----------- curve_shape -----------------#
+    #output: /home/ryan/DATA/result/selected/us_curve_shape.csv
+    python t_double_bottom.py --save_fig  -x US  --min_sample 90 --selected
+    python t_double_bottom.py --save_fig  -x HK  --min_sample 90 --selected
+    python t_double_bottom.py --save_fig  -x AG  --min_sample 90 --selected
 
 
   python t_summary.py  --select  --action=generate_report
