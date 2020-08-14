@@ -140,8 +140,7 @@ class Finlib:
             return (df_all_ts_pro)
 
         if not os.path.isdir(path):
-            logging.info('path not exist ' + path)
-            exit()
+            os.mkdir(path)
 
         #allFiles = glob.glob(path + "/*.csv")
         allFiles = glob.glob(path + "/*201[0-9]*.csv")
