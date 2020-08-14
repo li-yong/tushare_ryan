@@ -230,7 +230,7 @@ def benneish_start(ann_date):
     stock_list = finlib.Finlib().add_market_to_code(df=stock_list, dot_f=True, tspro_format=True)  # 603999.SH
 
 
-    out_f = "/home/ryan/DATA/result/beneish.csv"  # /home/ryan/DATA/result/ag_beneish.csv
+    out_f = "/home/ryan/DATA/result/ag_beneish.csv"  # /home/ryan/DATA/result/ag_beneish.csv
 
     df = get_beneish_element(ann_date=ann_date)
     current_date = datetime.datetime.strptime(ann_date, "%Y%m%d")

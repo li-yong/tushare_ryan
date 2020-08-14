@@ -290,14 +290,14 @@ def set_global_pro_fetch_field():
 
 def get_jaqs_field(ts_code, date=None, big_memory=False):  #date: YYYYMMDD, code:600519, read from ~/DATA/DAY_JAQS/SH600519.csv
     #date : None, then return the latest record.
-
+    dict_rtn = {'pe': 0, 'pe_ttm': 0, 'pb': 0, 'ps': 0}
     if big_memory:
         df = df_all_jaqs[df_all_jaqs['ts_code'] == ts_code]
     else:
         f = fund_base_source + "/individual_per_stock/" + ts_code + "_basic.csv"
         if not os.path.exists(f):
             logging.info('file not exist ' + f)
-            return
+            return(dict_rtn)
         df = pd.read_csv(f, converters={'ts_code': str, 'trade_date': str})
 
     if date == None:
@@ -305,6 +305,9 @@ def get_jaqs_field(ts_code, date=None, big_memory=False):  #date: YYYYMMDD, code
     else:
         date_Y_M_D = finlib.Finlib().get_last_trading_day(date)
         date = datetime.datetime.strptime(date_Y_M_D, '%Y%m%d').strftime('%Y%m%d')
+        if 'trade_date' not in df.columns:
+            logging.warning("trade_date is not in the df column, file "+f)
+            return(dict_rtn)
         df = df[df['trade_date'] == date]
 
         if df.__len__() == 0:
@@ -313,7 +316,7 @@ def get_jaqs_field(ts_code, date=None, big_memory=False):  #date: YYYYMMDD, code
         elif df.__len__() > 0:
             df = df.head(1)  # if multiple records, only use the 1st one.
 
-    dict_rtn = {'pe': 0, 'pe_ttm': 0, 'pb': 0, 'ps': 0}
+
 
     if df['pe'].__len__() > 0:
         dict_rtn['pe'] = df['pe'].values[0]
@@ -1939,7 +1942,7 @@ def _analyze_step_1(end_date, beneish_df):
     df_len = df.__len__()
 
     for i in range(0, df_len):
-        logging.info(__file__+" "+"=== analyze step_1, " + str(i + 1) + " of " + str(df_len) + ". ")
+        logging.info("\n"+__file__+" "+"=== analyze step_1, " + str(i + 1) + " of " + str(df_len) + ". ")
 
         garbageReason = ''
         bonusReason = ''
@@ -1949,12 +1952,15 @@ def _analyze_step_1(end_date, beneish_df):
         ####xiao xiong start
         ts_code = df.iloc[i]['ts_code']
         end_date = df.iloc[i]['end_date']
+        name = df.iloc[i]['name']
 
-        logging.info(__file__+" "+ts_code + " , " + end_date + " ===\n")
+        #ts_code = '002972.SZ'  #ryan debug
+
+        logging.info(__file__+" "+ts_code + " " +name+ " , " + end_date )
         sys.stdout.flush()
 
-        if end_date == '20171231':
-            pass  #debug
+        #if end_date == '20171231':
+        #    pass  #debug
 
         if not finlib.Finlib().is_on_market(ts_code, end_date, basic_df):
             logging.info(__file__ + " " + "stock has been not on market. " + ts_code + " , " + end_date)
@@ -1985,21 +1991,21 @@ def _analyze_step_1(end_date, beneish_df):
             df.iloc[i, df.columns.get_loc('stopProcess')] = 1
 
         # beneish
-        if (not ts_code in beneish_df['ts_code']):
-            garbageReason += 'No beneish score found'
+        if (not ts_code in list(beneish_df['ts_code'])):
+            garbageReason += 'No beneish score found. '
             garbageCnt += 1
             df.iloc[i, df.columns.get_loc('stopProcess')] = 1
         else:
-            M_8v = beneish_df[beneish_df['ts_code'] == ts_code]['M_8v']
-            M_5v = beneish_df[beneish_df['ts_code'] == ts_code]['M_5v']
+            M_8v = beneish_df[beneish_df['ts_code'] == ts_code]['M_8v'].values[0]
+            M_5v = beneish_df[beneish_df['ts_code'] == ts_code]['M_5v'].values[0]
 
             if M_8v > 0:
-                garbageReason += 'beneish M8v > 0'
+                garbageReason += 'beneish M8v > 0.'
                 garbageCnt += 1
                 df.iloc[i, df.columns.get_loc('stopProcess')] = 1
 
             if M_8v <= -2:
-                bonusReason += 'beneish M8v < -2'
+                bonusReason += 'beneish M8v < -2.'
                 bonusCnt += 1
 
         dict = _analyze_xiaoxiong_ct(ts_code=ts_code, end_date=end_date, basic_df=basic_df)
@@ -2276,7 +2282,7 @@ def _analyze_step_1(end_date, beneish_df):
         df.iloc[i, df.columns.get_loc('garbageReason')] = garbageReason
         df.iloc[i, df.columns.get_loc('bonusCnt')] = bonusCnt
         df.iloc[i, df.columns.get_loc('bonusReason')] = bonusReason
-        #df.to_csv(csv_output, encoding='UTF-8', index=False) #save csv every line
+        df.to_csv(csv_output, encoding='UTF-8', index=False) #save csv every line
         #logging.info(csv_output)
 
     if not df.empty:
@@ -2535,26 +2541,26 @@ def _analyze_profit_to_gr(ts_code, end_date, basic_df):
             bonusCnt += 1
             logging.info(__file__ + " " + "bonus. " + bonusReason)
             
-        if this_profit_to_gr > 70:
-            bonusReason += 'profit/gross income > 70%.'
+        if this_profit_to_gr > 30 and this_profit_to_gr < 101:
+            bonusReason += 'profit/gross income > 30%.'+str(this_profit_to_gr)
             bonusCnt += 1
             logging.info(__file__ + " " + "bonus. " + bonusReason)
                      
             
         if this_profit_to_gr < 0:
-            garbageReason += 'profit_to_gr < 0.'
+            garbageReason += 'profit_to_gr < 0.'+str(this_profit_to_gr)
             garbageCnt += 1
             stopProcess = True
             logging.info(__file__ + " " + "garbage. " + garbageReason)
         
-        if this_profit_to_gr > 100:
-            garbageReason += 'profit bigger than gross income.'
+        if this_profit_to_gr > 100: #manipulated finicial statement
+            garbageReason += 'manipulated, profit larger than gross income.'
             garbageCnt += 1
             stopProcess = True
             logging.info(__file__ + " " + "garbage. " + garbageReason)
  
-        if this_profit_to_gr < 30:
-            garbageReason += 'profit/gross income < 30%.'
+        if this_profit_to_gr < 10:
+            garbageReason += 'profit/gross income < 10% '+str(this_profit_to_gr)+"."
             garbageCnt += 1
             stopProcess = True
             logging.info(__file__ + " " + "garbage. " + garbageReason)
