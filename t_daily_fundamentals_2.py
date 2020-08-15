@@ -841,7 +841,7 @@ def fetch_basic_daily(fast_fetch=False):
     if fast_fetch:  #run on daily, fetch the most recent 5 day only.
         trading_days = trading_days[:5]
 
-    # the file should keep same between t_daily_update_csv_from_tushare_.py and t_daily_fundamentals_2.py
+    # the file should keep same between t_daily_update_csv_from_tushare.py and t_daily_fundamentals_2.py
     fields = 'ts_code, trade_date, close, turnover_rate, turnover_rate_f, volume_ratio, pe, pe_ttm,pb, ps, ps_ttm'
     fields += ',total_share,float_share,total_mv,circ_mv '
 
@@ -3895,16 +3895,7 @@ def main():
 
     set_global(debug=debug_f, big_memory=big_memory_f, force_run=force_run_f)
 
-    if options.fetch_pro_basic_f or \
-            options.fetch_stk_holdertrade_f or \
-            options.fetch_f or \
-            options.fetch_basic_quarterly_f or \
-            options.fetch_basic_daily_f or \
-            options.fetch_pro_concept_f or \
-            options.fetch_pro_repurchase_f or \
-            options.fetch_cctv_news_f or \
-            options.concept_top_f or \
-            options.fetch_all_f:
+    if options.fetch_all_f or options.fetch_f:
         set_global_pro_fetch_field()
 
     if options.fetch_pro_basic_f:

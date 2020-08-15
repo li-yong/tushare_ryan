@@ -2114,8 +2114,6 @@ def main():
 
     parser.add_option("-s", "--update_get_security", action="store_true", dest="update_get_security_flag", default=False, help="update /home/ryan/DATA/pickle/security.csv")
 
-    parser.add_option("-o", "--update_get_A_stock_instrment", action="store_true", dest="update_get_A_stock_instrment_flag", default=False, help="update /home/ryan/DATA/pickle/instrument_A.csv")
-
     parser.add_option("--force_run", action="store_true", dest="force_run_f", default=False, help="force fetch, force generate file, even when file exist or just updated")
 
     (options, args) = parser.parse_args()
@@ -2133,7 +2131,6 @@ def main():
     update_get_market = options.update_get_market_flag
     update_get_security = options.update_get_security_flag
     update_get_instrument = options.update_get_instrument_flag
-    update_get_A_stock_instrment = options.update_get_A_stock_instrment_flag
     force_run_f = options.force_run_f
 
     logging.info(__file__+" "+"fetch_all_f: " + str(fetch_all_f))
@@ -2149,7 +2146,6 @@ def main():
     logging.info(__file__+" "+"update_get_market: " + str(update_get_market))
     logging.info(__file__+" "+"update_get_security: " + str(update_get_security))
     logging.info(__file__+" "+"update_get_instrument: " + str(update_get_instrument))
-    logging.info(__file__+" "+"update_get_A_stock_instrment: " + str(update_get_A_stock_instrment))
     logging.info(__file__+" "+"debug: " + str(debug))
     logging.info(__file__+" "+"force_run_f: " + str(force_run_f))
 
@@ -2232,9 +2228,6 @@ def main():
         #updating ("/home/ryan/DATA/pickle/instrument.csv")
         finlib.Finlib().get_instrument(force_update=True)
 
-    elif update_get_A_stock_instrment:
-        #updating ("/home/ryan/DATA/pickle/instrument.csv")
-        finlib.Finlib().get_A_stock_instrment(force_update=True)
 
     logging.info('script completed')
     os._exit(0)

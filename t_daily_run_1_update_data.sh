@@ -39,9 +39,9 @@ python /home/ryan/tushare_ryan/t_fetch_us_hk_bar.py --selected -x US;
 ######################################
 #Output:
 # /home/ryan/DATA/DAY_Global/AG/*csv
-#
+# /home/ryan/DATA/pickle/instrument_A.csv
 ######################################
-python /home/ryan/tushare_ryan/t_daily_update_csv_from_tushare_.py;
+python /home/ryan/tushare_ryan/t_daily_update_csv_from_tushare.py;
 
 
 ######################################
@@ -100,7 +100,6 @@ if [ $full_or_daily == "FULL" ]; then
   python t_daily_fundamentals.py  --update_get_security;   #saved to /home/ryan/DATA/pickle/security.csv #stop work. 20200513
 
   python t_daily_fundamentals.py  --update_get_instrument;  # /home/ryan/DATA/pickle/instrument.csv
-  python t_daily_fundamentals.py  --update_get_A_stock_instrment;  #/home/ryan/DATA/pickle/instrument_A.csv #stop work. 20200513
 fi
 
 # update forex, get forex yesterday data from td.

@@ -275,6 +275,15 @@ def main():
     #
     #########################
 
+    pro = ts.pro_api()
+
+    df = pro.new_share()
+    tmp = df[df['issue_date']>='20200801']
+    tmp = tmp.sort_values(by='issue_date', ascending=False)
+
+    import tabulate
+    print(tabulate.tabulate(tmp, headers='keys', tablefmt='psql'))
+
     logging.info(__file__ + " " + "\n")
     logging.info(__file__ + " " + "SCRIPT STARTING " + " ".join(sys.argv))
 

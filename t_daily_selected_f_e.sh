@@ -17,7 +17,7 @@ fi
 if [ $fetch_or_exam == "FETCH" ]; then
   cd /home/ryan/tushare_ryan
 
-  python /home/ryan/tushare_ryan/t_daily_update_csv_from_tushare_.py;
+  python /home/ryan/tushare_ryan/t_daily_update_csv_from_tushare.py;
   python /home/ryan/tushare_ryan/t_daily_get_ag_index_from_tushare.py --fetch_index;
 
   python /home/ryan/tushare_ryan/t_daily_update_csv_from_stooq.py;
