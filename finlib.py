@@ -691,7 +691,7 @@ class Finlib:
         api.login("13651887669", "eyJhbGciOiJIUzI1NiJ9.eyJjcmVhdGVfdGltZSI6IjE1NTE1Mzg0NTQyNjgiLCJpc3MiOiJhdXRoMCIsImlkIjoiMTM2NTE4ODc2NjkifQ.MT6sg03zcLJprsx4NjsCbNqfIX0aYfycTyLZ4BsTh3c")
         return api
 
-    def get_A_stock_instrment(self, today_df=None, debug=False, force_update=False):  # return 3515 records
+    def get_A_stock_instrment(self, today_df=None, debug=False):  # return 3515 records
 
         df = pd.DataFrame()
 
@@ -700,7 +700,7 @@ class Finlib:
         else:
             instrument_csv = "/home/ryan/DATA/pickle/instrument_A.csv"
 
-        if os.path.isfile(instrument_csv) and (not force_update):
+        if os.path.isfile(instrument_csv):
             df = pd.read_csv(instrument_csv, converters={'code': str})
         else:
             print("file not exist. " + instrument_csv)
