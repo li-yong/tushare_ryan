@@ -783,117 +783,6 @@ def _ts_pro_fetch(pro_con, stock_list, fast_fetch, query, query_fields, fetch_pe
                     #logging.info(__file__+" "+"append "+ed +" to already_fetch_p")
 
 
-
-            # df_tmp.to_csv(ind_csv, encoding='UTF-8', index=False)
-
-
-'''            
-            except:
-                logging.info(__file__+" "+"exception, sleeping 30sec then renew the ts_pro connection")
-
-            finally:
-
-                if sys.exc_info() == (None, None, None):
-                    pass  # no exception
-                else:
-                    # logging.info(unicode(traceback.print_exception(*sys.exc_info())).encode('utf8')) #python2
-                    logging.info(str(traceback.print_exception(*sys.exc_info())).encode('utf8'))  #python3
-                    logging.info(sys.exc_value.message)  # print the human readable unincode
-                    logging.info(__file__+" "+"query: " + query + " ts_code: " + ts_code + " period: " + period)
-                    sys.exc_clear()
-'''
-'''
-        try:
-
-            #ind_csv = '/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/invidual/601888.SH_income.csv'
-            #ind_csv =
-
-
-            if force_run_global or fast_fetch or (not finlib.Finlib().is_cached(ind_csv, day=1)):
-                #3352 of 3621, Getting Income 000626.SZ. len 89041
-                logging.info(__file__+" "+str(j)+" of "+total+", Getting "+query+" "+ts_code+". ")
-                sys.stdout.flush()
-
-                df_sub = pd.DataFrame()
-
-                if query in['income','balancesheet','cashflow','fina_indicator','fina_audit','disclosure_date','forecast','express','fina_mainbz']: #forcast requires period input
-                    df_sub = _ts_pro_fetch_end_date(pro_con, ts_code, fast_fetch, query, query_fields, fetch_period_list)
-                elif query in ['dividend']:
-                    df_sub = pro_con.query(query, ts_code=ts_code, fields=query_fields)  #<<<<<< Query tushare api
-                    time.sleep(1) #抱歉，您每分最多访问该接口80次:-(，详情访问
-
-                name = stock_list[stock_list['code'] == ts_code]['name'].values[0]
-                df_sub = pd.DataFrame([name] * df_sub.__len__(), columns=['name']).join(df_sub)
-
-                df_sub = df_sub.drop_duplicates().reset_index().drop('index', axis=1)
-                df_sub.to_csv(ind_csv, encoding='UTF-8', index=False)
-                logging.info(__file__ + ": " + "saved sub csv "+ind_csv)
-            else:
-                logging.info(__file__+" "+"file has been update in 1 days, not fetch again. " +ind_csv)
-
-            j += 1
-
-        except:
-            logging.info(__file__+" "+"exception, sleeping 30sec then renew the ts_pro connection")
-
-        finally:
-            if sys.exc_info() == (None, None, None):
-                pass  # no exception
-            else:
-                logging.info(unicode(traceback.print_exception(*sys.exc_info())).encode('utf8'))
-                logging.info(sys.exc_value.message) #print the human readable unincode
-                logging.info(__file__+" "+"query: "+query+" ts_code: " + ts_code)
-                sys.exc_clear()
-'''
-'''
-def _ts_pro_fetch_end_date(pro_con, ts_code,  query, query_fields, fetch_period_list ):
-    fetch_period_list = list(set(fetch_period_list))  # remove duplicate in list
-    fetch_period_list.sort()
-
-    for period in fetch_period_list:
-        dir = fund_base_source + "/individual/"+period
-        if not os.path.isdir(dir):
-            os.mkdir(dir)
-
-        ind_csv = dir + "/" + ts_code + "_" + query + ".csv"
-
-
-        if os.path.exists(ind_csv) and "20151231" > period:
-            logging.info(__file__+" "+"not fetch as file alreay exists "+ind_csv)
-            continue
-
-
-        if finlib.Finlib().is_cached(ind_csv, 3):
-            logging.info(__file__+" "+"file already updated in 3 days, not fetch again "+ind_csv)
-            continue
-
-
-
-        #if os.path.exists(ind_csv):
-            # df_sub = pd.read_csv(ind_csv)
-        #    df_sub = pd.read_csv(ind_csv, converters={i: str for i in range(100)})
-        #    df_sub = df_sub.drop(columns="name")
-        #else:
-        #    df_sub = pd.DataFrame(columns=[])
-
-
-
-        logging.info(__file__+" "+ts_code + " " + query + " " + period)
-        df_tmp = pro_con.query(query, ts_code=ts_code, fields=query_fields, end_date=period)
-        time.sleep(1)
-        df_tmp = df_tmp.astype(str)
-        df_tmp.to_csv(ind_csv, encoding='UTF-8', index=False)
-        logging.info(__file__+" "+__file__+" "+"saved "+ind_csv)
-
-
-        #df_sub = pd.concat([df_tmp, df_sub], sort=False)
-
-    #df_sub = df_sub.drop_duplicates()
-    #df_sub = df_sub.sort_values('ann_date', ascending=False, inplace=False).reset_index().drop('index', axis=1)
-    #return(df_sub)
-'''
-
-
 #jasq stop work, get PE, PB from tushare. 20190302
 def fetch_basic_quarterly():
     ts.set_token(myToken)
@@ -1112,131 +1001,6 @@ def merge_individual_bash_basic(fast_fetch=False):
         logging.info(cmd)
         os.system(cmd)
 
-
-'''
-def zzz_merge_local():
-    _merge_local_bash('income', csv_income, col_list_income) #利润表
-    _merge_local_bash('balancesheet',  csv_balancesheet,col_list_balancesheet)#资产负债表
-    _merge_local_bash('cashflow',  csv_cashflow,col_list_cashflow)#现金流量表
-    _merge_local_bash('fina_indicator',  csv_fina_indicator, col_list_fina_indicator)#财务指标数据
-    _merge_local_bash('forecast',  csv_forecast,col_list_forecast)#业绩预告
-    _merge_local_bash('dividend',  csv_dividend,col_list_dividend)#分红送股
-    _merge_local_bash('express',  csv_express,col_list_express)#业绩快报
-    _merge_local_bash('fina_audit',  csv_fina_audit,col_list_fina_audit)#财务审计意见
-    _merge_local_bash('fina_mainbz',  csv_fina_mainbz,col_list_fina_mainbz)#主营业务构成
-    _merge_local_bash('disclosure_date',  csv_disclosure_date, col_list_disclosure_date)#财报披露计划
-
-
-
-    return
-
-    stock_list = finlib.Finlib().get_A_stock_instrment() #603999
-    stock_list = finlib.Finlib().add_market_to_code(stock_list, dot_f=True, tspro_format=True) #603999.SH
-
-    #ryan debug start
-    if debug_global:
-        stock_list=stock_list[stock_list['code']=='600519.SH']
-    #ryan debug end
-
-    _merge_local( stock_list,  'income',  csv_income,col_list_income) #利润表
-    _merge_local( stock_list,   'balancesheet',  csv_balancesheet,col_list_balancesheet)#资产负债表
-    _merge_local( stock_list,   'cashflow',  csv_cashflow,col_list_cashflow)#现金流量表
-    _merge_local( stock_list,   'fina_indicator',  csv_fina_indicator, col_list_fina_indicator)#财务指标数据
-
-    _merge_local( stock_list,   'forecast',  csv_forecast,col_list_forecast)#业绩预告
-    _merge_local( stock_list,   'dividend',  csv_dividend,col_list_dividend)#分红送股
-    _merge_local( stock_list,   'express',  csv_express,col_list_express)#业绩快报
-
-    _merge_local( stock_list,   'fina_audit',  csv_fina_audit,col_list_fina_audit)#财务审计意见
-    _merge_local( stock_list,   'fina_mainbz',  csv_fina_mainbz,col_list_fina_mainbz)#主营业务构成
-    _merge_local( stock_list,   'disclosure_date',  csv_disclosure_date, col_list_disclosure_date)#财报披露计划
-
-'''
-'''
-
-def zzz_merge_local_bash(feature,  output_csv, col_name_list):
-    if os.path.isfile(output_csv): #to make things simple, remove the file everytime.
-        os.remove(output_csv)
-
-    f_header = "~/tmp/header.txt"
-    f_content = "~/tmp/content.txt"
-
-    cmd_header = "for i in `ls "+ fund_base_source+"/individual_per_stock/*_"+feature+".csv`; do sed 1q $i > "+ f_header +"; break; done;"
-    #cmd_header = "for i in `ls "+ fund_base_source+"/individual/*_"+feature+".csv`; do sed 1q $i > "+ f_header +"; break; done;"
-
-    cmd_content = "rm -f "+f_content+"; "
-    cmd_content += "for i in `ls "+ fund_base_source+"/individual_per_stock/*_"+feature+".csv`; do sed 1d $i >> "+ f_content +"; done;"
-    #cmd_content += "for i in `ls "+ fund_base_source+"/individual/*_"+feature+".csv`; do sed 1d $i >> "+ f_content +"; done;"
-
-    cmd_exist_content_remove_header_overwrite = "sed -i 1d "+output_csv
-
-    #cmd_uniq = "cat "+f_content +" | sort | uniq > "+f_content
-    cmd_uniq = "sort -u -o "+f_content+ " "+f_content
-
-    if ((os.path.isfile(output_csv)) and os.stat(output_csv).st_size >= 10):
-        #There is a problem, the new generate conent colums are more than exists file.
-        #So never let the script runs to here.
-        #os.system(cmd_exist_content_remove_header_overwrite) #remove exist output file header
-        #os.system(cmd_header) #generate header to f_header
-        #os.system(cmd_content) #generate new content to f_content
-        #os.system("cat "+output_csv+" >> "+ f_content) #append  output_csv to f_content, f_content is all the content.
-        #os.system(cmd_uniq) #sort,uniq the content to f_content
-        #os.system("cat "+f_content + ">> "+f_header) #append f_content to f_header
-        #os.system("mv "+f_header+ " "+output_csv)
-        #os.system("rm -f "+f_content)
-        pass
-    else:
-        #logging.info(cmd_header)
-        os.system(cmd_header)
-
-        #logging.info(cmd_content)
-        os.system(cmd_content)
-
-        #logging.info(cmd_uniq)
-        os.system(cmd_uniq)
-
-        cmd="cat " + f_content + " >> " + f_header
-        #logging.info(cmd)
-        os.system(cmd)
-
-        cmd="mv " + f_header + " " + output_csv
-        #logging.info(cmd)
-        os.system(cmd)
-
-        cmd="rm -f " + f_content
-        #logging.info(cmd)
-        os.system(cmd)
-
-    df = pd.read_csv(output_csv, converters={i: str for i in range(100)})
-    cols = df.columns.tolist()
-    name_list = list(reversed(col_name_list))
-    for i in name_list:
-        if i in cols:
-            cols.remove(i)
-            cols.insert(0, i)
-        else:
-            logging.info(__file__+" "+"warning, no column named " + i + " in cols")
-
-    df = df[cols]
-    df = df.fillna(0)
-
-    if not df.empty:
-        df = df.reset_index().drop('index', axis=1)
-
-        df.to_csv(output_csv, encoding='UTF-8', index=False)
-        logging.info(__file__ + ": " + "saved, " + output_csv+" . len "+str(df.__len__()))
-        df = None    #free memory
-        df_exist_all = None
-    else:
-        logging.info(__file__+" "+"df is empty")
-
-
-    pass
-
-
-
-
-'''
 
 
 #########################
@@ -1866,7 +1630,7 @@ def _extract_latest(csv_input, csv_output, feature, col_name_list, ts_code=None,
 
 def _analyze_step_1(end_date, beneish_df):
 
-    logging.info(__file__ + " " + "=== analyze step 1 ===")
+    #logging.info(__file__ + " " + "=== analyze step 1, "+end_date+" ===")
     #end_date in format 20171231
     output_dir = fund_base_report + "/step1"
     csv_output = fund_base_report + "/step1/rpt_" + end_date + ".csv"
@@ -1895,7 +1659,12 @@ def _analyze_step_1(end_date, beneish_df):
     #if debug_global or True:  #ryan debug
     if debug_global:
         df = df[df['ts_code'] == '600519.SH'].reset_index().drop('index', axis=1)
-        #df = df.loc[df['ts_code'].isin(['000501.SZ', '600511.SH', '600535.SH', '600406.SH', '600519.SH', '600520.SH', '600518.SH', '600503.SH', '600506.SH'])].reset_index().drop('index', axis=1)
+
+    #ryan_debug start
+    #df = df.loc[df['ts_code'].isin(['000029.SZ', '600511.SH', '600535.SH', '600406.SH', '600519.SH', '600520.SH', '600518.SH', '600503.SH', '600506.SH'])].reset_index().drop('index', axis=1)
+    #df = df.loc[df['ts_code'].isin(['000029.SZ', '600511.SH'])].reset_index().drop('index', axis=1)
+    # ryan_debug start
+    
 
     lst = list(df['ts_code'].unique())
     lst.sort()
@@ -1942,7 +1711,7 @@ def _analyze_step_1(end_date, beneish_df):
     df_len = df.__len__()
 
     for i in range(0, df_len):
-        logging.info("\n"+__file__+" "+"=== analyze step_1, " + str(i + 1) + " of " + str(df_len) + ". ")
+        logging.info("\n"+__file__+" "+"=== analyze step_1, " + str(i + 1) + " of " + str(df_len) + ".  "+end_date+" ===")
 
         garbageReason = ''
         bonusReason = ''
@@ -2291,7 +2060,7 @@ def _analyze_step_1(end_date, beneish_df):
 
 
 def _analyze_xiaoxiong_ct(ts_code, end_date, basic_df):
-    logging.info(__file__ + " " + "=== analyze _analyze_xiaoxiong_ct ===")
+    logging.info(__file__ + " " + "=== analyze _analyze_xiaoxiong_ct, "+end_date+" ===")
 
     # changtou xueyuan, xiaoxiong di li
     garbageReason = ""
@@ -2417,7 +2186,7 @@ def _analyze_xiaoxiong_ct(ts_code, end_date, basic_df):
 
 
 def _analyze_white_horse_ct(ts_code, end_date, basic_df):
-    logging.info(__file__ + " " + "=== analyze _analyze_white_horse_ct ===")
+    logging.info(__file__ + " " + "=== analyze _analyze_white_horse_ct, "+end_date+" ===")
     # changtou bai ma gu
     garbageReason = ""
     bonusReason = ""
@@ -2447,11 +2216,10 @@ def _analyze_white_horse_ct(ts_code, end_date, basic_df):
 
     #### White Horse Stock of  Chang tou xue yuan
     this_roe =  finlib.Finlib().get_ts_field(ts_code=ts_code, ann_date=tmp['ann_date'], field='roe', big_memory=big_memory_global, df_all_ts_pro=df_all_ts_pro,fund_base_merged=fund_base_merged)
-    #this_fund = finlib.Finlib().get_jaqs_field(ts_code=ts_code)
-    #this_fund = get_jaqs_field(ts_code=ts_code, date=end_date, big_memory=big_memory_global)
-    #this_pb = this_fund['pb']
     this_pb =  finlib.Finlib().get_ts_quarter_field(ts_code=ts_code, ann_date=tmp['ann_date'], field='pb', base_dir=fund_base)
 
+    #if this_pb is None:
+    #    this_pb = 0
 
     roe_1y =  finlib.Finlib().get_ts_field(ts_code=ts_code, ann_date=tmp['ann_date_1y_before'], field='roe', big_memory=big_memory_global, df_all_ts_pro=df_all_ts_pro,fund_base_merged=fund_base_merged)
     roe_2y =  finlib.Finlib().get_ts_field(ts_code=ts_code, ann_date=tmp['ann_date_2y_before'], field='roe', big_memory=big_memory_global, df_all_ts_pro=df_all_ts_pro,fund_base_merged=fund_base_merged)
@@ -2473,7 +2241,7 @@ def _analyze_white_horse_ct(ts_code, end_date, basic_df):
             bonusCnt += 1
             logging.info(__file__ + " " + "bonus. " + bonusReason)
 
-            if this_pb > 0 and this_pb < 8:
+            if this_pb is not None and this_pb > 0 and this_pb < 8:
                 bonusReason += 'white horse '
                 bonusCnt += 1
                 logging.info(__file__ + " " + "bonus. " + bonusReason + ' ' + ts_code + " " + end_date)
@@ -2490,7 +2258,7 @@ def _analyze_white_horse_ct(ts_code, end_date, basic_df):
 
 
 def _analyze_profit_to_gr(ts_code, end_date, basic_df):
-    logging.info(__file__ + " " + "=== analyze _analyze_profit_to_gr ===")
+    logging.info(__file__ + " " + "=== analyze _analyze_profit_to_gr, "+end_date+"  ===")
     # changtou bai ma gu
     garbageReason = ""
     bonusReason = ""
@@ -2580,7 +2348,7 @@ def _analyze_profit_to_gr(ts_code, end_date, basic_df):
 
 
 def _analyze_beneish(ts_code, end_date, basic_df):
-    logging.info(__file__ + " " + "=== analyze _analyze_profit_to_gr ===")
+    logging.info(__file__ + " " + "=== analyze _analyze_profit_to_gr, "+end_date+"  ===")
     # changtou bai ma gu
     garbageReason = ""
     bonusReason = ""
@@ -2666,7 +2434,7 @@ def _analyze_step_2(end_date):
     #end_date in format 20171231
 
     #add columns to the sheet
-    logging.info(__file__ + " " + "=== analyze step 2 ===")
+    logging.info(__file__ + " " + "=== analyze step 2, "+end_date+"  ===")
 
     csv_input = fund_base_report + "/step1/rpt_" + end_date + ".csv"
     output_dir = fund_base_report + "/step2"
@@ -2852,7 +2620,7 @@ def _analyze_step_3(end_date):
     #end_date in format 20171231
 
     #add columns to the sheet
-    logging.info(__file__ + " " + "=== analyze step 3 ===")
+    logging.info(__file__ + " " + "=== analyze step 3, "+end_date+"  ===")
     csv_input = fund_base_report + "/step2/rpt_" + end_date + ".csv"
 
     output_dir = fund_base_report + "/step3"
@@ -3505,7 +3273,7 @@ def analyze(fully_a=False, daily_a=True, fast=True):
 
 
     for e in period_list:
-        logging.info(__file__ + " " + "e is " + str(e))
+       # logging.info(__file__ + " " + "e is " + str(e))
         if e <= '20151231' and daily_a:
             logging.info(__file__ + " " + "not process date before 2015 in daily analysis" + str(e))
             continue
@@ -3514,7 +3282,7 @@ def analyze(fully_a=False, daily_a=True, fast=True):
             logging.info(__file__ + " " + "not process date before 2010" + str(e))
             continue
 
-        logging.info(__file__+" "+"end_date " + e + ". ")
+        #logging.info(__file__+" "+"end_date " + e + ". ")
 
         #continue
         
