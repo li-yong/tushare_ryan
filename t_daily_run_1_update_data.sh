@@ -174,17 +174,39 @@ if [ $full_or_daily == "FULL" ]; then
   #python t_daily_fundamentals_2.py --fetch_data_all --fast_fetch  #most time, update most recent q.  #time consuming.
 
   #separate --fetch_data_all
-  python t_daily_fundamentals_2.py --fetch_basic_daily --fast_fetch
-  python t_daily_fundamentals_2.py --fetch_pro_concept --fast_fetch
-  python t_daily_fundamentals_2.py --fetch_pro_repurchase --fast_fetch
-  python t_daily_fundamentals_2.py --fetch_cctv_news --fast_fetch
-  python t_daily_fundamentals_2.py --fetch_pro_basic --fast_fetch
-  python t_daily_fundamentals_2.py --fetch_cctv_news --fast_fetch
-  python t_daily_fundamentals_2.py --fetch_basic_quarterly --fast_fetch
+  #output: /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/basic_daily/basic_*.csv
+  #ts_code,trade_date,close,turnover_rate,turnover_rate_f,volume_ratio,pe,pe_ttm,pb,ps,ps_ttm,total_share,float_share,total_mv,circ_mv
+  python t_daily_fundamentals_2.py --fetch_basic_daily --force_run
 
-  python t_daily_fundamentals_2.py --fetch_pro_fund --fast_fetch  #pro fundation tables. 10 tables.
+  # /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/market/pro_concept.csv
+  #ts_code,name,cat_code,cat_name
+  python t_daily_fundamentals_2.py --fetch_pro_concept --force_run
+
+  # /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/market/pro_repurchase.csv
+  #ts_code,ann_date,end_date,proc,exp_date,vol,amount,high_limit,low_limit
+  python t_daily_fundamentals_2.py --fetch_pro_repurchase --force_run
+
+  # /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/cctv_news/cctv_news.csv
+  #date,title,content
+  python t_daily_fundamentals_2.py --fetch_cctv_news --force_run
+
+  #/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/market/pro_basic.csv
+  #ts_code,symbol,name,area,industry,list_date
+  python t_daily_fundamentals_2.py --fetch_pro_basic --force_run
+
+  #output:
+  #/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/basic_quarterly/*.csv
+  #ts_code,trade_date,close,turnover_rate,turnover_rate_f,volume_ratio,pe,pe_ttm,pb,ps,ps_ttm,total_share,float_share,total_mv,circ_mv
+  python t_daily_fundamentals_2.py --fetch_basic_quarterly --force_run
+
+  #/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/individual/*.csv
+  python t_daily_fundamentals_2.py --fetch_pro_fund --force_run  #pro fundation tables. 10 tables.
 fi
 
+
+if [ $full_or_daily == "DAILY" ]; then
+  python t_daily_fundamentals_2.py --fetch_basic_daily
+  python t_daily_fundamentals_2.py --fetch_pro_fund --fast_fetch  #pro fundation tables. 10 tables.
 
 ######################################
 #

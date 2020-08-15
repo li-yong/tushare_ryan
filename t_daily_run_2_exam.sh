@@ -214,7 +214,7 @@ fi
 if [ $full_or_daily == "FULL" ]; then
     #rm -f /home/ryan/DATA/result/jaqs/jaqs_all.pickle.  JAQS is DEAD.
     #rm -f /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/merged/*.csv
-    python t_daily_fundamentals_2.py  --merge_quarterly --big_memory  --force_run # <<<  2 hour . jaqs_all.pickle regenated, while ts_all.pickle is invalid.
+    python t_daily_fundamentals_2.py  --merge_quarterly --big_memory  --force_run # <<<  2 hour . jaqs_all.pickle re-generated, while ts_all.pickle is invalid.
 
     #generate real ts_all.pickle based on the merged/*.csv just generated.
     rm -f /home/ryan/DATA/result/jaqs/ts_all.pickle

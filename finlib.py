@@ -3566,6 +3566,29 @@ class Finlib:
 
             return(data_in_field)
 
+    def get_ts_quarter_field(self, ts_code, ann_date, field, base_dir="/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2"):
+        f = base_dir + "/source/basic_quarterly/basic_" + ann_date + ".csv"
+
+        if not os.path.exists(f):
+            logging.warnning(__file__ + " " + "file not exists, " + f)
+            return
+
+        df = pd.read_csv(f, converters={'trade_date': str})
+
+        if not field in df.columns:
+            logging.warnning(__file__ + " " + "field not in the file, " + field + " " + f)
+            return
+
+        df = df[df['ts_code'] == ts_code]
+
+        if (df.__len__() == 0):
+            logging.warnning(__file__ + " " + "no ts_code in file " + ts_code + " " + f)
+            return
+
+        data_in_field = df[field].values[0]  # always return the first one. suppose the 1st is the most updated one if multiple lines for the code+ann_date
+
+        return(data_in_field)
+
 
     def get_tspro_query_fields(self,api):
         myToken = '4cc9a1cd78bf41e759dddf92c919cdede5664fa3f1204de572d8221b'

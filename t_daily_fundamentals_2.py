@@ -288,7 +288,7 @@ def set_global_pro_fetch_field():
 
 
 
-def get_jaqs_field(ts_code, date=None, big_memory=False):  #date: YYYYMMDD, code:600519, read from ~/DATA/DAY_JAQS/SH600519.csv
+def zzz_get_jaqs_field(ts_code, date=None, big_memory=False):  #date: YYYYMMDD, code:600519, read from ~/DATA/DAY_JAQS/SH600519.csv
     #date : None, then return the latest record.
     dict_rtn = {'pe': 0, 'pe_ttm': 0, 'pb': 0, 'ps': 0}
     if big_memory:
@@ -2448,8 +2448,10 @@ def _analyze_white_horse_ct(ts_code, end_date, basic_df):
     #### White Horse Stock of  Chang tou xue yuan
     this_roe =  finlib.Finlib().get_ts_field(ts_code=ts_code, ann_date=tmp['ann_date'], field='roe', big_memory=big_memory_global, df_all_ts_pro=df_all_ts_pro,fund_base_merged=fund_base_merged)
     #this_fund = finlib.Finlib().get_jaqs_field(ts_code=ts_code)
-    this_fund = get_jaqs_field(ts_code=ts_code, date=end_date, big_memory=big_memory_global)
-    this_pb = this_fund['pb']
+    #this_fund = get_jaqs_field(ts_code=ts_code, date=end_date, big_memory=big_memory_global)
+    #this_pb = this_fund['pb']
+    this_pb =  finlib.Finlib().get_ts_quarter_field(ts_code=ts_code, ann_date=tmp['ann_date'], field='pb', base_dir=fund_base)
+
 
     roe_1y =  finlib.Finlib().get_ts_field(ts_code=ts_code, ann_date=tmp['ann_date_1y_before'], field='roe', big_memory=big_memory_global, df_all_ts_pro=df_all_ts_pro,fund_base_merged=fund_base_merged)
     roe_2y =  finlib.Finlib().get_ts_field(ts_code=ts_code, ann_date=tmp['ann_date_2y_before'], field='roe', big_memory=big_memory_global, df_all_ts_pro=df_all_ts_pro,fund_base_merged=fund_base_merged)
