@@ -181,6 +181,10 @@ if [ $full_or_daily == "FULL" ]; then
   #ts_code,name,cat_code,cat_name
   python t_daily_fundamentals_2.py --fetch_pro_concept --force_run
 
+  # /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/new_share.csv
+  #ts_code,sub_code,name,ipo_date,issue_date,amount,market_amount,price,pe,limit_amount,funds,ballot
+  python t_daily_fundamentals_2.py --fetch_new_share
+
   # /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/market/pro_repurchase.csv
   #ts_code,ann_date,end_date,proc,exp_date,vol,amount,high_limit,low_limit
   python t_daily_fundamentals_2.py --fetch_pro_repurchase --force_run
@@ -205,6 +209,7 @@ fi
 
 if [ $full_or_daily == "DAILY" ]; then
   python t_daily_fundamentals_2.py --fetch_basic_daily
+  python t_daily_fundamentals_2.py --fetch_new_share
   python t_daily_fundamentals_2.py --fetch_pro_fund --fast_fetch  #pro fundation tables. 10 tables.
 
 ######################################

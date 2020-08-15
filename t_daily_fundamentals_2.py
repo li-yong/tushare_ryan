@@ -876,6 +876,18 @@ def fetch_basic_daily(fast_fetch=False):
     pass
 
 
+def fetch_new_share():
+    ts.set_token(myToken)
+    pro = ts.pro_api()
+    df = pro.new_share()
+    #df = df[df['issue_date']>='20200801']
+    df = df.sort_values(by=['ipo_date','issue_date'], ascending=False).reset_index().drop('index', axis=1)
+    f = fund_base_source+"/new_share.csv"
+    df.to_csv(f, encoding='UTF-8', index=False)
+    logging.info('new share saved to '+f)
+
+
+
 #input: source/*.csv
 #output: source/individual_per_stock/stockid_feature.csv , which include all history. (not the 50 records entry)
 
@@ -3807,6 +3819,7 @@ def main():
     parser.add_option("--fetch_pro_concept", action="store_true", dest="fetch_pro_concept_f", default=False, help="")
     parser.add_option("--fetch_pro_repurchase", action="store_true", dest="fetch_pro_repurchase_f", default=False, help="")
     parser.add_option("--fetch_cctv_news", action="store_true", dest="fetch_cctv_news_f", default=False, help="")
+    parser.add_option("--fetch_new_share", action="store_true", dest="fetch_new_share_f", default=False, help="")
 
     parser.add_option("-e", "--extract_latest", action="store_true", dest="extract_latest_f", default=False, help="extract latest quarter data")
 
@@ -3851,6 +3864,7 @@ def main():
 
     (options, args) = parser.parse_args()
     fetch_all_f = options.fetch_all_f
+    fetch_new_share_f = options.fetch_new_share_f
     extract_latest_f = options.extract_latest_f
     merge_quarterly_f = options.merge_quarterly_f
     analyze_f = options.analyze_f
@@ -3873,6 +3887,7 @@ def main():
     #verify_fund_increase_f = options.verify_fund_increase_f
 
     logging.info(__file__ + " " + "fetch_all_f: " + str(fetch_all_f))
+    logging.info(__file__ + " " + "fetch_new_share_f: " + str(fetch_new_share_f))
     logging.info(__file__ + " " + "extract_latest_f: " + str(extract_latest_f))
     logging.info(__file__ + " " + "merge_quarterly_f: " + str(merge_quarterly_f))
     logging.info(__file__ + " " + "analyze_f: " + str(analyze_f))
@@ -3925,10 +3940,14 @@ def main():
     if options.concept_top_f:
         concept_top()
 
+    if options.fetch_new_share_f:
+        fetch_new_share()
+
     if options.fetch_all_f:
         ##############
         #fast first
         ##############
+        fetch_new_share()
         fetch_basic_daily(fast_fetch=fast_fetch_f)  #300 credits
         _fetch_pro_concept()  #300 credits
         _fetch_pro_repurchase()  #600 credits
