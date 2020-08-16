@@ -36,7 +36,6 @@ logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m_%d %H:%M:%S', 
 
 
 def fetch_ak(api, note, parms):
-    logging.info("\nfetching " + api + " " + note)
 
     base_dir = "/home/ryan/DATA/pickle/Stock_Fundamental/akshare/source"
     if not os.path.exists(base_dir):
@@ -45,7 +44,10 @@ def fetch_ak(api, note, parms):
     csv_f = base_dir + "/" + api + "_" + note + ".csv"
 
     if finlib.Finlib().is_cached(csv_f, day=2):
-            logging.info("file updated in 2 days, not fetch. "+csv_f)
+        logging.info("file updated in 2 days, not fetch. "+csv_f)
+        return
+    
+    logging.info("\nfetching " + api + " " + note)
 
     try:
         cmd = "ak."+api+"("+parms+")"
