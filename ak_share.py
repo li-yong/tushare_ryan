@@ -44,7 +44,7 @@ def fetch_ak(api, note, parms):
     csv_f = base_dir + "/" + api + "_" + note + ".csv"
 
     if finlib.Finlib().is_cached(csv_f, day=2):
-        logging.info("file updated in 2 days, not fetch. "+csv_f)
+        logging.info("file updated in 2 days, not fetch again. "+csv_f)
         return
     
     logging.info("\nfetching " + api + " " + note)
@@ -58,7 +58,7 @@ def fetch_ak(api, note, parms):
             logging.info(tabulate.tabulate(df.head(1), headers='keys', tablefmt='psql'))
         else:
             logging.warning("df is None")
-    except e:
+    except Exception as e:
         logging.warning("Exception on "+ api + ", "+str(e))
 
 
