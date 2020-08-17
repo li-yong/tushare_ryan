@@ -1393,7 +1393,10 @@ def today_fundamental_any(todayS=None):
         'nmc',  #流通市值
     ]
 
+    today_all = finlib.Finlib().remove_market_from_tscode(today_all)
     today_all = pd.merge(today_all, df_basic, on='code', suffixes=('', '_df_basic'))
+
+
     #today_all.drop('pe_df_basic',  axis=1, inplace=True)
     #today_all.drop('name_df_basic',  axis=1, inplace=True)
     #today_all.drop('area_df_basic',  axis=1, inplace=True)
@@ -1510,11 +1513,11 @@ def today_fundamental_any(todayS=None):
         code = today_all.iloc[i]['code']
         #logging.info(__file__+" "+"daily analyse on " +code)
 
-        pe = today_all.ix[i]['pe']
-        #        fvalues = today_all.ix[i]['fvalues']
-        #        turnover = today_all.ix[i]['turnover']
-        amount = today_all.ix[i]['amount']
-        result_value_quarter_fundation = today_all.ix[i]['result_value_quarter_fundation']
+        pe = today_all.iloc[i]['pe']
+        #        fvalues = today_all.iloc[i]['fvalues']
+        #        turnover = today_all.iloc[i]['turnover']
+        amount = today_all.iloc[i]['amount']
+        result_value_quarter_fundation = today_all.iloc[i]['result_value_quarter_fundation']
 
         pe_perc = 1 - (stats.percentileofscore(pe_all, pe) / 100.0)
         #       fvalues_perc=1 - (stats.percentileofscore(fvalues_all, fvalues)/100.0)
@@ -1536,7 +1539,7 @@ def today_fundamental_any(todayS=None):
         if ((pe == 0) or (amount == 0)):
             result_value = 0
         today_all.iloc[i, today_all.columns.get_loc('result_value_today')] = result_value
-        today_all.iloc[i, today_all.columns.get_loc('result_value_sum')] = result_value * 0.5 + today_all.ix[i]['result_value_quarter_fundation'] * 0.5
+        today_all.iloc[i, today_all.columns.get_loc('result_value_sum')] = result_value * 0.5 + today_all.iloc[i]['result_value_quarter_fundation'] * 0.5
 
         #df.set_value(i,'result_value', result_value)
         #df.loc[i]['result_value'] = result_value
