@@ -1349,7 +1349,7 @@ def today_fundamental_any(todayS=None):
     #dump_today = "/home/ryan/DATA/pickle/daily_update_source/"+todayS+"ts_ud.pickle"
 
     if not os.path.isfile(today_fund_csv):
-        logging.info(__file__+" "+"csv_today file not exist, please run python t_daily_fundamentals.py  --fetch_data_all;. Abort." + today_fund_csv)
+        logging.info(__file__+" "+"csv_today file not exist, please run python t_daily_fundamentals.py  --fetch_data_all;. Abort. " + today_fund_csv)
         exit()
 
     if not os.path.isfile(dump_today):

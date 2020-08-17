@@ -85,9 +85,9 @@ python t_daily_hsgt.py --fetch_moneyflow_daily  #time consuming (a little)
 #                      ZZ500.csv #中证500成份股
 #
 ######################################
-if [ $full_or_daily == "FULL" ]; then
-  echo "updating quarter fund data, update /home/ryan/DATA/pickle/*.pickle"
-  python t_daily_fundamentals.py  --fetch_data_all;
+echo "updating quarter fund data, update /home/ryan/DATA/pickle/*.pickle"
+echo "updating fundamentals/daily/basic_today.csv"
+python t_daily_fundamentals.py  --fetch_data_all;
 fi
 
 ######################################
