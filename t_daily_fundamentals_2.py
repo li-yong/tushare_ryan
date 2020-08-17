@@ -2887,6 +2887,7 @@ def _analyze_step_6():
     logging.info(__file__ + " " + "loading " + csv_input_3)
     df_3 = pd.read_csv(csv_input_3)
     df_3 = finlib.Finlib().ts_code_to_code(df=df_3)
+    df_3 = finlib.Finlib().remove_garbage(df_3)
     df_3 = df_3[['code', 'scoreA']]  #code: SH600519, scoreA:NaN
 
     df = pd.merge(df_1, df_2, how='outer', on=['code'], suffixes=('', '_stock_basics'))
