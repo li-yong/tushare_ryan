@@ -368,6 +368,13 @@ if [ $full_or_daily == "DAILY" ]; then
     #python t_daily_pe_pb_roe_history.py --force_run #refresh every run.
 fi
 
+###############################################
+# Bebeish
+#
+##############################################
+if [ $full_or_daily == "FULL" ]; then
+   python t_yearly_beneish.py
+fi
 
 
 

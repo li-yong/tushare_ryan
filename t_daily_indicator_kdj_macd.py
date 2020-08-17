@@ -211,7 +211,7 @@ def kdj(period):
     df_rtn = pd.DataFrame()
 
     stock_list = finlib.Finlib().get_A_stock_instrment()
-    stock_list = finlib.Finlib().add_market_periodto_code(stock_list, dot_f=False, tspro_format=False)
+    stock_list = finlib.Finlib().add_market_to_code(stock_list, dot_f=False, tspro_format=False)
 
     #stock_list = stock_list.head(100) #ryan debug
 
