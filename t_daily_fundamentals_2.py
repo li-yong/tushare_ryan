@@ -3066,7 +3066,7 @@ def _analyze_step_7():
 
     csv_input = fund_base_report + "/step4/multiple_years_score.csv"
     df_input = pd.read_csv(csv_input, converters={'end_date': str})
-    df_input = finlib.Finlib.ts_code_to_code(df_input)
+    df_input = finlib.Finlib().ts_code_to_code(df_input)
     df_input = finlib.Finlib().remove_garbage(df_input)
 
     #debug:
