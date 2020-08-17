@@ -23,6 +23,7 @@ import signal
 import akshare as ak
 import tabulate
 import finlib
+import finlib
 
 logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m_%d %H:%M:%S', level=logging.DEBUG)
 
@@ -67,7 +68,29 @@ def main():
     ########################
     #
     #################
-    
+    b = "/home/ryan/DATA/pickle/Stock_Fundamental/akshare/source"
+    f = b+"/"+"stock_zh_a_scr_report_企业社会责任.csv"
+
+    # f = b+"/"+"stock_em_jgdy_detail_机构调研-详细.csv"
+    # f = b+"/"+"stock_em_gpzy_pledge_ratio_上市公司质押比例.csv"
+    # f = b+"/"+"stock_institute_recommend_机构推荐池-股票综合评级.csv"
+    # f = b+"/"+"stock_em_sy_list_个股商誉明细.csv"
+    # f = b+"/"+"stock_em_sy_jz_list_个股商誉减值明细.csv"
+    #f = b+"/"+""
+
+    f = b + "/" + "stock_em_jgdy_tj_机构调研-统计.csv"
+    df = finlib.Finlib().regular_read_akshare_to_stdard_df(data_csv=f, add_market=False)
+    df['NoticeDate'] = df['NoticeDate'].apply(lambda _d: str(_d).replace('-',''))
+    df['StartDate'] = df['StartDate'].apply(lambda _d: str(_d).replace('-',''))
+    df['EndDate'] = df['EndDate'].apply(lambda _d: str(_d).replace('-',''))
+
+    #df = finlib.Finlib().get_A_stock_instrment()
+    df = finlib.Finlib().remove_beneish_low_rate(df)
+
+    print(tabulate.tabulate(df[['name','code']].value_counts(), headers='keys', tablefmt='psql'))
+    #print(tabulate.tabulate(pd.DataFrame(df['name'].value_counts()), headers='keys', tablefmt='psql'))
+    #print(tabulate.tabulate(pd.DataFrame(df['code'].value_counts()), headers='keys', tablefmt='psql'))
+
     #企业社会责任
     fetch_ak(api = 'stock_zh_a_scr_report', note = '企业社会责任', parms='report_year=2019,page=1')
 

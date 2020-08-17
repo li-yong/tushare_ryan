@@ -265,6 +265,11 @@ def benneish_start(ann_date):
     cols = ['ts_code', 'name', 'ann_date', 'M_8v','M_5v','DSRI', 'GMI', 'AQI', 'SGI','DEPI','SGAI','TATA','LVGI']
     df_rst = df_rst[cols]
     df_rst = df_rst.sort_values(by='M_8v')
+
+    #rename and format ts_code to code, 600519.SH --> SH600519
+    df_rst = finlib.Finlib().ts_code_to_code(df_rst)
+
+
     df_rst.to_csv(out_f, encoding='UTF-8', index=False)
     logging.info("saved beneish output to "+out_f)
 

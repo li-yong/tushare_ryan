@@ -2725,6 +2725,7 @@ class Finlib:
     def get_code_format(self, code_input):
         rem_D6DotC2 = re.match("(\d{6})\.(.*)", code_input)  # 600519.SH
         rem_C2D6 = re.match("([a-zA-Z]{2})(\d{6})", code_input)  # SH600519
+        rem_D6 = re.match("^(\d{6})$", code_input)  # 600519
 
         if rem_D6DotC2:
             code = rem_D6DotC2.group(1)
@@ -2736,10 +2737,16 @@ class Finlib:
             mkt = rem_D6DotC2.group(1)
             code_format = "C2D6"
 
+        if rem_D6:
+            code = rem_D6.group(1)
+            mkt = 'NA'
+            code_format = "D6"
+
         dict = {'code': code, 'mkt': mkt, 'format': code_format}
 
         dict['D6.C2'] = dict['code'] + "." + dict['mkt']
         dict['C2D6'] = dict['mkt'] + dict['code']
+        dict['D6'] = dict['code']
 
         return (dict)
 
@@ -3431,6 +3438,232 @@ class Finlib:
 
         return (rtn_df)
 
+    def regular_read_akshare_to_stdard_df(self, data_csv,add_market=True):
+        base_dir = "/home/ryan/DATA/pickle/Stock_Fundamental/akshare/source"
+        data_csv = str(data_csv)
+        rtn_df = pd.DataFrame()
+
+        data_csv_fp = os.path.abspath(data_csv)
+        dir = os.path.dirname(data_csv_fp)
+
+        if not os.path.isfile(data_csv_fp):
+            logging.fatal(__file__+" "+"file not exist. " + data_csv_fp)
+            exit(0)
+
+        rtn_df = pd.read_csv(data_csv_fp, encoding="utf-8",converters={i: str for i in range(100)})
+
+        _t = 'Unnamed: 0'
+        if _t in rtn_df.columns:
+            rtn_df = rtn_df.drop(_t, axis=1)
+
+
+        fname_dict = {
+        "SName":"name",
+        "SCode":"code",
+        "板块":"Plate",
+        "板块代码": "Section code",
+        "板块名称": "Section name",
+        "超大单净流入-净额": "Super large single net inflow-net",
+        "超大单净流入-净占比": "Super large single net inflow-net proportion",
+        "城     市": "city",
+        "成交额": "Turnover",
+        "成交量": "Volume",
+        "持股比例": "Shareholding ratio",
+        "持股比例增幅": "Increase in shareholding ratio",
+        "持有数": "Number of holdings",
+        "达到平仓线比例(%)": "Proportion of reaching the liquidation line (%)",
+        "达到预警线未达平仓线比例(%)": "Proportion of reaching the warning line and not reaching the liquidation line (%)",
+        "大单净流入-净额": "Large order net inflow-net",
+        "大单净流入-净占比": "Large order net inflow-net proportion",
+        "代码": "code",
+        "当年累计净利润_累计净利润": "Cumulative net profit for the year_cumulative net profit",
+        "当年累计净利润_同比增长": "Cumulative net profit for the year _ year-on-year growth",
+        "当年累计营业收入_累计营业收入": "Cumulative operating income for the year_cumulative operating income",
+        "当年累计营业收入_同比增长": "Cumulative operating income for the year _ year-on-year growth",
+        "当前价": "Current price",
+        "当月净利润_环比增长": "Net profit for the month _ month-on-month growth",
+        "当月净利润_净利润": "Net profit for the month_net profit",
+        "当月净利润_同比增长": "Net profit for the month _ year-on-year growth",
+        "当月营业收入_环比增长": "Operating income for the month _ month-on-month growth",
+        "当月营业收入_同比增长": "Operating income for the month _ year-on-year growth",
+        "当月营业收入_营业收入": "Current month operating income_operating income",
+        "等级": "grade",
+        "地区": "Area",
+        "对应值": "Corresponding value",
+        "分红次数": "Dividend times",
+        "分析师": "Analyst",
+        "供应商、客户和消费者权益责任": "Supplier, customer, and consumer rights responsibilities",
+        "公告日期": "Announcement date",
+        "公司代码": "Company code",
+        "公司家数": "Number of companies",
+        "公司简称": "Company abbreviation",
+        "公司名称": "company name",
+        "公司全称": "full name of company",
+        "公司网址": "company website",
+        "股东名称": "Shareholder name",
+        "股东责任": "Shareholder responsibility",
+        "股票代码": "Stock code",
+        "股票简称": "Stock abbreviation",
+        "股票名称": "name",
+        "关注度": "Attention",
+        "关注股票数": "Pay attention to the number of stocks",
+        "行业": "industry",
+        "行业名称": "Industry Name",
+        "沪深300指数": "CSI 300 Index",
+        "环境责任": "Environmental responsibility",
+        "机构数": "Number of institutions",
+        "机构数变化": "Change in number of institutions",
+        "机构席位买入额(万)": "Institutional seat purchases (10,000)",
+        "机构席位卖出额(万)": "Institutional seats sold (10,000)",
+        "减持家数": "Reduce the number of households",
+        "减持评级数": "Number of underweight ratings",
+        "减持数": "Underweight",
+        "简称": "Abbreviation",
+        "交易日期": "transaction date",
+        "结束日期": "End date",
+        "近一年涨跌幅(%)": "Change in the past year (%)",
+        "净额": "Net",
+        "净利润规模(元)": "Net profit scale (yuan)",
+        "净利润同比(%)": "Net profit year-on-year (%)",
+        "净利润(元)": "Net profit (yuan)",
+        "净资产_净资产": "Net assets_net assets",
+        "净资产_同比增长": "Net assets_ year-on-year growth",
+        "净资产(元)": "Net assets (yuan)",
+        "开始日期": "start date",
+        "类型": "Types of",
+        "累积购买额": "Cumulative purchase amount",
+        "累积买入额": "Cumulative purchase amount",
+        "累积卖出额": "Cumulative sales",
+        "累计股息(%)": "Cumulative dividend (%)",
+        "买入次数": "Number of buys",
+        "买入家数": "Number of homes bought",
+        "买入评级数": "Number of buy ratings",
+        "买入前三股票": "Buy the top three stocks",
+        "买入数": "Number of purchases",
+        "买入席位数": "Number of buy seats",
+        "卖出次数": "Number of sells",
+        "卖出家数": "Number of homes sold",
+        "卖出评级数": "Number of sell ratings",
+        "卖出数": "Number sold",
+        "卖出席位数": "Number of sales attendance",
+        "名称": "name",
+        "目标价": "Target price",
+        "年均股息(%)": "Average annual dividend (%)",
+        "平均价格": "average price",
+        "平均目标价": "Average target price",
+        "平均目标涨幅": "Average target increase",
+        "平均评级": "Average rating",
+        "平均涨幅": "Average increase",
+        "平均质押比例(%)": "Average pledge ratio (%)",
+        "评级机构": "rating agencies",
+        "评级机构数": "Number of rating agencies",
+        "评级日期": "Rating date",
+        "日期": "date",
+        "融资次数": "Number of financing",
+        "融资总额(亿)": "Total financing (100 million)",
+        "商誉报告日期": "Goodwill report date",
+        "商誉规模(元)": "Goodwill scale (yuan)",
+        "商誉规模占净资产规模比例(%)": "Proportion of goodwill scale in net assets scale (%)",
+        "商誉减值(元)": "Goodwill impairment (yuan)",
+        "商誉减值占净利润比例(%)": "Percentage of goodwill impairment in net profit (%)",
+        "商誉减值占净资产比例(%)": "The percentage of goodwill impairment in net assets (%)",
+        "商誉(元)": "Goodwill (yuan)",
+        "商誉占净资产比例(%)": "Proportion of goodwill in net assets (%)",
+        "上榜次数": "Number of rankings",
+        "上年度同期净利润(元)": "Net profit for the same period of last year (yuan)",
+        "上年商誉": "Goodwill of the previous year",
+        "上年商誉(元)": "Goodwill of the previous year (yuan)",
+        "上市日期": "Listing date",
+        "上证-收盘价": "Shanghai Stock Exchange-Closing Price",
+        "上证-涨跌幅": "Shanghai Stock Exchange-Change",
+        "社会责任": "Social responsibility",
+        "深证-收盘价": "Shenzhen Stock Exchange-Closing Price",
+        "深证-涨跌幅": "Shenzhen Stock Exchange-Change",
+        "省    份": "Province",
+        "是否净流入": "Whether net inflow",
+        "收盘价": "Closing price",
+        "所属行业": "Industry",
+        "统计时间": "Statistics Time",
+        "未达预警线比例(%)": "Proportion of not reaching the warning line (%)",
+        "无限售股质押数(股)": "Pledged number of unlimited shares (shares)",
+        "限售股质押数(股)": "Pledge number of restricted shares (shares)",
+        "详细": "detailed",
+        "小单净流入-净额": "Small order net inflow-net",
+        "小单净流入-净占比": "Small order net inflow-net proportion",
+        "序号": "Serial number",
+        "业绩变动幅度-上限": "Performance change range-upper limit",
+        "业绩变动幅度-下限": "Performance change range-lower limit",
+        "业绩变动原因": "Reasons for performance changes",
+        "英文名称": "English name",
+        "营业部名称": "Sales department name",
+        "预告内容": "Preview content",
+        "预估平仓线(元)": "Estimated closing line (yuan)",
+        "预计净利润(元)-上限": "Estimated net profit (yuan)-upper limit",
+        "预计净利润(元)-下限": "Estimated net profit (yuan)-lower limit",
+        "员工责任": "Employee responsibility",
+        "增持家数": "Increase the number of households",
+        "增持评级数": "Overweight ratings",
+        "占流通股比例": "Percentage of outstanding shares",
+        "占流通股比例增幅": "Increase in the proportion of outstanding shares",
+        "占所持股份比例(%)": "Percentage of shares held (%)",
+        "占总股本比例(%)": "Percentage of total equity (%)",
+        "涨跌额": "Ups and downs",
+        "涨跌幅": "Quote change",
+        "证券代码": "Securities code",
+        "证券简称": "Securities short name",
+        "质押比例(%)": "Pledge ratio (%)",
+        "质押笔数": "Number of pledges",
+        "质押公司股票代码": "Pledge company stock code",
+        "质押公司数量": "Number of pledge companies",
+        "质押股份数量(股)": "Number of pledged shares (shares)",
+        "质押股数(股)": "Number of pledged shares (shares)",
+        "质押机构": "Pledge institution",
+        "质押开始日期": "Pledge start date",
+        "质押日收盘价(元)": "Closing price of pledge day (yuan)",
+        "质押市值(元)": "Pledge market value (yuan)",
+        "质押数量(股)": "Number of pledges (shares)",
+        "质押总笔数": "Total number of pledges",
+        "质押总股本": "Pledged total equity",
+        "质押总股数(股)": "Total pledged shares (shares)",
+        "质押总市值(元)": "Total market value of pledge (yuan)",
+        "中单净流入-净额": "Medium Single Net Inflow-Net",
+        "中单净流入-净占比": "Net inflow of medium singles-net proportion",
+        "中性家数": "Number of Neutral Homes",
+        "中性评级数": "Neutral rating number",
+        "中性数": "Neutral number",
+        "主力净流入-净额": "Main net inflow-net",
+        "主力净流入-净占比": "Main net inflow-net proportion",
+        "主力净流入最大股": "The main net inflow of the largest stocks",
+        "主力净流入最大股代码": "Major net inflow largest stock code",
+        "注册地址": "Registered address",
+        "综合评级": "Comprehensive rating",
+        "综合评级↑": "Comprehensive rating↑",
+        "总成交额(万元)": "Total turnover (ten thousand yuan)",
+        "总成交量(手)": "Total volume (hands)",
+        "总得分": "Total Score",
+        "最低目标价": "Lowest target price",
+        "最高目标价": "Highest target price",
+        "最新价": "Latest price",
+        "最新价(元)": "Latest price (yuan)",
+        "最新评级": "Latest rating",
+        "最新一期商誉(元)": "The latest goodwill (yuan)",
+        "最新质押市值": "The latest pledge market value",
+        }
+
+        for k in fname_dict.keys():
+            if k in rtn_df.columns:
+                rtn_df.rename(columns={k:fname_dict[k].lower()}, inplace=True)
+
+        if rtn_df.__len__() > 0:
+            rtn_df = self.regular_column_names(rtn_df)
+            rtn_df = self.regular_df_date_to_ymd(rtn_df)
+
+            if add_market:
+                rtn_df = self.add_market_to_code(rtn_df)
+                rtn_df['code'] = rtn_df['code'].apply(lambda _d: str(_d).upper())
+
+        return (rtn_df)
+
     def pprint(self, df):
         print(tabulate.tabulate(df, headers='keys', tablefmt='psql'))
 
@@ -3608,7 +3841,40 @@ class Finlib:
         rtn_fields = ','.join(list(_d))
         return (rtn_fields)
 
-    #input: df [open,high, low, close]
+    #input: df['code',...]
+    #output: df that without the low rated benish score
+    def remove_beneish_low_rate(self, df, m_score=0):
+        beneish_csv = '/home/ryan/DATA/result/ag_beneish.csv'
+        # ts_code,name,ann_date,M_8v,M_5v,DSRI,GMI,AQI,SGI,DEPI,SGAI,TATA,LVGI
+        b_df = pd.read_csv(beneish_csv, converters={'ann_date': str})
+
+        if df.__len__()==0:
+            logging.warning("empty df")
+            return(df)
+
+        logging.info("input df len " + str(df.__len__()))
+
+        if self.get_code_format(code_input=df['code'].iloc[0])['format'] == 'D6':
+            df = self.add_market_to_code(df)
+
+        s_all = df['code'].drop_duplicates().reset_index().drop('index', axis=1)['code']
+
+
+
+        s_sub = b_df[b_df['M_8v']>=m_score]['code'].drop_duplicates().reset_index().drop('index', axis=1)['code']
+        logging.info("beneish df low rate has uniq len " + str(s_sub.__len__()))
+
+        s_rst = s_all[~s_all.isin(s_sub)]  # remove s_sub from s_all
+        #logging.info("df after remove len " + str(s_rst.__len__()))
+
+        df = df[df['code'].isin(s_rst)].drop_duplicates().reset_index().drop('index', axis=1)
+        logging.info("df after remove len " + str(df.__len__()))
+        return(df)
+
+
+
+
+     #input: df [open,high, low, close]
     #output: {hit:[T|F], high:value, low:value, }
     def w_shape_exam(self, df):
         pass
