@@ -3093,7 +3093,6 @@ def _analyze_step_7():
             col_list.append(c)
 
     df_result = df_result[col_list]
-    df_result = finlib.Finlib().ts_code_to_code(df=df_result)
     df_result = pd.DataFrame([0] * df_result.__len__(), columns=["ktr_inc_avg"]).join(df_result)
     df_result = pd.DataFrame([0] * df_result.__len__(), columns=["ktr_win_p"]).join(df_result)
     df_result = pd.DataFrame([0] * df_result.__len__(), columns=["ktr_cnt_win"]).join(df_result)
