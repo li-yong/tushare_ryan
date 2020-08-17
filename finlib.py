@@ -203,7 +203,7 @@ class Finlib:
         # todayS = datetime.today().strftime('%Y-%m-%d')
         todayS = self.get_last_trading_day()
 
-        todayS = "2020-08-13"
+        #todayS = "2020-08-13" #ryan debug
 
         # csv_basic = "/home/ryan/DATA/tmp/basic_" + todayS + ".csv"  ##get_stock_basics每天都会更新一次
         csv_basic = "/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals/daily/basic_" + todayS + ".csv"  ##get_stock_basics每天都会更新一次
