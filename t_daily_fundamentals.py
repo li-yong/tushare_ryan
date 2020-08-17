@@ -345,7 +345,7 @@ def fetch(year, quarter, overwrite=False):
     if not os.path.exists(fund_base):
         os.makedirs(fund_base)
 
-    if ((not os.path.isfile(csv_report)) or overwrite) and (year >= 2010):
+    if ((not finlib.Finlib().is_cached(csv_report,5)) or overwrite) and (year >= 2010):
         logging.info(__file__+" "+"\nGetting Report, ts.get_report_data" + ". Y " + str(year) + ",Q " + str(quarter))  # 业绩报告（主表）
         try:
             df_report = ts.get_report_data(year, quarter)
@@ -362,7 +362,7 @@ def fetch(year, quarter, overwrite=False):
         except:
             logging.info(__file__ + ": " + "read exception " + csv_report)
 
-    if ((not os.path.isfile(csv_profit)) or overwrite) and (year >= 2010):
+    if ((not finlib.Finlib().is_cached(csv_profit)) or overwrite) and (year >= 2010):
         logging.info(__file__+" "+"\nGetting Profit, ts.get_profit_data" + ". Y " + str(year) + ",Q " + str(quarter))  # 盈利能力
         try:
             df_profit = ts.get_profit_data(year, quarter)
@@ -379,7 +379,7 @@ def fetch(year, quarter, overwrite=False):
         except:
             logging.info(__file__ + ": " + "read exception " + csv_profit)
 
-    if ((not os.path.isfile(csv_operation)) or overwrite) and (year >= 2010):
+    if ((not finlib.Finlib().is_cached(csv_operation)) or overwrite) and (year >= 2010):
         logging.info(__file__+" "+"\nGetting Operation, ts.get_operation_data" + ". Y " + str(year) + ",Q " + str(quarter))  #营运能力
         try:
             df_operation = ts.get_operation_data(year, quarter)
@@ -396,7 +396,7 @@ def fetch(year, quarter, overwrite=False):
         except:
             logging.info(__file__ + ": " + "read exception " + csv_operation)
 
-    if ((not os.path.isfile(csv_growth)) or overwrite) and (year >= 2010):
+    if ((not finlib.Finlib().is_cached(csv_growth)) or overwrite) and (year >= 2010):
         logging.info(__file__+" "+"\nGetting Growth, ts.get_growth_data" + ". Y " + str(year) + ",Q " + str(quarter))  # 成长能力
         try:
             df_growth = ts.get_growth_data(year, quarter)
@@ -413,7 +413,7 @@ def fetch(year, quarter, overwrite=False):
         except:
             logging.info(__file__ + ": " + "read exception " + csv_growth)
 
-    if ((not os.path.isfile(csv_debtpaying)) or overwrite) and (year >= 2010):
+    if ((not finlib.Finlib().is_cached(csv_debtpaying)) or overwrite) and (year >= 2010):
         logging.info(__file__+" "+"\nGetting Debtpaying, ts.get_debtpaying_data" + ". Y " + str(year) + ",Q " + str(quarter))  # 偿债能力
         try:
             df_debtpaying = ts.get_debtpaying_data(year, quarter)
@@ -430,7 +430,7 @@ def fetch(year, quarter, overwrite=False):
         except:
             logging.info(__file__ + ": " + "read exception " + csv_debtpaying)
 
-    if ((not os.path.isfile(csv_cashflow)) or overwrite) and (year >= 2010):
+    if ((not finlib.Finlib().is_cached(csv_cashflow)) or overwrite) and (year >= 2010):
         logging.info(__file__+" "+"\nGetting Cashflow, ts.get_cashflow_data" + ". Y " + str(year) + ",Q " + str(quarter))  # 现金流量
         try:
             df_cashflow = ts.get_cashflow_data(year, quarter)
