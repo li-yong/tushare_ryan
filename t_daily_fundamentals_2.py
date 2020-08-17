@@ -3066,6 +3066,7 @@ def _analyze_step_7():
 
     csv_input = fund_base_report + "/step4/multiple_years_score.csv"
     df_input = pd.read_csv(csv_input, converters={'end_date': str})
+    df_input = finlib.Finlib().remove_garbage(df_input)
 
     #debug:
     #df_input=df_input[df_input['ts_code'] == '600519.SH'].reset_index().drop('index', axis=1) #good stock
