@@ -850,7 +850,7 @@ class Finlib:
 
         for index, row in df.iterrows():
             code = row['code']
-
+            print("code "+code)
             dcode = re.match('(\d{6})\.(.*)', code).group(1)  # group(1):600000,
             mkt = re.match('(\d{6})\.(.*)', code).group(2)  # group(2):SH
 
