@@ -637,6 +637,18 @@ python t_daily_junxian_barstyle.py -x AG --show_result
 #python t_daily_pattern_Hit_Price_Volume.py -1 -2 -4  -x AG
 #python t_daily_pattern_Hit_Price_Volume.py -1 -2 -4  -m 22  #Only run pv test.
 
+
+
+################################
+#
+#
+###############################
+if [ $full_or_daily == "DAILY" ]; then
+    python t_double_bottom.py -x AG --save_fig --min_sample 90
+fi
+
+
+
 #############
 # output: /hdd/DATA/result/report_2019-03-29_AG.txt
 #############
