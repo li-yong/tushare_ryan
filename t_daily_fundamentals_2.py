@@ -1640,7 +1640,7 @@ def _extract_latest(csv_input, csv_output, feature, col_name_list, ts_code=None,
     logging.info(__file__ + ": " + "saved to " + csv_output + " . len " + str(df_result.__len__()))
 
 
-def _analyze_step_1(end_date, beneish_df):
+def _analyze_step_1(end_date):
 
     #logging.info(__file__ + " " + "=== analyze step 1, "+end_date+" ===")
     #end_date in format 20171231
@@ -1771,23 +1771,23 @@ def _analyze_step_1(end_date, beneish_df):
         if dict['stopProcess']:
             df.iloc[i, df.columns.get_loc('stopProcess')] = 1
 
-        # beneish
-        if (not ts_code in list(beneish_df['ts_code'])):
-            garbageReason += 'No beneish score found. '
-            garbageCnt += 1
-            df.iloc[i, df.columns.get_loc('stopProcess')] = 1
-        else:
-            M_8v = beneish_df[beneish_df['ts_code'] == ts_code]['M_8v'].values[0]
-            M_5v = beneish_df[beneish_df['ts_code'] == ts_code]['M_5v'].values[0]
-
-            if M_8v > 0:
-                garbageReason += 'beneish M8v > 0.'
-                garbageCnt += 1
-                df.iloc[i, df.columns.get_loc('stopProcess')] = 1
-
-            if M_8v <= -2:
-                bonusReason += 'beneish M8v < -2.'
-                bonusCnt += 1
+        # # beneish
+        # if (not ts_code in list(beneish_df['code'])):
+        #     garbageReason += 'No beneish score found. '
+        #     garbageCnt += 1
+        #     df.iloc[i, df.columns.get_loc('stopProcess')] = 1
+        # else:
+        #     M_8v = beneish_df[beneish_df['ts_code'] == ts_code]['M_8v'].values[0]
+        #     M_5v = beneish_df[beneish_df['ts_code'] == ts_code]['M_5v'].values[0]
+        #
+        #     if M_8v > 0:
+        #         garbageReason += 'beneish M8v > 0.'
+        #         garbageCnt += 1
+        #         df.iloc[i, df.columns.get_loc('stopProcess')] = 1
+        #
+        #     if M_8v <= -2:
+        #         bonusReason += 'beneish M8v < -2.'
+        #         bonusCnt += 1
 
         dict = _analyze_xiaoxiong_ct(ts_code=ts_code, end_date=end_date, basic_df=basic_df)
 
@@ -1881,9 +1881,9 @@ def _analyze_step_1(end_date, beneish_df):
             finExpToGr = fin_exp * 100 / total_revenue
             df.iloc[i, df.columns.get_loc('finExpToGr')] = round(finExpToGr, 1)
 
-        if total_revenue < 1000000:
+        if total_revenue != 0.0 and total_revenue < 1000000:
             garbageReason += "total_revenue less than 1M:" + str(total_revenue) + ". "
-            #df.iloc[i, df.columns.get_loc('garbageReason')] += garbageReason+". "
+            df.iloc[i, df.columns.get_loc('garbageReason')] += garbageReason+". "
             garbageCnt += 1
 
         #optPrftM
@@ -1893,12 +1893,12 @@ def _analyze_step_1(end_date, beneish_df):
             optPrftM = operate_profit * 100 / revenue
             df.iloc[i, df.columns.get_loc('optPrftM')] = round(optPrftM, 1)
 
-        if operate_profit < 1000000:
+        if operate_profit != 0.0 and  operate_profit < 1000000:
             garbageReason += "operate_profit less than 1M:" + str(operate_profit) + ". "
             garbageCnt += 1
             df.iloc[i, df.columns.get_loc('stopProcess')] = 1
 
-        if revenue < 1000000:
+        if revenue != 0.0 and revenue < 1000000:
             garbageReason += "revenue less than 1M:" + str(revenue) + ". "
             garbageCnt += 1
             df.iloc[i, df.columns.get_loc('stopProcess')] = 1
@@ -1906,16 +1906,16 @@ def _analyze_step_1(end_date, beneish_df):
     #cashProfitM
         n_cashflow_act = df.iloc[i]['n_cashflow_act']
         net_profit = df.iloc[i]['net_profit']
-        if net_profit != 0.0:
+        if n_cashflow_act != 0.0 and   net_profit != 0.0:
             cashProfitM = n_cashflow_act * 100 / net_profit
             df.iloc[i, df.columns.get_loc('cashProfitM')] = round(cashProfitM, 1)
 
-        if n_cashflow_act < 1000000:
+        if n_cashflow_act != 0.0 and   n_cashflow_act < 1000000:
             garbageReason += "n_cashflow_act less than 1M:" + str(revenue) + ". "
             garbageCnt += 1
             df.iloc[i, df.columns.get_loc('stopProcess')] = 1
 
-        if net_profit < 1000000:
+        if net_profit != 0.0 and  net_profit < 1000000:
             garbageReason += "net_profit less than 1M:" + str(revenue) + ". "
             garbageCnt += 1
             df.iloc[i, df.columns.get_loc('stopProcess')] = 1
@@ -1923,16 +1923,17 @@ def _analyze_step_1(end_date, beneish_df):
         #bzsAstM
         bz_sales = df.iloc[i]['bz_sales']
         total_assets = df.iloc[i]['total_assets']
-        if total_assets != 0.0:
+
+        if bz_sales != 0.0 and   total_assets != 0.0:
             bzsAstM = bz_sales * 100 / total_assets
             df.iloc[i, df.columns.get_loc('bzsAstM')] = round(bzsAstM, 1)
 
-        if bz_sales < 1000000:
+        if bz_sales != 0.0 and bz_sales < 1000000:
             garbageReason += "bz_sales less than 1M:" + str(bz_sales) + ". "
             garbageCnt += 1
             df.iloc[i, df.columns.get_loc('stopProcess')] = 1
 
-        if total_assets < 1000000:
+        if total_assets != 0.0 and total_assets < 1000000:
             garbageReason += "total_assets less than 1M:" + str(total_assets) + ". "
             garbageCnt += 1
             df.iloc[i, df.columns.get_loc('stopProcess')] = 1
@@ -1940,7 +1941,7 @@ def _analyze_step_1(end_date, beneish_df):
         #cashLiabM
         c_cash_equ_end_period = df.iloc[i]['c_cash_equ_end_period']
         total_liab = df.iloc[i]['total_liab']
-        if total_liab != 0.0:
+        if c_cash_equ_end_period !=0.0 and total_liab != 0.0:
             cashLiabM = finlib.Finlib().measureValue(c_cash_equ_end_period, total_liab)
             df.iloc[i, df.columns.get_loc('cashLiabM')] = round(cashLiabM, 1)
 
@@ -2143,7 +2144,7 @@ def _analyze_xiaoxiong_ct(ts_code, end_date, basic_df):
         rule_2_year_2 = (this_revenue_4q_before - this_revenue_8q_before) - (this_inventories_4q_before - this_inventories_8q_before)
         if rule_2_year_1 < 0 and rule_2_year_2 < 0:  #bigger is better
             #连续两年存货上升幅度超过营业收入上升幅度，产品滞销
-            garbageReason += "Increase of inventory  more than increase of business income for two consecutive years. "
+            garbageReason += "Increase of inventory more than increase of business income for two consecutive years. "
             garbageCnt += 1
         else:
             pass
@@ -2323,8 +2324,8 @@ def _analyze_profit_to_gr(ts_code, end_date, basic_df):
             bonusCnt += 1
             logging.info(__file__ + " " + "bonus. " + bonusReason)
             
-        if this_profit_to_gr > 30 and this_profit_to_gr < 101:
-            bonusReason += 'profit/gross income > 30%.'+str(this_profit_to_gr)
+        if this_profit_to_gr > 20 and this_profit_to_gr < 101:
+            bonusReason += 'profit/gross income > 20%.'+str(this_profit_to_gr)
             bonusCnt += 1
             logging.info(__file__ + " " + "bonus. " + bonusReason)
                      
@@ -3303,16 +3304,17 @@ def analyze(fully_a=False, daily_a=True, fast=True):
         #continue
         
         #beneish
-        beneish_csv = '/home/ryan/DATA/result/ag_beneish.csv'
+        #beneish_csv = '/home/ryan/DATA/result/ag_beneish.csv'
         #ts_code,name,ann_date,M_8v,M_5v,DSRI,GMI,AQI,SGI,DEPI,SGAI,TATA,LVGI
-        beneish_df = pd.read_csv(beneish_csv, converters={'ann_date': str}) 
-        
+        #beneish_df = pd.read_csv(beneish_csv, converters={'ann_date': str})
+        #beneish_df = finlib.Finlib().
 
         # as many date lost on Q1, Q3 report, so only process half-year, and year report.
         # !!!! @todo ryan: parallary compare on yearly report; Q1, Q2, Q3 data can be used in self comparision.
         # !!!!
         if re.match('\d{4}1231$', e) or daily_a or fully_a or force_run_global:  #daily_a check the most recent only(small scope), so daily_a check all steps.
-            _analyze_step_1(end_date=e, beneish_df=beneish_df)  # field calculate
+            #_analyze_step_1(end_date=e, beneish_df=beneish_df)  # field calculate
+            _analyze_step_1(end_date=e)  # field calculate
             _analyze_step_2(end_date=e)  # score
             _analyze_step_3(end_date=e)  # score of score
             _analyze_step_4()  # evaluate the stock score in mutliple years.
