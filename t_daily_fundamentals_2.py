@@ -2873,11 +2873,13 @@ def _analyze_step_6():
     logging.info(__file__ + " " + "loading " + csv_input_1)
     df_1 = pd.read_csv(csv_input_1)
     df_1 = finlib.Finlib().ts_code_to_code(df=df_1)  #code:SH600519
+    df_1 = finlib.Finlib().remove_garbage(df_1)
     #df_1 = df_1[df_1['code']==stock_code]
 
     logging.info(__file__ + " " + "loading " + csv_input_2)
     df_2 = pd.read_csv(csv_input_2, converters={'code': str})
     df_2 = finlib.Finlib().add_market_to_code(df=df_2)  #code: SH600519
+    df_2 = finlib.Finlib().remove_garbage(df_2)
 
     if debug_global:
         df_2 = df_2[df_2['code'] == "SH600519"]
@@ -3311,15 +3313,14 @@ def analyze(fully_a=False, daily_a=True, fast=True):
             _analyze_step_1(end_date=e, beneish_df=beneish_df)  # field calculate
             _analyze_step_2(end_date=e)  # score
             _analyze_step_3(end_date=e)  # score of score
-
+            _analyze_step_4()  # evaluate the stock score in mutliple years.
+            _analyze_step_5()  # 'scoreA'
         else:
             logging.info(__file__ + " " + "not handle Q1, Q2, Q3 report, " + e)
             continue
 
 
-    if fully_a or force_run_global or True:
-        _analyze_step_4()  # evaluate the stock score in mutliple years.
-        _analyze_step_5()  # 'scoreA'
+    if fully_a or force_run_global:
         _analyze_step_6()  #under valued stock, valuePrice/actualPrice. scoreA,V_C_P, #time consuming.
         _analyze_step_7()  #time consuming
         _analyze_step_8()
