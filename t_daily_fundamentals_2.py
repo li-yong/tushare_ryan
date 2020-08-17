@@ -3315,15 +3315,19 @@ def analyze(fully_a=False, daily_a=True, fast=True):
             _analyze_step_3(end_date=e)  # score of score
             _analyze_step_4()  # evaluate the stock score in mutliple years.
             _analyze_step_5()  # 'scoreA'
+
+            _analyze_step_6()  # under valued stock, valuePrice/actualPrice. scoreA,V_C_P, #time consuming.
+            _analyze_step_7()  # time consuming
+            _analyze_step_8()
         else:
             logging.info(__file__ + " " + "not handle Q1, Q2, Q3 report, " + e)
             continue
 
 
-    if fully_a or force_run_global:
-        _analyze_step_6()  #under valued stock, valuePrice/actualPrice. scoreA,V_C_P, #time consuming.
-        _analyze_step_7()  #time consuming
-        _analyze_step_8()
+    # if fully_a or force_run_global:
+    #     _analyze_step_6()  #under valued stock, valuePrice/actualPrice. scoreA,V_C_P, #time consuming.
+    #     _analyze_step_7()  #time consuming
+    #     _analyze_step_8()
 
 
 def extract_white_horse():
