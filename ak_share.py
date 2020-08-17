@@ -84,8 +84,9 @@ def main():
     df['StartDate'] = df['StartDate'].apply(lambda _d: str(_d).replace('-',''))
     df['EndDate'] = df['EndDate'].apply(lambda _d: str(_d).replace('-',''))
 
-    #df = finlib.Finlib().get_A_stock_instrment()
-    df = finlib.Finlib().remove_beneish_low_rate(df)
+    df = finlib.Finlib().get_A_stock_instrment()
+    df = finlib.Finlib().add_market_to_code(df)
+    df = finlib.Finlib().remove_garbage(df=df,code_filed_name='code', code_format='C2D6',b_m_score=-1)
 
     print(tabulate.tabulate(df[['name','code']].value_counts(), headers='keys', tablefmt='psql'))
     #print(tabulate.tabulate(pd.DataFrame(df['name'].value_counts()), headers='keys', tablefmt='psql'))

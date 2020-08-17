@@ -2733,8 +2733,8 @@ class Finlib:
             code_format = "D6.C2"
 
         if rem_C2D6:
-            code = rem_D6DotC2.group(2)
-            mkt = rem_D6DotC2.group(1)
+            code = rem_C2D6.group(2)
+            mkt = rem_C2D6.group(1)
             code_format = "C2D6"
 
         if rem_D6:
@@ -2905,19 +2905,38 @@ class Finlib:
             exit()
         return(df)
 
-    def remove_garbage(self, df, code_filed_name, code_format):
+    def remove_garbage(self, df, code_filed_name='code', code_format='C2D6',b_m_score=-1):
+        df = self._remove_garbage_rpt_s1(df, code_filed_name, code_format)
+        df = self._remove_garbage_beneish_low_rate(df,m_score=b_m_score)
+        return(df)
+
+    def _remove_garbage_rpt_s1(self, df, code_filed_name, code_format):
         # code_filed_name in code, ts_code
         # code_format in "D6.C2", "C2D6"
 
         df_init_len = df.__len__()
 
+        if "level_0" in df.columns:
+            df = df.drop('level_0', axis=1)
+
+        if "index" in df.columns:
+            df = df.drop('index', axis=1)
+
+        if "Unnamed: 0" in df.columns:
+            df = df.drop('Unnamed: 0', axis=1)
+
         stable_report_perid = self.get_year_month_quarter()['stable_report_perid']
 
         f = "/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/report/step1/rpt_" + stable_report_perid + ".csv"
-
         df_garbage = pd.read_csv(f, converters={'end_date': str})
         df_garbage = df_garbage[['stopProcess', 'ts_code', 'name', 'end_date']]
         df_garbage = df_garbage[df_garbage['stopProcess'] == 1].reset_index().drop('index', axis=1)
+        df_garbage = self.ts_code_to_code(df=df_garbage)
+
+        df = self._df_sub_by_code(df=df, df_sub=df_garbage)
+        df = df.reset_index().drop('index', axis=1)
+        return (df)
+
 
         garbage_cnt = df_garbage.__len__()
 
@@ -2932,19 +2951,44 @@ class Finlib:
             code_target = dict[code_format]
             df = df[df[code_filed_name] != code_target]
 
-        if "level_0" in df.columns:
-            df = df.drop('level_0', axis=1)
 
-        if "index" in df.columns:
-            df = df.drop('index', axis=1)
 
-        if "Unnamed: 0" in df.columns:
-            df = df.drop('Unnamed: 0', axis=1)
+    #input: df['code',...]
+    #output: df that without the low rated benish score
+    def _remove_garbage_beneish_low_rate(self, df, m_score):
+        beneish_csv = '/home/ryan/DATA/result/ag_beneish.csv'
+        # ts_code,name,ann_date,M_8v,M_5v,DSRI,GMI,AQI,SGI,DEPI,SGAI,TATA,LVGI
+        df_gar = pd.read_csv(beneish_csv, converters={'ann_date': str})
+        df_gar = df_gar[df_gar['M_8v'] >= m_score]
 
-        df = df.reset_index().drop('index', axis=1)
-        df_after_len = df.__len__()
-        logging.info(str(df_init_len) + '->' + str(df_after_len) + ". removed " + str(df_init_len - df_after_len) + " garbage stocks.")
-        return (df)
+        if df.__len__()==0:
+            logging.warning("empty df")
+            return(df)
+
+        if self.get_code_format(code_input=df['code'].iloc[0])['format'] == 'D6':
+            df = self.add_market_to_code(df)
+
+        df = self._df_sub_by_code(df=df, df_sub=df_gar)
+
+        return(df)
+
+
+
+    def _df_sub_by_code(self,df,df_sub):
+
+        df_init_len = df.__len__()
+
+        s_all = df['code'].drop_duplicates().reset_index().drop('index', axis=1)['code']
+        s_sub = df_sub['code'].drop_duplicates().reset_index().drop('index', axis=1)['code']
+
+        s_rst = s_all[~s_all.isin(s_sub)]  # remove s_sub from s_all
+
+
+        df = df[df['code'].isin(s_rst)].drop_duplicates().reset_index().drop('index', axis=1)
+        df_len = df.__len__()
+        logging.info(str(df_init_len)+"->"+str(df_len)+", "+str(df_init_len - df_len) + " shares were removed")
+        return(df)
+
 
     # convert daily df to monthly df with resample/reshape
     def daily_to_monthly_bar(self, df_daily):
@@ -3840,37 +3884,6 @@ class Finlib:
         logging.info(api+" finally field count " + str(_d.__len__()))
         rtn_fields = ','.join(list(_d))
         return (rtn_fields)
-
-    #input: df['code',...]
-    #output: df that without the low rated benish score
-    def remove_beneish_low_rate(self, df, m_score=0):
-        beneish_csv = '/home/ryan/DATA/result/ag_beneish.csv'
-        # ts_code,name,ann_date,M_8v,M_5v,DSRI,GMI,AQI,SGI,DEPI,SGAI,TATA,LVGI
-        b_df = pd.read_csv(beneish_csv, converters={'ann_date': str})
-
-        if df.__len__()==0:
-            logging.warning("empty df")
-            return(df)
-
-        logging.info("input df len " + str(df.__len__()))
-
-        if self.get_code_format(code_input=df['code'].iloc[0])['format'] == 'D6':
-            df = self.add_market_to_code(df)
-
-        s_all = df['code'].drop_duplicates().reset_index().drop('index', axis=1)['code']
-
-
-
-        s_sub = b_df[b_df['M_8v']>=m_score]['code'].drop_duplicates().reset_index().drop('index', axis=1)['code']
-        logging.info("beneish df low rate has uniq len " + str(s_sub.__len__()))
-
-        s_rst = s_all[~s_all.isin(s_sub)]  # remove s_sub from s_all
-        #logging.info("df after remove len " + str(s_rst.__len__()))
-
-        df = df[df['code'].isin(s_rst)].drop_duplicates().reset_index().drop('index', axis=1)
-        logging.info("df after remove len " + str(df.__len__()))
-        return(df)
-
 
 
 
