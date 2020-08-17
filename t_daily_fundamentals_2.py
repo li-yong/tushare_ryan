@@ -3317,7 +3317,7 @@ def analyze(fully_a=False, daily_a=True, fast=True):
             continue
 
 
-    if fully_a or force_run_global:
+    if fully_a or force_run_global or True:
         _analyze_step_4()  # evaluate the stock score in mutliple years.
         _analyze_step_5()  # 'scoreA'
         _analyze_step_6()  #under valued stock, valuePrice/actualPrice. scoreA,V_C_P, #time consuming.
