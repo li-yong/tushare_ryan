@@ -2127,7 +2127,7 @@ def _analyze_xiaoxiong_ct(ts_code, end_date, basic_df):
         if rule_1_year_1 < 0 and rule_1_year_2 < 0:  #bigger is better
             #logging.info(__file__+" "+"garbage")
             #连续两年应收账款上升幅度超过营业收入上升幅度，没赚钱，收到白条。
-            garbageReason += "Accounts receivable increased more than business income for two consecutive years. "
+            garbageReason += "Accounts receivable increased more than business income for two consecutive years.连续两年应收账款上升幅度超过营业收入上升幅度，没赚钱，收到白条。 "
             garbageCnt += 1
         else:
             pass
@@ -2142,9 +2142,9 @@ def _analyze_xiaoxiong_ct(ts_code, end_date, basic_df):
     try:
         rule_2_year_1 = (this_revenue - this_revenue_4q_before) - (this_inventories - this_inventories_4q_before)
         rule_2_year_2 = (this_revenue_4q_before - this_revenue_8q_before) - (this_inventories_4q_before - this_inventories_8q_before)
-        if rule_2_year_1 < 0 and rule_2_year_2 < 0:  #bigger is better
+        if rule_2_year_1 < -10E7 and rule_2_year_2 < -10E7:  #bigger is better
             #连续两年存货上升幅度超过营业收入上升幅度，产品滞销
-            garbageReason += "Increase of inventory more than increase of business income for two consecutive years. "
+            garbageReason += "Increase of inventory more than increase of business income for two consecutive years. 连续两年存货上升幅度超过营业收入上升幅度，产品滞销 "
             garbageCnt += 1
         else:
             pass
@@ -2157,9 +2157,9 @@ def _analyze_xiaoxiong_ct(ts_code, end_date, basic_df):
 
     try:
         rule_3_year_1 = (this_total_cur_assets * 1.0 / (this_total_cur_liab + 1))
-        if this_total_cur_liab > 0 and rule_3_year_1 < 1:  #bigger is better
+        if this_total_cur_liab > 0 and this_total_cur_assets > 0 and rule_3_year_1 < 0.1:  #bigger is better
             #流动负债远大于流动资产
-            garbageReason += "Current liabilities far outweigh current assets. "
+            garbageReason += "Current liabilities far outweigh current assets. 流动负债远大于流动资产 "
             garbageCnt += 1
         else:
             pass
@@ -2173,9 +2173,9 @@ def _analyze_xiaoxiong_ct(ts_code, end_date, basic_df):
 
     try:
         rule_4_year_1 = (this_c_inf_fr_operate_a - this_st_cash_out_act) - this_net_profit
-        if rule_4_year_1 > 0:  #bigger is better
+        if rule_4_year_1 > 10E6:  #bigger is better
             #经营活动现金流量净值大于净利润
-            bonusReason += 'Net cash flow of operating activities > net profit. '
+            bonusReason += 'Net cash flow of operating activities > net profit. 经营活动现金流量净值大于净利润 '
             bonusCnt += 1
             #logging.info(__file__+" "+"bonus, rule 4")
     except:
@@ -2183,8 +2183,8 @@ def _analyze_xiaoxiong_ct(ts_code, end_date, basic_df):
 
     this_free_cashflow =  finlib.Finlib().get_ts_field(ts_code=ts_code, ann_date=ann_date_this, field='free_cashflow', big_memory=big_memory_global, df_all_ts_pro=df_all_ts_pro,fund_base_merged=fund_base_merged)
     try:
-        if this_free_cashflow > 0:  #bigger is better
-            bonusReason += 'Free cashflow > 0. '
+        if this_free_cashflow > 10E7:  #bigger is better
+            bonusReason += 'Free cashflow > 10E7. '
             bonusCnt += 1
             #logging.info(__file__+" "+"bonus, rule 5")
     except:
