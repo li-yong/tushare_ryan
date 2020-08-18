@@ -88,7 +88,6 @@ python t_daily_hsgt.py --fetch_moneyflow_daily  #time consuming (a little)
 echo "updating quarter fund data, update /home/ryan/DATA/pickle/*.pickle"
 echo "updating fundamentals/daily/basic_today.csv"
 python t_daily_fundamentals.py  --fetch_data_all;
-fi
 
 ######################################
 #
@@ -207,10 +206,6 @@ if [ $full_or_daily == "FULL" ]; then
 fi
 
 
-if [ $full_or_daily == "DAILY" ]; then
-  python t_daily_fundamentals_2.py --fetch_basic_daily
-  python t_daily_fundamentals_2.py --fetch_new_share
-  python t_daily_fundamentals_2.py --fetch_pro_fund --fast_fetch  #pro fundation tables. 10 tables.
 
 ######################################
 #
@@ -219,7 +214,12 @@ if [ $full_or_daily == "DAILY" ]; then
 # /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/basic_daily/basic_20200710.csv
 #
 #####################################
-python t_daily_fundamentals_2.py --fetch_basic_daily
+#python t_daily_fundamentals_2.py --fetch_basic_daily
+if [ $full_or_daily == "DAILY" ]; then
+  python t_daily_fundamentals_2.py --fetch_basic_daily
+  python t_daily_fundamentals_2.py --fetch_new_share
+  python t_daily_fundamentals_2.py --fetch_pro_fund --fast_fetch  #pro fundation tables. 10 tables.
+fi
 
 
 ######################################
