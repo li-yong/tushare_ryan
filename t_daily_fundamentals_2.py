@@ -1002,16 +1002,19 @@ def merge_individual_bash_basic(fast_fetch=False):
             os.makedirs(tmp_dir)
 
         cmd = "cd " + fund_base_source + ";"
+        cmd += 'cp basic.csv basic.csv.tmp;'
         cmd += "mkdir -p  ~/tmp/pro_basic;"
 
-        cmd += "for i in `awk -F',' '{print $1}' basic.csv  | uniq|grep -v ts_code` ; do "
-        cmd += "echo ${i}_basic.csv;  head -1 basic.csv > ~/tmp/pro_basic/${i}_basic.csv;"
-        cmd += "grep -E \"^$i\" basic.csv >> ~/tmp/pro_basic/${i}_basic.csv; "
+        cmd += "for i in `awk -F',' '{print $1}' basic.csv.tmp  | uniq|grep -v ts_code` ; do "
+        cmd += "echo ${i}_basic.csv;  head -1 basic.csv.tmp > ~/tmp/pro_basic/${i}_basic.csv;"
+        cmd += "grep -E \"^$i\" basic.csv.tmp >> ~/tmp/pro_basic/${i}_basic.csv; "
         cmd += "mv ~/tmp/pro_basic/${i}_basic.csv " + fund_base_source + "/individual_per_stock/ ;"
+        cmd += "grep -v \"^$i\" basic.csv.tmp > tmp; mv tmp basic.csv.tmp"
         cmd += "done"
 
         logging.info(cmd)
         os.system(cmd)
+        os.system('rm -f basic.csv.tmp')
 
 
 
