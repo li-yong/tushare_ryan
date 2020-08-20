@@ -992,7 +992,8 @@ def merge_individual_bash_basic(fast_fetch=False):
     if not fast_fetch:
         logging.info(__file__ + " " + "FULL UPDATE, overwrite exists. processing basic, split source/basic.csv to source/individual_per_stock/ts_code_basic.csv")
 
-        check_csv = fund_base_source + "/individual_per_stock/600519.SH_basic.csv"
+        #check_csv = fund_base_source + "/individual_per_stock/600519.SH_basic.csv"
+        check_csv =  fund_base_source + "/individual_per_stock/" + ts_code + "_basic.csv"
 
         if (not force_run_global) and finlib.Finlib().is_cached(check_csv, day=6):
             logging.info(__file__ + " " + "*_basic.csv are updated in 5 days, not process. result checked by " + check_csv)

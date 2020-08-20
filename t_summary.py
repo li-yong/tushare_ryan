@@ -1134,7 +1134,7 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
         if (os.path.isfile(f_fund) and os.stat(f_fund).st_size >= 10):
             df_fund = finlib.Finlib().regular_read_csv_to_stdard_df(f_fund)
             df_fund = finlib.Finlib().add_market_to_code(df_fund)
-            df_fund = df_fund[df_fund['result_value_quarter_fundation'] > str(0.8)]
+            df_fund = df_fund[df_fund['result_value_quarter_fundation'] > 0.8]
             df_fund = finlib.Finlib().remove_garbage(df_fund, code_filed_name='code', code_format='C2D6')
 
             cols = df_fund.columns.tolist()
