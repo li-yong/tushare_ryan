@@ -1009,7 +1009,7 @@ def merge_individual_bash_basic(fast_fetch=False):
         cmd += "echo ${i}_basic.csv;  head -1 basic.csv.tmp > ~/tmp/pro_basic/${i}_basic.csv;"
         cmd += "grep -E \"^$i\" basic.csv.tmp >> ~/tmp/pro_basic/${i}_basic.csv; "
         cmd += "mv ~/tmp/pro_basic/${i}_basic.csv " + fund_base_source + "/individual_per_stock/ ;"
-        cmd += "grep -v \"^$i\" basic.csv.tmp > tmp; mv tmp basic.csv.tmp;"
+#        cmd += "grep -v \"^$i\" basic.csv.tmp > tmp; mv tmp basic.csv.tmp;" #let filesystem do caching. Not read the file again.
         cmd += "done"
 
         logging.info(cmd)
