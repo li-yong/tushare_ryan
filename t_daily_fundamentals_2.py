@@ -1011,7 +1011,7 @@ def merge_individual_bash_basic(fast_fetch=False):
         cmd += 'cp basic.csv /mnt/ramdisk/basic.csv.tmp;'
         cmd += "mkdir -p  ~/tmp/pro_basic;"
 
-        cmd += "for i in `awk -F',' '{print $1}' /mnt/ramdisk/basic.csv.tmp  | uniq|grep -v ts_code` ; do "
+        cmd += "for i in `awk -F',' '{print $1}' /mnt/ramdisk/basic.csv.tmp  |sort| uniq|grep -v ts_code` ; do "
         cmd += "echo ${i}_basic.csv;  head -1 /mnt/ramdisk/basic.csv.tmp > ~/tmp/pro_basic/${i}_basic.csv;"
         cmd += "grep -E \"^$i\" /mnt/ramdisk/basic.csv.tmp >> ~/tmp/pro_basic/${i}_basic.csv; "
         cmd += "mv ~/tmp/pro_basic/${i}_basic.csv " + fund_base_source + "/individual_per_stock/ ;"
