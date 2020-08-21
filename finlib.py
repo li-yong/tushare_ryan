@@ -246,13 +246,13 @@ class Finlib:
 
         a = datetime.now() - timedelta(360)
         b = a.date().strftime('%Y%m%d')  # '20170505'
-        df_basic = df_basic[df_basic['timeToMarket'] < int(b)]
+        #df_basic = df_basic[df_basic['timeToMarket'] < int(b)]
         # logging.info(__file__+" "+"after timetoMarket>360, df_basic.__len__() is " + str(df_basic.__len__()))
 
-        df_basic = df_basic[df_basic['esp'] > 0]
+        #df_basic = df_basic[df_basic['esp'] > 0]
         # logging.info(__file__+" "+"after esp>0, df_basic.__len__() is " + str(df_basic.__len__()))
 
-        df_basic = df_basic[df_basic['npr'] > 0]
+        #df_basic = df_basic[df_basic['npr'] > 0]
         # logging.info(__file__+" "+"after npr>0, df_basic.__len__() is " + str(df_basic.__len__()))
 
         df_basic = self.add_market_to_code(df=df_basic)  # the code must in format 'SH600xxx' etc

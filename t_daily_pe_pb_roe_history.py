@@ -19,31 +19,80 @@ import sys
 import tushare.util.conns as ts_cs
 import finlib
 import logging
+import tabulate
 logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m_%d %H:%M:%S', level=logging.DEBUG)
 
 #this script comparing a stock's data in history, to get the lower PE/PB/ROE in the history (cheap & high grow rate) stock.
 
 
+def save_df(df,csv,note,sortby,ascending):
+    df = df.sort_values(sortby, ascending=ascending, inplace=False)
+    df = df.reset_index().drop('index', axis=1)
+    df.to_csv(csv, encoding='UTF-8', index=False)
+    logging.info("\n"+str(note)+", " + csv + " len " + str(df.__len__()))
+    if df.__len__() > 5:
+        logging.info(tabulate.tabulate(df[0:5], headers='keys', tablefmt='psql'))
+    else:
+        logging.info(tabulate.tabulate(df, headers='keys', tablefmt='psql'))
+
+   
+
 def select_from_result():
-    input_csv = "/home/ryan/DATA/result/pe_pb_rank.csv"
-    output_csv = "/home/ryan/DATA/result/pe_pb_rank_selected.csv"
-    df_result = pd.DataFrame()
+    base_dir = "/home/ryan/DATA/result"
+    input_csv = base_dir+"/pe_pb_rank.csv"
+    
+    output_low_pe = base_dir+"/low_pe_top30p.csv"
+    output_low_pb = base_dir+"/low_pb_top30p.csv"
+    output_low_ps = base_dir+"/low_ps_top30p.csv"
 
-    df_rank = pd.read_csv(input_csv, converters={'end_date': str})
+    output_high_pe = base_dir+"/high_pe_top30p.csv"
+    output_high_pb = base_dir+"/high_pb_top30p.csv"
+    output_high_ps = base_dir+"/high_ps_top30p.csv"
 
-    df_result = df_rank[df_rank['pe_ttm_perc'] < 0.1]
-    df_result = df_result[df_result['pb_perc'] < 0.1]
-    df_result = df_result[df_result['roe'] > 15]
-
-    df_result.to_csv(output_csv, encoding='UTF-8', index=False)
-    print("\nPE/PB/ROE self percent result saved to " + output_csv + " len " + str(df_result.__len__()))
+    output_uv = base_dir+"/under_valued.csv"
+    output_mb = base_dir+"/market_bless.csv"
+    
 
 
+    output_high_roe = base_dir+"/high_roe_top30.csv"
+
+    df_uv = pd.DataFrame()
+    df_mb = pd.DataFrame()
+
+    df = pd.read_csv(input_csv, converters={'end_date': str})
+    
+    df_low_pe = df[df['pe_ttm_perc'] < 0.3]
+    df_low_pb = df[df['pb_perc'] < 0.3]
+    df_low_ps = df[df['ps_ttm_perc'] < 0.3]
+    
+    df_high_pe = df[df['pe_ttm_perc'] > 0.7]
+    df_high_pb = df[df['pb_perc'] > 0.7]
+    df_high_ps = df[df['ps_ttm_perc'] > 0.7]
+    df_high_roe  = df[df['roe'] > 12 ]
+    
+    save_df(df=df_low_pe, csv=output_low_pe, note="low pe, pe_ttm_perc<0.3",sortby=['pe_ttm_perc','pe'], ascending=True)
+    save_df(df=df_low_pb, csv=output_low_pb, note="low pb, pb_ttm_perc<0.3",sortby='pb', ascending=True)
+    save_df(df=df_low_ps, csv=output_low_ps, note="low ps, ps_ttm_perc<0.3",sortby=['ps_ttm_perc','ps_ttm'], ascending=True)
+ 
+    save_df(df=df_high_pe, csv=output_high_pe, note="high pe, pe_ttm_perc>0.7",sortby=['pe_ttm_perc','pe'], ascending=False)
+    save_df(df=df_high_pb, csv=output_high_pb, note="high pb, pb_ttm_perc>0.7",sortby='pb', ascending=False)
+    save_df(df=df_high_ps, csv=output_high_ps, note="high ps, ps_ttm_perc>0.7",sortby=['ps_ttm_perc','ps_ttm'], ascending=False)
+    
+    save_df(df=df_high_roe, csv=output_high_roe, note="high roe, roe>12",sortby='roe', ascending=False)
+ 
+    
+    df_uv = df[(df['pe_ttm_perc'] < 0.15) & (df['pb_perc'] < 0.15) & (df['roe'] > 12)]
+    df_mb = df[(df['pe_ttm_perc'] > 0.6) & (df['roe'] > 12)]
+        
+    save_df(df=df_uv, csv=output_uv, note="PE/PB/ROE under valued,pe_ttm_perc<0.15, pb_perc<0.15, roe>12 ",sortby='roe', ascending=False)
+    save_df(df=df_mb, csv=output_mb, note="PE/PB/ROE market blessed, pe_ttm_perc>0.6, roe>12",sortby='roe', ascending=False)
+
+ 
 ######
 #
 ######
-def get_indicator_history():
-    output_csv = "/home/ryan/DATA/result/pe_pb_rank.csv"
+def get_indicator_history(output_csv):
+
     df_result = pd.DataFrame()
 
     #extract roe from fina_indicator.csv
@@ -166,12 +215,19 @@ def get_indicator_history():
 
 def main():
     logging.info(__file__+" "+"SCRIPT STARTING " + " ".join(sys.argv))
-    get_indicator_history()
+    output_csv = "/home/ryan/DATA/result/pe_pb_rank.csv"
+    days = 3
+    if not finlib.Finlib().is_cached(file_path=output_csv, day=days):
+            get_indicator_history(output_csv)
+    else:
+        logging.info("output updated in "+str(days)+" days, not calculate again.")
+
     select_from_result()
+    print('script completed')
 
 
 ### MAIN ####
 if __name__ == '__main__':
     main()
 
-    print('script completed')
+

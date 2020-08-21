@@ -1675,15 +1675,23 @@ def calc_peg(debug=False):
         year_this = regex.group(1)
         month_this = regex.group(2)
 
+
         t = finlib.Finlib().get_year_month_quarter(year=int(year_this), month=int(month_this))
 
         t_1q = t['ann_date_1q_before']
         t_4q = t['ann_date_4q_before']
 
+        #ryan debug
+        #p =finlib.Finlib().get_report_publish_status()['completed_year_rpt_date'] #20191231
+        #t_1q = '20181231'
+        #t_4q = '20171231'
+
+
         #input and output file, peg column will be inserted to the file inplacely.
-        merged_fund_f = "/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals/merged/merged_all_" + p + ".csv"
-        merged_fund_f_4q = "/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals/merged/merged_all_" + t_4q + ".csv"
-        merged_fund_f_1q = "/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals/merged/merged_all_" + t_1q + ".csv"
+        merged_fund_f = "/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/merged/merged_all_" + p + ".csv"
+        merged_fund_f_4q = "/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/merged/merged_all_" + t_4q + ".csv"
+        merged_fund_f_1q = "/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/merged/merged_all_" + t_1q + ".csv"
+
 
         if (not force_run_global) \
                 and os.path.exists(merged_fund_f) \
@@ -1704,14 +1712,33 @@ def calc_peg(debug=False):
             print("skip, need -1Q file to calcuate peg " + merged_fund_f_1q)
             continue
 
-        df = pd.read_csv(merged_fund_f, converters={'code': str, 'name': str, 'year_quarter': str})
+        df = pd.read_csv(merged_fund_f )
+        df = finlib.Finlib().ts_code_to_code(df)
+        df =df[['code','name','end_date','eps']]
         logging.info(__file__ + ": " + "loading " + merged_fund_f)
 
-        df_4q = pd.read_csv(merged_fund_f_4q, converters={'code': str, 'name': str, 'year_quarter': str})
+        df_4q = pd.read_csv(merged_fund_f_4q )
+        df_4q = finlib.Finlib().ts_code_to_code(df_4q)
+        df_4q = df_4q[['code', 'name', 'end_date', 'eps']]
         logging.info(__file__ + ": " + "loading " + merged_fund_f_4q)
 
-        df_1q = pd.read_csv(merged_fund_f_1q, converters={'code': str, 'name': str, 'year_quarter': str})
+        df_1q = pd.read_csv(merged_fund_f_1q)
+        df_1q = finlib.Finlib().ts_code_to_code(df_1q)
+        df_1q = df_1q[['code', 'name', 'end_date', 'eps']]
         logging.info(__file__ + ": " + "loading " + merged_fund_f_1q)
+
+        todayS_l = finlib.Finlib().get_last_trading_day()
+        regex = re.match("(\d{4})(\d{2})(\d{2})", todayS_l)
+
+        todayS_l = regex.group(1)+"-"+regex.group(2)+"-"+regex.group(3)
+        dump = "/home/ryan/DATA/pickle/daily_update_source/" + todayS_l + "ts_ud.pickle"
+        df_today_price = pandas.read_pickle(dump)
+        df_today_price = finlib.Finlib().ts_code_to_code(df_today_price)
+
+
+        df_rst = pd.merge(df, df_1q, on='code', how='inner', suffixes=('', '_1q')).drop('name_1q', axis=1)
+        df_rst = pd.merge(df_rst, df_4q, on='code', how='inner', suffixes=('', '_4q')).drop('name_4q', axis=1)
+        df_rst = pd.merge(df_rst, df_today_price, on='code', how='inner', suffixes=('', '_price'))
 
         df = df.fillna(0)
         df_4q = df_4q.fillna(0)
@@ -1738,7 +1765,7 @@ def calc_peg(debug=False):
         dflen = df.__len__()
         for i in range(dflen):
             code = str(df.iloc[i]['code'])
-            year_quarter = str(df.iloc[i]['year_quarter'])
+            year_quarter = str(df.iloc[i]['end_date'])
             name = str(df.iloc[i]['name'])
 
             logging.info(str(i) + " of " + str(dflen) + " " + code + " " + name + " " + year_quarter)
@@ -1748,7 +1775,8 @@ def calc_peg(debug=False):
             eps_last_1 = 0
             egr_4 = 0
             egr_1 = 0
-            close_this = df.iloc[i]['close']
+            #close_this = df.iloc[i]['close']
+            close_this = finlib.Finlib().get_price(code_m=code)
 
             if float(eps_this) <= 0.0:
                 logging.info(__file__+" "+"eps_this <= 0")
@@ -1804,166 +1832,6 @@ def calc_peg(debug=False):
         logging.info(__file__ + ": " + "fundmental peg result saved to " + merged_fund_f + " , len " + str(df.__len__()))
 
     pass
-
-
-def zzz_calc_peg(debug=False):
-    #df_result = pd.DataFrame()
-
-    refined_fundamental_merged_csv = "/home/ryan/DATA/result/fundamental.csv"  #get eps.this and eps.last
-    fund_peg_csv = "/home/ryan/DATA/result/fundamental_peg.csv"
-
-    if finlib.Finlib().is_cached(fund_peg_csv, 7) and (not force_run_global):
-        logging.info(__file__+" "+"target file updated in 7 days, not process. " + fund_peg_csv)
-        exit(0)
-
-    #j_quartly_report_csv = "/home/ryan/DATA/result/jaqs_quarterly_fundamental.csv" #get quartly price
-
-    if not os.path.isfile(refined_fundamental_merged_csv):
-        logging.info(__file__+" "+"not found source file to get quartly eps " + refined_fundamental_merged_csv)
-        exit(1)
-
-    #if not os.path.isfile(j_quartly_report_csv):
-    #logging.info(__file__+" "+"not found source file to get quartly price "+j_quartly_report_csv)
-    #exit(1)
-
-    df_base = pd.read_csv(refined_fundamental_merged_csv, converters={'code': str})
-    logging.info(__file__ + ": " + "loading " + refined_fundamental_merged_csv)
-
-    #df_price=pd.read_csv(j_quartly_report_csv,converters={'code': str})
-
-    df_price = finlib.Finlib().load_ts_pro_basic_quarterly()
-
-    df_base = df_base[df_base['year_quarter'] >= '2010_1'].reset_index()  #ryan, manual modify
-    #df_price = df_price[df_price['trade_date']>='2017'].reset_index()
-
-    if debug:  #ryan debug
-        df_base = df_base.query("code=='000651' and eps>0").reset_index().drop('index', axis=1)
-
-    #egr:  earnings growth rate = 100 * ((EPS_this / EPS_last) - 1)  (=20% e.g.)
-    df_base = pd.DataFrame([0] * df_base.__len__(), columns=['egr_4']).join(df_base)
-    df_base = pd.DataFrame([0] * df_base.__len__(), columns=['egr_1']).join(df_base)
-
-    #peg:  Price/egr
-    df_base = pd.DataFrame([0] * df_base.__len__(), columns=['peg_4']).join(df_base)
-    df_base = pd.DataFrame([0] * df_base.__len__(), columns=['peg_1']).join(df_base)
-    df_base = pd.DataFrame([0] * df_base.__len__(), columns=['ps']).join(df_base)
-
-    #close: quartly mean
-    df_base = pd.DataFrame([0] * df_base.__len__(), columns=['close']).join(df_base)
-
-    #df_base = df_base.query("year_quarter >='201601'") #ryan debug
-
-    #today_all = pd.merge(df_base, df_price, on='code', suffixes=('', '_df_price'))
-
-    #all_code = df_base['code'].unique()
-    df_base_len = df_base.__len__()
-    for i in range(df_base.__len__()):
-        logging.info(__file__+" "+"=== " + str(i) + " of " + str(df_base_len) + " ===")
-        code = df_base.iloc[i]['code']
-        year_quarter = df_base.iloc[i]['year_quarter']
-        name = df_base.iloc[i]['name']
-        #pe = df_base.iloc[i]['pe']
-        eps_this = df_base.iloc[i]['eps']
-        eps_last_4 = 0
-        eps_last_1 = 0
-        egr_4 = 0
-        egr_1 = 0
-        price_q = 0
-
-        if float(eps_this) <= 0.0:
-            logging.info(__file__+" "+"eps_this <= 0")
-            continue
-
-        df_base_sub = df_base[df_base.code == code].sort_values('year_quarter').reset_index().drop('index', axis=1)
-        df_base_sub = df_base_sub[df_base_sub.year_quarter < year_quarter]
-
-        if df_base_sub.__len__() < 4:
-            logging.info(__file__+" "+"no enough data, need at least 4 quarter entries " + code + " " + year_quarter)
-            continue
-
-        logging.info(__file__+" "+"processing peg of " + year_quarter + " " + code)
-
-        year = re.match("(\d{4})_(\d{1})", year_quarter).group(1)
-        quarter = re.match("(\d{4})_(\d{1})", year_quarter).group(2)
-
-        if quarter == "1":
-            file_date = "03"  #cannot decied which day it is, could be 0329, if 0331 is not a trading day.
-        elif quarter == "2":
-            file_date = "06"
-        elif quarter == "3":
-            file_date = "09"
-        elif quarter == "4":
-            file_date = "12"
-
-        tongbi_4q_year = str(int(year) - 1)
-        tongbi_4q_quarter = quarter
-
-        if quarter == "1":
-            huanbi_1q_year = str(int(year) - 1)
-            huanbi_1q_quarter = "4"
-        else:
-            huanbi_1q_year = year
-            huanbi_1q_quarter = str(int(quarter) - 1)
-
-        #getting price of the quarter
-        df_price_query = df_price[df_price.trade_date.str.match(year + file_date)]
-        df_price_query = finlib.Finlib().remove_market_from_tscode(df_price_query)
-        df_price_query = df_price_query[df_price_query.code == code]
-
-        if df_price_query.__len__() > 0:
-            if (df_price_query.__len__() != 1):
-                logging.info(__file__+" "+"some thing wrong, duplicate date on df_price_query ")
-            #logging.info(__file__+" "+"found quartly price data, "+code+" "+year_quarter+" "+name)
-            price_q = df_price_query['close'].values[0]
-            ps = df_price_query['ps'].values[0]
-            df_base.iloc[i, df_base.columns.get_loc('close')] = round(price_q, 2)
-            df_base.iloc[i, df_base.columns.get_loc('ps')] = round(ps, 2)
-
-        ## getting 4 quarter and 1q  before data.
-        df_code_4q = df_base_sub[df_base_sub.year_quarter == tongbi_4q_year + "_" + tongbi_4q_quarter]
-        df_code_1q = df_base_sub[df_base_sub.year_quarter == huanbi_1q_year + "_" + huanbi_1q_quarter]
-
-        if df_code_4q.empty:
-            logging.info(__file__+" "+"no data for " + code + " " + tongbi_4q_year + "_" + tongbi_4q_quarter)
-            continue
-
-        if df_code_1q.empty:
-            logging.info(__file__+" "+"no data for " + code + " " + huanbi_1q_year + "_" + huanbi_1q_quarter)
-            continue
-
-        eps_last_4 = df_code_4q['eps'].values[0]
-        eps_last_1 = df_code_1q['eps'].values[0]
-
-        if float(eps_last_4) <= 0.0:
-            logging.info(__file__+" "+"eps_last_4 <= 0 ")
-            continue
-
-        if float(eps_last_1) <= 0.0:
-            logging.info(__file__+" "+"eps_last_1 <= 0 ")
-            continue
-
-        #earning growth rate (in percent)
-        egr_4 = 100 * ((eps_this / eps_last_4) - 1)
-        df_base.iloc[i, df_base.columns.get_loc('egr_4')] = round(egr_4, 2)
-
-        #peg
-        peg_4 = price_q / egr_4
-        df_base.iloc[i, df_base.columns.get_loc('peg_4')] = round(peg_4, 2)
-
-        # earning growth rate (in percent)
-        egr_1 = 100 * ((eps_this / eps_last_1) - 1)
-        df_base.iloc[i, df_base.columns.get_loc('egr_1')] = round(egr_1, 2)
-
-        # peg
-        peg_1 = price_q / egr_1
-        df_base.iloc[i, df_base.columns.get_loc('peg_1')] = round(peg_1, 2)
-
-        logging.info(__file__+" "+"egr_1 " + str(egr_1) + ", egr_4 " + str(egr_4))
-        logging.info(__file__+" "+"peg_1 " + str(peg_1) + ", peg_4 " + str(peg_4))
-
-    df_base.to_csv(fund_peg_csv, encoding='UTF-8', index=False)
-    logging.info(__file__ + ": " + "fundmental peg result saved to " + fund_peg_csv + " , len " + str(df_base.__len__()))
-    return ()
 
 
 #update the csv dump_csv_q with inserting ps, peg columns. 'ps','peg_1','peg_4','egr_1','egr_4'

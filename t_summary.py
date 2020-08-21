@@ -479,7 +479,7 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
     #f_fund_2 = "/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/report/step8/multiple_years_score_selected.csv"
     f_fund_2 = "/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/report/step6/multiple_years_score_selected.csv"
 
-    f_pe_pb_roe_history = "/home/ryan/DATA/result/pe_pb_rank_selected.csv"
+    f_pe_pb_roe_history = "/home/ryan/DATA/result/high_roe_top30.csv"
 
     f_p_r_div = base + "/" + "price_rsi_div.csv"
     #f_lanchou=base+"/"+"lanchou.csv"
