@@ -1562,53 +1562,6 @@ def today_fundamental_any(todayS=None):
     logging.info(__file__ + ": " + "symbol link created  " + dump_csv_d_sym_link + " -> " + dump_csv_d)
 
 
-def zzz_peg_last_year(year, quarter, debug=False):
-    year_quarter = str(year) + "_" + str(quarter)
-    output_csv = "/home/ryan/DATA/result/fundamental_peg_" + year_quarter + ".csv"
-    output_csv_2 = "/home/ryan/DATA/result/fundamental_peg_" + year_quarter + "_selected.csv"
-
-    fund_peg_csv = "/home/ryan/DATA/result/fundamental_peg.csv"
-    if not os.path.isfile(fund_peg_csv):
-        logging.info(__file__+" "+"not found source peg file to get eps " + fund_peg_csv)
-        exit(1)
-    df_base = pd.read_csv(fund_peg_csv, converters={'code': str})
-    logging.info(__file__ + ": " + "loading " + fund_peg_csv)
-
-    query_1 = "year_quarter == '" + year_quarter + "'"
-    query_2 = query_1 + "and roe > 15 and ((peg_1 > 0.0 and peg_1 < 0.5) and (peg_4 > 0.0 and peg_4 < 0.5))"
-    df_result_1 = df_base.query(query_1).sort_values(by='peg_1', ascending=True)
-    df_result_2 = df_base.query(query_2).sort_values(by='peg_1', ascending=True)
-
-    df_result_1 = finlib.Finlib().remove_df_columns(df_result_1, "name_.*")
-    df_result_1 = finlib.Finlib().change_df_columns_order(df_result_1, ['code', 'name', 'year_quarter', 'roe', 'peg_1', 'peg_4'])
-    df_result_1 = df_result_1.drop_duplicates()
-    df_result_1.code = df_result_1.code.astype(str)
-
-    df_result_2 = finlib.Finlib().remove_df_columns(df_result_2, "name_.*")
-    df_result_2 = finlib.Finlib().change_df_columns_order(df_result_2, ['code', 'name', 'year_quarter', 'roe', 'peg_1', 'peg_4'])
-    df_result_2 = df_result_2.drop_duplicates()
-    df_result_2.code = df_result_2.code.astype(str)
-
-    df_result_1.to_csv(output_csv, encoding='UTF-8', index=False)
-    df_result_2.to_csv(output_csv_2, encoding='UTF-8', index=False)
-    logging.info(__file__ + ": " + year_quarter + " fundmental peg result saved to " + output_csv + " , len " + str(df_result_1.__len__()))
-    logging.info(__file__ + ": " + year_quarter + " fundmental peg Selectd result saved to " + output_csv_2 + " , len " + str(df_result_2.__len__()))
-
-    sl_1 = "/home/ryan/DATA/result/latest_fundamental_peg.csv"
-    if os.path.lexists(sl_1):
-        os.unlink(sl_1)
-    os.symlink(output_csv, sl_1)
-    logging.info(__file__+" "+"make symbol link " + sl_1 + " --> " + output_csv)
-
-    sl_2 = "/home/ryan/DATA/result/latest_fundamental_peg_selected.csv"
-    if os.path.lexists(sl_2):
-        os.unlink(sl_2)
-    os.symlink(output_csv_2, sl_2)
-    logging.info(__file__+" "+"make symbol link " + sl_2 + " --> " + output_csv_2)
-
-    return ()
-
-
 def peg_last_year(year, quarter, debug=False):
     year_quarter = str(year) + "_" + str(quarter)
     output_csv = "/home/ryan/DATA/result/fundamental_peg_" + year_quarter + ".csv"
@@ -1616,7 +1569,7 @@ def peg_last_year(year, quarter, debug=False):
 
     #fund_peg_csv = "/home/ryan/DATA/result/fundamental_peg.csv"
 
-    fund_peg_csv = "/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals/merged/merged_all_"
+    fund_peg_csv = "/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/peg/"
     fund_peg_csv += str(year) + finlib.Finlib().get_quarter_date(quarter) + ".csv"
 
     if not os.path.isfile(fund_peg_csv):
@@ -1625,30 +1578,30 @@ def peg_last_year(year, quarter, debug=False):
     df_base = pd.read_csv(fund_peg_csv, converters={'code': str})
     logging.info(__file__ + ": " + "loading " + fund_peg_csv)
 
-    query_1 = "year_quarter == '" + year_quarter + "'"
-    query_2 = query_1 + "and roe > 15 and ((peg_1 > 0.0 and peg_1 < 0.5) and (peg_4 > 0.0 and peg_4 < 0.5))"
-    df_result_1 = df_base.query(query_1).sort_values(by='peg_1', ascending=True)
+    #query_1 = "year_quarter == '" + year_quarter + "'"
+    query_2 = "roe > 15 and ((peg_1 > 0.0 and peg_1 < 0.5) and (peg_4 > 0.0 and peg_4 < 0.5))"
+    #df_result_1 = df_base.query(query_1).sort_values(by='peg_1', ascending=True)
     df_result_2 = df_base.query(query_2).sort_values(by='peg_1', ascending=True)
 
-    df_result_1 = finlib.Finlib().remove_df_columns(df_result_1, "name_.*")
-    df_result_1 = finlib.Finlib().change_df_columns_order(df_result_1, ['code', 'name', 'year_quarter', 'roe', 'peg_1', 'peg_4'])
-    df_result_1 = df_result_1.drop_duplicates()
-    df_result_1.code = df_result_1.code.astype(str)
+    # df_result_1 = finlib.Finlib().remove_df_columns(df_result_1, "name_.*")
+    # df_result_1 = finlib.Finlib().change_df_columns_order(df_result_1, ['code', 'name', 'year_quarter', 'roe', 'peg_1', 'peg_4'])
+    # df_result_1 = df_result_1.drop_duplicates()
+    # df_result_1.code = df_result_1.code.astype(str)
 
     df_result_2 = finlib.Finlib().remove_df_columns(df_result_2, "name_.*")
-    df_result_2 = finlib.Finlib().change_df_columns_order(df_result_2, ['code', 'name', 'year_quarter', 'roe', 'peg_1', 'peg_4'])
+    df_result_2 = finlib.Finlib().change_df_columns_order(df_result_2, ['code', 'name',  'end_date', 'roe', 'peg_1', 'peg_4'])
     df_result_2 = df_result_2.drop_duplicates()
     df_result_2.code = df_result_2.code.astype(str)
 
-    df_result_1.to_csv(output_csv, encoding='UTF-8', index=False)
+    # df_result_1.to_csv(output_csv, encoding='UTF-8', index=False)
     df_result_2.to_csv(output_csv_2, encoding='UTF-8', index=False)
-    logging.info(__file__ + ": " + year_quarter + " fundmental peg result saved to " + output_csv + " , len " + str(df_result_1.__len__()))
-    logging.info(__file__ + ": " + year_quarter + " fundmental peg Selectd result saved to " + output_csv_2 + " , len " + str(df_result_2.__len__()))
+    # logging.info(__file__ + ": " + year_quarter + " fundmental peg result saved to " + output_csv + " , len " + str(df_result_1.__len__()))
+    logging.info(__file__ + ": fundmental peg Selectd result saved to " + output_csv_2 + " , len " + str(df_result_2.__len__()))
 
     sl_1 = "/home/ryan/DATA/result/latest_fundamental_peg.csv"
     if os.path.lexists(sl_1):
         os.unlink(sl_1)
-    os.symlink(output_csv, sl_1)
+    os.symlink(fund_peg_csv, sl_1)
     logging.info(__file__+" "+"make symbol link " + sl_1 + " --> " + output_csv)
 
     sl_2 = "/home/ryan/DATA/result/latest_fundamental_peg_selected.csv"
@@ -1714,17 +1667,17 @@ def calc_peg(debug=False):
 
         df = pd.read_csv(merged_fund_f )
         df = finlib.Finlib().ts_code_to_code(df)
-        df =df[['code','name','end_date','eps']]
+        df =df[['code','name','end_date','eps','roe']]
         logging.info(__file__ + ": " + "loading " + merged_fund_f)
 
         df_4q = pd.read_csv(merged_fund_f_4q )
         df_4q = finlib.Finlib().ts_code_to_code(df_4q)
-        df_4q = df_4q[['code', 'name', 'end_date', 'eps']]
+        df_4q = df_4q[['code', 'name', 'end_date', 'eps','roe']]
         logging.info(__file__ + ": " + "loading " + merged_fund_f_4q)
 
         df_1q = pd.read_csv(merged_fund_f_1q)
         df_1q = finlib.Finlib().ts_code_to_code(df_1q)
-        df_1q = df_1q[['code', 'name', 'end_date', 'eps']]
+        df_1q = df_1q[['code', 'name', 'end_date', 'eps','roe']]
         logging.info(__file__ + ": " + "loading " + merged_fund_f_1q)
 
 
