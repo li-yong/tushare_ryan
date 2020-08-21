@@ -1727,6 +1727,17 @@ def calc_peg(debug=False):
         df_1q = df_1q[['code', 'name', 'end_date', 'eps']]
         logging.info(__file__ + ": " + "loading " + merged_fund_f_1q)
 
+
+        #get latest pe
+        todayS_l = finlib.Finlib().get_last_trading_day()
+        basic_csv = "/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/basic_daily/basic_"+todayS_l+".csv"
+        basic_df = pd.read_csv(basic_csv)
+        basic_df = finlib.Finlib().ts_code_to_code(basic_df)
+        basic_df = basic_df[['code','pe']]
+        logging.info(__file__ + ": " + "loading " + basic_csv)
+
+
+        #get latest price
         todayS_l = finlib.Finlib().get_last_trading_day()
         regex = re.match("(\d{4})(\d{2})(\d{2})", todayS_l)
 
@@ -1739,97 +1750,110 @@ def calc_peg(debug=False):
         df_rst = pd.merge(df, df_1q, on='code', how='inner', suffixes=('', '_1q')).drop('name_1q', axis=1)
         df_rst = pd.merge(df_rst, df_4q, on='code', how='inner', suffixes=('', '_4q')).drop('name_4q', axis=1)
         df_rst = pd.merge(df_rst, df_today_price, on='code', how='inner', suffixes=('', '_price'))
+        df_rst = pd.merge(df_rst, basic_df, on='code', how='inner', suffixes=('', '_basic'))
 
-        df = df.fillna(0)
-        df_4q = df_4q.fillna(0)
-        df_1q = df_1q.fillna(0)
+        # df = df.fillna(0)
+        # df_4q = df_4q.fillna(0)
+        # df_1q = df_1q.fillna(0)
 
         # egr:  earnings growth rate = 100 * ((EPS_this / EPS_last) - 1)  (=20% e.g.)
         # peg:  Price/egr
-        if not "egr_4" in df.columns:
-            df = pd.DataFrame([0] * df.__len__(), columns=['egr_4']).join(df)
+        # if not "egr_4" in df.columns:
+        #     df = pd.DataFrame([0] * df.__len__(), columns=['egr_4']).join(df)
+        #
+        # if not "egr_1" in df.columns:
+        #     df = pd.DataFrame([0] * df.__len__(), columns=['egr_1']).join(df)
+        #
+        # if not "peg_4" in df.columns:
+        #     df = pd.DataFrame([0] * df.__len__(), columns=['peg_4']).join(df)
+        #
+        # if not "peg_1" in df.columns:
+        #     df = pd.DataFrame([0] * df.__len__(), columns=['peg_1']).join(df)
 
-        if not "egr_1" in df.columns:
-            df = pd.DataFrame([0] * df.__len__(), columns=['egr_1']).join(df)
+        # #update line by line
+        # if debug:
+        #     df = df[df['code'] == '600519']
 
-        if not "peg_4" in df.columns:
-            df = pd.DataFrame([0] * df.__len__(), columns=['peg_4']).join(df)
+        df_rst['egr_4'] = 100 * (df_rst['eps'] / df_rst['eps_4q'] - 1)
+        df_rst['egr_1'] = 100 * (df_rst['eps'] / df_rst['eps_1q'] - 1)
+        df_rst['peg_4'] = df_rst['pe'] / df_rst['egr_4']
+        df_rst['peg_1'] = df_rst['pe'] / df_rst['egr_1']
 
-        if not "peg_1" in df.columns:
-            df = pd.DataFrame([0] * df.__len__(), columns=['peg_1']).join(df)
+        # dflen = df.__len__()
+        # for i in range(dflen):
+        #     code = str(df.iloc[i]['code'])
+        #     year_quarter = str(df.iloc[i]['end_date'])
+        #     name = str(df.iloc[i]['name'])
+        #
+        #     logging.info(str(i) + " of " + str(dflen) + " " + code + " " + name + " " + year_quarter)
+        #
+        #     eps_this = df.iloc[i]['eps']
+        #     eps_last_4 = 0
+        #     eps_last_1 = 0
+        #     egr_4 = 0
+        #     egr_1 = 0
+        #     #close_this = df.iloc[i]['close']
+        #     close_this = finlib.Finlib().get_price(code_m=code)
+        #
+        #     if float(eps_this) <= 0.0:
+        #         logging.info(__file__+" "+"eps_this <= 0")
+        #         continue
+        #
+        #     ## getting 4 quarter and 1q  before data for this code
+        #     df_code_4q = df_4q[df_4q.code == code]
+        #     df_code_1q = df_1q[df_1q.code == code]
+        #
+        #     if df_code_4q.empty:
+        #         logging.info(__file__+" "+"no code for 4q" + code)
+        #         continue
+        #
+        #     if df_code_1q.empty:
+        #         logging.info(__file__+" "+"no data for 1q" + code)
+        #         continue
+        #
+        #     eps_last_4 = df_code_4q['eps'].values[0]
+        #     eps_last_1 = df_code_1q['eps'].values[0]
+        #
+        #     if float(eps_last_4) <= 0.0:
+        #         logging.info(__file__+" "+"negative eps of eps_last_4")
+        #         continue
+        #
+        #     if float(eps_last_1) <= 0.0:
+        #         logging.info(__file__+" "+"negative eps of eps_last_1")
+        #         continue
+        #
+        #     # earning growth rate (in percent)
 
-        #update line by line
-        if debug:
-            df = df[df['code'] == '600519']
 
-        dflen = df.__len__()
-        for i in range(dflen):
-            code = str(df.iloc[i]['code'])
-            year_quarter = str(df.iloc[i]['end_date'])
-            name = str(df.iloc[i]['name'])
-
-            logging.info(str(i) + " of " + str(dflen) + " " + code + " " + name + " " + year_quarter)
-
-            eps_this = df.iloc[i]['eps']
-            eps_last_4 = 0
-            eps_last_1 = 0
-            egr_4 = 0
-            egr_1 = 0
-            #close_this = df.iloc[i]['close']
-            close_this = finlib.Finlib().get_price(code_m=code)
-
-            if float(eps_this) <= 0.0:
-                logging.info(__file__+" "+"eps_this <= 0")
-                continue
-
-            ## getting 4 quarter and 1q  before data for this code
-            df_code_4q = df_4q[df_4q.code == code]
-            df_code_1q = df_1q[df_1q.code == code]
-
-            if df_code_4q.empty:
-                logging.info(__file__+" "+"no code for 4q" + code)
-                continue
-
-            if df_code_1q.empty:
-                logging.info(__file__+" "+"no data for 1q" + code)
-                continue
-
-            eps_last_4 = df_code_4q['eps'].values[0]
-            eps_last_1 = df_code_1q['eps'].values[0]
-
-            if float(eps_last_4) <= 0.0:
-                logging.info(__file__+" "+"negative eps of eps_last_4")
-                continue
-
-            if float(eps_last_1) <= 0.0:
-                logging.info(__file__+" "+"negative eps of eps_last_1")
-                continue
-
-            # earning growth rate (in percent)
-            egr_4 = 100 * ((eps_this / eps_last_4) - 1)
-            df.iloc[i, df.columns.get_loc('egr_4')] = round(egr_4, 2)
+            #egr_4 = 100 * ((eps_this / eps_last_4) - 1)
+            #df.iloc[i, df.columns.get_loc('egr_4')] = round(egr_4, 2)
 
             # peg
-            peg_4 = close_this / egr_4
-            df.iloc[i, df.columns.get_loc('peg_4')] = round(peg_4, 2)
+            #peg_4 = close_this / egr_4
+            #df.iloc[i, df.columns.get_loc('peg_4')] = round(peg_4, 2)
+            #
+            # # earning growth rate (in percent)
+            # egr_1 = 100 * ((eps_this / eps_last_1) - 1)
+            # df.iloc[i, df.columns.get_loc('egr_1')] = round(egr_1, 2)
+            #
+            # # peg
+            # peg_1 = close_this / egr_1
+            # df.iloc[i, df.columns.get_loc('peg_1')] = round(peg_1, 2)
+            #
+            # logging.info(__file__+" "+"egr_1 " + str(egr_1) + ", egr_4 " + str(egr_4))
+            # logging.info(__file__+" "+"peg_1 " + str(peg_1) + ", peg_4 " + str(peg_4))
 
-            # earning growth rate (in percent)
-            egr_1 = 100 * ((eps_this / eps_last_1) - 1)
-            df.iloc[i, df.columns.get_loc('egr_1')] = round(egr_1, 2)
+        # pass  #all codes in the year_quarter csv file has been updated. e.g /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals/merged/merged_all_20181231.csv
 
-            # peg
-            peg_1 = close_this / egr_1
-            df.iloc[i, df.columns.get_loc('peg_1')] = round(peg_1, 2)
+        df_rst = finlib.Finlib().change_df_columns_order(df=df_rst, col_list_to_head=['code', 'name', 'end_date', 'peg_1', 'peg_4', 'egr_1', 'egr_4','trade_date','close'])
+        b_dir = "/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/peg"
 
-            logging.info(__file__+" "+"egr_1 " + str(egr_1) + ", egr_4 " + str(egr_4))
-            logging.info(__file__+" "+"peg_1 " + str(peg_1) + ", peg_4 " + str(peg_4))
+        if not os.path.isdir(b_dir):
+            os.mkdir(b_dir)
 
-        pass  #all codes in the year_quarter csv file has been updated. e.g /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals/merged/merged_all_20181231.csv
-
-        df = finlib.Finlib().change_df_columns_order(df=df, col_list_to_head=['code', 'name', 'year_quarter', 'trade_date', 'peg_1', 'peg_4', 'egr_1', 'egr_4'])
-
-        df.to_csv(merged_fund_f, encoding='UTF-8', index=False)
-        logging.info(__file__ + ": " + "fundmental peg result saved to " + merged_fund_f + " , len " + str(df.__len__()))
+        out_f = b_dir+"/"+p+".csv"
+        df_rst.to_csv(out_f, encoding='UTF-8', index=False)
+        logging.info(__file__ + ": " + "fundmental peg result saved to " + out_f + " , len " + str(df_rst.__len__()))
 
     pass
 
