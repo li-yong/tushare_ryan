@@ -24,6 +24,7 @@ logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m_%d %H:%M:%S', 
 
 def update_holc(todayS_l, base_dir, pickle_only, add_miss):
     dump = "/home/ryan/DATA/pickle/daily_update_source/" + todayS_l + "ts_ud.pickle"
+    dump_csv = "/home/ryan/DATA/pickle/daily_update_source/" + todayS_l + ".csv"
     todayS_l = datetime.strptime(todayS_l, '%Y-%m-%d').strftime('%Y-%m-%d')  #ensure input todayS_l is in format yyyy-mm-dd
     todayS_s = datetime.strptime(todayS_l, '%Y-%m-%d').strftime('%Y%m%d')
 
@@ -39,15 +40,20 @@ def update_holc(todayS_l, base_dir, pickle_only, add_miss):
 
     pro = ts.pro_api(token="4cc9a1cd78bf41e759dddf92c919cdede5664fa3f1204de572d8221b")
 
-    if not os.path.isfile(dump):
+    if (not os.path.isfile(dump)) or (not os.path.isfile(dump_csv)):
         if add_miss:
             #today_all = ts.get_day_all(todayS_s)
             today_all = pro.daily(trade_date=todayS_s)
         else:
             #today_all = ts.get_today_all()
             today_all = pro.daily(trade_date=todayS_s)
-            today_all.to_pickle(dump)
-            logging.info(__file__+" "+"Pickle saved to " + dump)
+
+        today_all.to_pickle(dump)
+        logging.info(__file__+" "+"Pickle saved to " + dump)
+
+        today_all.to_csv(dump_csv, encoding='UTF-8')
+        logging.info(__file__+" "+"csv saved to " + dump_csv)
+
     else:
         logging.info(__file__+" "+"read pickle from " + dump)
         today_all = pandas.read_pickle(dump)
