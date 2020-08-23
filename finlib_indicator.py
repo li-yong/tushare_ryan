@@ -223,7 +223,14 @@ class Finlib_indicator:
         df['ema_middle_' + str(middle)] = stock['close_' + str(middle) + '_ema']
         df['ema_long_' + str(long)] = stock['close_' + str(long) + '_ema']
 
+
         df = df.reset_index()  # after retype, 'date' column was changed to index. reset 'date' to a column
+        if 'index' in df.columns:
+            df = df.drop('index', axis=1)
+
+        if 'level_0' in df.columns:
+            df = df.drop('level_0', axis=1)
+
         return (df)
 
     def add_tr_atr(self, df, short=5, middle=10, long=20):
@@ -236,6 +243,30 @@ class Finlib_indicator:
         df['atr_long_' + str(long)] = stock[ 'atr_'+str(long)]
 
         df = df.reset_index()  # after retype, 'date' column was changed to index. reset 'date' to a column
+
+        if 'index' in df.columns:
+            df = df.drop('index', axis=1)
+
+        if 'level_0' in df.columns:
+            df = df.drop('level_0', axis=1)
+
+        return (df)
+
+
+    def add_rsi(self, df, short=5, middle=10, long=20):
+        stock = stockstats.StockDataFrame.retype(df)
+
+        df['rsi_short_' + str(short)] = stock[ 'rsi_'+str(short)]
+        df['rsi_middle_' + str(middle)] = stock[ 'rsi_'+str(middle)]
+        df['rsi_long_' + str(long)] = stock[ 'rsi_'+str(long)]
+
+        df = df.reset_index()   # after retype, 'date' column was changed to index. reset 'date' to a column
+        if 'index' in df.columns:
+            df = df.drop('index', axis=1)
+
+        if 'level_0' in df.columns:
+            df = df.drop('level_0', axis=1)
+
         return (df)
 
     #########################################################

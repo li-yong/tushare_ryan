@@ -731,23 +731,39 @@ class Finlib:
             #logging.info(("Fatal: UNKNOWN CODE " + code))
         return code_S
 
-    def add_market_to_code_single(self, code):
+    def add_market_to_code_single(self, code, dot_f=False, tspro_format=False):
         code_S = code
+
+        dot = ''
+
+        if dot_f == True:
+            dot = '.'
+
         if re.match('^6', code):
             code_S = "SH" + code
+            code_S2 = code + dot + 'SH'
         elif re.match('^[0|3]', code):
             code_S = "SZ" + code
+            code_S2 = code + dot + 'SZ'
         elif re.match('^[9]', code):  # B Gu
             pass
             #logging.info(("ignore B GU " + code))
         elif re.match('^SH', code):  #
+            code_number = re.match('^SH(.*)', code).group(1)
             code_S = code
+            code_S2 = code_number + dot + 'SH'
         elif re.match('^SZ', code):  #
+            code_number = re.match('^SZ(.*)', code).group(1)
             code_S = code
+            code_S2 = code_number + dot + 'SZ'
         else:
             pass
             #logging.info(("Fatal: UNKNOWN CODE " + code))
-        return code_S
+
+        if tspro_format:
+            return(code_S2)
+        else:
+            return(code_S)
 
     def add_market_to_code(self, df, dot_f=False, tspro_format=False):
 
@@ -3440,12 +3456,15 @@ class Finlib:
 
     #regular df to format: code, name, open,high,low,close,volume
     def regular_read_csv_to_stdard_df(self, data_csv,add_market=True):
+        logging.info("loading "+data_csv)
         base_dir = "/home/ryan/DATA/DAY_Global"
+        base_dir_fund2 = "/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2"
         data_csv = str(data_csv)
         rtn_df = pd.DataFrame()
-
         data_csv_fp = os.path.abspath(data_csv)
         dir = os.path.dirname(data_csv_fp)
+
+        add_market = False
 
         if not os.path.isfile(data_csv_fp):
             logging.fatal(__file__+" "+"file not exist. " + data_csv_fp)
@@ -3455,16 +3474,37 @@ class Finlib:
             rtn_df = pd.read_csv(data_csv_fp, converters={'code': str, 'date': str}, header=None, skiprows=1, names=['code', 'date', 'open', 'high', 'low', 'close', 'volume', 'amount', 'tnv'])
         elif dir in [base_dir + "/stooq/US_INDEX", base_dir + "/stooq/US"]:
             #DOW.csv  SP500.csv, AAPL.csv
-            add_market = False
+            #add_market = False
             rtn_df = pd.read_csv(data_csv_fp, converters={'code': str, 'date': str}, encoding="utf-8")
         elif dir == base_dir + "/US":
-            add_market = False
+            #add_market = False
             rtn_df = pd.read_csv(data_csv_fp, converters={'code': str, 'date': str}, encoding="utf-8")
         elif dir == base_dir + "/HK":
-            add_market = False
+            #add_market = False
             rtn_df = pd.read_csv(data_csv_fp, converters={'code': str, 'date': str}, encoding="utf-8")
         elif dir == base_dir + "/AG_INDEX":
             rtn_df = pd.read_csv(data_csv_fp, skiprows=1, header=None, names=['code', 'date', 'close', 'open', 'high', 'low', 'pre_close', 'change', 'pct_chg', 'vol', 'amount'], converters={'code': str, 'date': str}, encoding="utf-8")
+
+        elif dir == base_dir_fund2 + "/source/basic_daily":
+            rtn_df = self.ts_code_to_code(pd.read_csv(data_csv_fp, encoding="utf-8"))
+
+        elif dir == base_dir_fund2 + "/source/basic_quarterly":
+            rtn_df = self.ts_code_to_code(pd.read_csv(data_csv_fp, encoding="utf-8"))
+
+
+        elif dir == base_dir_fund2 + "/merged":
+            rtn_df = self.ts_code_to_code(pd.read_csv(data_csv_fp, encoding="utf-8"))
+
+
+        elif dir == base_dir_fund2 + "/peg":
+            rtn_df = pd.read_csv(data_csv_fp, encoding="utf-8")
+
+
+        elif dir =="/home/ryan/DATA/pickle/daily_update_source":
+            rtn_df = self.ts_code_to_code(pd.read_csv(data_csv_fp, encoding="utf-8"))
+
+
+
         elif dir.__contains__("/home/ryan/DATA/result"):
             rtn_df = pd.read_csv(data_csv_fp, converters={'code': str, 'date': str}, encoding="utf-8")
         elif dir.__contains__("/home/ryan/DATA"):

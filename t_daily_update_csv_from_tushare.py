@@ -24,9 +24,10 @@ logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m_%d %H:%M:%S', 
 
 def update_holc(todayS_l, base_dir, pickle_only, add_miss):
     dump = "/home/ryan/DATA/pickle/daily_update_source/" + todayS_l + "ts_ud.pickle"
-    dump_csv = "/home/ryan/DATA/pickle/daily_update_source/" + todayS_l + ".csv"
     todayS_l = datetime.strptime(todayS_l, '%Y-%m-%d').strftime('%Y-%m-%d')  #ensure input todayS_l is in format yyyy-mm-dd
     todayS_s = datetime.strptime(todayS_l, '%Y-%m-%d').strftime('%Y%m%d')
+    dump_csv = "/home/ryan/DATA/pickle/daily_update_source/ag_daily_" + todayS_s + ".csv"
+
 
     if not finlib.Finlib().is_a_trading_day_ag(dateS=todayS_s):
         logging.error("date is not a trading day " + todayS_s)
@@ -48,10 +49,12 @@ def update_holc(todayS_l, base_dir, pickle_only, add_miss):
             #today_all = ts.get_today_all()
             today_all = pro.daily(trade_date=todayS_s)
 
+
         today_all.to_pickle(dump)
         logging.info(__file__+" "+"Pickle saved to " + dump)
 
-        today_all.to_csv(dump_csv, encoding='UTF-8')
+        today_all = today_all.reset_index().drop('index', axis=1)
+        today_all.to_csv(dump_csv, encoding='UTF-8', index=False)
         logging.info(__file__+" "+"csv saved to " + dump_csv)
 
     else:
@@ -64,6 +67,7 @@ def update_holc(todayS_l, base_dir, pickle_only, add_miss):
     instrument_csv = "/home/ryan/DATA/pickle/instrument_A.csv"
     df_basic = pro.stock_basic()
     df_basic = finlib.Finlib().remove_market_from_tscode(df_basic)
+    df_basic = df_basic.reset_index().drop('index', axis=1)
     df_basic.to_csv(instrument_csv, encoding='UTF-8', index=False)  # len 3515
     logging.info(__file__+" "+"\nsaved to " + instrument_csv)
 
