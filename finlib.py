@@ -2727,7 +2727,7 @@ class Finlib:
         if not os.path.exists(file_path):
             return False
 
-        if os.stat(file_path).st_size <= 10:
+        if os.stat(file_path).st_size <= 10: #not work
             return False
 
         file_time = datetime.fromtimestamp(os.path.getctime(file_path))
