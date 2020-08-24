@@ -245,14 +245,15 @@ def main():
     #df_daily_stocks_basic['dv_ttm_perc_rank'] = df_daily_stocks_basic['dv_ttm'].rank(pct=True) #股息率（TTM）（%）
 
     #remove small circ_mv stocks
-    logging.info("reduce exam stocks. keep circ_mv_perc_rank > 0.5 ")
-    df_daily_stocks_basic = df_daily_stocks_basic[df_daily_stocks_basic['circ_mv_perc_rank'] > 0.50 ] #df len: 3923 --> 1962
-    logging.info("reduce exam stocks. keep total_mv_perc_rank > 0.5 ")
-    df_daily_stocks_basic = df_daily_stocks_basic[df_daily_stocks_basic['total_mv_perc_rank'] > 0.50 ] # 1962 --> 1690
-    logging.info("reduce exam stocks. keep turnover_rate_f_perc_rank < 0.95 ")
-    df_daily_stocks_basic = df_daily_stocks_basic[df_daily_stocks_basic['turnover_rate_f_perc_rank'] < 0.95 ] #need this? k  # 1690 -> 1636
-    logging.info("reduce exam stocks. remove garbage ")
-    df_daily_stocks_basic = finlib.Finlib().remove_garbage(df=df_daily_stocks_basic, code_filed_name='code') #1636 -> 545
+    if False:
+        logging.info("reduce exam stocks. keep circ_mv_perc_rank > 0.5 ")
+        df_daily_stocks_basic = df_daily_stocks_basic[df_daily_stocks_basic['circ_mv_perc_rank'] > 0.50 ] #df len: 3923 --> 1962
+        logging.info("reduce exam stocks. keep total_mv_perc_rank > 0.5 ")
+        df_daily_stocks_basic = df_daily_stocks_basic[df_daily_stocks_basic['total_mv_perc_rank'] > 0.50 ] # 1962 --> 1690
+        logging.info("reduce exam stocks. keep turnover_rate_f_perc_rank < 0.95 ")
+        df_daily_stocks_basic = df_daily_stocks_basic[df_daily_stocks_basic['turnover_rate_f_perc_rank'] < 0.95 ] #need this? k  # 1690 -> 1636
+        logging.info("reduce exam stocks. remove garbage ")
+        df_daily_stocks_basic = finlib.Finlib().remove_garbage(df=df_daily_stocks_basic, code_filed_name='code') #1636 -> 545
 
     # /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/basic_quarterly/basic_20200630.csv
     # ts_code,trade_date,close,turnover_rate,turnover_rate_f,volume_ratio,pe,pe_ttm,pb,ps,ps_ttm,total_share,float_share,total_mv,circ_mv
