@@ -123,16 +123,13 @@ def _exam_a_stock(code,date_exam_day,
 
 
 def step1_generate_df(output_csv):
-    code_6d = "600519"
-    date_exam_day = finlib.Finlib().get_last_trading_day() #20200821
-    date_exam_day="20200821" #ryan debug
 
     if finlib.Finlib().is_cached(output_csv, 1):
         logging.info("file updated in 1 days, "+output_csv)
         return()
 
-    code = finlib.Finlib().add_market_to_code_single(code_6d,dot_f=False,tspro_format=False) #SH600519
-    tscode = finlib.Finlib().add_market_to_code_single(code_6d,dot_f=True,tspro_format=True) #600519.SH
+    #code = finlib.Finlib().add_market_to_code_single(code_6d,dot_f=False,tspro_format=False) #SH600519
+    #tscode = finlib.Finlib().add_market_to_code_single(code_6d,dot_f=True,tspro_format=True) #600519.SH
 
     date_rpt_q = finlib.Finlib().get_year_month_quarter()['ann_date_1q_before'] #20200630
     date_rpt_q1 = finlib.Finlib().get_year_month_quarter()['ann_date_2q_before'] #20200331
@@ -223,6 +220,10 @@ def step2_ana(df_exam_day_all):
     #   print(df_exam_day_all.columns.values)
     print(tabulate.tabulate(df_exam_day_all.head(1), headers='keys', tablefmt='psql'))
 
+    exam_date = df_exam_day_all['date'].dropna().values[0]
+
+
+
     # df_exam_day_all:
     # ['code' 'trade_date' 'close' 'turnover_rate' 'turnover_rate_f'
     # 'volume_ratio' 'pe' 'pe_ttm' 'pb' 'ps' 'ps_ttm' 'total_share'
@@ -255,9 +256,6 @@ def step2_ana(df_exam_day_all):
     # '30day_close_std_mean_ratio_LastRowValidOnly'
     # '30day_volume_std_mean_ratio_LastRowValidOnly']
 
-    rst_dir = '/home/ryan/DATA/result/pv_2'
-    if not os.path.isdir(rst_dir):
-        os.mkdir(rst_dir)
 
     df_vcp = df_exam_day_all
 
@@ -418,11 +416,22 @@ def _df_filter_save(df, col_list, sort_by_list, sort_asc_list, to_csv_f):
 
 ### MAIN ####
 if __name__ == '__main__':
-    step1_output_csv = "/home/ryan/DATA/result/pv_2/step1.out.csv"
-    step1_generate_df(step1_output_csv)
+    date_exam_day = finlib.Finlib().get_last_trading_day() #20200821
+    date_exam_day="20200821" #ryan debug
+    logging.info("examine date "+str(date_exam_day))
+
+    rst_dir = '/home/ryan/DATA/result/pv_2'
+    if not os.path.isdir(rst_dir):
+        os.mkdir(rst_dir)
+
+    rst_dir = '/home/ryan/DATA/result/pv_2/'+str(date_exam_day)
+    if not os.path.isdir(rst_dir):
+        os.mkdir(rst_dir)
+
+    step1_output_csv = rst_dir+"/step1.out.csv"
+    step1_generate_df(output_csv=step1_output_csv)
 
     # compare between stocks and save result
-    df_exam_day_all = pd.read_csv(step1_output_csv, encoding="utf-8")
-    step2_ana(df_exam_day_all)
+    step2_ana(pd.read_csv(step1_output_csv, converters={'code': str, 'date': str}, encoding="utf-8"))
 
     logging.info("script completed!")

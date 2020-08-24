@@ -3487,7 +3487,7 @@ class Finlib:
             rtn_df = pd.read_csv(data_csv_fp, skiprows=1, header=None, names=['code', 'date', 'close', 'open', 'high', 'low', 'pre_close', 'change', 'pct_chg', 'vol', 'amount'], converters={'code': str, 'date': str}, encoding="utf-8")
 
         elif dir == base_dir_fund2 + "/source/basic_daily":
-            rtn_df = self.ts_code_to_code(pd.read_csv(data_csv_fp, encoding="utf-8"))
+            rtn_df = self.ts_code_to_code(pd.read_csv(data_csv_fp,converters={'ts_code': str, 'trade_date': str}, encoding="utf-8"))
 
         elif dir == base_dir_fund2 + "/source/basic_quarterly":
             rtn_df = self.ts_code_to_code(pd.read_csv(data_csv_fp, encoding="utf-8"))
@@ -3502,7 +3502,7 @@ class Finlib:
 
 
         elif dir =="/home/ryan/DATA/pickle/daily_update_source":
-            rtn_df = self.ts_code_to_code(pd.read_csv(data_csv_fp, encoding="utf-8"))
+            rtn_df = self.ts_code_to_code(pd.read_csv(data_csv_fp, converters={'ts_code': str, 'trade_date': str},encoding="utf-8"))
 
         elif data_csv_fp =="/home/ryan/DATA/pickle/instrument_A.csv":
             add_market = True
