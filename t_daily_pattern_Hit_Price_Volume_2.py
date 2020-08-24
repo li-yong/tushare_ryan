@@ -5,7 +5,7 @@ import finlib_indicator
 import logging
 import tabulate
 import tushare as ts
-
+import re
 import talib 
 
 
@@ -57,11 +57,11 @@ def step1_exam_a_stock(code,fund2_dir,date_exam_day,date_rpt_q,date_rpt_q1,date_
     df['52weeklow_LastRowValidOnly'] = _52weeklow
 
 
-    df['cond_6_p_distance_to_52weeklow_LastRowValidOnly'] = round((df['close'].iloc[-1] - _52weeklow)/(_52weekhigh - _52weeklow),2)
+    df['p_distance_to_52weeklow_LastRowValidOnly'] = round((df['close'].iloc[-1] - _52weeklow)/(_52weekhigh - _52weeklow),2)
     df['cond_6_p_gt_03_52weeklow_LastRowValidOnly'] = ((df['close'].iloc[-1] - _52weeklow)/(_52weekhigh - _52weeklow)) > 0.3
 
     #7. (52weekhigh - p)/(52weekhigh - 52weeklowest) < 0.15 (越接近越好)
-    df['cond_7_p_distance_to_52weekhigh_LastRowValidOnly'] = round((_52weekhigh - df['close'].iloc[-1])/(_52weekhigh - _52weeklow),2)
+    df['p_distance_to_52weekhigh_LastRowValidOnly'] = round((_52weekhigh - df['close'].iloc[-1])/(_52weekhigh - _52weeklow),2)
     df['cond_7_p_lt_015_52weekhigh_LastRowValidOnly'] = ((_52weekhigh - df['close'].iloc[-1])/(_52weekhigh - _52weeklow)) < 0.15
 
     #8. RSI > 70, 最好是80, 90
@@ -123,6 +123,7 @@ def step1_exam_a_stock(code,fund2_dir,date_exam_day,date_rpt_q,date_rpt_q1,date_
 def step2_ana(df_exam_day_all):
     #   print(df_exam_day_all.columns.values)
     print(tabulate.tabulate(df_exam_day_all.head(1), headers='keys', tablefmt='psql'))
+
     # df_exam_day_all:
     # ['code' 'trade_date' 'close' 'turnover_rate' 'turnover_rate_f'
     # 'volume_ratio' 'pe' 'pe_ttm' 'pb' 'ps' 'ps_ttm' 'total_share'
@@ -144,9 +145,9 @@ def step2_ana(df_exam_day_all):
     # 'cond_3_ma200_gt_ma200_50days_ago_LastRowValidOnly'
     # 'cond_4_ma50_gt_ma150_ma200' 'cond_5_p_gt_ma50'
     # '52weekhigh_LastRowValidOnly' '52weeklow_LastRowValidOnly'
-    # 'cond_6_p_distance_to_52weeklow_LastRowValidOnly'
+    # 'p_distance_to_52weeklow_LastRowValidOnly'
     # 'cond_6_p_gt_03_52weeklow_LastRowValidOnly'
-    # 'cond_7_p_distance_to_52weekhigh_LastRowValidOnly'
+    # 'p_distance_to_52weekhigh_LastRowValidOnly'
     # 'cond_7_p_lt_015_52weekhigh_LastRowValidOnly' 'cond_8_rsi_gt_70'
     # 'cond_9_p_gt_12' 'tr_LastRowValidOnly' 'tr_1q_LastRowValidOnly'
     # 'tr_1y_LastRowValidOnly' 'cond_10_sales_acceleration'
@@ -155,18 +156,18 @@ def step2_ana(df_exam_day_all):
     # '30day_close_std_mean_ratio_LastRowValidOnly'
     # '30day_volume_std_mean_ratio_LastRowValidOnly']
 
-    df_vcp = df_exam_day_all[df_exam_day_all['cond_1_p_gt_ma150_ma200']]
-    df_vcp = df_vcp[df_vcp['cond_2_ma15_gt_ma200']]
-    df_vcp = df_vcp[df_vcp['cond_3_ma200_gt_ma200_50days_ago_LastRowValidOnly']]
-    df_vcp = df_vcp[df_vcp['cond_4_ma50_gt_ma150_ma200']]
-    df_vcp = df_vcp[df_vcp['cond_5_p_gt_ma50']]
-    df_vcp = df_vcp[df_vcp['cond_6_p_gt_03_52weeklow_LastRowValidOnly']]
-    df_vcp = df_vcp[df_vcp['cond_7_p_lt_015_52weekhigh_LastRowValidOnly']]
-    df_vcp = df_vcp[df_vcp['cond_8_rsi_gt_70']]
-    df_vcp = df_vcp[df_vcp['cond_9_p_gt_12']]
-    df_vcp = df_vcp[df_vcp['cond_10_sales_acceleration']]
-    df_vcp = df_vcp[df_vcp['cond_11_sales_acceleration_gt_5']]
-    df_vcp = df_vcp[df_vcp['cond_12_volume_mean_50_gt_25000']]
+
+    df_vcp = df_exam_day_all
+
+    for cn in df_vcp.columns:
+        if re.match("cond_", cn):
+            if df_vcp.__len__() == 0:
+                logging.info("df_vcp is emtpy")
+                break
+            logging.info("fill False to NA to column "+cn)
+            df_vcp[cn] = df_vcp[cn].fillna(value=False)
+            df_vcp = df_vcp[df_vcp[cn]]
+            logging.info("df_vcp len "+str(df_vcp.__len__())+" , filter " + cn)
 
     rst_dir = '/home/ryan/DATA/result/pv_2'
     if not os.path.isdir(rst_dir):
