@@ -3931,8 +3931,27 @@ class Finlib:
         return (rtn_fields)
 
 
+    def add_stock_name_to_df(self, df, ts_pro_format=False):
+        # add stock name
+        # if ts_pro_format:
+        #     df=self.ts_code_to_code(df)
 
-     #input: df [open,high, low, close]
+        name_df = self.regular_read_csv_to_stdard_df(data_csv="/home/ryan/DATA/pickle/instrument_A.csv")
+        name_df = name_df[['code','name']]
+
+        if ts_pro_format:
+            name_df = self.add_market_to_code(df=df,dot_f=True,tspro_format=True)
+            df = pd.merge(df, name_df, left_on=['ts_code'], right_on=['code'], how="left")
+            df = self.adjust_column(df, ['ts_code', 'name'])
+        else:
+            df = pd.merge(df, name_df, on=['code'], how="left")
+            df = self.adjust_column(df, ['code', 'name'])
+
+        return(df)
+
+
+
+    #input: df [open,high, low, close]
     #output: {hit:[T|F], high:value, low:value, }
     def w_shape_exam(self, df):
         pass

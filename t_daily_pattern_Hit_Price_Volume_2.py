@@ -1,4 +1,5 @@
 import pandas as pd
+import os
 import finlib
 import finlib_indicator
 import logging
@@ -9,7 +10,7 @@ import talib
 
 
 
-def exam_a_stock_then_merge(code,fund2_dir,date_exam_day,date_rpt_q,date_rpt_q1,date_rpt_y1,
+def step1_exam_a_stock(code,fund2_dir,date_exam_day,date_rpt_q,date_rpt_q1,date_rpt_y1,
                             df_quarterly_merged_all,
                             df_quarterly_merged_all_1q_before,
                             df_quarterly_merged_all_1y_before
@@ -64,10 +65,11 @@ def exam_a_stock_then_merge(code,fund2_dir,date_exam_day,date_rpt_q,date_rpt_q1,
     df['cond_7_p_lt_015_52weekhigh_LastRowValidOnly'] = ((_52weekhigh - df['close'].iloc[-1])/(_52weekhigh - _52weeklow)) < 0.15
 
     #8. RSI > 70, 最好是80, 90
-    df = df[ df['rsi_middle_14'] > 70]
+    df['cond_8_rsi_gt_70'] = df['rsi_middle_14'] > 70
 
     #9. P > 12 或者 20
-    df = df[ df['close'] > 12]
+    df['cond_9_p_gt_12'] =  df['close'] > 12
+
 
 
     #10. 销售增速, sales acceleration - last 2 Qtrs. S_t > S_t-1
@@ -90,7 +92,7 @@ def exam_a_stock_then_merge(code,fund2_dir,date_exam_day,date_rpt_q,date_rpt_q1,
 
     #11. 上季度销售增长>0.05.  高速成长股票. 未有盈余,正在抢占市场.
     #tr_yoy	float	Y	营业总收入同比增长率(%)
-    df['cond_10_sales_acceleration'] = tr > 5
+    df['cond_11_sales_acceleration_gt_5'] = tr > 5
 
     #12. 过去50天的平均成交量, 至少25000股以上
     df['volume_mean_50'] = df['volume'].rolling(window=50).mean()
@@ -112,9 +114,107 @@ def exam_a_stock_then_merge(code,fund2_dir,date_exam_day,date_rpt_q,date_rpt_q1,
     df['30day_volume_std_mean_ratio_LastRowValidOnly'] = _30day_vol_stable
 
     # Merge the stock to the all stock list
-    df_a_stock_price_history_last = df_a_stock_price_history[df_a_stock_price_history['date']==date_exam_day]
+    #print(df.columns.values)
+    df_a_stock_price_history_last = df[df['date']==date_exam_day]
+    #(df_a_stock_price_history_last.columns.values)
     return(df_a_stock_price_history_last)
 
+
+def step2_ana(df_exam_day_all):
+    #   print(df_exam_day_all.columns.values)
+    print(tabulate.tabulate(df_exam_day_all.head(1), headers='keys', tablefmt='psql'))
+    # df_exam_day_all:
+    # ['code' 'trade_date' 'close' 'turnover_rate' 'turnover_rate_f'
+    # 'volume_ratio' 'pe' 'pe_ttm' 'pb' 'ps' 'ps_ttm' 'total_share'
+    # 'float_share' 'total_mv' 'circ_mv' 'volume_ratio_perc_rank'
+    # 'total_mv_perc_rank' 'circ_mv_perc_rank' 'pe_perc_rank'
+    # 'pe_ttm_perc_rank' 'ps_ttm_perc_rank' 'turnover_rate_f_perc_rank' 'open'
+    # 'high' 'low' 'close_x' 'pre_close' 'change' 'pct_chg' 'volume' 'amount'
+    # 'date' 'open_x' 'high_x' 'low_x' 'close_x' 'volume_x' 'amount_x' 'tnv'
+    # 'close_15_sma' 'sma_short_15' 'close_150_sma' 'sma_middle_150'
+    # 'close_200_sma' 'sma_long_200' 'close_15_ema' 'ema_short_15'
+    # 'close_150_ema' 'ema_middle_150' 'close_200_ema' 'ema_long_200'
+    # 'close_50_sma' 'sma_short_50' 'close_60_sma' 'sma_middle_60'
+    # 'close_260_sma' 'sma_long_260' 'close_50_ema' 'ema_short_50'
+    # 'close_60_ema' 'ema_middle_60' 'close_260_ema' 'ema_long_260'
+    # 'close_-1_s' 'tr' 'tr_5_smma' 'atr_5' 'atr_short_5' 'atr_middle_10'
+    # 'atr_long_20' 'close_-1_d' 'closepm' 'closenm' 'closepm_5_smma'
+    # 'closenm_5_smma' 'rs_5' 'rsi_5' 'rsi_short_5' 'rsi_middle_14'
+    # 'rsi_long_20' 'cond_1_p_gt_ma150_ma200' 'cond_2_ma15_gt_ma200'
+    # 'cond_3_ma200_gt_ma200_50days_ago_LastRowValidOnly'
+    # 'cond_4_ma50_gt_ma150_ma200' 'cond_5_p_gt_ma50'
+    # '52weekhigh_LastRowValidOnly' '52weeklow_LastRowValidOnly'
+    # 'cond_6_p_distance_to_52weeklow_LastRowValidOnly'
+    # 'cond_6_p_gt_03_52weeklow_LastRowValidOnly'
+    # 'cond_7_p_distance_to_52weekhigh_LastRowValidOnly'
+    # 'cond_7_p_lt_015_52weekhigh_LastRowValidOnly' 'cond_8_rsi_gt_70'
+    # 'cond_9_p_gt_12' 'tr_LastRowValidOnly' 'tr_1q_LastRowValidOnly'
+    # 'tr_1y_LastRowValidOnly' 'cond_10_sales_acceleration'
+    # 'cond_11_sales_acceleration_gt_5' 'volume_mean_50'
+    # 'cond_12_volume_mean_50_gt_25000' '30dayhigh_LastRowValidOnly'
+    # '30day_close_std_mean_ratio_LastRowValidOnly'
+    # '30day_volume_std_mean_ratio_LastRowValidOnly']
+
+    df_vcp = df_exam_day_all[df_exam_day_all['cond_1_p_gt_ma150_ma200']]
+    df_vcp = df_vcp[df_vcp['cond_2_ma15_gt_ma200']]
+    df_vcp = df_vcp[df_vcp['cond_3_ma200_gt_ma200_50days_ago_LastRowValidOnly']]
+    df_vcp = df_vcp[df_vcp['cond_4_ma50_gt_ma150_ma200']]
+    df_vcp = df_vcp[df_vcp['cond_5_p_gt_ma50']]
+    df_vcp = df_vcp[df_vcp['cond_6_p_gt_03_52weeklow_LastRowValidOnly']]
+    df_vcp = df_vcp[df_vcp['cond_7_p_lt_015_52weekhigh_LastRowValidOnly']]
+    df_vcp = df_vcp[df_vcp['cond_8_rsi_gt_70']]
+    df_vcp = df_vcp[df_vcp['cond_9_p_gt_12']]
+    df_vcp = df_vcp[df_vcp['cond_10_sales_acceleration']]
+    df_vcp = df_vcp[df_vcp['cond_11_sales_acceleration_gt_5']]
+    df_vcp = df_vcp[df_vcp['cond_12_volume_mean_50_gt_25000']]
+
+    rst_dir = '/home/ryan/DATA/result/pv_2'
+    if not os.path.isdir(rst_dir):
+        os.mkdir(rst_dir)
+    df_vcp.to_csv(rst_dir+"/vcp.csv", encoding='UTF-8', index=False)
+
+    df_exam_day_all[df_exam_day_all['pe_perc_rank']>0.7].to_csv(rst_dir+"/pe_top_30p.csv", encoding='UTF-8', index=False)
+
+
+
+    ######################################
+    #
+    ######################################
+    # df_52week_0.15low
+    # df_52week_0.75high
+    #
+    #
+    # df_zhangting
+    # df_dieting
+    # df_high_minus_low__0.75high (max voliaty)
+
+    # df_rsi
+    # df_rsi_divergence
+
+    # 长期低位出现剧烈放量突破长势的: 250 day 0.1 low, volume_ration in 5~10
+    # 缩量创新高的股票多说是长庄股: volume_ration < 0.5, 30 days highest price,up_top_zhangting, volume_ration < 1
+
+    # df_cheng_jiao_er_0.15low
+    # df_cheng_jiao_er_0.75high
+    # df_bar_cross
+    # df_bar_long_head
+    # df_bar_long_leg
+    # df_bar_no_head_leg
+
+    # df_volume_ration_0.15low
+    # df_volume_ration_0.75high
+
+    # df_??? 在跌停板的情况下，量比越小则说明杀跌动能未能得到有效宣泄，后市仍有巨大下跌空间。
+    # df_??? 底部放量，价位不高的强势股，是我们讨论的重点，其股票换手率高的可信程度较高，表明新资金介入的迹象较为明显，未来的上涨空间相对较大，越是底部换手充分，上行中的抛压越轻。
+
+    # df_volume_ration_00_05_little   #7、量比在0.5一下的缩量情形也值得好好关注，其实严重缩量不仅显示了交易不活跃的表象，同时也暗藏着一定的市场机会。缩量创新高的股票多说是长庄股，缩量能创出新高，说明庄家控盘程度相当高，而且可以排除拉高出货的可能。缩量调整的股票，特别是放量突破某个重要阻力位之后缩量回调的个股，常常是不可多得的买入对象。
+    # df_volume_ration_00_10_neuro #涨停板时量比在1以下的股票，上涨空间无可限量，第二天开盘即封涨停的可能性极高。
+    # df_volume_ration_08_15_neuro #若某日量比为0.8-1.5,则说明成交量处于正常水平。
+    # df_volume_ration_12_15_mild #量比在1.2--2.5之间则为温和放量，如果股价也处于温和缓升状态，则升势相对健康，可继续持股，若股价下跌，则可认定跌势难以在短期内结束，从量的方面判断应可考虑停损退出。
+    # df_volume_ration_25_50_obvious #量比在2.5--5，则为明显放量，若股价形影的突破重要支撑或阻力位置，则突破有效的机率颇高，可以相应的采取行动。
+    # df_volume_ration_50_100_strong #量比达5--10则为剧烈放量，如果是在个股处于长期低位出现剧烈放量突破长势的后续空间巨大，是“钱”途无量的象征。
+    # df_volume_ration_100_more_extreme #某日量比达到10倍以上的股票，一般可以考虑反向操作。在涨势中出现这种情况，说明见顶的可能性压倒一切，即使不是彻底反转，至少涨势会休整相当长一段时间。在股票处于绵绵阴跌的后期，突然出现的巨大量比，说明该股在目前的位置彻底释放了下跌动能。
+    # df_volume_ration_200_more_extreme #量比达到20以上的情形基本上每天都有一两单，是极端放量的一种表现，这种情况的反转意义特别强烈，如果在连续的上涨之后，成交量极端放大，但股价出现“滞涨”现象，则是涨势行将死亡的强烈信号。当某只股票在跌势中出现极端放量，则是建仓的大好时机。
 
 
 def main():
@@ -162,8 +262,6 @@ def main():
     # /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/individual_per_stock/600519.SH_income.csv
     # name,ts_code,ann_date,f_ann_date,end_date,report_type,comp_type,basic_eps,diluted_eps,total_revenue,revenue,int_income,prem_earned,comm_income,n_commis_income,n_oth_income,n_oth_b_income,prem_income,out_prem,une_prem_reser,reins_income,n_sec_tb_income,n_sec_uw_income,n_asset_mg_income,oth_b_income,fv_value_chg_gain,invest_income,ass_invest_income,forex_gain,total_cogs,oper_cost,int_exp,comm_exp,biz_tax_surchg,sell_exp,admin_exp,fin_exp,assets_impair_loss,prem_refund,compens_payout,reser_insur_liab,div_payt,reins_exp,oper_exp,compens_payout_refu,insur_reser_refu,reins_cost_refund,other_bus_cost,operate_profit,non_oper_income,non_oper_exp,nca_disploss,total_profit,income_tax,n_income,n_income_attr_p,minority_gain,oth_compr_income,t_compr_income,compr_inc_attr_p,compr_inc_attr_m_s,ebit,ebitda,insurance_exp,undist_profit,distable_profit,update_flag
 
-
-
     # /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/peg/20200630.csv
     # code,name,end_date,peg_1,peg_4,egr_1,egr_4,trade_date,close,eps,roe,end_date_1q,eps_1q,roe_1q,end_date_4q,eps_4q,roe_4q,open,high,low,pre_close,change,pct_chg,vol,amount,pe
     df_peg = finlib.Finlib().regular_read_csv_to_stdard_df(data_csv=fund2_dir+'/source/peg/'+date_rpt_q+".csv")
@@ -183,14 +281,18 @@ def main():
 
 
     df_exam_day_all = pd.merge(df_daily_stocks_basic, df_daily_stocks_price, on=['code','trade_date'], how='inner', suffixes=('', '_x'))
+    df_exam_day_all = finlib.Finlib().add_stock_name_to_df(df=df_exam_day_all, ts_pro_format=False)
 
-    df_exam_day_all = df_exam_day_all.iloc[10:13] #ryan debug
+
+
+    #df_exam_day_all = df_exam_day_all.iloc[10:13] #ryan debug
 
     df_rst_stocks_daily = pd.DataFrame()
-
+    i = 0
     for code in df_exam_day_all['code']:
-        logging.info("Exam start "+str(code))
-        df_a_stock_price_history_last = exam_a_stock_then_merge(code=code, fund2_dir=fund2_dir, date_exam_day=date_exam_day,
+        i+=1
+        logging.info("Exam start "+str(code)+" , "+str(i) + " of "+str(df_exam_day_all.__len__()))
+        df_a_stock_price_history_last = step1_exam_a_stock(code=code, fund2_dir=fund2_dir, date_exam_day=date_exam_day,
                                                                 date_rpt_q=date_rpt_q,
                                                                 date_rpt_q1=date_rpt_q1,
                                                                 date_rpt_y1=date_rpt_y1,
@@ -200,109 +302,19 @@ def main():
                                                                 )
 
         if df_a_stock_price_history_last is not None:
-            print(df_a_stock_price_history_last[['code', 'cond_6_p_gt_03_52weeklow_LastRowValidOnly']])
+            # print(df_a_stock_price_history_last[['code', 'cond_6_p_gt_03_52weeklow_LastRowValidOnly']])
             df_rst_stocks_daily = pd.concat([df_rst_stocks_daily, df_a_stock_price_history_last], axis=0)
-            print(df_rst_stocks_daily[['code', 'cond_6_p_gt_03_52weeklow_LastRowValidOnly']])
-            logging.info("merged a stock")
+            # print(df_rst_stocks_daily[['code', 'cond_6_p_gt_03_52weeklow_LastRowValidOnly']])
+        logging.info("Exam completed " + str(code))
 
-    logging.info("Exam completed " + str(code))
     df_exam_day_all = pd.merge(df_exam_day_all, df_rst_stocks_daily,  on=['code'], how='left', suffixes=('', '_x'))
 
-    exit()
-    print(tabulate.tabulate(df_exam_day_all, headers='keys', tablefmt='psql'))
-    # df_exam_day_all:  Index(['code', 'trade_date', 'close', 'turnover_rate', 'turnover_rate_f',
-    #        'volume_ratio', 'pe', 'pe_ttm', 'pb', 'ps', 'ps_ttm', 'total_share',
-    #        'float_share', 'total_mv', 'circ_mv', 'volume_ratio_perc_rank',
-    #        'total_mv_perc_rank', 'circ_mv_perc_rank', 'pe_perc_rank',
-    #        'pe_ttm_perc_rank', 'ps_ttm_perc_rank', 'turnover_rate_f_perc_rank',
-    #        'open', 'high', 'low', 'close_x', 'pre_close', 'change', 'pct_chg',
-    #        'volume', 'amount', 'date', 'open_x', 'high_x', 'low_x', 'close_x',
-    #        'volume_x', 'amount_x', 'tnv', 'close_15_sma', 'sma_short_15',
-    #        'close_150_sma', 'sma_middle_150', 'close_200_sma', 'sma_long_200',
-    #        'close_15_ema', 'ema_short_15', 'close_150_ema', 'ema_middle_150',
-    #        'close_200_ema', 'ema_long_200', 'close_50_sma', 'sma_short_50',
-    #        'close_60_sma', 'sma_middle_60', 'close_260_sma', 'sma_long_260',
-    #        'close_50_ema', 'ema_short_50', 'close_60_ema', 'ema_middle_60',
-    #        'close_260_ema', 'ema_long_260', 'close_-1_s', 'tr', 'tr_5_smma',
-    #        'atr_5', 'atr_short_5', 'atr_middle_10', 'atr_long_20', 'close_-1_d',
-    #        'closepm', 'closenm', 'closepm_5_smma', 'closenm_5_smma', 'rs_5',
-    #        'rsi_5', 'rsi_short_5', 'rsi_middle_14', 'rsi_long_20',
-    #        'cond_1_p_gt_ma150_ma200', 'cond_2_ma15_gt_ma200',
-    #        'cond_3_ma200_gt_ma200_50days_ago_LastRowValidOnly',
-    #        'cond_4_ma50_gt_ma150_ma200', 'cond_5_p_gt_ma50',
-    #        '52weekhigh_LastRowValidOnly', '52weeklow_LastRowValidOnly',
-    #        'cond_6_p_distance_to_52weeklow_LastRowValidOnly',
-    #        'cond_6_p_gt_0.3_52weeklow_LastRowValidOnly',
-    #        'cond_7_p_distance_to_52weekhigh_LastRowValidOnly',
-    #        'cond_7_p_lt_0.15_52weekhigh_LastRowValidOnly'],
-    #       dtype='object')
-    #
+    #compare between stocks and save result
+    step2_ana(df_exam_day_all)
 
 
-######################################
-#
-######################################
-# df_52week_0.15low
-# df_52week_0.75high
-#
-#
-# df_zhangting
-# df_dieting
-# df_high_minus_low__0.75high (max voliaty)
-
-# df_rsi
-# df_rsi_divergence
-
-#长期低位出现剧烈放量突破长势的: 250 day 0.1 low, volume_ration in 5~10
-#缩量创新高的股票多说是长庄股: volume_ration < 0.5, 30 days highest price,up_top_zhangting, volume_ration < 1
-
-
-# df_cheng_jiao_er_0.15low
-# df_cheng_jiao_er_0.75high
-# df_bar_cross
-# df_bar_long_head
-# df_bar_long_leg
-# df_bar_no_head_leg
- 
-
-# df_volume_ration_0.15low
-# df_volume_ration_0.75high
-
-
-# df_??? 在跌停板的情况下，量比越小则说明杀跌动能未能得到有效宣泄，后市仍有巨大下跌空间。
-# df_??? 底部放量，价位不高的强势股，是我们讨论的重点，其股票换手率高的可信程度较高，表明新资金介入的迹象较为明显，未来的上涨空间相对较大，越是底部换手充分，上行中的抛压越轻。
-
-# df_volume_ration_00_05_little   #7、量比在0.5一下的缩量情形也值得好好关注，其实严重缩量不仅显示了交易不活跃的表象，同时也暗藏着一定的市场机会。缩量创新高的股票多说是长庄股，缩量能创出新高，说明庄家控盘程度相当高，而且可以排除拉高出货的可能。缩量调整的股票，特别是放量突破某个重要阻力位之后缩量回调的个股，常常是不可多得的买入对象。
-# df_volume_ration_00_10_neuro #涨停板时量比在1以下的股票，上涨空间无可限量，第二天开盘即封涨停的可能性极高。
-# df_volume_ration_08_15_neuro #若某日量比为0.8-1.5,则说明成交量处于正常水平。
-# df_volume_ration_12_15_mild #量比在1.2--2.5之间则为温和放量，如果股价也处于温和缓升状态，则升势相对健康，可继续持股，若股价下跌，则可认定跌势难以在短期内结束，从量的方面判断应可考虑停损退出。
-# df_volume_ration_25_50_obvious #量比在2.5--5，则为明显放量，若股价形影的突破重要支撑或阻力位置，则突破有效的机率颇高，可以相应的采取行动。
-# df_volume_ration_50_100_strong #量比达5--10则为剧烈放量，如果是在个股处于长期低位出现剧烈放量突破长势的后续空间巨大，是“钱”途无量的象征。
-# df_volume_ration_100_more_extreme #某日量比达到10倍以上的股票，一般可以考虑反向操作。在涨势中出现这种情况，说明见顶的可能性压倒一切，即使不是彻底反转，至少涨势会休整相当长一段时间。在股票处于绵绵阴跌的后期，突然出现的巨大量比，说明该股在目前的位置彻底释放了下跌动能。
-# df_volume_ration_200_more_extreme #量比达到20以上的情形基本上每天都有一两单，是极端放量的一种表现，这种情况的反转意义特别强烈，如果在连续的上涨之后，成交量极端放大，但股价出现“滞涨”现象，则是涨势行将死亡的强烈信号。当某只股票在跌势中出现极端放量，则是建仓的大好时机。
-
-
-
+    logging.info("script completed!")
 
 ### MAIN ####
 if __name__ == '__main__':
     main()
-
-
-
-######################################################
-# Bar Style
-#         date      code  open  ...  long_lower_shadow  yunxian_buy  yunxian_sell
-# 299  20200619  SZ000651  58.5  ...              False        False         False
-######################################################
-df_bar_style = finlib_indicator.Finlib_indicator().upper_body_lower_shadow(df)
-df_today_bar_style = df_bar_style[-1:].reset_index().drop('index', axis=1)  # <<<<<< TODAY BAR_STYLE
-
-######################################################
-# Junxian Style. Only One Row
-#
-#      code      date  close  ...  ema_short  ema_middle   ema_long
-# 0  SZ000651  20200619  58.84  ...  58.433884    58.61309  58.362801
-######################################################
-df_today_junxian_style = finlib_indicator.Finlib_indicator().sma_jincha_sicha_duotou_koutou(df, 5, 10,
-                                                                                            20)  # <<<<<< TODAY JUNXIAN
