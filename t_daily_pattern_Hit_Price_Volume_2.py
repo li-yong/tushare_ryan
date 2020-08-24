@@ -2,7 +2,7 @@ import pandas as pd
 import finlib
 import finlib_indicator
 import logging
-
+import tabulate
 import tushare as ts
 
 import talib 
@@ -21,6 +21,9 @@ def exam_a_stock_then_merge(code,fund2_dir,date_exam_day,date_rpt_q,date_rpt_q1,
     # /home/ryan/DATA/DAY_Global/AG/SH600519.csv
     # 代码,时间,开盘价,最高价,最低价,收盘价,成交量(股),成交额(元),换手率
     df_a_stock_price_history = finlib.Finlib().regular_read_csv_to_stdard_df(data_csv='/home/ryan/DATA/DAY_Global/AG/'+code+".csv")
+    if df_a_stock_price_history.__len__() < 200:
+        logging.info("No enough data for "+code+", expected 200+, actual "+str(df_a_stock_price_history.__len__()))
+        return(None)
 
     # df must have column (code, date, open, low,high,close)
     df_a_stock_price_history = finlib_indicator.Finlib_indicator().add_ma_ema(df=df_a_stock_price_history, short=15, middle=150, long=200)
@@ -54,11 +57,11 @@ def exam_a_stock_then_merge(code,fund2_dir,date_exam_day,date_rpt_q,date_rpt_q1,
 
 
     df['cond_6_p_distance_to_52weeklow_LastRowValidOnly'] = round((df['close'].iloc[-1] - _52weeklow)/(_52weekhigh - _52weeklow),2)
-    df['cond_6_p_gt_0.3_52weeklow_LastRowValidOnly'] = (df['close'].iloc[-1] - _52weeklow)/(_52weekhigh - _52weeklow) > 0.3
+    df['cond_6_p_gt_03_52weeklow_LastRowValidOnly'] = ((df['close'].iloc[-1] - _52weeklow)/(_52weekhigh - _52weeklow)) > 0.3
 
     #7. (52weekhigh - p)/(52weekhigh - 52weeklowest) < 0.15 (越接近越好)
     df['cond_7_p_distance_to_52weekhigh_LastRowValidOnly'] = round((_52weekhigh - df['close'].iloc[-1])/(_52weekhigh - _52weeklow),2)
-    df['cond_7_p_lt_0.15_52weekhigh_LastRowValidOnly'] = (_52weekhigh - df['close'].iloc[-1])/(_52weekhigh - _52weeklow) < 0.15
+    df['cond_7_p_lt_015_52weekhigh_LastRowValidOnly'] = ((_52weekhigh - df['close'].iloc[-1])/(_52weekhigh - _52weeklow)) < 0.15
 
     #8. RSI > 70, 最好是80, 90
     df = df[ df['rsi_middle_14'] > 70]
@@ -113,7 +116,6 @@ def exam_a_stock_then_merge(code,fund2_dir,date_exam_day,date_rpt_q,date_rpt_q1,
     return(df_a_stock_price_history_last)
 
 
-    print(2)
 
 def main():
     code_6d = "600519"
@@ -182,10 +184,12 @@ def main():
 
     df_exam_day_all = pd.merge(df_daily_stocks_basic, df_daily_stocks_price, on=['code','trade_date'], how='inner', suffixes=('', '_x'))
 
-    df_exam_day_all = df_exam_day_all.iloc[-10:] #ryan debug
+    df_exam_day_all = df_exam_day_all.iloc[10:13] #ryan debug
+
+    df_rst_stocks_daily = pd.DataFrame()
 
     for code in df_exam_day_all['code']:
-        logging.info("Exam "+str(code))
+        logging.info("Exam start "+str(code))
         df_a_stock_price_history_last = exam_a_stock_then_merge(code=code, fund2_dir=fund2_dir, date_exam_day=date_exam_day,
                                                                 date_rpt_q=date_rpt_q,
                                                                 date_rpt_q1=date_rpt_q1,
@@ -194,11 +198,45 @@ def main():
                                                                 df_quarterly_merged_all_1q_before=df_quarterly_merged_all_1q_before,
                                                                 df_quarterly_merged_all_1y_before=df_quarterly_merged_all_1y_before,
                                                                 )
-        df_exam_day_all = pd.merge(df_exam_day_all, df_a_stock_price_history_last,  on=['code'], how='outer', suffixes=('', '_x'))
-        print(4)
 
-    print(3)
-    #handling df_exam_day_all
+        if df_a_stock_price_history_last is not None:
+            print(df_a_stock_price_history_last[['code', 'cond_6_p_gt_03_52weeklow_LastRowValidOnly']])
+            df_rst_stocks_daily = pd.concat([df_rst_stocks_daily, df_a_stock_price_history_last], axis=0)
+            print(df_rst_stocks_daily[['code', 'cond_6_p_gt_03_52weeklow_LastRowValidOnly']])
+            logging.info("merged a stock")
+
+    logging.info("Exam completed " + str(code))
+    df_exam_day_all = pd.merge(df_exam_day_all, df_rst_stocks_daily,  on=['code'], how='left', suffixes=('', '_x'))
+
+    exit()
+    print(tabulate.tabulate(df_exam_day_all, headers='keys', tablefmt='psql'))
+    # df_exam_day_all:  Index(['code', 'trade_date', 'close', 'turnover_rate', 'turnover_rate_f',
+    #        'volume_ratio', 'pe', 'pe_ttm', 'pb', 'ps', 'ps_ttm', 'total_share',
+    #        'float_share', 'total_mv', 'circ_mv', 'volume_ratio_perc_rank',
+    #        'total_mv_perc_rank', 'circ_mv_perc_rank', 'pe_perc_rank',
+    #        'pe_ttm_perc_rank', 'ps_ttm_perc_rank', 'turnover_rate_f_perc_rank',
+    #        'open', 'high', 'low', 'close_x', 'pre_close', 'change', 'pct_chg',
+    #        'volume', 'amount', 'date', 'open_x', 'high_x', 'low_x', 'close_x',
+    #        'volume_x', 'amount_x', 'tnv', 'close_15_sma', 'sma_short_15',
+    #        'close_150_sma', 'sma_middle_150', 'close_200_sma', 'sma_long_200',
+    #        'close_15_ema', 'ema_short_15', 'close_150_ema', 'ema_middle_150',
+    #        'close_200_ema', 'ema_long_200', 'close_50_sma', 'sma_short_50',
+    #        'close_60_sma', 'sma_middle_60', 'close_260_sma', 'sma_long_260',
+    #        'close_50_ema', 'ema_short_50', 'close_60_ema', 'ema_middle_60',
+    #        'close_260_ema', 'ema_long_260', 'close_-1_s', 'tr', 'tr_5_smma',
+    #        'atr_5', 'atr_short_5', 'atr_middle_10', 'atr_long_20', 'close_-1_d',
+    #        'closepm', 'closenm', 'closepm_5_smma', 'closenm_5_smma', 'rs_5',
+    #        'rsi_5', 'rsi_short_5', 'rsi_middle_14', 'rsi_long_20',
+    #        'cond_1_p_gt_ma150_ma200', 'cond_2_ma15_gt_ma200',
+    #        'cond_3_ma200_gt_ma200_50days_ago_LastRowValidOnly',
+    #        'cond_4_ma50_gt_ma150_ma200', 'cond_5_p_gt_ma50',
+    #        '52weekhigh_LastRowValidOnly', '52weeklow_LastRowValidOnly',
+    #        'cond_6_p_distance_to_52weeklow_LastRowValidOnly',
+    #        'cond_6_p_gt_0.3_52weeklow_LastRowValidOnly',
+    #        'cond_7_p_distance_to_52weekhigh_LastRowValidOnly',
+    #        'cond_7_p_lt_0.15_52weekhigh_LastRowValidOnly'],
+    #       dtype='object')
+    #
 
 
 ######################################
