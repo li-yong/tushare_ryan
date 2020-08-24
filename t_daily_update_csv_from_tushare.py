@@ -6,6 +6,7 @@ import pickle
 import os.path
 import pandas as pd
 import os
+import datetime
 import time
 import numpy as np
 #import matplotlib.pyplot as plt
@@ -65,11 +66,30 @@ def update_holc(todayS_l, base_dir, pickle_only, add_miss):
 
     #ryan add 20180511. update code_map_csv
     instrument_csv = "/home/ryan/DATA/pickle/instrument_A.csv"
-    df_basic = pro.stock_basic()
+    #pro.stock_basic
+    # ts_code	str	TS代码
+    # symbol	str	股票代码
+    # name	str	股票名称
+    # area	str	所在地域
+    # industry	str	所属行业
+    # fullname	str	股票全称
+    # enname	str	英文全称
+    # market	str	市场类型 （主板/中小板/创业板/科创板）
+    # exchange	str	交易所代码
+    # curr_type	str	交易货币
+    # list_status	str	上市状态： L上市 D退市 P暂停上市
+    # list_date	str	上市日期
+    # delist_date	str	退市日期
+    # is_hs	str	是否沪深港通标的，N否 H沪股通 S深股通
+
+    df_basic = pro.stock_basic(list_status='L', fields='ts_code,symbol,name,area,industry,fullname,enname,market,exchange,list_status,list_date,delist_date,is_hs')
+    df_basic['list_date_dt'] = df_basic['list_date'].apply(lambda _d: datetime.strptime(str(_d), '%Y%m%d'))
+    df_basic['list_date_days_before'] = df_basic['list_date_dt'].apply(lambda _d: (datetime.today() - _d).days)
+
     df_basic = finlib.Finlib().remove_market_from_tscode(df_basic)
     df_basic = df_basic.reset_index().drop('index', axis=1)
     df_basic.to_csv(instrument_csv, encoding='UTF-8', index=False)  # len 3515
-    logging.info(__file__+" "+"\nsaved to " + instrument_csv)
+    logging.info(__file__+" "+"\nsaved to " + instrument_csv+" , len "+str(df_basic.__len__()))
 
     if pickle_only:
         logging.info(__file__+" "+"Save pickle only, exit")

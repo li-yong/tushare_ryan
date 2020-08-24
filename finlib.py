@@ -3455,7 +3455,7 @@ class Finlib:
         return (dateStr)
 
     #regular df to format: code, name, open,high,low,close,volume
-    def regular_read_csv_to_stdard_df(self, data_csv,add_market=True):
+    def regular_read_csv_to_stdard_df(self, data_csv,add_market=False,exit_if_not_exist=True):
         logging.info("loading "+data_csv)
         base_dir = "/home/ryan/DATA/DAY_Global"
         base_dir_fund2 = "/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2"
@@ -3464,11 +3464,12 @@ class Finlib:
         data_csv_fp = os.path.abspath(data_csv)
         dir = os.path.dirname(data_csv_fp)
 
-        add_market = False
-
         if not os.path.isfile(data_csv_fp):
             logging.fatal(__file__+" "+"file not exist. " + data_csv_fp)
-            exit(0)
+            if exit_if_not_exist:
+                exit(0)
+            else:
+                return("FILE_NOT_EXIT")
 
         if dir == base_dir + "/AG":
             rtn_df = pd.read_csv(data_csv_fp, converters={'code': str, 'date': str}, header=None, skiprows=1, names=['code', 'date', 'open', 'high', 'low', 'close', 'volume', 'amount', 'tnv'])
@@ -3503,7 +3504,9 @@ class Finlib:
         elif dir =="/home/ryan/DATA/pickle/daily_update_source":
             rtn_df = self.ts_code_to_code(pd.read_csv(data_csv_fp, encoding="utf-8"))
 
-
+        elif data_csv_fp =="/home/ryan/DATA/pickle/instrument_A.csv":
+            add_market = True
+            rtn_df = pd.read_csv(data_csv_fp, converters={'code': str, 'list_date': str},  encoding="utf-8")
 
         elif dir.__contains__("/home/ryan/DATA/result"):
             rtn_df = pd.read_csv(data_csv_fp, converters={'code': str, 'date': str}, encoding="utf-8")

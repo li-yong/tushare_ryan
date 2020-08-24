@@ -1663,6 +1663,12 @@ def _analyze_step_1(end_date):
         logging.info(__file__ + " " + "file has been updated in 1 days, will not calculate. " + csv_output)
         return
 
+    df_on_market_date = finlib.Finlib().regular_read_csv_to_stdard_df(data_csv = "/home/ryan/DATA/pickle/instrument_A.csv")
+    df_on_market_date = finlib.Finlib().add_market_to_code(df=df_on_market_date, dot_f=True, tspro_format=True)
+    df_on_market_date = df_on_market_date.rename(columns={"code": "ts_code"}, inplace=False)
+
+
+
     f = fund_base_merged + "/" + "merged_all_" + end_date + ".csv"
 
     if not os.path.isfile(f):
@@ -1730,6 +1736,7 @@ def _analyze_step_1(end_date):
     basic_df = get_pro_basic()
 
     df_len = df.__len__()
+    MAX_TOLERATED_DAYS_NO_PROFIT  = 365*2  #2 years
 
     for i in range(0, df_len):
         logging.info("\n"+__file__+" "+"=== analyze step_1, " + str(i + 1) + " of " + str(df_len) + ".  "+end_date+" ===")
@@ -1739,6 +1746,8 @@ def _analyze_step_1(end_date):
         bonusCnt = 0
         garbageCnt = 0
 
+
+
         ####xiao xiong start
         ts_code = df.iloc[i]['ts_code']
         end_date = df.iloc[i]['end_date']
@@ -1746,7 +1755,10 @@ def _analyze_step_1(end_date):
 
         #ts_code = '002972.SZ'  #ryan debug
 
-        logging.info(__file__+" "+ts_code + " " +name+ " , " + end_date )
+        on_market_days = df_on_market_date[df_on_market_date['ts_code'] == ts_code]['list_date_days_before'].values[0]
+
+
+        logging.info(__file__+" "+ts_code + " " +name+ " , " + end_date+" , on market days "+str(on_market_days) )
         sys.stdout.flush()
 
         #if end_date == '20171231':
@@ -1828,7 +1840,8 @@ def _analyze_step_1(end_date):
         n_income_attr_p = df.iloc[i]['n_income_attr_p']  #净利润(不含少数股东损益)
         net_profit = df.iloc[i]['net_profit']  #净利润
 
-        if net_profit < 0:
+        # Ryan todo: adding checking condition that on-market > 5 years. in order to keep the stock in high speed development.
+        if on_market_days > MAX_TOLERATED_DAYS_NO_PROFIT and net_profit < 0:
             garbageReason += "net profit < 0" + ". "
             garbageCnt += 1
             df.iloc[i, df.columns.get_loc('stopProcess')] = 1
@@ -1848,17 +1861,17 @@ def _analyze_step_1(end_date):
         n_income = df.iloc[i]['n_income']  #净利润(含少数股东损益)
         n_income_attr_p = df.iloc[i]['n_income_attr_p']  #归属于母公司所有者的净利润
 
-        if n_income < 0:
+        if on_market_days > MAX_TOLERATED_DAYS_NO_PROFIT and n_income < 0:
             garbageReason += "n_income 净利润(含少数股东损益) <  0" + ". "
             garbageCnt += 1
             df.iloc[i, df.columns.get_loc('stopProcess')] = 1
 
-        if n_income_attr_p < 0:
+        if on_market_days > MAX_TOLERATED_DAYS_NO_PROFIT and n_income_attr_p < 0:
             garbageReason += "n_income_attr_p 归属于母公司所有者的净利润 <  0" + ". "
             garbageCnt += 1
             df.iloc[i, df.columns.get_loc('stopProcess')] = 1
 
-        if total_cur_assets < total_cur_liab:
+        if on_market_days > MAX_TOLERATED_DAYS_NO_PROFIT and total_cur_assets < total_cur_liab:
             garbageReason += "total_cur_assets <  total_cur_liab" + ". "
             garbageCnt += 1
             df.iloc[i, df.columns.get_loc('stopProcess')] = 1
