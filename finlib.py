@@ -3949,7 +3949,61 @@ class Finlib:
 
         return(df)
 
+    def count_min_max_value_days(self,df,col_name):
+        latest_close = df[col_name].iloc[-1]
 
+        this_is_min_of_last_n_records = 0
+        this_is_max_of_last_n_records = 0
+
+        if df.__len__() > 2:
+            for i in range(2, df.__len__()):
+                if latest_close >= df[col_name].iloc[-1 * i]:
+                    this_is_max_of_last_n_records = i
+                else:
+                    break
+
+            for i in range(2, df.__len__()):
+                if latest_close <= df[col_name].iloc[-1 * i]:
+                    this_is_min_of_last_n_records = i
+                else:
+                    break
+
+        logging.info("this_is_max_of_last_n_records of column "+col_name+ " , " + str(this_is_max_of_last_n_records))
+        logging.info("this_is_min_of_last_n_records of column "+col_name+ " , " + str(this_is_min_of_last_n_records))
+
+        return({'this_is_max_of_last_n_records':this_is_max_of_last_n_records,
+                'this_is_min_of_last_n_records':this_is_min_of_last_n_records})
+
+
+   #up-volume equal to or greater than the largest down-volume day over the prior 10 days
+    def pocket_pivot_check(self,df):
+        #check price critiria
+        if ((df['close'].iloc[-2] < df['close_50_sma'].iloc[-2]) and (df['close'].iloc[-1] > df['close_50_sma'].iloc[-1]))  or  ( (df['close'].iloc[-2] < df['close_15_sma'].iloc[-2]) and (df['close'].iloc[-1] > df['close_15_sma'].iloc[-1])):
+            logging.info("Pocket Pivot Price condition satisfied. P break SMA15 or SMA50")
+        else:
+            logging.info("Pocket Pivot Price condition failed.")
+            return(False)
+
+        #next check volume critiria
+        latest_volume = df['volume'].iloc[-1]
+
+        pocket_pivot_this_vol_gt_N_records_of_down_vol = 0
+
+        if df.__len__() < 2:
+            return(False)
+
+        for i in range(2, df.__len__()):
+            if df['close_-1_d'].iloc[-1*i] < 0: #price was down that day
+                if latest_volume >= df['volume'].iloc[-1 * i]:
+                    pocket_pivot_this_vol_gt_N_records_of_down_vol += 1
+                else:
+                    break
+            else:
+                pocket_pivot_this_vol_gt_N_records_of_down_vol += 1
+
+        logging.info("this_vol_gt_N_records_of_down_vol "+ str(pocket_pivot_this_vol_gt_N_records_of_down_vol))
+
+        return({'pocket_pivot_this_vol_gt_N_records_of_down_vol':pocket_pivot_this_vol_gt_N_records_of_down_vol})
 
     #input: df [open,high, low, close]
     #output: {hit:[T|F], high:value, low:value, }

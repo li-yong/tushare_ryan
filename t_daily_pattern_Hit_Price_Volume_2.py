@@ -35,8 +35,29 @@ def _exam_a_stock(code,date_exam_day,
     df_a_stock_price_history = finlib_indicator.Finlib_indicator().add_rsi(df=df_a_stock_price_history, short=5, middle=14, long=20)
 
 
-    #1. 股价高于150天(30周) 与 200天(40周) 移动平均
+
     df = df_a_stock_price_history
+
+    #-2. pv, today_vol > last_15_days_down_volume. pocket pivot: up-volume equal to or greater than the largest down-volume day over the prior 10 days
+    exp = finlib.Finlib().pocket_pivot_check(df=df)
+    if (exp is not False):
+        df['cond_pocket_pivot']=True
+        df['pocket_pivot_maxvol_N_downdays'] = exp['pocket_pivot_this_vol_gt_N_records_of_down_vol'] #>10 or >15 is positive for Pocket pivot volume condition.
+    else:
+        df['cond_pocket_pivot'] = False
+
+
+    #-1. today volumn is the min/max of last N days
+    min_max = finlib.Finlib().count_min_max_value_days(df, 'volume')
+    df['vol_is_min_of_last_n_records_LastRowValidOnly']=min_max['this_is_min_of_last_n_records']
+    df['vol_is_max_of_last_n_records_LastRowValidOnly']=min_max['this_is_max_of_last_n_records']
+
+    # 0. today close is the min/max of last N days
+    min_max = finlib.Finlib().count_min_max_value_days(df, 'close')
+    df['p_is_min_of_last_n_records_LastRowValidOnly']=min_max['this_is_min_of_last_n_records']
+    df['p_is_max_of_last_n_records_LastRowValidOnly']=min_max['this_is_max_of_last_n_records']
+
+    # 1. 股价高于150天(30周) 与 200天(40周) 移动平均
     df['cond_1_p_gt_ma150_ma200'] = (df['close'] > df['close_150_sma']) & (df['close'] > df['close_200_sma'])
 
     #2. 15MA高于200MA
@@ -108,12 +129,12 @@ def _exam_a_stock(code,date_exam_day,
     df['30dayhigh_LastRowValidOnly'] = _30dayhigh
     df['30dayhigh_LastRowValidOnly'] = _30daylow
 
-    #14. df_30day_standard_deviation_0.15low
-    _30day_close_stable=df['close'][-30:].std()/df['close'][-30:].mean() #0.025
-    _30day_vol_stable= df['volume'][-30:].std()/df['volume'][-30:].mean() #0.42
+    #14. df_15day_standard_deviation_0.15low
+    _14day_close_stable=df['close'][-15:-1].std()/df['close'][-15:-1].mean() #0.025
+    _14day_vol_stable= df['volume'][-15:-1].std()/df['volume'][-15:-1].mean() #0.42
 
-    df['30day_close_std_mean_ratio_LastRowValidOnly'] = _30day_close_stable
-    df['30day_volume_std_mean_ratio_LastRowValidOnly'] = _30day_vol_stable
+    df['14day_close_std_mean_ratio_LastRowValidOnly'] = _14day_close_stable
+    df['14day_volume_std_mean_ratio_LastRowValidOnly'] = _14day_vol_stable
 
     # Merge the stock to the all stock list
     #print(df.columns.values)
@@ -354,6 +375,27 @@ def step2_ana(df_exam_day_all):
 
 
     ############################
+    # pocket pivot
+    ############################
+    _df_filter_save(df = df_exam_day_all[df_exam_day_all['cond_pocket_pivot']],
+                    col_list=['code','name','date','close','pct_chg',
+                              'cond_pocket_pivot','pocket_pivot_maxvol_N_downdays' ,
+                              '14day_close_std_mean_ratio_LastRowValidOnly','14day_volume_std_mean_ratio_LastRowValidOnly'],
+                    sort_by_list=['pocket_pivot_maxvol_N_downdays'],sort_asc_list=[False],
+                    to_csv_f=rst_dir+"/pocket_pivot.csv"
+                    )
+
+
+    ############################
+    # stable price/vol 14 days
+    ############################
+    _df_filter_save(df = df,
+                    col_list=['code','name','date','close','pct_chg','14day_close_std_mean_ratio_LastRowValidOnly','14day_volume_std_mean_ratio_LastRowValidOnly'],
+                    sort_by_list=['14day_close_std_mean_ratio_LastRowValidOnly','14day_volume_std_mean_ratio_LastRowValidOnly'],sort_asc_list=[True,True],
+                    to_csv_f=rst_dir+"/stable_price_volume.csv"
+                    )
+
+    ############################
     # template
     ############################
     _df_filter_save(df = df_exam_day_all[df_exam_day_all['pct_chg']< -9.9],
@@ -417,7 +459,7 @@ def _df_filter_save(df, col_list, sort_by_list, sort_asc_list, to_csv_f):
 ### MAIN ####
 if __name__ == '__main__':
     date_exam_day = finlib.Finlib().get_last_trading_day() #20200821
-    date_exam_day="20200821" #ryan debug
+    #date_exam_day="20200821" #ryan debug
     logging.info("examine date "+str(date_exam_day))
 
     rst_dir = '/home/ryan/DATA/result/pv_2'
