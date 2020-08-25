@@ -292,7 +292,7 @@ def step2_ana(df_exam_day_all):
         "cond_9_p_gt_12",
         "cond_12_volume_mean_50_gt_25000",
         "cond_11_sales_acceleration_gt_5",
-        "cond_10_sales_acceleration"
+        "cond_10_sales_acceleration",
     ]
 
     ############################
@@ -377,6 +377,7 @@ def step2_ana(df_exam_day_all):
     ############################
     # pocket pivot
     ############################
+    df_exam_day_all['cond_pocket_pivot'].fillna(value=False, inplace=True)
     _df_filter_save(df = df_exam_day_all[df_exam_day_all['cond_pocket_pivot']],
                     col_list=['code','name','date','close','pct_chg',
                               'cond_pocket_pivot','pocket_pivot_maxvol_N_downdays' ,
@@ -389,7 +390,7 @@ def step2_ana(df_exam_day_all):
     ############################
     # stable price/vol 14 days
     ############################
-    _df_filter_save(df = df,
+    _df_filter_save(df = df_exam_day_all,
                     col_list=['code','name','date','close','pct_chg','14day_close_std_mean_ratio_LastRowValidOnly','14day_volume_std_mean_ratio_LastRowValidOnly'],
                     sort_by_list=['14day_close_std_mean_ratio_LastRowValidOnly','14day_volume_std_mean_ratio_LastRowValidOnly'],sort_asc_list=[True,True],
                     to_csv_f=rst_dir+"/stable_price_volume.csv"
@@ -398,11 +399,11 @@ def step2_ana(df_exam_day_all):
     ############################
     # template
     ############################
-    _df_filter_save(df = df_exam_day_all[df_exam_day_all['pct_chg']< -9.9],
-                    col_list=['code','name','date','close','pct_chg'],
-                    sort_by_list=['pct_chg'],sort_asc_list=[False],
-                    to_csv_f=rst_dir+"/die_ting.csv"
-                    )
+    # _df_filter_save(df = df_exam_day_all[df_exam_day_all['pct_chg']< -9.9],
+    #                 col_list=['code','name','date','close','pct_chg'],
+    #                 sort_by_list=['pct_chg'],sort_asc_list=[False],
+    #                 to_csv_f=rst_dir+"/die_ting.csv"
+    #                 )
 
 
 def _df_filter_save(df, col_list, sort_by_list, sort_asc_list, to_csv_f):

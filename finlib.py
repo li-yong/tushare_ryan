@@ -3977,6 +3977,9 @@ class Finlib:
 
    #up-volume equal to or greater than the largest down-volume day over the prior 10 days
     def pocket_pivot_check(self,df):
+        if df.__len__() < 2:
+            return(False)
+
         #check price critiria
         if ((df['close'].iloc[-2] < df['close_50_sma'].iloc[-2]) and (df['close'].iloc[-1] > df['close_50_sma'].iloc[-1]))  or  ( (df['close'].iloc[-2] < df['close_15_sma'].iloc[-2]) and (df['close'].iloc[-1] > df['close_15_sma'].iloc[-1])):
             logging.info("Pocket Pivot Price condition satisfied. P break SMA15 or SMA50")
@@ -3989,8 +3992,7 @@ class Finlib:
 
         pocket_pivot_this_vol_gt_N_records_of_down_vol = 0
 
-        if df.__len__() < 2:
-            return(False)
+
 
         for i in range(2, df.__len__()):
             if df['close_-1_d'].iloc[-1*i] < 0: #price was down that day
