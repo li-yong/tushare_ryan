@@ -27,6 +27,17 @@ cd /home/ryan/tushare_ryan
 #mysqldump -uroot -padmin888.@_@  ryan_stock_db order_tracking_stock > order_tracking_stock.sql.backup_`hostname`_`date +"%Y-%m-%d_%H_%M_%S"`
 
 
+##########################
+#input:
+#    /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/basic_daily/basic_20200826.csv
+#    /home/ryan/DATA/pickle/daily_update_source/ag_daily_20200826.csv
+#output: /home/ryan/DATA/result/pv_2/20200826
+# die_ting.csv	   pe_top_30p.csv    stable_price_volume.csv  vcp.csv			   volume_ratio_top_20p.csv  zhangting_volume_ration_lt_1.csv
+#pe_bottom_30p.csv  pocket_pivot.csv  step1.out.csv	      volume_ratio_bottom_10p.csv  zhang_ting.csv
+##########################
+python t_daily_pattern_Hit_Price_Volume_2.py
+
+
 ########################################################  Step1 Others  ################################################
 
 ##########################

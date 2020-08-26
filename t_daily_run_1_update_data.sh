@@ -35,6 +35,7 @@ git pull
 # /home/ryan/DATA/DAY_Global/AG/*csv
 # /home/ryan/DATA/pickle/instrument_A.csv
 ######################################
+# These two lines prepare data used by t_daily_pattern_Hit_Price_Volume_2.py.
 python /home/ryan/tushare_ryan/t_daily_update_csv_from_tushare.py;
 python t_daily_fundamentals_2.py --fetch_basic_daily
 
