@@ -173,7 +173,7 @@ def main():
         out_f = "/home/ryan/DATA/result/fib.csv"
         stock_list = finlib.Finlib().get_A_stock_instrment()  #603999
         stock_list = finlib.Finlib().add_market_to_code(stock_list, dot_f=False, tspro_format=False)  #603999.SH
-        stock_list = finlib.Finlib().remove_garbage(stock_list, code_filed_name='code', code_format='C2D6')
+        stock_list = finlib.Finlib().remove_garbage(stock_list, code_field_name='code', code_format='C2D6')
 
     #debug_f = True
     #verify_fibo_f = True

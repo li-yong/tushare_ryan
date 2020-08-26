@@ -212,7 +212,7 @@ def kdj(period):
 
     stock_list = finlib.Finlib().get_A_stock_instrment()
     stock_list = finlib.Finlib().add_market_to_code(stock_list, dot_f=False, tspro_format=False)
-    stock_list = finlib.Finlib().remove_garbage(stock_list, code_filed_name='code', code_format='C2D6')
+    stock_list = finlib.Finlib().remove_garbage(stock_list, code_field_name='code', code_format='C2D6')
 
     #stock_list = stock_list.head(100) #ryan debug
 
@@ -380,7 +380,7 @@ def macd(period):
 
     stock_list = finlib.Finlib().get_A_stock_instrment()
     stock_list = finlib.Finlib().add_market_to_code(stock_list, dot_f=False, tspro_format=False)
-    stock_list = finlib.Finlib().remove_garbage(stock_list, code_filed_name='code', code_format='C2D6')
+    stock_list = finlib.Finlib().remove_garbage(stock_list, code_field_name='code', code_format='C2D6')
     #stock_list = stock_list.head(10) #debug
 
     cnt = stock_list.__len__()

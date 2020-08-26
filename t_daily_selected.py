@@ -292,7 +292,7 @@ def analyze_moneyflow(mf_ana_date, mf_ana_pre_days=3, mf_ana_test_hold_days=5, p
     else:  #all stocks
         stock_list = finlib.Finlib().get_A_stock_instrment()
         stock_list = finlib.Finlib().add_market_to_code(stock_list, dot_f=False, tspro_format=False)  # SH600519
-        stock_list = finlib.Finlib().remove_garbage(stock_list, code_filed_name='code', code_format='C2D6')
+        stock_list = finlib.Finlib().remove_garbage(stock_list, code_field_name='code', code_format='C2D6')
 
     i = 0
     csv_in_dir = "/home/ryan/DATA/DAY_Global/AG_MoneyFlow"

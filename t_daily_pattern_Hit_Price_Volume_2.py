@@ -143,7 +143,7 @@ def _exam_a_stock(code,date_exam_day,
     return(df_a_stock_price_history_last)
 
 
-def step1_generate_df(output_csv):
+def step1_generate_df(output_csv,date_exam_day):
 
     if finlib.Finlib().is_cached(output_csv, 1):
         logging.info("file updated in 1 days, "+output_csv)
@@ -179,7 +179,7 @@ def step1_generate_df(output_csv):
         logging.info("reduce exam stocks. keep turnover_rate_f_perc_rank < 0.95 ")
         df_daily_stocks_basic = df_daily_stocks_basic[df_daily_stocks_basic['turnover_rate_f_perc_rank'] < 0.95 ] #need this? k  # 1690 -> 1636
         logging.info("reduce exam stocks. remove garbage ")
-        df_daily_stocks_basic = finlib.Finlib().remove_garbage(df=df_daily_stocks_basic, code_filed_name='code') #1636 -> 545
+        df_daily_stocks_basic = finlib.Finlib().remove_garbage(df=df_daily_stocks_basic, code_field_name='code') #1636 -> 545
 
     # /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/basic_quarterly/basic_20200630.csv
     # ts_code,trade_date,close,turnover_rate,turnover_rate_f,volume_ratio,pe,pe_ttm,pb,ps,ps_ttm,total_share,float_share,total_mv,circ_mv
@@ -243,7 +243,7 @@ def step2_ana(df_exam_day_all):
 
     exam_date = df_exam_day_all['date'].dropna().values[0]
 
-
+    df_exam_day_all = finlib.Finlib().remove_garbage(df=df_exam_day_all,code_field_name='code', code_format='C2D6')
 
     # df_exam_day_all:
     # ['code' 'trade_date' 'close' 'turnover_rate' 'turnover_rate_f'
@@ -278,6 +278,9 @@ def step2_ana(df_exam_day_all):
     # '30day_volume_std_mean_ratio_LastRowValidOnly']
 
 
+    ############################
+    # VCP
+    ############################
     df_vcp = df_exam_day_all
 
     check_list = [
@@ -295,9 +298,6 @@ def step2_ana(df_exam_day_all):
         "cond_10_sales_acceleration",
     ]
 
-    ############################
-    # VCP
-    ############################
     for cn in check_list:
         if re.match("cond_", cn):
 
@@ -311,7 +311,11 @@ def step2_ana(df_exam_day_all):
                 break
 
             df_vcp.to_csv(rst_dir + "/vcp.csv", encoding='UTF-8', index=False)
-    logging.info("vcp saved to "+rst_dir + "/vcp.csv")
+
+    logging.info("vcp saved to "+rst_dir + "/vcp.csv"+" , len "+str(df_vcp.__len__()))
+    logging.info(tabulate.tabulate(df_vcp.head(3), headers='keys', tablefmt='psql'))
+
+
 
     ############################
     # pe top, bottom
@@ -392,7 +396,7 @@ def step2_ana(df_exam_day_all):
     ############################
     _df_filter_save(df = df_exam_day_all,
                     col_list=['code','name','date','close','pct_chg','14day_close_std_mean_ratio_LastRowValidOnly','14day_volume_std_mean_ratio_LastRowValidOnly'],
-                    sort_by_list=['14day_close_std_mean_ratio_LastRowValidOnly','14day_volume_std_mean_ratio_LastRowValidOnly'],sort_asc_list=[True,True],
+                    sort_by_list=['14day_volume_std_mean_ratio_LastRowValidOnly','14day_close_std_mean_ratio_LastRowValidOnly'],sort_asc_list=[True,True],
                     to_csv_f=rst_dir+"/stable_price_volume.csv"
                     )
 
@@ -411,7 +415,8 @@ def _df_filter_save(df, col_list, sort_by_list, sort_asc_list, to_csv_f):
     df = df.sort_values(by=sort_by_list, ascending=sort_asc_list, inplace=False)
     df = df.reset_index().drop('index', axis=1)
     df.to_csv(to_csv_f, encoding='UTF-8', index=False)
-    logging.info("saved "+to_csv_f)
+    logging.info("saved "+to_csv_f+" , len "+str(df.__len__()))
+    logging.info(tabulate.tabulate(df.head(3), headers='keys', tablefmt='psql'))
 
 
 
@@ -460,7 +465,7 @@ def _df_filter_save(df, col_list, sort_by_list, sort_asc_list, to_csv_f):
 ### MAIN ####
 if __name__ == '__main__':
     date_exam_day = finlib.Finlib().get_last_trading_day() #20200821
-    #date_exam_day="20200821" #ryan debug
+#    date_exam_day="20200825" #ryan debug
     logging.info("examine date "+str(date_exam_day))
 
     rst_dir = '/home/ryan/DATA/result/pv_2'
@@ -472,7 +477,7 @@ if __name__ == '__main__':
         os.mkdir(rst_dir)
 
     step1_output_csv = rst_dir+"/step1.out.csv"
-    step1_generate_df(output_csv=step1_output_csv)
+    step1_generate_df(output_csv=step1_output_csv, date_exam_day = date_exam_day)
 
     # compare between stocks and save result
     step2_ana(pd.read_csv(step1_output_csv, converters={'code': str, 'date': str}, encoding="utf-8"))

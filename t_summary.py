@@ -797,7 +797,7 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
         if (os.path.isfile(f_pv_no_filter)) and os.stat(f_pv_no_filter).st_size >= 10:  # > 10 bytes
             df_pv_no_filter = finlib.Finlib().regular_read_csv_to_stdard_df(f_pv_no_filter)
             df_pv_no_filter.drop_duplicates(inplace=True)
-            df_pv_no_filter = finlib.Finlib().remove_garbage(df_pv_no_filter, code_filed_name='code', code_format='C2D6')
+            df_pv_no_filter = finlib.Finlib().remove_garbage(df_pv_no_filter, code_field_name='code', code_format='C2D6')
             arr.append('df_pv_no_filter')
         else:
             logging.info(__file__+" "+"NOT found file " + f_pv_no_filter)
@@ -833,7 +833,7 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
             df_max_daily_increase = df_pv_no_filter[df_pv_no_filter['op_rsn'].str.contains('_max_daily_increase')]
             df_max_daily_increase = df_max_daily_increase.reset_index()
             df_max_daily_increase = refine_df(df_max_daily_increase, has_db_record=False, force_pass=True, insert_buy_record_to_db=False, debug=debug)
-            df_max_daily_increase = finlib.Finlib().remove_garbage(df_max_daily_increase, code_filed_name='code', code_format='C2D6')
+            df_max_daily_increase = finlib.Finlib().remove_garbage(df_max_daily_increase, code_field_name='code', code_format='C2D6')
             logging.info(__file__+" "+"\t df_max_daily_increase length " + str(df_max_daily_increase.__len__()))
 
             # ====== max_daily_decrease
@@ -841,7 +841,7 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
             df_max_daily_decrease = df_pv_no_filter[df_pv_no_filter['op_rsn'].str.contains('_max_daily_decrease')]
             df_max_daily_decrease = df_max_daily_decrease.reset_index()
             df_max_daily_decrease = refine_df(df_max_daily_decrease, has_db_record=False, force_pass=True, insert_buy_record_to_db=False, debug=debug)
-            df_max_daily_decrease = finlib.Finlib().remove_garbage(df_max_daily_decrease, code_filed_name='code', code_format='C2D6')
+            df_max_daily_decrease = finlib.Finlib().remove_garbage(df_max_daily_decrease, code_field_name='code', code_format='C2D6')
             logging.info(__file__+" "+"\t df_max_daily_decrease length " + str(df_max_daily_decrease.__len__()))
 
             # ====== decrease gap
@@ -849,7 +849,7 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
             df_decrease_gap = df_pv_no_filter[df_pv_no_filter['op_rsn'].str.contains('_decrease_gap')]
             df_decrease_gap = df_decrease_gap.reset_index()
             df_decrease_gap = refine_df(df_decrease_gap, has_db_record=False, force_pass=True, insert_buy_record_to_db=False, debug=debug)
-            df_decrease_gap = finlib.Finlib().remove_garbage(df_decrease_gap, code_filed_name='code', code_format='C2D6')
+            df_decrease_gap = finlib.Finlib().remove_garbage(df_decrease_gap, code_field_name='code', code_format='C2D6')
             logging.info(__file__+" "+"\t df_decrease_gap length " + str(df_decrease_gap.__len__()))
 
             logging.info(__file__ + " " + "loading df_moneyflow_top_amt_perc")
@@ -865,7 +865,7 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
             df_increase_gap = df_pv_no_filter[df_pv_no_filter['op_rsn'].str.contains('_increase_gap')]
             df_increase_gap = df_increase_gap.reset_index()
             df_increase_gap = refine_df(df_increase_gap, has_db_record=False, force_pass=True, insert_buy_record_to_db=False, debug=debug)
-            df_increase_gap = finlib.Finlib().remove_garbage(df_increase_gap, code_filed_name='code', code_format='C2D6')
+            df_increase_gap = finlib.Finlib().remove_garbage(df_increase_gap, code_field_name='code', code_format='C2D6')
             logging.info(__file__+" "+"\t df_increase_gap length " + str(df_increase_gap.__len__()))
 
             # ====== 52 week low price
@@ -877,7 +877,7 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
             # if 'Unnamed: 0' in df_low_price_year.columns:  df_low_price_year = df_low_price_year.drop('Unnamed: 0', axis=1)
             df_low_price_year = df_low_price_year.reset_index()
             df_low_price_year = refine_df(df_low_price_year, has_db_record=False, force_pass=True, insert_buy_record_to_db=False, debug=debug)
-            df_low_price_year = finlib.Finlib().remove_garbage(df_low_price_year, code_filed_name='code', code_format='C2D6')
+            df_low_price_year = finlib.Finlib().remove_garbage(df_low_price_year, code_field_name='code', code_format='C2D6')
             logging.info(__file__+" "+"\t df_low_price_year length " + str(df_low_price_year.__len__()))
 
             # ====== 52 week low volume
@@ -888,7 +888,7 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
             # if 'Unnamed: 0' in df_low_vol_year.columns:  df_low_vol_year = df_low_vol_year.drop('Unnamed: 0', axis=1)
             df_low_vol_year = df_low_vol_year.reset_index()
             df_low_vol_year = refine_df(df_low_vol_year, has_db_record=False, force_pass=True, insert_buy_record_to_db=False, debug=debug)
-            df_low_vol_year = finlib.Finlib().remove_garbage(df_low_vol_year, code_filed_name='code', code_format='C2D6')
+            df_low_vol_year = finlib.Finlib().remove_garbage(df_low_vol_year, code_field_name='code', code_format='C2D6')
             logging.info(__file__+" "+"\t df_low_vol_year length " + str(df_low_vol_year.__len__()))
 
             # ====== 52 week high price
@@ -900,7 +900,7 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
             #if 'Unnamed: 0' in df_high_price_year.columns:  df_high_price_year = df_high_price_year.drop('Unnamed: 0', axis=1)
             df_high_price_year = df_high_price_year.reset_index()
             df_high_price_year = refine_df(df_high_price_year, has_db_record=False, force_pass=True, insert_buy_record_to_db=False, debug=debug)
-            df_high_price_year = finlib.Finlib().remove_garbage(df_high_price_year, code_filed_name='code', code_format='C2D6')
+            df_high_price_year = finlib.Finlib().remove_garbage(df_high_price_year, code_field_name='code', code_format='C2D6')
             logging.info(__file__+" "+"\t df_high_price_year length "+str(df_high_price_year.__len__()))
 
 
@@ -912,7 +912,7 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
             #if 'Unnamed: 0' in df_high_vol_year.columns:  df_high_vol_year = df_high_vol_year.drop('Unnamed: 0', axis=1)
             df_high_vol_year = df_high_vol_year.reset_index()
             df_high_vol_year = refine_df(df_high_vol_year, has_db_record=False, force_pass=True, insert_buy_record_to_db=False, debug=debug)
-            df_high_vol_year = finlib.Finlib().remove_garbage(df_high_vol_year, code_filed_name='code', code_format='C2D6')
+            df_high_vol_year = finlib.Finlib().remove_garbage(df_high_vol_year, code_field_name='code', code_format='C2D6')
             logging.info(__file__+" "+"\t df_high_vol_year length "+str(df_high_vol_year.__len__()))
             '''
 
@@ -946,7 +946,7 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
 
         df_fenghong = finlib.Finlib().regular_read_csv_to_stdard_df(f_fenghong)
         df_fenghong = df_fenghong[df_fenghong['score'] >= 0.8]
-        df_fenghong = finlib.Finlib().remove_garbage(df_fenghong, code_filed_name='code', code_format='C2D6')
+        df_fenghong = finlib.Finlib().remove_garbage(df_fenghong, code_field_name='code', code_format='C2D6')
         logging.info(__file__+" "+"\t df_fenghong length " + str(df_fenghong.__len__()))
 
         #df_ann=pd.DataFrame(columns=['code'])  #removed since ann stop working after julang info web adjusted. 20190228
@@ -969,65 +969,65 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
         #df_lanchou=pd.DataFrame(columns=['code'])
 
         #df_area_top = finlib.Finlib().regular_read_csv_to_stdard_df(f_area_top ) #removed to make report concise.
-        #df_area_top = finlib.Finlib().remove_garbage(df_area_top, code_filed_name='code', code_format='C2D6')
+        #df_area_top = finlib.Finlib().remove_garbage(df_area_top, code_field_name='code', code_format='C2D6')
         #logging.info(__file__+" "+"\t df_area_top length " + str(df_area_top.__len__()))
 
         df_peg_ps = finlib.Finlib().regular_read_csv_to_stdard_df(f_fund_peg_ps)
         df_peg_ps = finlib.Finlib().add_market_to_code(df=df_peg_ps)
-        df_peg_ps = finlib.Finlib().remove_garbage(df_peg_ps, code_filed_name='code', code_format='C2D6')
+        df_peg_ps = finlib.Finlib().remove_garbage(df_peg_ps, code_field_name='code', code_format='C2D6')
         logging.info(__file__+" "+"\t df_peg_ps length " + str(df_peg_ps.__len__()))
 
         df_support_resist_line_today = finlib.Finlib().regular_read_csv_to_stdard_df(f_support_resist_line_today)
-        df_support_resist_line_today = finlib.Finlib().remove_garbage(df_support_resist_line_today, code_filed_name='code', code_format='C2D6')
+        df_support_resist_line_today = finlib.Finlib().remove_garbage(df_support_resist_line_today, code_field_name='code', code_format='C2D6')
         logging.info(__file__+" "+"\t df_support_resist_line_today length " + str(df_support_resist_line_today.__len__()))
 
         #df_disclosure_date_notify = finlib.Finlib().regular_read_csv_to_stdard_df(f_disclosure_date_notify)
 
         # CANNOT USE converters={'name':str}, it will cause error in tabulate. 'UnicodeDecodeError: 'ascii' codec can't decode byte 0xe6 in position 0: ordinal not in range(128)'
         df_disclosure_date_notify = finlib.Finlib().regular_read_csv_to_stdard_df(f_disclosure_date_notify)
-        df_disclosure_date_notify = finlib.Finlib().remove_garbage(df_disclosure_date_notify, code_filed_name='code', code_format='C2D6')
+        df_disclosure_date_notify = finlib.Finlib().remove_garbage(df_disclosure_date_notify, code_field_name='code', code_format='C2D6')
         logging.info(__file__+" "+"\t df_disclosure_date_notify length " + str(df_disclosure_date_notify.__len__()))
 
         df_macd_m = finlib.Finlib().regular_read_csv_to_stdard_df(f_macd_m)
         df_macd_m = df_macd_m[df_macd_m.action.str.contains('BUY')]
-        df_macd_m = finlib.Finlib().remove_garbage(df_macd_m, code_filed_name='code', code_format='C2D6')
+        df_macd_m = finlib.Finlib().remove_garbage(df_macd_m, code_field_name='code', code_format='C2D6')
         logging.info(__file__+" "+"\t df_macd_m length " + str(df_macd_m.__len__()))
 
         df_macd_w = finlib.Finlib().regular_read_csv_to_stdard_df(f_macd_w)
         df_macd_w = df_macd_w[df_macd_w.action.str.contains('BUY')]
-        df_macd_w = finlib.Finlib().remove_garbage(df_macd_w, code_filed_name='code', code_format='C2D6')
+        df_macd_w = finlib.Finlib().remove_garbage(df_macd_w, code_field_name='code', code_format='C2D6')
         logging.info(__file__+" "+"\t df_macd_w length " + str(df_macd_w.__len__()))
 
         df_macd_d = finlib.Finlib().regular_read_csv_to_stdard_df(f_macd_d)
         df_macd_d = df_macd_d[df_macd_d.action.str.contains('BUY')]
-        df_macd_d = finlib.Finlib().remove_garbage(df_macd_d, code_filed_name='code', code_format='C2D6')
+        df_macd_d = finlib.Finlib().remove_garbage(df_macd_d, code_field_name='code', code_format='C2D6')
         logging.info(__file__+" "+"\t df_macd_d length " + str(df_macd_d.__len__()))
 
         df_kdj_m = finlib.Finlib().regular_read_csv_to_stdard_df(f_kdj_m)
         df_kdj_m = df_kdj_m[df_kdj_m.action.str.contains('BUY')]
-        df_kdj_m = finlib.Finlib().remove_garbage(df_kdj_m, code_filed_name='code', code_format='C2D6')
+        df_kdj_m = finlib.Finlib().remove_garbage(df_kdj_m, code_field_name='code', code_format='C2D6')
         logging.info(__file__+" "+"\t df_kdj_m length " + str(df_kdj_m.__len__()))
 
         df_kdj_w = finlib.Finlib().regular_read_csv_to_stdard_df(f_kdj_w)
         df_kdj_w = df_kdj_w[df_kdj_w.action.str.contains('BUY')]
-        df_kdj_w = finlib.Finlib().remove_garbage(df_kdj_w, code_filed_name='code', code_format='C2D6')
+        df_kdj_w = finlib.Finlib().remove_garbage(df_kdj_w, code_field_name='code', code_format='C2D6')
         logging.info(__file__+" "+"\t df_kdj_w length " + str(df_kdj_w.__len__()))
 
         df_kdj_d = finlib.Finlib().regular_read_csv_to_stdard_df(f_kdj_d)
         df_kdj_d = df_kdj_d[df_kdj_d.action.str.contains('BUY')]
-        df_kdj_d = finlib.Finlib().remove_garbage(df_kdj_d, code_filed_name='code', code_format='C2D6')
+        df_kdj_d = finlib.Finlib().remove_garbage(df_kdj_d, code_field_name='code', code_format='C2D6')
         logging.info(__file__+" "+"\t df_kdj_d length " + str(df_kdj_d.__len__()))
 
         df_hsgt = finlib.Finlib().regular_read_csv_to_stdard_df(f_hsgt)
-        df_hsgt = finlib.Finlib().remove_garbage(df_hsgt, code_filed_name='code', code_format='C2D6')
+        df_hsgt = finlib.Finlib().remove_garbage(df_hsgt, code_field_name='code', code_format='C2D6')
         logging.info(__file__+" "+"\t df_hsgt length " + str(df_hsgt.__len__()))
 
         df_fib_ag = finlib.Finlib().regular_read_csv_to_stdard_df(f_fib_ag)
-        df_fib_ag = finlib.Finlib().remove_garbage(df_fib_ag, code_filed_name='code', code_format='C2D6')
+        df_fib_ag = finlib.Finlib().remove_garbage(df_fib_ag, code_field_name='code', code_format='C2D6')
         logging.info(__file__+" "+"\t df_fib_ag length " + str(df_fib_ag.__len__()))
 
         df_fib_ag_selected = finlib.Finlib().regular_read_csv_to_stdard_df(f_fib_ag_selected)
-        df_fib_ag_selected = finlib.Finlib().remove_garbage(df_fib_ag_selected, code_filed_name='code', code_format='C2D6')
+        df_fib_ag_selected = finlib.Finlib().remove_garbage(df_fib_ag_selected, code_field_name='code', code_format='C2D6')
         logging.info(__file__+" "+"\t df_fib_ag_selected length " + str(df_fib_ag_selected.__len__()))
 
         df_fib_index = finlib.Finlib().regular_read_csv_to_stdard_df(f_fib_index)
@@ -1046,7 +1046,7 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
             df_sme=finlib.Finlib().regular_read_csv_to_stdard_df(dump)
 
         df_sme = df_sme[['code', 'name']]
-        df_sme = finlib.Finlib().remove_garbage(df_sme, code_filed_name='code', code_format='C2D6')
+        df_sme = finlib.Finlib().remove_garbage(df_sme, code_field_name='code', code_format='C2D6')
         logging.info(__file__+" "+"\t df_sme length " + str(df_sme.__len__()))
 
 
@@ -1058,7 +1058,7 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
             logging.info(__file__+" "+"read csv from "+dump)
             df_gem=finlib.Finlib().regular_read_csv_to_stdard_df(dump)
         df_gem = df_gem[['code', 'name']]
-        df_gem = finlib.Finlib().remove_garbage(df_gem, code_filed_name='code', code_format='C2D6')
+        df_gem = finlib.Finlib().remove_garbage(df_gem, code_field_name='code', code_format='C2D6')
         logging.info(__file__+" "+"\t df_gem length " + str(df_gem.__len__()))
 
 
@@ -1071,7 +1071,7 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
             logging.info(__file__+" "+"read csv from "+dump)
             df_sz50=finlib.Finlib().regular_read_csv_to_stdard_df(dump)
         df_sz50 = df_sz50[['code', 'name']]
-        df_sz50 = finlib.Finlib().remove_garbage(df_sz50, code_filed_name='code', code_format='C2D6')
+        df_sz50 = finlib.Finlib().remove_garbage(df_sz50, code_field_name='code', code_format='C2D6')
         logging.info(__file__+" "+"\t df_sz50 length " + str(df_sz50.__len__()))
 
 
@@ -1084,7 +1084,7 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
             logging.info(__file__+" "+"read csv from "+dump)
             df_hs300=finlib.Finlib().regular_read_csv_to_stdard_df(dump)
         df_hs300 = df_hs300[['code', 'name']]
-        df_hs300 = finlib.Finlib().remove_garbage(df_hs300, code_filed_name='code', code_format='C2D6')
+        df_hs300 = finlib.Finlib().remove_garbage(df_hs300, code_field_name='code', code_format='C2D6')
         logging.info(__file__+" "+"\t df_hs300 length " + str(df_hs300.__len__()))
 
 
@@ -1098,14 +1098,14 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
             df_zz500=finlib.Finlib().regular_read_csv_to_stdard_df(dump)
 
         df_zz500 = df_zz500[['code', 'name']] #elimate date in the df as it is not necessary and not update to date.
-        df_zz500 = finlib.Finlib().remove_garbage(df_zz500, code_filed_name='code', code_format='C2D6')
+        df_zz500 = finlib.Finlib().remove_garbage(df_zz500, code_field_name='code', code_format='C2D6')
         logging.info(__file__+" "+"\t df_zz500 length " + str(df_zz500.__len__()))
         '''
         '''
         logging.info(__file__+" "+"loading df_ann "+f_ann)
         if (os.path.isfile(f_ann) ):
             df_ann=finlib.Finlib().regular_read_csv_to_stdard_df(f_ann,dtype=str);
-            df_ann = finlib.Finlib().remove_garbage(df_ann, code_filed_name='code', code_format='C2D6')
+            df_ann = finlib.Finlib().remove_garbage(df_ann, code_field_name='code', code_format='C2D6')
             logging.info(__file__+" "+"\t df_ann length " + str(df_ann.__len__()))
         else:
             logging.info(__file__+" "+"no such file "+f_ann +". Using Dummy instead")
@@ -1115,7 +1115,7 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
         logging.info(__file__+" "+"loading df_industry_top " + f_industry_top)
         if (os.path.isfile(f_industry_top) and os.stat(f_industry_top).st_size >= 10):
             df_industry_top = finlib.Finlib().regular_read_csv_to_stdard_df(f_industry_top)
-            df_industry_top = finlib.Finlib().remove_garbage(df_industry_top, code_filed_name='code', code_format='C2D6')
+            df_industry_top = finlib.Finlib().remove_garbage(df_industry_top, code_field_name='code', code_format='C2D6')
         else:
             logging.warning(__file__+" "+"file not exist or no content " + f_industry_top)
 
@@ -1124,7 +1124,7 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
         logging.info(__file__+" "+"loading df_moneyflow " + f_moneyflow)
         if (os.path.isfile(f_moneyflow) and os.stat(f_moneyflow).st_size >= 10):
             df_moneyflow = finlib.Finlib().regular_read_csv_to_stdard_df(f_moneyflow)
-            df_moneyflow = finlib.Finlib().remove_garbage(df_moneyflow, code_filed_name='code', code_format='C2D6')
+            df_moneyflow = finlib.Finlib().remove_garbage(df_moneyflow, code_field_name='code', code_format='C2D6')
         else:
             logging.warning(__file__+" "+"file not exist or no content " + f_moneyflow)
 
@@ -1135,7 +1135,7 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
             df_fund = finlib.Finlib().regular_read_csv_to_stdard_df(f_fund)
             df_fund = finlib.Finlib().add_market_to_code(df_fund)
             df_fund = df_fund[df_fund['result_value_quarter_fundation'] > 0.8]
-            df_fund = finlib.Finlib().remove_garbage(df_fund, code_filed_name='code', code_format='C2D6')
+            df_fund = finlib.Finlib().remove_garbage(df_fund, code_field_name='code', code_format='C2D6')
 
             cols = df_fund.columns.tolist()
             #cols = ['code',
@@ -1157,7 +1157,7 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
         if (os.path.isfile(f_fund_2)) and os.stat(f_fund_2).st_size >= 10:  # > 10 bytes
             df_fund_2 = finlib.Finlib().regular_read_csv_to_stdard_df(f_fund_2)
             #df_fund_2 = df_fund_2[df_fund_2['scoreAB']>90]
-            df_fund_2 = finlib.Finlib().remove_garbage(df_fund_2, code_filed_name='code', code_format='C2D6')
+            df_fund_2 = finlib.Finlib().remove_garbage(df_fund_2, code_field_name='code', code_format='C2D6')
             logging.info(__file__+" "+"\t df_fund_2 length " + str(df_fund_2.__len__()))
 
             #df_fund_2 = finlib.Finlib().ts_code_to_code(df_fund_2)
@@ -1175,7 +1175,7 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
         logging.info(__file__+" "+"loading df_pe_pb_roe_history, " + f_pe_pb_roe_history)
         if (os.path.isfile(f_pe_pb_roe_history)) and os.stat(f_pe_pb_roe_history).st_size >= 10:  # > 10 bytes
             df_pe_pb_roe_history = finlib.Finlib().regular_read_csv_to_stdard_df(f_pe_pb_roe_history)
-            df_pe_pb_roe_history = finlib.Finlib().remove_garbage(df_pe_pb_roe_history, code_filed_name='code', code_format='C2D6')
+            df_pe_pb_roe_history = finlib.Finlib().remove_garbage(df_pe_pb_roe_history, code_field_name='code', code_format='C2D6')
             logging.info(__file__+" "+"\t df_pe_pb_roe_history length " + str(df_pe_pb_roe_history.__len__()))
 
             df_pe_pb_roe_history = df_pe_pb_roe_history.drop_duplicates()
@@ -1189,7 +1189,7 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
         logging.info(__file__+" "+"loading whitehorse, " + f_whitehorse)
         if (os.path.isfile(f_whitehorse)) and os.stat(f_whitehorse).st_size >= 10:  # > 10 bytes
             df_whitehorse = finlib.Finlib().regular_read_csv_to_stdard_df(f_whitehorse)
-            df_whitehorse = finlib.Finlib().remove_garbage(df_whitehorse, code_filed_name='code', code_format='C2D6')
+            df_whitehorse = finlib.Finlib().remove_garbage(df_whitehorse, code_field_name='code', code_format='C2D6')
             logging.info(__file__+" "+"\t df_whitehorse length " + str(df_whitehorse.__len__()))
 
             df_whitehorse = df_whitehorse.drop_duplicates()
@@ -1201,7 +1201,7 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
         logging.info(__file__+" "+"loading f_freecashflow_price_ratio, " + f_freecashflow_price_ratio)
         if (os.path.isfile(f_freecashflow_price_ratio)) and os.stat(f_freecashflow_price_ratio).st_size >= 10:  # > 10 bytes
             df_freecashflow_price_ratio = finlib.Finlib().regular_read_csv_to_stdard_df(f_freecashflow_price_ratio)
-            df_freecashflow_price_ratio = finlib.Finlib().remove_garbage(df_freecashflow_price_ratio, code_filed_name='code', code_format='C2D6')
+            df_freecashflow_price_ratio = finlib.Finlib().remove_garbage(df_freecashflow_price_ratio, code_field_name='code', code_format='C2D6')
             logging.info(__file__+" "+"\t df_freecashflow_price_ratio length " + str(df_freecashflow_price_ratio.__len__()))
 
             df_freecashflow_price_ratio = df_freecashflow_price_ratio.drop_duplicates()
@@ -1214,7 +1214,7 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
         if (os.path.isfile(f_whitehorse)) and os.stat(f_whitehorse).st_size >= 10:  # > 10 bytes
             df_hen_cow = finlib.Finlib().regular_read_csv_to_stdard_df(f_hen_cow)
 
-            df_hen_cow = finlib.Finlib().remove_garbage(df_hen_cow, code_filed_name='code', code_format='C2D6')
+            df_hen_cow = finlib.Finlib().remove_garbage(df_hen_cow, code_field_name='code', code_format='C2D6')
             logging.info(__file__+" "+"\t df_hen_cow length " + str(df_hen_cow.__len__()))
 
             df_hen_cow = df_hen_cow.drop_duplicates()
@@ -1231,7 +1231,7 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
             # already sorted by Increase_2D in t_daily_pattern_Hit_Price_Volume.py
             df_pv_db_buy_filter = df_pv_db_buy_filter.loc[df_pv_db_buy_filter['close_p'] != '0.0']
             len_df_pv_db_buy_filter_0 = str(df_pv_db_buy_filter.__len__())
-            df_pv_db_buy_filter = finlib.Finlib().remove_garbage(df_pv_db_buy_filter, code_filed_name='code', code_format='C2D6')
+            df_pv_db_buy_filter = finlib.Finlib().remove_garbage(df_pv_db_buy_filter, code_field_name='code', code_format='C2D6')
             logging.info(__file__+" "+"\t df_pv_db_buy_filter length " + str(df_pv_db_buy_filter.__len__()))
         else:
             logging.info(__file__+" "+"ERROR: NOT found file " + f_pv_db_buy_filter)
@@ -1246,7 +1246,7 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
             # already sorted by Increase_2D in t_daily_pattern_Hit_Price_Volume.py
             df_pv_db_sell_filter = df_pv_db_sell_filter.loc[df_pv_db_sell_filter['close_p'] != '0.0']
             len_df_pv_db_sell_filter_0 = str(df_pv_db_sell_filter.__len__())
-            df_pv_db_sell_filter = finlib.Finlib().remove_garbage(df_pv_db_sell_filter, code_filed_name='code', code_format='C2D6')
+            df_pv_db_sell_filter = finlib.Finlib().remove_garbage(df_pv_db_sell_filter, code_field_name='code', code_format='C2D6')
             logging.info(__file__+" "+"\t df_pv_db_sell_filter length " + str(df_pv_db_sell_filter.__len__()))
 
         else:
@@ -1258,7 +1258,7 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
         if (os.path.isfile(f_yunxian_sell)) and os.stat(f_yunxian_sell).st_size >= 10:  # > 10 bytes
             df_yunxian_sell = finlib.Finlib().regular_read_csv_to_stdard_df(f_yunxian_sell)
 
-            df_yunxian_sell = finlib.Finlib().remove_garbage(df_yunxian_sell, code_filed_name='code', code_format='C2D6')
+            df_yunxian_sell = finlib.Finlib().remove_garbage(df_yunxian_sell, code_field_name='code', code_format='C2D6')
             logging.info(__file__ + " " + "\t df_yunxian_sell length " + str(df_yunxian_sell.__len__()))
 
             df_yunxian_sell = df_yunxian_sell.drop_duplicates()
@@ -1272,7 +1272,7 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
         if (os.path.isfile(f_yunxian_buy)) and os.stat(f_yunxian_buy).st_size >= 10:  # > 10 bytes
             df_yunxian_buy = finlib.Finlib().regular_read_csv_to_stdard_df(f_yunxian_buy)
 
-            df_yunxian_buy = finlib.Finlib().remove_garbage(df_yunxian_buy, code_filed_name='code', code_format='C2D6')
+            df_yunxian_buy = finlib.Finlib().remove_garbage(df_yunxian_buy, code_field_name='code', code_format='C2D6')
             logging.info(__file__ + " " + "\t df_yunxian_buy length " + str(df_yunxian_buy.__len__()))
 
             df_yunxian_buy = df_yunxian_buy.drop_duplicates()
@@ -1286,7 +1286,7 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
         if (os.path.isfile(f_duotou_pailie)) and os.stat(f_duotou_pailie).st_size >= 10:  # > 10 bytes
             df_duotou_pailie = finlib.Finlib().regular_read_csv_to_stdard_df(f_duotou_pailie)
 
-            df_duotou_pailie = finlib.Finlib().remove_garbage(df_duotou_pailie, code_filed_name='code', code_format='C2D6')
+            df_duotou_pailie = finlib.Finlib().remove_garbage(df_duotou_pailie, code_field_name='code', code_format='C2D6')
             logging.info(__file__ + " " + "\t df_duotou_pailie length " + str(df_duotou_pailie.__len__()))
 
             df_duotou_pailie = df_duotou_pailie.drop_duplicates()
@@ -1301,7 +1301,7 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
         if (os.path.isfile(f_jincha_minor)) and os.stat(f_jincha_minor).st_size >= 10:  # > 10 bytes
             df_jincha_minor = finlib.Finlib().regular_read_csv_to_stdard_df(f_jincha_minor)
 
-            df_jincha_minor = finlib.Finlib().remove_garbage(df_jincha_minor, code_filed_name='code', code_format='C2D6')
+            df_jincha_minor = finlib.Finlib().remove_garbage(df_jincha_minor, code_field_name='code', code_format='C2D6')
             logging.info(__file__ + " " + "\t df_jincha_minor length " + str(df_jincha_minor.__len__()))
 
             df_jincha_minor = df_jincha_minor.drop_duplicates()
@@ -1316,7 +1316,7 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
         if (os.path.isfile(f_jincha_major)) and os.stat(f_jincha_major).st_size >= 10:  # > 10 bytes
             df_jincha_major = finlib.Finlib().regular_read_csv_to_stdard_df(f_jincha_major)
 
-            df_jincha_major = finlib.Finlib().remove_garbage(df_jincha_major, code_filed_name='code', code_format='C2D6')
+            df_jincha_major = finlib.Finlib().remove_garbage(df_jincha_major, code_field_name='code', code_format='C2D6')
             logging.info(__file__ + " " + "\t df_jincha_major length " + str(df_jincha_major.__len__()))
 
             df_jincha_major = df_jincha_major.drop_duplicates()
@@ -1331,7 +1331,7 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
         if (os.path.isfile(f_very_strong_up_trend)) and os.stat(f_very_strong_up_trend).st_size >= 10:  # > 10 bytes
             df_very_strong_up_trend = finlib.Finlib().regular_read_csv_to_stdard_df(f_very_strong_up_trend)
 
-            df_very_strong_up_trend = finlib.Finlib().remove_garbage(df_very_strong_up_trend, code_filed_name='code', code_format='C2D6')
+            df_very_strong_up_trend = finlib.Finlib().remove_garbage(df_very_strong_up_trend, code_field_name='code', code_format='C2D6')
             logging.info(__file__ + " " + "\t df_very_strong_up_trend length " + str(df_very_strong_up_trend.__len__()))
 
             df_very_strong_up_trend = df_very_strong_up_trend.drop_duplicates()
@@ -1347,7 +1347,7 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
         if (os.path.isfile(f_very_strong_down_trend)) and os.stat(f_very_strong_down_trend).st_size >= 10:  # > 10 bytes
             df_very_strong_down_trend = finlib.Finlib().regular_read_csv_to_stdard_df(f_very_strong_down_trend)
 
-            df_very_strong_down_trend = finlib.Finlib().remove_garbage(df_very_strong_down_trend, code_filed_name='code', code_format='C2D6')
+            df_very_strong_down_trend = finlib.Finlib().remove_garbage(df_very_strong_down_trend, code_field_name='code', code_format='C2D6')
             logging.info(__file__ + " " + "\t df_very_strong_down_trend length " + str(df_very_strong_down_trend.__len__()))
 
             df_very_strong_down_trend = df_very_strong_down_trend.drop_duplicates()

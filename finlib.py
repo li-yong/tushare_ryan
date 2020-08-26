@@ -2727,7 +2727,9 @@ class Finlib:
         if not os.path.exists(file_path):
             return False
 
-        if os.stat(file_path).st_size <= 10: #not work
+
+        #print(os.stat(file_path).st_size)
+        if os.stat(file_path).st_size <= 300: #not work
             return False
 
         file_time = datetime.fromtimestamp(os.path.getctime(file_path))
@@ -2923,13 +2925,13 @@ class Finlib:
             exit()
         return(df)
 
-    def remove_garbage(self, df, code_filed_name='code', code_format='C2D6',b_m_score=-1):
-        df = self._remove_garbage_rpt_s1(df, code_filed_name, code_format)
+    def remove_garbage(self, df, code_field_name='code', code_format='C2D6',b_m_score=-1):
+        df = self._remove_garbage_rpt_s1(df, code_field_name, code_format)
         df = self._remove_garbage_beneish_low_rate(df,m_score=b_m_score)
         return(df)
 
-    def _remove_garbage_rpt_s1(self, df, code_filed_name, code_format):
-        # code_filed_name in code, ts_code
+    def _remove_garbage_rpt_s1(self, df, code_field_name, code_format):
+        # code_field_name in code, ts_code
         # code_format in "D6.C2", "C2D6"
 
         df_init_len = df.__len__()
@@ -2967,7 +2969,7 @@ class Finlib:
             dict = self.get_code_format(garbage_ts_code)
 
             code_target = dict[code_format]
-            df = df[df[code_filed_name] != code_target]
+            df = df[df[code_field_name] != code_target]
 
 
 
@@ -3794,7 +3796,7 @@ class Finlib:
                 out_dir = "/home/ryan/DATA/result"
                 stock_list = self.get_A_stock_instrment()  # 603999
                 stock_list = self.add_market_to_code(stock_list, dot_f=False, tspro_format=False)  # 603999.SH
-                stock_list = self.remove_garbage(stock_list, code_filed_name='code', code_format='C2D6')
+                stock_list = self.remove_garbage(stock_list, code_field_name='code', code_format='C2D6')
             elif stock_global == 'HK':
                 csv_dir = "/home/ryan/DATA/DAY_Global/HK"
                 out_dir = "/home/ryan/DATA/result/hk"

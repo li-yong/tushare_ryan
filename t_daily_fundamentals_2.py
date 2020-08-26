@@ -803,7 +803,7 @@ def fetch_basic_quarterly():
 
     for i in b:
         output_csv = dir_q + "/basic_" + i + ".csv"  #the date in filename is i but not the actual date of the data.
-        if os.path.exists(output_csv) and os.stat(output_csv).st_size >= 10 and (not force_run_global):
+        if finlib.Finlib().is_cached(output_csv, day=90) and (not force_run_global):
             logging.info(__file__ + " " + "file exist and have content, not fetch again " + output_csv)
             continue
 
@@ -862,7 +862,7 @@ def fetch_basic_daily(fast_fetch=False):
 
         output_csv = dir_d + "/basic_" + trade_date + ".csv"
 
-        if os.path.exists(output_csv) and os.stat(output_csv).st_size >= 10 and (not force_run_global):
+        if finlib.Finlib().is_cached(output_csv, day=90) and (not force_run_global):
             logging.info(__file__ + " " + "file exist and have content, not fetch again " + output_csv)
             continue
 
@@ -3063,7 +3063,7 @@ def _analyze_step_6():
     df_selected = df_selected[df_selected['FCV_P'] > 50]
     df_selected = df_selected[df_selected['FCV_NYears_P'] > 50]
 
-    df_selected = finlib.Finlib().remove_garbage(df_selected, code_filed_name='code', code_format='C2D6')
+    df_selected = finlib.Finlib().remove_garbage(df_selected, code_field_name='code', code_format='C2D6')
 
     df.to_csv(csv_output, encoding='UTF-8', index=False)
     logging.info(__file__ + ": " + "analysze step 6 result saved to " + csv_output + " , len " + str(df.__len__()))

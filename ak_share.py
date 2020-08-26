@@ -86,7 +86,7 @@ def main():
 
     df = finlib.Finlib().get_A_stock_instrment()
     df = finlib.Finlib().add_market_to_code(df)
-    df = finlib.Finlib().remove_garbage(df=df,code_filed_name='code', code_format='C2D6',b_m_score=-1)
+    df = finlib.Finlib().remove_garbage(df=df,code_field_name='code', code_format='C2D6',b_m_score=-1)
 
     print(tabulate.tabulate(df[['name','code']], headers='keys', tablefmt='psql'))
     #print(tabulate.tabulate(pd.DataFrame(df['name'].value_counts()), headers='keys', tablefmt='psql'))

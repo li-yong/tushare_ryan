@@ -28,12 +28,6 @@ sleep 2
 cd /home/ryan/tushare_ryan
 git pull
 
-#### update the HK stock ####
-echo "updating HK/US selected stock daily from tushare "
-#python ~/tushare_ryan/t_fetch_us_hk_bar.py --selected -x HK  --force_fetch;
-python /home/ryan/tushare_ryan/t_fetch_us_hk_bar.py --selected -x HK;
-#python ~/tushare_ryan/t_fetch_us_hk_bar.py --selected -x US  --force_fetch;
-python /home/ryan/tushare_ryan/t_fetch_us_hk_bar.py --selected -x US;
 
 #更新当天股票数据
 ######################################
@@ -42,6 +36,16 @@ python /home/ryan/tushare_ryan/t_fetch_us_hk_bar.py --selected -x US;
 # /home/ryan/DATA/pickle/instrument_A.csv
 ######################################
 python /home/ryan/tushare_ryan/t_daily_update_csv_from_tushare.py;
+python t_daily_fundamentals_2.py --fetch_basic_daily
+
+
+
+#### update the HK stock ####
+echo "updating HK/US selected stock daily from tushare "
+#python ~/tushare_ryan/t_fetch_us_hk_bar.py --selected -x HK  --force_fetch;
+python /home/ryan/tushare_ryan/t_fetch_us_hk_bar.py --selected -x HK;
+#python ~/tushare_ryan/t_fetch_us_hk_bar.py --selected -x US  --force_fetch;
+python /home/ryan/tushare_ryan/t_fetch_us_hk_bar.py --selected -x US;
 
 
 ######################################
@@ -139,7 +143,7 @@ fi
 #
 # output:
 # /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/market/pro_basic.csv
-#
+# #ts_code,symbol,name,area,industry,list_date
 ######################################
 
 python t_daily_fundamentals_2.py --fetch_pro_basic
