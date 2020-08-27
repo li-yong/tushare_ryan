@@ -29,6 +29,10 @@ def update_holc(todayS_l, base_dir, pickle_only, add_miss):
     todayS_s = datetime.strptime(todayS_l, '%Y-%m-%d').strftime('%Y%m%d')
     dump_csv = "/home/ryan/DATA/pickle/daily_update_source/ag_daily_" + todayS_s + ".csv"
 
+    if finlib.Finlib().is_cached(dump_csv, 1):
+        logging.info("csv is updated in 1 day, not fetch. "+dump_csv)
+        return
+
 
     if not finlib.Finlib().is_a_trading_day_ag(dateS=todayS_s):
         logging.error("date is not a trading day " + todayS_s)
@@ -42,7 +46,7 @@ def update_holc(todayS_l, base_dir, pickle_only, add_miss):
 
     pro = ts.pro_api(token="4cc9a1cd78bf41e759dddf92c919cdede5664fa3f1204de572d8221b")
 
-    if (not os.path.isfile(dump)) or (not os.path.isfile(dump_csv)):
+    if (not os.path.isfile(dump)) or (os.stat(dump).st_size <= 1000):
         if add_miss:
             #today_all = ts.get_day_all(todayS_s)
             today_all = pro.daily(trade_date=todayS_s)
@@ -56,7 +60,8 @@ def update_holc(todayS_l, base_dir, pickle_only, add_miss):
 
         today_all = today_all.reset_index().drop('index', axis=1)
         today_all.to_csv(dump_csv, encoding='UTF-8', index=False)
-        logging.info(__file__+" "+"csv saved to " + dump_csv)
+        logging.info(__file__+" "+"csv saved to " + dump_csv+ " , len " + str(today_all.__len__()))
+
 
     else:
         logging.info(__file__+" "+"read pickle from " + dump)
