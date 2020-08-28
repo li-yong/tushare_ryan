@@ -1685,7 +1685,8 @@ def _analyze_step_1(end_date):
 
     #if debug_global or True:  #ryan debug
     if debug_global:
-        df = df[df['ts_code'] == '600519.SH'].reset_index().drop('index', axis=1)
+        #df = df[df['ts_code'] == '600519.SH'].reset_index().drop('index', axis=1)
+        df = df[df['ts_code'] == '688128.SH'].reset_index().drop('index', axis=1)
 
     #ryan_debug start
     #df = df.loc[df['ts_code'].isin(['000029.SZ', '600511.SH', '600535.SH', '600406.SH', '600519.SH', '600520.SH', '600518.SH', '600503.SH', '600506.SH'])].reset_index().drop('index', axis=1)
@@ -2649,6 +2650,8 @@ def _analyze_step_2(end_date):
     if not df.empty:
         df.to_csv(csv_output, encoding='UTF-8', index=False)
         logging.info(__file__ + ": " + "analysze step 2 result saved to " + csv_output + " . len " + str(df.__len__()))
+    else:
+        logging.info(__file__ +": "+"empty step 2 result")
 
 
 def _analyze_step_3(end_date):
