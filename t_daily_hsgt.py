@@ -53,7 +53,7 @@ def fetch_hsgt_top_10():
     dir = "/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/daily_money_flow"
     input_output_csv =dir+ "/"+"hsgt_top10.csv"
 
-    if os.path.isdir(dir):
+    if not os.path.isdir(dir):
         os.mkdir(dir)
 
     ts.set_token(myToken)
