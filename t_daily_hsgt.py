@@ -50,7 +50,11 @@ def set_global(debug=False, force_run=False):
 
 def fetch_hsgt_top_10():
     # 获取沪股通、深股通每日前十大成交详细数据
-    input_output_csv = "/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/daily_money_flow/hsgt_top10.csv"
+    dir = "/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/daily_money_flow"
+    input_output_csv =dir+ "/"+"hsgt_top10.csv"
+
+    if os.path.isdir(dir):
+        os.mkdir(dir)
 
     ts.set_token(myToken)
     pro = ts.pro_api()
