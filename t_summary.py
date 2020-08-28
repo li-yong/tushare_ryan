@@ -1813,19 +1813,19 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
         else:
             logging.info(__file__+" "+"Base df_fund_2 doesn't exists, quit the program.")
 
-        if 'df_whitehorse' in locals():
+        if 'df_whitehorse' in locals() and df_whitehorse.__len__()>0:
             df_combined_year = pd.concat([df_combined_year, df_whitehorse], sort=False).drop_duplicates().reset_index().drop('index', axis=1)
             df_reduced_year = pd.merge(df_reduced_year, df_whitehorse, on='code', how='inner', suffixes=('', '_x')).drop('name_x', axis=1)
             logging.info(__file__+" "+"After df_whitehorse, df_combined_year " + str(df_combined_year.__len__()) + ", df_reduced_year " + str(df_reduced_year.__len__()))
             #arr.remove('df_whitehorse')
 
-        if 'df_hen_cow' in locals():
+        if 'df_hen_cow' in locals() and df_hen_cow.__len__()>0:
             df_combined_year = pd.concat([df_combined_year, df_hen_cow], sort=False).drop_duplicates().reset_index().drop('index', axis=1)
             df_reduced_year = pd.merge(df_reduced_year, df_hen_cow, on='code', how='inner', suffixes=('', '_x')).drop('name_x', axis=1)
             logging.info(__file__+" "+"After df_hen_cow, df_combined_year " + str(df_combined_year.__len__()) + ", df_reduced_year " + str(df_reduced_year.__len__()))
             #arr.remove('df_hen_cow')
 
-        if 'df_fenghong' in locals():
+        if 'df_fenghong' in locals() and df_fenghong.__len__()>0:
             df_combined_year = pd.concat([df_combined_year, df_fenghong], sort=False).drop_duplicates().reset_index().drop('index', axis=1)
             df_reduced_year = pd.merge(df_reduced_year, df_fenghong, on='code', how='inner', suffixes=('', '_x')).drop('name_x', axis=1)
             logging.info(__file__+" "+"After df_fenghong, df_combined_year " + str(df_combined_year.__len__()) + ", df_reduced_year " + str(df_reduced_year.__len__()))
@@ -1846,7 +1846,7 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
             logging.info(__file__+" "+"After df_peg_ps, df_combined_quarter " + str(df_combined_quarter.__len__()) + ", df_reduced_quarter " + str(df_reduced_quarter.__len__()))
             #arr.remove('df_peg_ps')
 
-        if 'df_freecashflow_price_ratio' in locals():
+        if 'df_freecashflow_price_ratio' in locals() and df_freecashflow_price_ratio.__len__()>0:
             df_combined_quarter = pd.concat([df_combined_quarter, df_freecashflow_price_ratio], sort=False).drop_duplicates().reset_index().drop('index', axis=1)
             df_reduced_quarter = pd.merge(df_reduced_quarter, df_freecashflow_price_ratio, on='code', how='inner', suffixes=('', '_x')).drop('name_x', axis=1)
             logging.info(__file__+" "+"After df_freecashflow_price_ratio, df_combined_quarter " + str(df_combined_quarter.__len__()) + ", df_reduced_quarter " + str(df_reduced_quarter.__len__()))
@@ -1867,7 +1867,8 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
         #''' No need to filter every df with df_reduced_quarter_year which are the quarter and yearly good stock
         for a in arr:
             logging.info(__file__+" "+"=== Inner Merge  " + a + " with df_reduced_quarter_year ====")
-            cmd = "pd.merge(" + a + ", df_reduced_quarter_year, on='code',how='inner',suffixes=('','_x')).drop('name_x', axis=1)"
+            #cmd = "pd.merge(" + a + ", df_reduced_quarter_year, on='code',how='inner',suffixes=('','_x')).drop('name_x', axis=1)"
+            cmd = "pd.merge(" + a + ", df_reduced_quarter_year, on='code',how='inner',suffixes=('','_x'))"
 
             tmp_df = eval(cmd)
             logging.info(__file__+" "+"length after merge :" + str(tmp_df.__len__()))
