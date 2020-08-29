@@ -1688,10 +1688,7 @@ def _analyze_step_1(end_date):
     df = pd.read_csv(f, converters={'ts_code': str, 'end_date': str})
 
     df = finlib.Finlib().ts_code_to_code(df)
-    df = finlib.Finlib()._remove_garbage_none_standard_audit_statement(df, n_year=5)
-    df = finlib.Finlib()._remove_garbage_change_named_stock(df, n_year=5)
-    df = finlib.Finlib()._remove_garbage_beneish_low_rate(df, m_score=2)
-    df = finlib.Finlib().add_market_to_code(df, dot_f=True, tspro_format=True)
+    df = finlib.Finlib()._remove_garbage_must(df,m_score=2, n_year=5)
     df = df.rename(columns={"code": "ts_code"}, inplace=False)
 
     #profit > 1E+8.  Have exception while loading on haha_65

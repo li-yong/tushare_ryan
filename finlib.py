@@ -2929,15 +2929,36 @@ class Finlib:
         return(df)
 
     def remove_garbage(self, df, code_field_name='code', code_format='C2D6',b_m_score=-1,n_year=5):
+        df = self._remove_garbage_must(df,b_m_score,n_year)
         df = self._remove_garbage_rpt_s1(df, code_field_name, code_format)
+        return(df)
+
+
+    def _remove_garbage_must(self, df, b_m_score=-1,n_year=5):
+        if 'ts_code' in df.columns:
+            ts_code_fmt = True
+            df = self.ts_code_to_code(df)
+        else:
+            ts_code_fmt = False
+
         df = self._remove_garbage_beneish_low_rate(df,m_score=b_m_score)
         df = self._remove_garbage_change_named_stock(df,n_year=n_year)
         df = self._remove_garbage_none_standard_audit_statement(df,n_year=n_year)
+
+        if ts_code_fmt:
+            df = df.rename(columns={"code": "ts_code"}, inplace=False)
+
         return(df)
+
 
     def _remove_garbage_rpt_s1(self, df, code_field_name, code_format):
         # code_field_name in code, ts_code
         # code_format in "D6.C2", "C2D6"
+        if 'ts_code' in df.columns:
+            ts_code_fmt = True
+            df = self.ts_code_to_code(df)
+        else:
+            ts_code_fmt = False
 
         df_init_len = df.__len__()
 
@@ -2959,22 +2980,26 @@ class Finlib:
         df_garbage = self.ts_code_to_code(df=df_garbage)
 
         df = self._df_sub_by_code(df=df, df_sub=df_garbage)
+
+        if ts_code_fmt:
+            df = df.rename(columns={"code": "ts_code"}, inplace=False)
+
         df = df.reset_index().drop('index', axis=1)
         return (df)
 
-
-        garbage_cnt = df_garbage.__len__()
-
-        # determin input df code format
-
-        for i in range(garbage_cnt):
-            garbage_ts_code = df_garbage.iloc[i]
-            garbage_ts_code = garbage_ts_code['ts_code']  # 600519.SH
-
-            dict = self.get_code_format(garbage_ts_code)
-
-            code_target = dict[code_format]
-            df = df[df[code_field_name] != code_target]
+        #
+        # garbage_cnt = df_garbage.__len__()
+        #
+        # # determin input df code format
+        #
+        # for i in range(garbage_cnt):
+        #     garbage_ts_code = df_garbage.iloc[i]
+        #     garbage_ts_code = garbage_ts_code['ts_code']  # 600519.SH
+        #
+        #     dict = self.get_code_format(garbage_ts_code)
+        #
+        #     code_target = dict[code_format]
+        #     df = df[df[code_field_name] != code_target]
 
 
 
