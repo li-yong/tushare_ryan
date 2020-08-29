@@ -444,7 +444,7 @@ def load_fund_result(mini_score=80):
 def fetch(fast_fetch=False):
     ts.set_token(myToken)
     pro = ts.pro_api()
-    
+
     time_series = finlib.Finlib().get_year_month_quarter()
     fetch_period_list = []
 
@@ -885,6 +885,15 @@ def fetch_new_share():
     f = fund_base_source+"/new_share.csv"
     df.to_csv(f, encoding='UTF-8', index=False)
     logging.info('new share saved to '+f)
+
+
+def _fetch_change_name():
+    ts.set_token(myToken)
+    pro = ts.pro_api()
+    df = pro.namechange()
+    f = fund_base_source+"/changed_name_stocks.csv"
+    df.to_csv(f, encoding='UTF-8', index=False)
+    logging.info('all stocks changed name saved to '+f)
 
 
 
@@ -1678,6 +1687,13 @@ def _analyze_step_1(end_date):
     #df['net_profit'].describe()
     df = pd.read_csv(f, converters={'ts_code': str, 'end_date': str})
 
+    df = finlib.Finlib().ts_code_to_code(df)
+    df = finlib.Finlib()._remove_garbage_none_standard_audit_statement(df, n_year=5)
+    df = finlib.Finlib()._remove_garbage_change_named_stock(df, n_year=5)
+    df = finlib.Finlib()._remove_garbage_beneish_low_rate(df, m_score=2)
+    df = finlib.Finlib().add_market_to_code(df, dot_f=True, tspro_format=True)
+    df = df.rename(columns={"code": "ts_code"}, inplace=False)
+
     #profit > 1E+8.  Have exception while loading on haha_65
     #df = df[df.net_profit > 1E+6] #1 million
     #df = df[df.bz_profit > 1E+8] #0.1 billion
@@ -1692,7 +1708,7 @@ def _analyze_step_1(end_date):
     #df = df.loc[df['ts_code'].isin(['000029.SZ', '600511.SH', '600535.SH', '600406.SH', '600519.SH', '600520.SH', '600518.SH', '600503.SH', '600506.SH'])].reset_index().drop('index', axis=1)
     #df = df.loc[df['ts_code'].isin(['000029.SZ', '600511.SH'])].reset_index().drop('index', axis=1)
     # ryan_debug start
-    
+
 
     lst = list(df['ts_code'].unique())
     lst.sort()
@@ -1825,7 +1841,7 @@ def _analyze_step_1(end_date):
         bonusCnt += dict['bonusCnt']
         garbageCnt += dict['garbageCnt']
         ####xiao xiong end
-        
+
 
 
         #audit_result
@@ -2308,7 +2324,7 @@ def _analyze_profit_to_gr(ts_code, end_date, basic_df):
     dict_rtn['bonusReason'] = bonusReason
     dict_rtn['garbageReason'] = garbageReason
     dict_rtn['stopProcess'] = stopProcess
-    
+
 
     if not finlib.Finlib().is_on_market(ts_code, end_date, basic_df):
         logging.info(__file__ + " " + "stock has been not on market. " + ts_code + " , " + end_date)
@@ -2346,25 +2362,25 @@ def _analyze_profit_to_gr(ts_code, end_date, basic_df):
             bonusReason += 'n_cashflow_act continue increase consecutively 3 years.'
             bonusCnt += 1
             logging.info(__file__ + " " + "bonus. " + bonusReason)
-            
+
         if this_profit_to_gr > 20 and this_profit_to_gr < 101:
             bonusReason += 'profit/gross income > 20%.'+str(this_profit_to_gr)
             bonusCnt += 1
             logging.info(__file__ + " " + "bonus. " + bonusReason)
-                     
-            
+
+
         if this_profit_to_gr < 0:
             garbageReason += 'profit_to_gr < 0.'+str(this_profit_to_gr)
             garbageCnt += 1
             stopProcess = True
             logging.info(__file__ + " " + "garbage. " + garbageReason)
-        
+
         if this_profit_to_gr > 100: #manipulated finicial statement
             garbageReason += 'manipulated, profit larger than gross income.'
             garbageCnt += 1
             stopProcess = True
             logging.info(__file__ + " " + "garbage. " + garbageReason)
- 
+
         if this_profit_to_gr < 10:
             garbageReason += 'profit/gross income < 10% '+str(this_profit_to_gr)+"."
             garbageCnt += 1
@@ -2433,23 +2449,23 @@ def _analyze_beneish(ts_code, end_date, basic_df):
             bonusReason += 'n_cashflow_act continue increase consecutively 3 years.'
             bonusCnt += 1
             logging.info(__file__ + " " + "bonus. " + bonusReason)
-            
+
         if profit_to_gr > 70:
             bonusReason += 'profit/gross income > 70%.'
             bonusCnt += 1
             logging.info(__file__ + " " + "bonus. " + bonusReason)
-                     
-            
+
+
         if profit_to_gr < 0:
             garbageReason += 'profit_to_gr < 0.'
             garbageCnt += 1
             logging.info(__file__ + " " + "garbage. " + garbageReason)
-        
+
         if profit_to_gr > 100:
             garbageReason += 'profit bigger than gross income.'
             garbageCnt += 1
             logging.info(__file__ + " " + "garbage. " + garbageReason)
- 
+
         if profit_to_gr < 30:
             garbageReason += 'profit/gross income < 30%.'
             garbageCnt += 1
@@ -3327,7 +3343,7 @@ def analyze(fully_a=False, daily_a=True, fast=True):
         #logging.info(__file__+" "+"end_date " + e + ". ")
 
         #continue
-        
+
         #beneish
         #beneish_csv = '/home/ryan/DATA/result/ag_beneish.csv'
         #ts_code,name,ann_date,M_8v,M_5v,DSRI,GMI,AQI,SGI,DEPI,SGAI,TATA,LVGI
@@ -3854,6 +3870,7 @@ def main():
     parser.add_option("--fetch_pro_repurchase", action="store_true", dest="fetch_pro_repurchase_f", default=False, help="")
     parser.add_option("--fetch_cctv_news", action="store_true", dest="fetch_cctv_news_f", default=False, help="")
     parser.add_option("--fetch_new_share", action="store_true", dest="fetch_new_share_f", default=False, help="")
+    parser.add_option("--fetch_change_name", action="store_true", dest="fetch_change_name_f", default=False, help="")
 
     parser.add_option("-e", "--extract_latest", action="store_true", dest="extract_latest_f", default=False, help="extract latest quarter data")
 
@@ -3899,6 +3916,7 @@ def main():
     (options, args) = parser.parse_args()
     fetch_all_f = options.fetch_all_f
     fetch_new_share_f = options.fetch_new_share_f
+    fetch_change_name_f = options.fetch_change_name_f
     extract_latest_f = options.extract_latest_f
     merge_quarterly_f = options.merge_quarterly_f
     analyze_f = options.analyze_f
@@ -3977,15 +3995,20 @@ def main():
     if options.fetch_new_share_f:
         fetch_new_share()
 
+    if options.fetch_change_name_f:
+        _fetch_change_name()
+
     if options.fetch_all_f:
         ##############
         #fast first
         ##############
+        _fetch_change_name()
         fetch_new_share()
         fetch_basic_daily(fast_fetch=fast_fetch_f)  #300 credits
         _fetch_pro_concept()  #300 credits
         _fetch_pro_repurchase()  #600 credits
         #_fetch_cctv_news() #120 credits.  5 times/minute
+
 
 
         ##############

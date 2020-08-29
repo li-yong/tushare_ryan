@@ -867,10 +867,13 @@ class Finlib:
         for index, row in df.iterrows():
             code = row['code']
             #print("code "+code)
-            dcode = re.match('(\d{6})\.(.*)', code).group(1)  # group(1):600000,
-            mkt = re.match('(\d{6})\.(.*)', code).group(2)  # group(2):SH
+            try:
+                dcode = re.match('(\d{6})\.(.*)', code).group(1)  # group(1):600000,
+                mkt = re.match('(\d{6})\.(.*)', code).group(2)  # group(2):
+                df.at[index, 'code'] = mkt + dcode
+            except:
+                logging.warning("expection convert ts_code to code, ts_code "+code)
 
-            df.at[index, 'code'] = mkt + dcode
 
         return df
 
@@ -2925,9 +2928,11 @@ class Finlib:
             exit()
         return(df)
 
-    def remove_garbage(self, df, code_field_name='code', code_format='C2D6',b_m_score=-1):
+    def remove_garbage(self, df, code_field_name='code', code_format='C2D6',b_m_score=-1,n_year=5):
         df = self._remove_garbage_rpt_s1(df, code_field_name, code_format)
         df = self._remove_garbage_beneish_low_rate(df,m_score=b_m_score)
+        df = self._remove_garbage_change_named_stock(df,n_year=n_year)
+        df = self._remove_garbage_none_standard_audit_statement(df,n_year=n_year)
         return(df)
 
     def _remove_garbage_rpt_s1(self, df, code_field_name, code_format):
@@ -2984,6 +2989,58 @@ class Finlib:
         if df.__len__()==0:
             logging.warning("empty df")
             return(df)
+
+        if self.get_code_format(code_input=df['code'].iloc[0])['format'] == 'D6':
+            df = self.add_market_to_code(df)
+
+        df = self._df_sub_by_code(df=df, df_sub=df_gar)
+
+        return(df)
+
+
+    #input: df['code',...]
+    def _remove_garbage_change_named_stock(self, df, n_year=5):
+
+        if df.__len__()==0:
+            logging.warning("empty df")
+            return(df)
+
+
+        csv = '/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/changed_name_stocks.csv'
+        df_gar = pd.read_csv(csv, converters={'start_date': str})
+
+
+        df_gar = df_gar[df_gar['start_date'] > (datetime.today() - timedelta(days=n_year * 365)).strftime("%Y%m%d")]
+        df_gar = df_gar[df_gar['change_reason'] != "其他"]
+        df_gar = self.ts_code_to_code(df_gar)
+        df_gar = pd.DataFrame(df_gar['code'].drop_duplicates()).reset_index().drop('index', axis=1)
+        logging.info("Shares changed name within " + str(n_year) + " years, len " + str(df_gar.__len__()))
+
+        if self.get_code_format(code_input=df['code'].iloc[0])['format'] == 'D6':
+            df = self.add_market_to_code(df)
+
+        df = self._df_sub_by_code(df=df, df_sub=df_gar)
+
+        return(df)
+
+
+    #input: df['code',...]
+    def _remove_garbage_none_standard_audit_statement(self, df, n_year=5):
+        if df.__len__()==0:
+            logging.warning("empty df")
+            return(df)
+
+        csv = '/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/fina_audit.csv'
+        df_gar = pd.read_csv(csv, converters={'ann_date': str})
+
+
+        df_gar = df_gar[df_gar['ann_date'] > (datetime.today() - timedelta(days=n_year * 365)).strftime("%Y%m%d")]
+        df_gar = df_gar[df_gar['audit_result'] != "标准无保留意见"]
+        df_gar = self.ts_code_to_code(df_gar)
+        df_gar = pd.DataFrame(df_gar['code'].drop_duplicates()).reset_index().drop('index', axis=1)
+        logging.info("none standard audit statement " + str(n_year) + " years, len " + str(df_gar.__len__()))
+
+
 
         if self.get_code_format(code_input=df['code'].iloc[0])['format'] == 'D6':
             df = self.add_market_to_code(df)
