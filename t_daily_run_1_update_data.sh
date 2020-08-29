@@ -181,6 +181,12 @@ if [ $full_or_daily == "FULL" ]; then
   #ts_code,trade_date,close,turnover_rate,turnover_rate_f,volume_ratio,pe,pe_ttm,pb,ps,ps_ttm,total_share,float_share,total_mv,circ_mv
   python t_daily_fundamentals_2.py --fetch_basic_daily --force_run
 
+
+
+  #/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/changed_name_stocks.csv
+  #ts_code,name,start_date,end_date,ann_date,change_reason
+  python t_daily_fundamentals_2.py  --fetch_change_name --force_run
+
   # /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/market/pro_concept.csv
   #ts_code,name,cat_code,cat_name
   python t_daily_fundamentals_2.py --fetch_pro_concept --force_run
@@ -224,6 +230,8 @@ if [ $full_or_daily == "DAILY" ]; then
   python t_daily_fundamentals_2.py --fetch_basic_daily
   python t_daily_fundamentals_2.py --fetch_new_share
   python t_daily_fundamentals_2.py --fetch_pro_fund --fast_fetch  #pro fundation tables. 10 tables.
+  python t_daily_fundamentals_2.py  --fetch_change_name
+
 fi
 
 
