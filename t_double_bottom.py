@@ -16,8 +16,13 @@ import tabulate
 from optparse import OptionParser
 import os
 
+####  regenerated font cache
+#import matplotlib.font_manager
+#matplotlib.font_manager._rebuild()
+#matplotlib.font_manager.fontManager.ttflist
+
 logging.getLogger('matplotlib.font_manager').disabled = True
-plt.rcParams['font.family'] = ['AaTEST (Non-Commercial Use)']
+plt.rcParams['font.family'] = ['WenQuanYi Micro Hei']
 
 from pandas.plotting import register_matplotlib_converters
 register_matplotlib_converters()
