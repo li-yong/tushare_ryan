@@ -3089,8 +3089,13 @@ class Finlib:
 
         s_rst = s_all[~s_all.isin(s_sub)]  # remove s_sub from s_all
 
+        df = df[df['code'].isin(s_rst)].drop_duplicates()
 
-        df = df[df['code'].isin(s_rst)].drop_duplicates().reset_index().drop('index', axis=1)
+        if 'level_0' in df.columns:
+            df = df.drop('level_0', axis=1)
+
+        df = df.reset_index().drop('index', axis=1)
+
         df_len = df.__len__()
         logging.info(str(df_init_len)+"->"+str(df_len)+", "+str(df_init_len - df_len) + " shares were removed")
         return(df)
