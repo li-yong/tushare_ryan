@@ -11,17 +11,28 @@ from optparse import OptionParser
 import logging
 
 ####  regeneated font cache
-#import matplotlib.font_manager
-#matplotlib.font_manager._rebuild()
+import matplotlib.font_manager
+matplotlib.font_manager._rebuild()
+
+# instal font in Ubuntu
+# https://help.ubuntu.com/community/Fonts#Chinese.2C_Japanese.2C_and_Korean_Fonts
+# sudo apt-get install ttf-wqy-microhei
+# fc-list |grep wqy
+# /usr/share/fonts/truetype/wqy/wqy-microhei.ttc: 文泉驿微米黑,文泉驛微米黑,WenQuanYi Micro Hei:style=Regular
+# /usr/share/fonts/truetype/wqy/wqy-microhei.ttc: 文泉驿等宽微米黑,文泉驛等寬微米黑,WenQuanYi Micro Hei Mono:style=Regular
+
 
 #### list the font matplot can use. #
 # <Font 'AaTEST (Non-Commercial Use)' (AaDouBanErTi-2.ttf) normal normal 400 normal>,
 # <Font 'Noto Serif CJK JP' (NotoSerifCJK-Black.ttc) normal normal black normal>,
-# matplotlib.font_manager.fontManager.ttflist
+# <Font 'WenQuanYi Micro Hei' (wqy-microhei.ttc) normal normal 400 normal>,
+
+matplotlib.font_manager.fontManager.ttflist
 
 #use the font
 logging.getLogger('matplotlib.font_manager').disabled = True
-plt.rcParams['font.family'] = ['AaTEST (Non-Commercial Use)']
+plt.rcParams['font.family'] = ['WenQuanYi Micro Hei']
+#plt.rcParams['font.family'] = ['AaTEST (Non-Commercial Use)']
 #plt.rcParams['font.sans-serif'] = ['Source Han Sans TW', 'sans-serif']
 
 from pandas.plotting import register_matplotlib_converters
