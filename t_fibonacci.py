@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import finlib
 from optparse import OptionParser
+import logging
 
 ####  regeneated font cache
 #import matplotlib.font_manager
@@ -19,6 +20,7 @@ from optparse import OptionParser
 # matplotlib.font_manager.fontManager.ttflist
 
 #use the font
+logging.getLogger('matplotlib.font_manager').disabled = True
 plt.rcParams['font.family'] = ['AaTEST (Non-Commercial Use)']
 #plt.rcParams['font.sans-serif'] = ['Source Han Sans TW', 'sans-serif']
 
