@@ -51,6 +51,7 @@ rsync -avz   ${source_host}:/home/ryan/DATA/result/*.csv  /home/ryan/DATA/result
 rsync -avz   ${source_host}:/home/ryan/DATA/result/*.txt  /home/ryan/DATA/result/
 rsync -az   ${source_host}:/home/ryan/DATA/result/today/  /home/ryan/DATA/result/today/
 rsync -az   ${source_host}:/home/ryan/DATA/result/fib_plot/  /home/ryan/DATA/result/fib_plot/
+rsync -az   ${source_host}:/home/ryan/DATA/result/curv_plot/  /home/ryan/DATA/result/curv_plot/
 rsync -az   ${source_host}:/home/ryan/DATA/result/selected/  /home/ryan/DATA/result/selected/
 rsync -az   ${source_host}:/home/ryan/DATA/result/jaqs/  /home/ryan/DATA/result/jaqs/
 
@@ -74,6 +75,7 @@ else
   rsync -az   ${source_host}:/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/latest/*.csv  /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/latest/
   rsync -az   ${source_host}:/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/*.csv  /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/
   rsync -az   ${source_host}:/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/individual_per_stock/  /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/individual_per_stock/
+  rsync -az   ${source_host}:/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/  /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/
 fi
 
 ###################################################################
