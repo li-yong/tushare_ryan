@@ -180,6 +180,7 @@ if [ $full_or_daily == "FULL" ]; then
   #output: /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/basic_daily/basic_*.csv
   #ts_code,trade_date,close,turnover_rate,turnover_rate_f,volume_ratio,pe,pe_ttm,pb,ps,ps_ttm,total_share,float_share,total_mv,circ_mv
   python t_daily_fundamentals_2.py --fetch_basic_daily --force_run
+  python t_daily_fundamentals_2.py --fetch_info_daily --force_run
 
 
 
@@ -228,6 +229,7 @@ fi
 #python t_daily_fundamentals_2.py --fetch_basic_daily
 if [ $full_or_daily == "DAILY" ]; then
   python t_daily_fundamentals_2.py --fetch_basic_daily
+  python t_daily_fundamentals_2.py --fetch_info_daily
   python t_daily_fundamentals_2.py --fetch_new_share
   python t_daily_fundamentals_2.py --fetch_pro_fund --fast_fetch  #pro fundation tables. 10 tables.
   python t_daily_fundamentals_2.py  --fetch_change_name

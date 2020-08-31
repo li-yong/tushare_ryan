@@ -245,6 +245,9 @@ class Finlib:
 
                                  'ebit',  # 息税前利润
                                  'ebitda',  # 息税折旧摊销前利润
+                                 'netdebt',  # 净债务
+                                 'fcff',  # 企业自由现金流量
+                                 'fcfe',  # 股权自由现金流量
 
 
                                  ]]
@@ -262,11 +265,44 @@ class Finlib:
                                      'total_assets',  # 资产总计
                                      'total_liab',  # 负债合计
 
+                                     'ebit',  # 息税前利润
+                                     'ebitda',  # 息税折旧摊销前利润
+                                     'netdebt',  # 净债务
+                                     'fcff',  # 企业自由现金流量
+                                     'fcfe',  # 股权自由现金流量
+
                                      ]]
 
         df_exam_all = pd.merge(df_exam_all, df_merge_sub, on=['code'], how='inner', suffixes=('', '_x'))
         df_exam_all = pd.merge(df_exam_all, df_merge_sub_1, on=['code'], how='inner', suffixes=('', '_year1'))
+
+        #600519 netdebt: -2.2e+09
+        #df_exam_all['ev'] = df_exam_all['total_mv']+df_exam_all['netdebt']-df_exam_all['fcff']-df_exam_all['fcfe']
+        df_exam_all['ev'] = df_exam_all['total_mv']*1e4+df_exam_all['netdebt']
+        df_exam_all['ev_ebitda_ratio'] = df_exam_all['ev']/df_exam_all['ebitda']
+        df_exam_all['ev_ebitda_ratio_rank'] =  df_exam_all['ev_ebitda_ratio'].rank(pct=True)
+        print(df_exam_all.sort_values(by='ev_ebitda_ratio_rank').head(50)[['code','name','ev_ebitda_ratio','ev_ebitda_ratio_rank']])
+
+        #market cap/Net profit after tax
+        df_exam_all['total_mv_net_profit_ratio'] = df_exam_all['total_mv']*1e4 / df_exam_all['net_profit']
+        df_exam_all['total_mv_net_profit_ratio_rank'] =  df_exam_all['total_mv_net_profit_ratio'].rank(pct=True)  #
+        print(df_exam_all.sort_values(by='total_mv_net_profit_ratio_rank').head(50)[['code','name','total_mv_net_profit_ratio']])
+
+        self.print_mt(df_exam_all)
+
+
         return(df_exam_all)
+
+
+    #print maotai's data in format in annual statement.
+    def print_mt(self,df):
+        test_stock = df[df['code'] == 'SH600519'].iloc[0]
+        for k in test_stock.keys():
+            v = test_stock[k]
+            if type(v) == int or type(v) == float:
+                v =  f"{v:,}"
+            logging.info( k+" --> " +str(v))
+
 
     #merge df daily basic of ts and tspro
     def get_today_stock_basic(self,date_exam_day=None):
