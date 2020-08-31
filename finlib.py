@@ -207,7 +207,7 @@ class Finlib:
         csv_pro_basic = "/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/market/pro_basic.csv"
         df_omd = self.regular_read_csv_to_stdard_df(data_csv=csv_pro_basic)
         df_omd['on_market_days'] = df_omd['list_date'].apply(
-            lambda _d: (datetime.datetime.today() - datetime.datetime.strptime(str(_d), '%Y%m%d')).days)
+            lambda _d: (datetime.today() - datetime.strptime(str(_d), '%Y%m%d')).days)
 
         # get pe
         # ts_code,trade_date,close,turnover_rate,turnover_rate_f,volume_ratio,pe,pe_ttm,pb,ps,ps_ttm,total_share,float_share,total_mv,circ_mv
