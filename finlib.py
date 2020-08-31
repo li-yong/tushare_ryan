@@ -200,6 +200,16 @@ class Finlib:
         return rst
 
     def get_common_fund_df(self):
+        return(pd.read_csv("/home/ryan/DATA/result/fund_analysis.csv", converters={'code': str}))
+
+    def generate_common_fund_df(self):
+        dir = "/home/ryan/DATA/result"
+        if not os.path.isdir(dir):
+            os.mkdir(dir)
+
+        to_csv = dir + "/fund_analysis.csv"
+
+
         df_exam_all = pd.DataFrame()
 
         # get on market days
@@ -290,8 +300,10 @@ class Finlib:
 
         self.print_mt(df_exam_all)
 
+        df_exam_all.to_csv(to_csv, encoding='UTF-8', index=False)
+        logging.info("fund analysis result saved to "+to_csv+" , len "+str(df_exam_all.__len__()))
 
-        return(df_exam_all)
+        return()
 
 
     #print maotai's data in format in annual statement.

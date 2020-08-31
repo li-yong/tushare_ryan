@@ -4070,6 +4070,7 @@ def main():
 
     if options.generate_today_fund1_fund2_stock_basic_f:
         finlib.Finlib().generate_today_fund1_fund2_stock_basic()
+        finlib.Finlib().generate_common_fund_df()
 
     if options.fetch_all_f:
         ##############
