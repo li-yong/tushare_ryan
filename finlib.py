@@ -304,12 +304,11 @@ class Finlib:
             logging.info( k+" --> " +str(v))
 
 
-    #merge df daily basic of ts and tspro
-    def get_today_stock_basic(self,date_exam_day=None):
+    def fetch_today_stock_basic_fund1(self,date_exam_day=None):
         if date_exam_day == None:
             date_exam_day = self.get_last_trading_day()
 
-        csv_basic = "/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals/daily/basic_" + date_exam_day + ".csv"  #get_stock_basics每天都会更新一次
+        csv_basic = "/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals/daily/basic_" + date_exam_day + ".csv"  # get_stock_basics每天都会更新一次
 
         if not self.is_cached(csv_basic):
             logging.info(__file__ + " " + "Getting Basic, ts.get_stock_basics of " + date_exam_day)  # 获取沪深上市公司基本情况
@@ -317,8 +316,34 @@ class Finlib:
             df_basic = df_basic.reset_index()
             df_basic.code = df_basic.code.astype(str)  # convert the code from numpy.int to string.
             df_basic.reset_index().to_csv(csv_basic, encoding='UTF-8', index=False)
+            logging.info(__file__+" "+"Saved tushare.org daily fund to "+csv_basic+" , len "+str(df_basic.__len__()))
 
-        df_daily_basic_1 = self.add_market_to_code(self.regular_read_csv_to_stdard_df(data_csv=csv_basic))
+
+
+    #merge df daily basic of ts and tspro
+    def get_today_stock_basic(self,date_exam_day=None):
+        if date_exam_day == None:
+            date_exam_day = self.get_last_trading_day()
+
+        dir = "/home/ryan/DATA/result/basic_summary"
+        csv = dir + "/basic_fund_fund2_" + date_exam_day + ".csv"
+
+        df = pd.read_csv(csv, converters={'code': str})
+        return(df)
+
+
+    #merge df daily basic of ts and tspro
+    def generate_today_fund1_fund2_stock_basic(self,date_exam_day=None):
+        dir = "/home/ryan/DATA/result/basic_summary"
+        if not os.path.isdir(dir):
+            os.mkdir(dir)
+
+        if date_exam_day == None:
+            date_exam_day = self.get_last_trading_day()
+
+        to_csv = dir + "/basic_fund_fund2_" + date_exam_day + ".csv"
+
+        df_daily_basic_1 = self.add_market_to_code(self.regular_read_csv_to_stdard_df(data_csv="/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals/daily/basic_" + date_exam_day + ".csv" ))
 
 
        # /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/basic_daily/basic_20200820.csv
@@ -335,9 +360,11 @@ class Finlib:
 
         df_rtn = pd.merge(df_daily_stocks_basic, df_daily_basic_1, on=['code'], how='left', suffixes=('', '_x')).reset_index().drop('index', axis=1)
         df_rtn = self.add_ts_code_to_column(df_rtn)
-        logging.info("df today basic generated, len "+str(df_rtn.__len__()))
+        df_rtn = df_rtn.reset_index().drop('index', axis=1)
+        df_rtn.to_csv(to_csv, encoding='UTF-8', index=False)
 
-        return(df_rtn)
+        logging.info("df today basic generated, len "+str(df_rtn.__len__())+" , saved to "+to_csv)
+        return
 
     def add_ts_code_to_column(self,df,code_col='code'):
         if 'ts_code' in df.columns:

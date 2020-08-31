@@ -3970,6 +3970,7 @@ def main():
     parser.add_option("--force_run", action="store_true", dest="force_run_f", default=False, help="force fetch, force generate file, even when file exist or just updated")
 
     parser.add_option("--express_notify", action="store_true", dest="force_run_f", default=False, help="force fetch, force generate file, even when file exist or just updated")
+    parser.add_option("--generate_today_fund1_fund2_stock_basic", action="store_true", dest="generate_today_fund1_fund2_stock_basic_f", default=False, help="merge and calc fund1 and fund2 today basic")
 
     parser.add_option("--disclosure_date_notify_day", type="int", dest="disclosure_date_notify_day_f", default=None, help="generate stock list that will be disclosured in the give days.")
 
@@ -3999,6 +4000,7 @@ def main():
     debug_f = options.debug_f
     force_run_f = options.force_run_f
     disclosure_date_notify_day_f = options.disclosure_date_notify_day_f
+    generate_today_fund1_fund2_stock_basic_f = options.generate_today_fund1_fund2_stock_basic_f
 
     #verify_fund_increase_f = options.verify_fund_increase_f
 
@@ -4022,6 +4024,7 @@ def main():
     logging.info(__file__ + " " + "debug_f: " + str(debug_f))
     logging.info(__file__ + " " + "force_run_f: " + str(force_run_f))
     logging.info(__file__ + " " + "disclosure_date_notify_day_f: " + str(disclosure_date_notify_day_f))
+    logging.info(__file__ + " " + "generate_today_fund1_fund2_stock_basic: " + str(generate_today_fund1_fund2_stock_basic_f))
     #logging.info(__file__+" "+"disclosure_date_notify_day_f: " + str(disclosure_date_notify_day_f))
 
     set_global(debug=debug_f, big_memory=big_memory_f, force_run=force_run_f)
@@ -4064,6 +4067,9 @@ def main():
 
     if options.fetch_change_name_f:
         _fetch_change_name()
+
+    if options.generate_today_fund1_fund2_stock_basic_f:
+        finlib.Finlib().generate_today_fund1_fund2_stock_basic()
 
     if options.fetch_all_f:
         ##############
