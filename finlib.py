@@ -310,6 +310,14 @@ class Finlib:
             date_exam_day = self.get_last_trading_day()
 
         csv_basic = "/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals/daily/basic_" + date_exam_day + ".csv"  #get_stock_basics每天都会更新一次
+
+        if not self.is_cached(csv_basic):
+            logging.info(__file__ + " " + "Getting Basic, ts.get_stock_basics of " + date_exam_day)  # 获取沪深上市公司基本情况
+            df_basic = ts.get_stock_basics()
+            df_basic = df_basic.reset_index()
+            df_basic.code = df_basic.code.astype(str)  # convert the code from numpy.int to string.
+            df_basic.reset_index().to_csv(csv_basic, encoding='UTF-8', index=False)
+
         df_daily_basic_1 = self.add_market_to_code(self.regular_read_csv_to_stdard_df(data_csv=csv_basic))
 
 
