@@ -195,6 +195,19 @@ fi
 
 
 
+######################### fund analysis
+#input:
+
+#output :
+# /home/ryan/DATA/result/basic_summary/basic_fund_fund2_20200831.csv  <<< merged fund1 and fund2 daily fund
+# header: code,ts_code,trade_date,close,turnover_rate,turnover_rate_f,volume_ratio,pe,pe_ttm,pb,ps,ps_ttm,total_share,float_share,total_mv,circ_mv,volume_ratio_perc_rank,total_mv_perc_rank,circ_mv_perc_rank,pe_perc_rank,pe_ttm_perc_rank,ps_ttm_perc_rank,turnover_rate_f_perc_rank,name,industry,area,pe_x,outstanding,totals,totalAssets,liquidAssets,fixedAssets,reserved,reservedPerShare,esp,bvps,pb_x,timeToMarket,undp,perundp,rev,profit,gpr,npr,holders
+
+#/home/ryan/DATA/result/fund_analysis.csv <<<< fund2 analysis on today's basic
+# head: code,symbol,name,area,industry,list_date,on_market_days,ts_code,trade_date,close,turnover_rate,turnover_rate_f,volume_ratio,pe,pe_ttm,pb,ps,ps_ttm,total_share,float_share,total_mv,circ_mv,volume_ratio_perc_rank,total_mv_perc_rank,circ_mv_perc_rank,pe_perc_rank,pe_ttm_perc_rank,ps_ttm_perc_rank,turnover_rate_f_perc_rank,name_x,industry_x,area_x,pe_x,outstanding,totals,totalAssets,liquidAssets,fixedAssets,reserved,reservedPerShare,esp,bvps,pb_x,timeToMarket,undp,perundp,rev,profit,gpr,npr,holders,name_x,roe,roa,total_profit,net_profit,free_cashflow,total_revenue,total_assets,total_liab,ebit,ebitda,netdebt,fcff,fcfe,name_year1,roe_year1,roa_year1,total_profit_year1,net_profit_year1,free_cashflow_year1,total_revenue_year1,total_assets_year1,total_liab_year1,ebit_year1,ebitda_year1,netdebt_year1,fcff_year1,fcfe_year1,ev,ev_ebitda_ratio,ev_ebitda_ratio_rank,total_mv_net_profit_ratio,total_mv_net_profit_ratio_rank
+
+#########################
+python t_daily_fundamentals_2.py  --generate_today_fund1_fund2_stock_basic
+
 ######################### sum_mainbz
 #input: /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/fina_mainbz.csv
 #output : /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/fina_mainbz_sum.csv
