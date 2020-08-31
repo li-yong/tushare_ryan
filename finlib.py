@@ -218,7 +218,7 @@ class Finlib:
         # total_mv: 总市值 （万元）
         # circ_mv: 流通市值（万元）
 
-        df_basic = self.add_market_to_code(self.get_today_stock_basic())
+        df_basic = self.get_today_stock_basic()
         df_exam_all = pd.merge(df_omd, df_basic, on=['code'], how='inner', suffixes=('', '_x'))
 
         # get ROE, market cap
@@ -243,6 +243,10 @@ class Finlib:
                                  'total_assets',  # 资产总计
                                  'total_liab',  # 负债合计
 
+                                 'ebit',  # 息税前利润
+                                 'ebitda',  # 息税折旧摊销前利润
+
+
                                  ]]
 
         df_merge_sub_1 = df_merge_1[['name',
@@ -264,39 +268,91 @@ class Finlib:
         df_exam_all = pd.merge(df_exam_all, df_merge_sub_1, on=['code'], how='inner', suffixes=('', '_year1'))
         return(df_exam_all)
 
-    def get_today_stock_basic(self):
-        # todayS = datetime.today().strftime('%Y-%m-%d')
-        todayS = self.get_last_trading_day()
+    #merge df daily basic of ts and tspro
+    def get_today_stock_basic(self,date_exam_day=None):
+        if date_exam_day == None:
+            date_exam_day = self.get_last_trading_day()
 
-        #todayS = "2020-08-13" #ryan debug
+        csv_basic = "/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals/daily/basic_" + date_exam_day + ".csv"  #get_stock_basics每天都会更新一次
+        df_daily_basic_1 = self.add_market_to_code(self.regular_read_csv_to_stdard_df(data_csv=csv_basic))
 
-        # csv_basic = "/home/ryan/DATA/tmp/basic_" + todayS + ".csv"  ##get_stock_basics每天都会更新一次
-        csv_basic = "/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals/daily/basic_" + todayS + ".csv"  ##get_stock_basics每天都会更新一次
 
-        df_basic = pd.DataFrame()
+       # /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/basic_daily/basic_20200820.csv
+       # ts_code,trade_date,close,turnover_rate,turnover_rate_f,volume_ratio,pe,pe_ttm,pb,ps,ps_ttm,total_share,float_share,total_mv,circ_mv
+        df_daily_stocks_basic = self.regular_read_csv_to_stdard_df(data_csv="/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/basic_daily/basic_" + date_exam_day + ".csv")
+        df_daily_stocks_basic['volume_ratio_perc_rank'] = df_daily_stocks_basic['volume_ratio'].rank(pct=True)  # 量比
+        df_daily_stocks_basic['total_mv_perc_rank'] = df_daily_stocks_basic['total_mv'].rank(pct=True)  # 总市值 （万元）
+        df_daily_stocks_basic['circ_mv_perc_rank'] = df_daily_stocks_basic['circ_mv'].rank(pct=True)  # 流通市值（万元）
+        df_daily_stocks_basic['pe_perc_rank'] = df_daily_stocks_basic['pe'].rank(pct=True)  # 市盈率（总市值/净利润， 亏损的PE为空）
+        df_daily_stocks_basic['pe_ttm_perc_rank'] = df_daily_stocks_basic['pe_ttm'].rank(pct=True)  # 市盈率（TTM，亏损的PE为空）
+        df_daily_stocks_basic['ps_ttm_perc_rank'] = df_daily_stocks_basic['ps_ttm'].rank(pct=True)  # 市销率（TTM）
+        df_daily_stocks_basic['turnover_rate_f_perc_rank'] = df_daily_stocks_basic['turnover_rate_f'].rank(pct=True)  # 换手率（自由流通股）
+       # df_daily_stocks_basic['dv_ttm_perc_rank'] = df_daily_stocks_basic['dv_ttm'].rank(pct=True) #股息率（TTM）（%）
 
-        if not os.path.isfile(csv_basic):
-            logging.info(__file__+" "+"Getting Basic, ts.get_stock_basics of " + todayS)  # 获取沪深上市公司基本情况
-            try:
-                df_basic = ts.get_stock_basics()
-                df_basic = df_basic.reset_index()
-                df_basic.code = df_basic.code.astype(str)  # convert the code from numpy.int to string.
-                df_basic.reset_index().to_csv(csv_basic, encoding='UTF-8', index=False)
-            except:
-                logging.info(__file__+" "+"exception in get_today_stock_basic()" + str(e))
-            finally:
-                if sys.exc_info() == (None, None, None):
-                    pass  # no exception
-                else:
-                    logging.info(str(traceback.print_exception(*sys.exc_info())).encode('utf8'))  # python3
-                    # logging.info(unicode(traceback.print_exception(*sys.exc_info())).encode('utf8')) #python2
-                    logging.info(sys.exc_value.message)  # print the human readable unincode
-                    sys.exc_clear()
+        df_rtn = pd.merge(df_daily_stocks_basic, df_daily_basic_1, on=['code'], how='left', suffixes=('', '_x')).reset_index().drop('index', axis=1)
+        df_rtn = self.add_ts_code_to_column(df_rtn)
+        logging.info("df today basic generated, len "+str(df_rtn.__len__()))
+
+        return(df_rtn)
+
+    def add_ts_code_to_column(self,df,code_col='code'):
+        if 'ts_code' in df.columns:
+            return(df)
+
+        if df.__len__() == 0:
+            return(df)
+
+        df_tmp = df.copy(deep=True)
+
+        code_fmt = self.get_code_format(df_tmp['code'].iloc[0])['format']
+
+        if code_fmt == 'C2D6':
+            df['ts_code'] = self.add_market_to_code(self.remove_market_from_tscode(df_tmp), dot_f=True, tspro_format=True)['code']
+        elif code_fmt == 'D6':
+            df['ts_code'] = self.add_market_to_code(df, dot_f=True, tspro_format=True)['code']
         else:
-            # logging.info(__file__+" "+"\nLoading Basic")
-            df_basic = pandas.read_csv(csv_basic, converters={'code': str})
+            logging.error("unknow code format "+str(df_tmp['code'].iloc[0]))
 
-        return (df_basic)
+        if 'level_0' in df.columns:
+            df = df.drop('level_0', axis=1, inplace=False)
+
+        df = self.adjust_column(df,['code','ts_code'])
+
+        return(df)
+
+
+    # def get_today_stock_basic_zzz(self):
+    #     # todayS = datetime.today().strftime('%Y-%m-%d')
+    #     todayS = self.get_last_trading_day()
+    #
+    #     #todayS = "2020-08-13" #ryan debug
+    #
+    #     csv_basic = "/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals/daily/basic_" + todayS + ".csv"  ##get_stock_basics每天都会更新一次
+    #
+    #     df_basic = pd.DataFrame()
+    #
+    #     if not os.path.isfile(csv_basic):
+    #         logging.info(__file__+" "+"Getting Basic, ts.get_stock_basics of " + todayS)  # 获取沪深上市公司基本情况
+    #         try:
+    #             df_basic = ts.get_stock_basics()
+    #             df_basic = df_basic.reset_index()
+    #             df_basic.code = df_basic.code.astype(str)  # convert the code from numpy.int to string.
+    #             df_basic.reset_index().to_csv(csv_basic, encoding='UTF-8', index=False)
+    #         except:
+    #             logging.info(__file__+" "+"exception in get_today_stock_basic()" + str(e))
+    #         finally:
+    #             if sys.exc_info() == (None, None, None):
+    #                 pass  # no exception
+    #             else:
+    #                 logging.info(str(traceback.print_exception(*sys.exc_info())).encode('utf8'))  # python3
+    #                 # logging.info(unicode(traceback.print_exception(*sys.exc_info())).encode('utf8')) #python2
+    #                 logging.info(sys.exc_value.message)  # print the human readable unincode
+    #                 sys.exc_clear()
+    #     else:
+    #         # logging.info(__file__+" "+"\nLoading Basic")
+    #         df_basic = pandas.read_csv(csv_basic, converters={'code': str})
+    #
+    #     return (df_basic)
 
     def df_filter(self, df):
         # code in df: the code must in format 'SH600xxx' etc
@@ -319,8 +375,6 @@ class Finlib:
 
         #df_basic = df_basic[df_basic['npr'] > 0]
         # logging.info(__file__+" "+"after npr>0, df_basic.__len__() is " + str(df_basic.__len__()))
-
-        df_basic = self.add_market_to_code(df=df_basic)  # the code must in format 'SH600xxx' etc
 
         # a= pd.merge(df_basic,df, on='code',how='inner')
         # logging.info(str(a.__len__()))

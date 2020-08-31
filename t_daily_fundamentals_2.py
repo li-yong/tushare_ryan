@@ -871,7 +871,75 @@ def fetch_basic_daily(fast_fetch=False):
         time.sleep(1)
 
         df.to_csv(output_csv, encoding='UTF-8', index=False)
-        logging.info(__file__ + " " + "saved basic of all stocks to " + output_csv + " len " + str(df.__len__()))
+        logging.info(__file__ + " " + "saved daily basic of all stocks to " + output_csv + " len " + str(df.__len__()))
+
+    pass
+
+
+def fetch_info_daily(fast_fetch=False):
+    ts.set_token(myToken)
+    pro = ts.pro_api()
+
+    ##### get daily basic
+    calendar_f = "/home/ryan/DATA/pickle/trading_day_2020.csv"
+    if not os.path.isfile(calendar_f):
+        logging.error("no such file " + calendar_f)
+        exit()
+
+    trade_days = pandas.read_csv(calendar_f)
+    todayS = datetime.datetime.today().strftime('%Y%m%d')
+
+    trading_days = trade_days[(trade_days.cal_date <= int(todayS)) & (trade_days.is_open == 1)]
+    trading_days = trading_days.sort_values('cal_date', ascending=False, inplace=False)
+
+    if fast_fetch:  #run on daily, fetch the most recent 5 day only.
+        trading_days = trading_days[:5]
+
+    # the file should keep same between t_daily_update_csv_from_tushare.py and t_daily_fundamentals_2.py
+    # trade_date	                         #	交易日期
+    # ts_code	                         #	市场代码
+    # ts_name	                         #	市场名称
+    # com_count	                         #	挂牌数
+    # total_share	                         #	总股本（亿股）
+    # float_share	                         #	流通股本（亿股）
+    # total_mv	                         #	总市值（亿元）
+    # float_mv	                         #	流通市值（亿元）
+    # amount	                         #	交易金额（亿元）
+    # vol	                         #	成交量（亿股）
+    # trans_count	                         #	成交笔数（万笔）
+    # pe	                         #	平均市盈率
+    # tr	                         #	换手率（％），注：深交所暂无此列
+    # exchange	                         #	交易所（SH上交所 SZ深交所）
+
+    fields = 'trade_date,ts_code,ts_name,com_count, total_share, float_share, total_mv, float_mv, amount, vol, trans_count,pe, tr, exchange'
+
+    dir_d = fund_base_source + "/info_daily"
+
+    if not os.path.isdir(dir_d):
+        os.mkdir(dir_d)
+
+    for i in trading_days['cal_date']:
+        reg = re.match(r"(\d{4})(\d{2})(\d{2})", str(i))
+        yyyy = reg.group(1)
+        mm = reg.group(2)
+        dd = reg.group(3)
+
+        trade_date = yyyy + mm + dd
+
+        #trade_date="20191224" #ryan debug
+
+        output_csv = dir_d + "/info_" + trade_date + ".csv"
+
+        if finlib.Finlib().is_cached(output_csv, day=90) and (not force_run_global):
+            logging.info(__file__ + " " + "file exist and have content, not fetch again " + output_csv)
+            continue
+
+        logging.info(__file__ + " " + "fetch daily_info on date " + str(trade_date))
+        df = pro.daily_info(trade_date=trade_date, exchange='SZ,SH', fields=fields)
+        time.sleep(1)
+
+        df.to_csv(output_csv, encoding='UTF-8', index=False)
+        logging.info(__file__ + " " + "saved daily info of all stocks to " + output_csv + " len " + str(df.__len__()))
 
     pass
 
@@ -3861,6 +3929,7 @@ def main():
     parser.add_option("--fetch_pro_fund", action="store_true", dest="fetch_f", default=False, help="fetch pro income,balance,cashflow,mainbz,dividend,indicator,audit,forecast,express,disclosure ")
     parser.add_option("--fetch_basic_quarterly", action="store_true", dest="fetch_basic_quarterly_f", default=False, help="")
     parser.add_option("--fetch_basic_daily", action="store_true", dest="fetch_basic_daily_f", default=False, help="")
+    parser.add_option("--fetch_info_daily", action="store_true", dest="fetch_info_daily_f", default=False, help="")
     parser.add_option("--fetch_pro_concept", action="store_true", dest="fetch_pro_concept_f", default=False, help="")
     parser.add_option("--fetch_pro_repurchase", action="store_true", dest="fetch_pro_repurchase_f", default=False, help="")
     parser.add_option("--fetch_cctv_news", action="store_true", dest="fetch_cctv_news_f", default=False, help="")
@@ -3974,6 +4043,9 @@ def main():
 
     if options.fetch_basic_daily_f:
         fetch_basic_daily(fast_fetch=fast_fetch_f)
+
+    if options.fetch_info_daily_f:
+        fetch_info_daily(fast_fetch=fast_fetch_f)
 
     if options.fetch_pro_concept_f:
         _fetch_pro_concept()
