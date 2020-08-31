@@ -199,6 +199,71 @@ class Finlib:
 
         return rst
 
+    def get_common_fund_df(self):
+        df_exam_all = pd.DataFrame()
+
+        # get on market days
+        # ts_code,symbol,name,area 所在地域,industry 所属行业,list_date 上市日期
+        csv_pro_basic = "/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/market/pro_basic.csv"
+        df_omd = self.regular_read_csv_to_stdard_df(data_csv=csv_pro_basic)
+        df_omd['on_market_days'] = df_omd['list_date'].apply(
+            lambda _d: (datetime.datetime.today() - datetime.datetime.strptime(str(_d), '%Y%m%d')).days)
+
+        # get pe
+        # ts_code,trade_date,close,turnover_rate,turnover_rate_f,volume_ratio,pe,pe_ttm,pb,ps,ps_ttm,total_share,float_share,total_mv,circ_mv
+        # close: 		当日收盘价
+        # turnover_rate: 		换手率（%）
+        # turnover_rate_f: 		换手率（自由流通股）
+        # dv_ratio: 股息率 （%）
+        # total_mv: 总市值 （万元）
+        # circ_mv: 流通市值（万元）
+
+        df_basic = self.add_market_to_code(self.get_today_stock_basic())
+        df_exam_all = pd.merge(df_omd, df_basic, on=['code'], how='inner', suffixes=('', '_x'))
+
+        # get ROE, market cap
+
+        rp = self.get_year_month_quarter()['stable_report_perid']
+        rp_1 = self.get_year_month_quarter()['ann_date_2y_before']
+
+        df_merge = self.regular_read_csv_to_stdard_df(
+            data_csv="/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/merged/merged_all_" + rp + ".csv")
+        df_merge_1 = self.regular_read_csv_to_stdard_df(
+            data_csv="/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/merged/merged_all_" + rp_1 + ".csv")
+        df_merge_sub = df_merge[['name',
+                                 'code',
+                                 'roe',  # 净资产收益率
+                                 'roa',  # 总资产报酬率
+
+                                 'total_profit',  # 利润总额
+                                 'net_profit',  # 净利润
+                                 'free_cashflow',  # 企业自由现金流量
+
+                                 'total_revenue',  # 营业总收入
+                                 'total_assets',  # 资产总计
+                                 'total_liab',  # 负债合计
+
+                                 ]]
+
+        df_merge_sub_1 = df_merge_1[['name',
+                                     'code',
+                                     'roe',  # 净资产收益率
+                                     'roa',  # 总资产报酬率
+
+                                     'total_profit',  # 利润总额
+                                     'net_profit',  # 净利润
+                                     'free_cashflow',  # 企业自由现金流量
+
+                                     'total_revenue',  # 营业总收入
+                                     'total_assets',  # 资产总计
+                                     'total_liab',  # 负债合计
+
+                                     ]]
+
+        df_exam_all = pd.merge(df_exam_all, df_merge_sub, on=['code'], how='inner', suffixes=('', '_x'))
+        df_exam_all = pd.merge(df_exam_all, df_merge_sub_1, on=['code'], how='inner', suffixes=('', '_year1'))
+        return(df_exam_all)
+
     def get_today_stock_basic(self):
         # todayS = datetime.today().strftime('%Y-%m-%d')
         todayS = self.get_last_trading_day()
@@ -2623,7 +2688,10 @@ class Finlib:
 
     def is_on_market(self, ts_code, date, basic_df):
         # basic_df passed from invoker, to avoid load csv everytime.
-        # basic_df = get_pro_basic()
+
+        if basic_df ==None:
+            basic_df = self.get_today_stock_basic()
+
 
         list_date_df = basic_df.query("ts_code==\'" + ts_code + "\'")
 
@@ -2931,8 +2999,47 @@ class Finlib:
     def remove_garbage(self, df, code_field_name='code', code_format='C2D6',b_m_score=-1,n_year=5):
         df = self._remove_garbage_must(df,b_m_score,n_year)
         df = self._remove_garbage_rpt_s1(df, code_field_name, code_format)
+        df = self._remove_garbage_by_profit_on_market_days_st(df)
         return(df)
 
+
+    def evaluate_by_ps_pe_pb(self):
+        df_exam_all = self.get_common_fund_df()
+        df_exam_all['evaluated_by'] = None
+
+        # on_market_long years: PB
+        df_exam_all.loc[df_exam_all['on_market_days'] > 10 * 365, ['evaluated_by']] = 'PE,PB'
+
+        df_exam_all.loc[(df_exam_all['on_market_days'] < 10 * 365)&(df_exam_all['on_market_days'] > 5 * 365), ['evaluated_by']] = 'PE'
+
+        # PS : currently unprofitable companies
+        df_exam_all.loc[(df_exam_all['on_market_days'] < 5 * 365) & (df_exam_all['net_profit'] < 0), ['evaluated_by']] = 'PS'
+
+
+        df_exam_all.loc[(df_exam_all['on_market_days'] < 5 * 365) & (df_exam_all['net_profit'] > 0), ['evaluated_by']] = 'PE,PS'
+
+        # PB: banks and insurance companies, QuanShang.
+        df_exam_all.loc[df_exam_all['industry'].str.contains("银行|证券|多元金融|保险"), ['evaluated_by']] = 'PB'
+        return(df_exam_all)
+
+    def _remove_garbage_by_profit_on_market_days_st(self,df):
+        df_exam_all = self.get_common_fund_df()
+
+        # on market 5 years, nagtive profit 2 years
+        df_gar_1 = df_exam_all[(df_exam_all['net_profit'] < 0) & (df_exam_all['net_profit_year1'] < 0) & (
+                    df_exam_all['on_market_days'] > 5 * 365)]
+        df = self._df_sub_by_code(df=df,df_sub=df_gar_1)
+
+        # on market 5 years, debit more than assets
+        df_gar_2 = df_exam_all[
+            (df_exam_all['on_market_days'] > 5 * 365) & (df_exam_all['total_liab'] > df_exam_all['total_assets'])]
+        df = self._df_sub_by_code(df=df, df_sub=df_gar_2)
+
+        # ST
+        df_gar_3 = df_exam_all[df_exam_all['name'].str.contains('ST')]
+        df = self._df_sub_by_code(df=df, df_sub=df_gar_3)
+
+        return(df)
 
     def _remove_garbage_must(self, df, b_m_score=-1,n_year=5):
         if 'ts_code' in df.columns:
@@ -3585,6 +3692,8 @@ class Finlib:
         elif dir == base_dir_fund2 + "/source/basic_quarterly":
             rtn_df = self.ts_code_to_code(pd.read_csv(data_csv_fp, encoding="utf-8"))
 
+        elif dir == base_dir_fund2 + "/source/market":
+            rtn_df = self.ts_code_to_code(pd.read_csv(data_csv_fp, converters={'ts_code': str, 'list_date': str}, encoding="utf-8"))
 
         elif dir == base_dir_fund2 + "/merged":
             rtn_df = self.ts_code_to_code(pd.read_csv(data_csv_fp, encoding="utf-8"))

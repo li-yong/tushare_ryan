@@ -1694,10 +1694,10 @@ def _analyze_step_1(end_date):
     #df = df[df.bz_profit > 1E+8] #0.1 billion
     #df = df[~df.name.str.contains("ST")] #remove ST
 
-    #if debug_global or True:  #ryan debug
-    if debug_global:
+    if debug_global or True:  #ryan debug
+    #if debug_global:
         #df = df[df['ts_code'] == '600519.SH'].reset_index().drop('index', axis=1)
-        df = df[df['ts_code'] == '688128.SH'].reset_index().drop('index', axis=1)
+        df = df[df['ts_code'] == '600743.SH'].reset_index().drop('index', axis=1)
 
     #ryan_debug start
     #df = df.loc[df['ts_code'].isin(['000029.SZ', '600511.SH', '600535.SH', '600406.SH', '600519.SH', '600520.SH', '600518.SH', '600503.SH', '600506.SH'])].reset_index().drop('index', axis=1)
