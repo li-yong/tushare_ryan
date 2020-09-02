@@ -1,6 +1,6 @@
-source /home/ryan/.bashrc
-source /home/ryan/.profile 
-source /etc/bash.bashrc 
+#source /home/ryan/.bashrc
+#source /home/ryan/.profile 
+#source /etc/bash.bashrc 
 
 
 cd /home/ryan/tushare_ryan
