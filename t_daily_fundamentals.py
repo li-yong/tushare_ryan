@@ -455,7 +455,7 @@ def fetch(year, quarter, overwrite=False):
 
 def fetch_all():
 
-    finlib.Finlib().get_today_stock_basic()  #get today basic
+    finlib.Finlib().fetch_today_stock_basic_fund1()  #get today basic
 
     fetch_pickle()
 
