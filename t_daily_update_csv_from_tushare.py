@@ -34,6 +34,8 @@ def update_holc(todayS_l, base_dir, pickle_only, add_miss):
         return
 
 
+    finlib.Finlib().fetch_ag_trading_day()
+
     if not finlib.Finlib().is_a_trading_day_ag(dateS=todayS_s):
         logging.error("date is not a trading day " + todayS_s)
         return

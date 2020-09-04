@@ -1112,7 +1112,8 @@ class Finlib:
 
         exam_date = todayS = date
 
-        csv_f = "/home/ryan/DATA/pickle/trading_day_2020.csv"
+        this_year = datetime.today().strftime("%Y") #2020
+        csv_f = "/home/ryan/DATA/pickle/trading_day_"+this_year+".csv"
 
         if not os.path.isfile(csv_f):
             a = self.get_ag_trading_day()
@@ -1141,19 +1142,22 @@ class Finlib:
 
         return str(exam_date)
 
+    def fetch_ag_trading_day(self):
+        this_year = datetime.today().strftime("%Y") #2020
+        csv_f = "/home/ryan/DATA/pickle/trading_day_"+this_year+".csv"
+
+        if self.is_cached(csv_f, day=10):
+            ts.trade_cal().to_csv(csv_f, encoding='UTF-8', index=False)
+            logging.info(__file__+" "+" fetching trading days, saved to "+csv_f)
+        else:
+            logging.info(__file__+" "+" file updated in 10 days, not fetch again. "+csv_f)
+
+
     def is_a_trading_day_ag(self, dateS):
 
-        csv_f = "/home/ryan/DATA/pickle/trading_day_2020.csv"
-
-        if not os.path.isfile(csv_f):
-            # logging.info(__file__+" "+"downloading trading day data")
-            a = ts.trade_cal()
-            # a.to_pickle(dump)
-            a.to_csv(csv_f, encoding='UTF-8', index=False)
-        else:
-            # logging.info(__file__+" "+"loading trading day data")
-            # a = pandas.read_pickle(dump)
-            a = pandas.read_csv(csv_f)
+        this_year = datetime.today().strftime("%Y") #2020
+        csv_f = "/home/ryan/DATA/pickle/trading_day_"+this_year+".csv"
+        a = pandas.read_csv(csv_f)
 
         tdy_idx = a[a['cal_date'] == int(dateS)].index.values[0]
 
@@ -3832,6 +3836,9 @@ class Finlib:
         elif dir == base_dir_fund2 + "/source/market":
             rtn_df = self.ts_code_to_code(pd.read_csv(data_csv_fp, converters={'ts_code': str, 'list_date': str}, encoding="utf-8"))
 
+        elif dir == base_dir_fund2 + "/source":
+            rtn_df = self.ts_code_to_code(pd.read_csv(data_csv_fp, converters={'ts_code': str, 'trade_date':str}, encoding="utf-8"))
+
         elif dir == base_dir_fund2 + "/merged":
             rtn_df = self.ts_code_to_code(pd.read_csv(data_csv_fp, encoding="utf-8"))
 
@@ -3861,6 +3868,9 @@ class Finlib:
 
             if add_market:
                 rtn_df = self.add_market_to_code(rtn_df)
+
+            if 'Unnamed: 0' in rtn_df.columns:
+                rtn_df = rtn_df.drop('Unnamed: 0', axis=1)
 
             rtn_df['code'] = rtn_df['code'].apply(lambda _d: str(_d).upper())
 
