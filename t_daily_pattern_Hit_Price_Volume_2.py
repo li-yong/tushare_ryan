@@ -486,4 +486,3 @@ if __name__ == '__main__':
     step2_ana(pd.read_csv(step1_output_csv, converters={'code': str, 'date': str}, encoding="utf-8"))
 
     logging.info("script completed!")
-i-
