@@ -53,7 +53,8 @@ rsync -az   ${source_host}:/home/ryan/DATA/result/today/  /home/ryan/DATA/result
 rsync -az   ${source_host}:/home/ryan/DATA/result/fib_plot/  /home/ryan/DATA/result/fib_plot/
 rsync -az   ${source_host}:/home/ryan/DATA/result/curv_plot/  /home/ryan/DATA/result/curv_plot/
 rsync -az   ${source_host}:/home/ryan/DATA/result/selected/  /home/ryan/DATA/result/selected/
-rsync -az   ${source_host}:/home/ryan/DATA/result/jaqs/  /home/ryan/DATA/result/jaqs/
+rsync -az   ${source_host}:/home/ryan/DATA/result/pv_2/  /home/ryan/DATA/result/pv_2/
+#rsync -az   ${source_host}:/home/ryan/DATA/result/jaqs/  /home/ryan/DATA/result/jaqs/
 
 if [[ ${source_host} == "haha_65" ]]; then
   rsync -avz  haha_66:/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals/merged/  /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals/merged/
