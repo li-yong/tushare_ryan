@@ -497,17 +497,17 @@ def fetch(fast_fetch=False):
         return ()
     else:
         _ts_pro_fetch(pro, stock_list, fast_fetch, 'income', query_fields_income, fetch_period_list)  #利润表
-        _ts_pro_fetch(pro, stock_list, fast_fetch, 'balancesheet', query_fields_balancesheet, fetch_period_list)  #资产负债表
-        _ts_pro_fetch(pro, stock_list, fast_fetch, 'cashflow', query_fields_cashflow, fetch_period_list)  #现金流量表
-        _ts_pro_fetch(pro, stock_list, fast_fetch, 'fina_indicator', query_fields_fina_indicator, fetch_period_list)  # 财务指标数据
+        # _ts_pro_fetch(pro, stock_list, fast_fetch, 'balancesheet', query_fields_balancesheet, fetch_period_list)  #资产负债表
+        # _ts_pro_fetch(pro, stock_list, fast_fetch, 'cashflow', query_fields_cashflow, fetch_period_list)  #现金流量表
+        # _ts_pro_fetch(pro, stock_list, fast_fetch, 'fina_indicator', query_fields_fina_indicator, fetch_period_list)  # 财务指标数据
 
-        _ts_pro_fetch(pro, stock_list, fast_fetch, 'dividend', query_fields_dividend, fetch_period_list)  #分红送股
-        _ts_pro_fetch(pro, stock_list, fast_fetch, 'fina_mainbz', query_fields_fina_mainbz, fetch_period_list)  # 主营业务构成
-        _ts_pro_fetch(pro, stock_list, fast_fetch, 'fina_audit', query_fields_fina_audit, fetch_period_list)  #财务审计意见
-
-        _ts_pro_fetch(pro, stock_list, fast_fetch, 'forecast', query_fields_forecast, fetch_period_list)  #业绩预告
-        _ts_pro_fetch(pro, stock_list, fast_fetch, 'express', query_fields_express, fetch_period_list)  #业绩快报
-        _ts_pro_fetch(pro, stock_list, fast_fetch, 'disclosure_date', query_fields_disclosure_date, fetch_period_list)  #财报披露计划日期
+        # _ts_pro_fetch(pro, stock_list, fast_fetch, 'dividend', query_fields_dividend, fetch_period_list)  #分红送股
+        # _ts_pro_fetch(pro, stock_list, fast_fetch, 'fina_mainbz', query_fields_fina_mainbz, fetch_period_list)  # 主营业务构成
+        # _ts_pro_fetch(pro, stock_list, fast_fetch, 'fina_audit', query_fields_fina_audit, fetch_period_list)  #财务审计意见
+        #
+        # _ts_pro_fetch(pro, stock_list, fast_fetch, 'forecast', query_fields_forecast, fetch_period_list)  #业绩预告
+        # _ts_pro_fetch(pro, stock_list, fast_fetch, 'express', query_fields_express, fetch_period_list)  #业绩快报
+        # _ts_pro_fetch(pro, stock_list, fast_fetch, 'disclosure_date', query_fields_disclosure_date, fetch_period_list)  #财报披露计划日期
 
 
 def handler(signum, frame):
@@ -518,6 +518,8 @@ def handler(signum, frame):
 #save only == True
 def _ts_pro_fetch(pro_con, stock_list, fast_fetch, query, query_fields, fetch_period_list):
     #save_only == generate 6 source/*.csv, e.g income.csv, balance_sheet.csv
+    fetch_period_list_ori = fetch_period_list
+
     basic_df = get_pro_basic()
     fetch_most_recent_report_perid = finlib.Finlib().get_year_month_quarter()['fetch_most_recent_report_perid'][-1]
 
@@ -529,6 +531,7 @@ def _ts_pro_fetch(pro_con, stock_list, fast_fetch, query, query_fields, fetch_pe
     stock_cnt = 0
     for ts_code in stock_list['code']:
         stock_cnt += 1
+        fetch_period_list = fetch_period_list_ori #fetch_period_list will be empty after fetch a stock, so need restore it at the begining of new stock fetching.
 
         fetch_period_list = list(set(fetch_period_list))  # remove duplicate in list
         #fetch_period_list.sort(reverse=False) #20161231 -> 20171231 -> 20181231.
