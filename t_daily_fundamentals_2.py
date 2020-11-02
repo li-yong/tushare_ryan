@@ -776,9 +776,9 @@ def _ts_pro_fetch(pro_con, stock_list, fast_fetch, query, query_fields, fetch_pe
 
                 ind_csv_sub = dir_sub + "/" + ts_code + "_" + query + ".csv"
 
-                if (not os.path.exists(ind_csv_sub)) or (force_run_global) or (os.stat(ind_csv).st_size == 0):
-                    df_tmp_sub.to_csv(ind_csv_sub, encoding='UTF-8', index=False)
-                    logging.info(__file__ + ": " + "saved " + ind_csv_sub + " . len " + str(df_tmp_sub.__len__()))
+                # if (not os.path.exists(ind_csv_sub)) or (force_run_global) or (os.stat(ind_csv).st_size < 2000):
+                df_tmp_sub.to_csv(ind_csv_sub, encoding='UTF-8', index=False)
+                logging.info(__file__ + ": " + "saved " + ind_csv_sub + " . len " + str(df_tmp_sub.__len__()))
                 #else:
                 #logging.info(__file__+" "+"file exists, "+ind_csv_sub)
 
