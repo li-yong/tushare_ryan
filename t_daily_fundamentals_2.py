@@ -445,17 +445,20 @@ def fetch(fast_fetch=False):
     ts.set_token(myToken)
     pro = ts.pro_api()
 
-    time_series = finlib.Finlib().get_year_month_quarter()
-    fetch_period_list = []
-
     if not os.path.exists(fund_base):
         os.makedirs(fund_base)
 
     if not os.path.exists(fund_base_source + "/individual"):
         os.makedirs(fund_base_source + "/individual")
 
+    time_series = finlib.Finlib().get_year_month_quarter()
+
+    fetch_period_list = time_series['fetch_most_recent_report_perid']
+    fetch_period_list = list(set(fetch_period_list))  # remove duplicate in list
+    fetch_period_list.sort(reverse=True)  # 20181231 -> 20171231 -> 20161231
+
     if fast_fetch:
-        fetch_period_list = time_series['fetch_most_recent_report_perid']
+        fetch_period_list = fetch_period_list[0:1]
 
         # high_score_stock_only
         if (not force_run_global):  #ryan debug
@@ -468,8 +471,9 @@ def fetch(fast_fetch=False):
     else:
         stock_list = finlib.Finlib().get_A_stock_instrment()  #603999
         stock_list = finlib.Finlib().add_market_to_code(stock_list, dot_f=True, tspro_format=True)  #603999.SH
-        fetch_period_list = time_series['full_period_list']
-        #fetch_period_list = time_series['full_period_list_yearly']
+        fetch_period_list = time_series['full_period_list'][0:3] + time_series['full_period_list_yearly']
+        fetch_period_list = list(set(fetch_period_list))  # remove duplicate in list
+        fetch_period_list.sort(reverse=True)  # 20181231 -> 20171231 -> 20161231
 
     if debug_global:  #ryan debug start of fetching
         stock_list = stock_list[stock_list['code'] == '600519.SH']
@@ -535,8 +539,8 @@ def _ts_pro_fetch(pro_con, stock_list, fast_fetch, query, query_fields, fetch_pe
 
         p_cnt = 0
 
-        #fetch_period_list = fetch_period_list[0:1] #this line result in only fetch default period in tushare. (no period in parameter when fetch)
-        fetch_period_list = [finlib.Finlib().get_year_month_quarter()['ann_date_1y_before']] #this line result in only fetch default period in tushare. (no period in parameter when fetch)
+        #fetch_period_list = fetch_period_list[0:4] #this line result in only fetch default period in tushare. (no period in parameter when fetch)
+        #fetch_period_list = [finlib.Finlib().get_year_month_quarter()['ann_date_1y_before']] #this line result in only fetch default period in tushare. (no period in parameter when fetch)
 
         for period in fetch_period_list:
             p_cnt += 1
@@ -761,7 +765,7 @@ def _ts_pro_fetch(pro_con, stock_list, fast_fetch, query, query_fields, fetch_pe
                 df_tmp_sub = df_tmp[df_tmp[field] == ed]
 
                 if df_tmp_sub.__len__() > 1 and "update_flag" in df_tmp_sub.columns:
-                    df_tmp_sub = df_tmp[df_tmp['update_flag'] == "1"]
+                    df_tmp_sub = df_tmp_sub[df_tmp_sub['update_flag'] == "1"]
                     # if df_tmp_sub.__len__() > 1:
                     #    df_tmp_sub = df_tmp_sub.iloc[-1]
                 df_tmp_sub = df_tmp_sub.reset_index().drop('index', axis=1)

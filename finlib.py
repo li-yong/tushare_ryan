@@ -2830,7 +2830,7 @@ class Finlib:
     def is_on_market(self, ts_code, date, basic_df):
         # basic_df passed from invoker, to avoid load csv everytime.
 
-        if basic_df ==None:
+        if basic_df is None:
             basic_df = self.get_today_stock_basic()
 
 

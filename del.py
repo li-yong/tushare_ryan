@@ -9,6 +9,45 @@ import datetime
 import talib 
 import logging
 import time
+import os
+
+out_f = "/home/ryan/DATA/result/price_quality.csv"
+stock_list = finlib.Finlib().get_A_stock_instrment()  # 603999
+stock_list = finlib.Finlib().add_market_to_code(stock_list, dot_f=False, tspro_format=False)  # 603999.SH
+stock_list = finlib.Finlib().remove_garbage(stock_list, code_field_name='code', code_format='C2D6')
+
+csv_dir = "/home/ryan/DATA/DAY_Global/AG"
+i = 0
+
+for index, row in stock_list.iterrows():
+    i += 1
+    print(str(i) + " of " + str(stock_list.__len__()) + " ", end="")
+    name, code = row['name'], row['code']
+
+    csv_f = csv_dir + "/" + code + ".csv"
+
+
+    if not os.path.exists(csv_f):
+        print("csv_f not exist, " + csv_f)
+        continue
+
+    print("reading " + csv_f)
+    df = finlib.Finlib().regular_read_csv_to_stdard_df(data_csv=csv_f)
+
+    close_sma_2 = df['close'].rolling(window=2).mean()
+    close_ema_2 = df['close'].ewm(span=2, min_periods=0, adjust=False, ignore_na=False).mean()
+
+    finlib_indicator.Finlib_indicator().add_rsi()
+    finlib_indicator.Finlib_indicator().add_ma_ema()
+
+
+    pass
+
+
+
+exit(0)
+
+#END OF
 
 #
 # df1 = finlib.Finlib().evaluate_by_ps_pe_pb()
