@@ -1840,19 +1840,19 @@ def generate_result_csv(full_combination=False, select=True, debug=False):
             df_reduced_quarter = df_fund
             #arr.remove('df_fund')
 
-        if 'df_peg_ps' in locals():
+        if 'df_peg_ps' in locals() and df_peg_ps.__len__()>50:
             df_combined_quarter = pd.concat([df_combined_quarter, df_peg_ps], sort=False).drop_duplicates().reset_index().drop('index', axis=1)
             df_reduced_quarter = pd.merge(df_reduced_quarter, df_peg_ps, on='code', how='inner', suffixes=('', '_x')).drop('name_x', axis=1)
             logging.info(__file__+" "+"After df_peg_ps, df_combined_quarter " + str(df_combined_quarter.__len__()) + ", df_reduced_quarter " + str(df_reduced_quarter.__len__()))
             #arr.remove('df_peg_ps')
 
-        if 'df_freecashflow_price_ratio' in locals() and df_freecashflow_price_ratio.__len__()>0:
+        if 'df_freecashflow_price_ratio' in locals() and df_freecashflow_price_ratio.__len__()>50:
             df_combined_quarter = pd.concat([df_combined_quarter, df_freecashflow_price_ratio], sort=False).drop_duplicates().reset_index().drop('index', axis=1)
             df_reduced_quarter = pd.merge(df_reduced_quarter, df_freecashflow_price_ratio, on='code', how='inner', suffixes=('', '_x')).drop('name_x', axis=1)
             logging.info(__file__+" "+"After df_freecashflow_price_ratio, df_combined_quarter " + str(df_combined_quarter.__len__()) + ", df_reduced_quarter " + str(df_reduced_quarter.__len__()))
             #arr.remove('df_freecashflow_price_ratio')
 
-        if 'df_industry_top' in locals():
+        if 'df_industry_top' in locals() and df_industry_top.__len__()>50:
             df_combined_quarter = pd.concat([df_combined_quarter, df_industry_top], sort=False).drop_duplicates().reset_index().drop('index', axis=1)
             df_reduced_quarter = pd.merge(df_reduced_quarter, df_industry_top, on='code', how='inner', suffixes=('', '_x')).drop('name_x', axis=1)
             logging.info(__file__+" "+"After df_industry_top, df_combined_quarter " + str(df_combined_quarter.__len__()) + ", df_reduced_quarter " + str(df_reduced_quarter.__len__()))

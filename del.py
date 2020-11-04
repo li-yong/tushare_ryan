@@ -15,7 +15,7 @@ import os
 
 
 ######### For TRIN, Advance/Decline LINE #######\
-days=3
+days=30
 dir = "/home/ryan/DATA/DAY_Global/AG"
 cmd1 = "head -1 "+dir+"/SH600519.csv > "+dir+"/ag_all.csv"
 cmd2 = "for i in `ls "+dir+"/SH*.csv`; do tail -"+str(days)+" $i >> "+dir+"/ag_all.csv; done"
@@ -40,31 +40,97 @@ csv = '/home/ryan/DATA/DAY_Global/AG/ag_all.csv'
 df = finlib.Finlib().regular_read_csv_to_stdard_df(data_csv=csv)
 len = df.__len__()
 
-
+###----------- AG OverAll ------------
 a = df['date'].unique()
 a.sort()
 dates = a[-1*days:]
 
 previous_adv = 0
+previous_adv_perc = 0
 ADL = 0
+
+csv_out = 'ag_adl_trin.csv'
+
+df_out = pd.DataFrame( columns=['date','code','NetAdv','ADL','ADL_perc','TRIN'])
 
 for d in dates:
     _df = df[df['date']==d]
     _df_adv = _df[df['close'] > df['open']]
     _df_dec = _df[df['close'] < df['open']]
-    net_adv = _df_adv.__len__()-_df_dec.__len__()
+    _adv_stocks = _df_adv.__len__()
+    _dec_stocks = _df_dec.__len__()
+    net_adv = _adv_stocks - _dec_stocks
+    net_adv_perc = (_adv_stocks - _dec_stocks)/_df.__len__()
 
     ADL = net_adv + previous_adv
-    print("date "+d+" , net_adv "+str(net_adv)+", PA"+str(previous_adv)+", ADL"+str(ADL))
+    ADL_perc = round(net_adv_perc + previous_adv_perc,4)
+
+    print("date "+d+", code SH000001 (AG_overall)"+" , net_adv "+str(net_adv)+", PA "+str(previous_adv)+", ADL "+str(ADL)+", ADL_perc "+str(ADL_perc))
 
     previous_adv = ADL
+    previous_adv_perc = ADL_perc
+
+    ### TRIN (Arms Index)
+    adv_dec_cnt_ratio = round(_adv_stocks / _dec_stocks,2)
+    adv_dec_vol_ratio = round(_df_adv['volume'].sum()/_df_dec['volume'].sum(),2)
+    adv_dec_amt_ratio = round(_df_adv['amount'].sum()/_df_dec['amount'].sum(),2)
+
+    TRIN = round(adv_dec_amt_ratio/adv_dec_vol_ratio,2)
+
+    print("date "+d+", code SH00001, ad_cnt_ratio "+str(adv_dec_cnt_ratio)+", ad_vol_ratio "+str(adv_dec_vol_ratio)+", ad_amt_ratio "+str(adv_dec_amt_ratio) +
+          ", TRIN "+str(TRIN))
+
+    df_out = df_out.append({'date':d, 'code':'SH000001', 'NetAdv':net_adv, 'ADL':ADL,'ADL_perc':ADL_perc, 'TRIN':TRIN}, ignore_index=True)
+
+df_out.to_csv(csv_out)
+print("AG ADL, TRIN saved to "+csv_out)
 
 
 
+###----------- Individual ------------
+df = finlib.Finlib().remove_garbage(df, code_field_name='code', code_format='C2D6')
+df = finlib.Finlib().add_stock_name_to_df(df=df, ts_pro_format=False)
+
+codes = df['code'].unique()
+codes.sort()
+
+for c in codes:
+    previous_adv = 0
+    ADL = 0
+
+    _df = df[df['code']==c]  #_df already has number of 'days' rows.
+    _last_date = _df[['date']].iloc[-1].values[0]
+    _df_adv = _df[df['close'] > df['open']]
+    _df_dec = _df[df['close'] < df['open']]
+    _adv_days = _df_adv.__len__()
+    _dec_days = _df_dec.__len__()
+    net_adv = _adv_days - _dec_days
+
+    ADL = net_adv
+    ADL_perc = round(net_adv/_df.__len__(), 4)
+    print("date "+_last_date+", code "+c+", net_adv "+str(net_adv)+", PA "+str(previous_adv)+", ADL "+str(ADL)+", ADL_perc "+str(ADL_perc))
 
 
-print(1)
+    ### TRIN (Arms Index)
+    if _dec_days == 0: # no decling days, very strong, set TRIN=0
+        adv_dec_cnt_ratio = 0
+        adv_dec_vol_ratio = 0
+        adv_dec_amt_ratio = 0
+        TRIN = 0
+    else:
+        adv_dec_cnt_ratio = round(_adv_days / _dec_days,2)
+        adv_dec_vol_ratio = round(_df_adv['volume'].sum()/_df_dec['volume'].sum(),2)
+        adv_dec_amt_ratio = round(_df_adv['amount'].sum()/_df_dec['amount'].sum(),2)
 
+        TRIN = round(adv_dec_amt_ratio/adv_dec_vol_ratio,2)
+
+    print("date "+d+", code "+c+", ad_cnt_ratio "+str(adv_dec_cnt_ratio)+", ad_vol_ratio "+str(adv_dec_vol_ratio)+", ad_amt_ratio "+str(adv_dec_amt_ratio) +
+          ", TRIN "+str(TRIN))
+
+    df_out = df_out.append({'date':d, 'code':c, 'NetAdv':net_adv, 'ADL':ADL,'ADL_perc':ADL_perc, 'TRIN':TRIN}, ignore_index=True)
+
+df_out.to_csv(csv_out)
+print("AG ADL, TRIN saved to "+csv_out)
 
 
 
