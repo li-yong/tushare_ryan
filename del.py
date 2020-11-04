@@ -11,6 +11,86 @@ import logging
 import time
 import os
 
+
+
+
+######### For TRIN, Advance/Decline LINE #######\
+days=3
+dir = "/home/ryan/DATA/DAY_Global/AG"
+cmd1 = "head -1 "+dir+"/SH600519.csv > "+dir+"/ag_all.csv"
+cmd2 = "for i in `ls "+dir+"/SH*.csv`; do tail -"+str(days)+" $i >> "+dir+"/ag_all.csv; done"
+cmd3 = "for i in `ls "+dir+"/SZ*.csv`; do tail -"+str(days)+" $i >> "+dir+"/ag_all.csv; done"
+
+print(cmd1)
+print(cmd2)
+print(cmd3)
+
+
+os.system(cmd1)
+os.system(cmd2)
+os.system(cmd3)
+
+print("generated "+dir+"/ag_all.csv")
+# for i in `ls SH*.csv`; do tail -300 $i >> ag_all.csv;done
+# for i in `ls SZ*.csv`; do tail -300 $i >> ag_all.csv;done
+#
+# wc -l ag_all.csv
+
+csv = '/home/ryan/DATA/DAY_Global/AG/ag_all.csv'
+df = finlib.Finlib().regular_read_csv_to_stdard_df(data_csv=csv)
+len = df.__len__()
+
+
+a = df['date'].unique()
+a.sort()
+dates = a[-1*days:]
+
+previous_adv = 0
+ADL = 0
+
+for d in dates:
+    _df = df[df['date']==d]
+    _df_adv = _df[df['close'] > df['open']]
+    _df_dec = _df[df['close'] < df['open']]
+    net_adv = _df_adv.__len__()-_df_dec.__len__()
+
+    ADL = net_adv + previous_adv
+    print("date "+d+" , net_adv "+str(net_adv)+", PA"+str(previous_adv)+", ADL"+str(ADL))
+
+    previous_adv = ADL
+
+
+
+
+
+print(1)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+exit(0)
+
+
+
+################ Filter price under 30 weeks MA,
+################ Screen price growth steadly, e.g increase 2 point every days.
+################  Looks duplicate with VCP.py at some level,
+################  Consider if VCP.py output can be reused.
 out_f = "/home/ryan/DATA/result/price_quality.csv"
 stock_list = finlib.Finlib().get_A_stock_instrment()  # 603999
 stock_list = finlib.Finlib().add_market_to_code(stock_list, dot_f=False, tspro_format=False)  # 603999.SH
