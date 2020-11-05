@@ -33,7 +33,6 @@ def prepare_data(days=30):
 
     csv = '/home/ryan/DATA/DAY_Global/AG/ag_all.csv'
     df = finlib.Finlib().regular_read_csv_to_stdard_df(data_csv=csv)
-    df = finlib.Finlib().add_stock_name_to_df(df=df, ts_pro_format=False)
 
     print("generated "+dir+"/ag_all.csv, len "+str(df.__len__()))
 
@@ -147,6 +146,7 @@ if __name__ == '__main__':
 
 
     df_out = individual_adl_trin(df_in = df_in, df_out=df_out)
+    df_out = finlib.Finlib().add_stock_name_to_df(df=df_out, ts_pro_format=False)
     df_out.to_csv(csv_out, encoding='UTF-8', index=False)
     print("Individual stock appended to "+csv_out)
 
