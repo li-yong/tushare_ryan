@@ -51,7 +51,7 @@ ADL = 0
 
 csv_out = 'ag_adl_trin.csv'
 
-df_out = pd.DataFrame( columns=['date','code','NetAdv','ADL','ADL_perc','TRIN'])
+df_out = pd.DataFrame( columns=['date','code','net_adv_perc','ADL','ADL_perc','TRIN'])
 
 for d in dates:
     _df = df[df['date']==d]
@@ -60,7 +60,7 @@ for d in dates:
     _adv_stocks = _df_adv.__len__()
     _dec_stocks = _df_dec.__len__()
     net_adv = _adv_stocks - _dec_stocks
-    net_adv_perc = (_adv_stocks - _dec_stocks)/_df.__len__()
+    net_adv_perc = round((_adv_stocks - _dec_stocks)/_df.__len__(),4)
 
     ADL = net_adv + previous_adv
     ADL_perc = round(net_adv_perc + previous_adv_perc,4)
@@ -80,7 +80,7 @@ for d in dates:
     print("date "+d+", code SH00001, ad_cnt_ratio "+str(adv_dec_cnt_ratio)+", ad_vol_ratio "+str(adv_dec_vol_ratio)+", ad_amt_ratio "+str(adv_dec_amt_ratio) +
           ", TRIN "+str(TRIN))
 
-    df_out = df_out.append({'date':d, 'code':'SH000001', 'NetAdv':net_adv, 'ADL':ADL,'ADL_perc':ADL_perc, 'TRIN':TRIN}, ignore_index=True)
+    df_out = df_out.append({'date':d, 'code':'SH000001', 'net_adv_perc':net_adv_perc, 'ADL':ADL,'ADL_perc':ADL_perc, 'TRIN':TRIN}, ignore_index=True)
 
 df_out.to_csv(csv_out)
 print("AG ADL, TRIN saved to "+csv_out)
@@ -89,7 +89,7 @@ print("AG ADL, TRIN saved to "+csv_out)
 
 ###----------- Individual ------------
 df = finlib.Finlib().remove_garbage(df, code_field_name='code', code_format='C2D6')
-df = finlib.Finlib().add_stock_name_to_df(df=df, ts_pro_format=False)
+
 
 codes = df['code'].unique()
 codes.sort()
@@ -105,10 +105,11 @@ for c in codes:
     _adv_days = _df_adv.__len__()
     _dec_days = _df_dec.__len__()
     net_adv = _adv_days - _dec_days
+    net_adv_perc = round(net_adv/_df.__len__(),4)
 
     ADL = net_adv
     ADL_perc = round(net_adv/_df.__len__(), 4)
-    print("date "+_last_date+", code "+c+", net_adv "+str(net_adv)+", PA "+str(previous_adv)+", ADL "+str(ADL)+", ADL_perc "+str(ADL_perc))
+    print("date "+_last_date+", code "+c+", net_adv_perc "+str(net_adv_perc)+", PA "+str(previous_adv)+", ADL "+str(ADL)+", ADL_perc "+str(ADL_perc))
 
 
     ### TRIN (Arms Index)
@@ -127,9 +128,11 @@ for c in codes:
     print("date "+d+", code "+c+", ad_cnt_ratio "+str(adv_dec_cnt_ratio)+", ad_vol_ratio "+str(adv_dec_vol_ratio)+", ad_amt_ratio "+str(adv_dec_amt_ratio) +
           ", TRIN "+str(TRIN))
 
-    df_out = df_out.append({'date':d, 'code':c, 'NetAdv':net_adv, 'ADL':ADL,'ADL_perc':ADL_perc, 'TRIN':TRIN}, ignore_index=True)
+    df_out = df_out.append({'date':d, 'code':c, 'net_adv_perc':net_adv_perc, 'ADL':ADL,'ADL_perc':ADL_perc, 'TRIN':TRIN}, ignore_index=True)
 
-df_out.to_csv(csv_out)
+df_out = finlib.Finlib().add_stock_name_to_df(df=df_out, ts_pro_format=False)
+df_out.to_csv(csv_out, encoding='UTF-8', index=False)
+
 print("AG ADL, TRIN saved to "+csv_out)
 
 
