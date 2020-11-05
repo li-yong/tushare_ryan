@@ -132,7 +132,7 @@ def individual_adl_trin(df_in, df_out):
 
         df_out = df_out.append({'date':_last_date, 'code':c, 'net_adv_perc':net_adv_perc, 'ADL':ADL,'ADL_perc':ADL_perc, 'TRIN':TRIN}, ignore_index=True)
 
-        return df_out
+    return df_out
 
 
 
