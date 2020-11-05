@@ -12,9 +12,8 @@ import time
 import os
 
 
-def prepare_data():
+def prepare_data(days=30):
     ######### For TRIN, Advance/Decline LINE #######\
-    days=30
     dir = "/home/ryan/DATA/DAY_Global/AG"
     cmd1 = "head -1 "+dir+"/SH600519.csv > "+dir+"/ag_all.csv"
 
@@ -34,6 +33,8 @@ def prepare_data():
 
     csv = '/home/ryan/DATA/DAY_Global/AG/ag_all.csv'
     df = finlib.Finlib().regular_read_csv_to_stdard_df(data_csv=csv)
+    df = finlib.Finlib().add_stock_name_to_df(df=df, ts_pro_format=False)
+
     print("generated "+dir+"/ag_all.csv, len "+str(df.__len__()))
 
     return(df)
@@ -92,7 +93,6 @@ def individual_adl_trin(df_in, df_out):
     ###----------- Individual ------------
     df = finlib.Finlib().remove_garbage(df_in, code_field_name='code', code_format='C2D6')
 
-
     codes = df['code'].unique()
     codes.sort()
 
@@ -132,29 +132,22 @@ def individual_adl_trin(df_in, df_out):
 
         df_out = df_out.append({'date':_last_date, 'code':c, 'net_adv_perc':net_adv_perc, 'ADL':ADL,'ADL_perc':ADL_perc, 'TRIN':TRIN}, ignore_index=True)
 
-    return df_out
-
-
-
-
-
-
-
-
+    return(df_out)
 
 ### MAIN ####
 if __name__ == '__main__':
-    csv_out = 'ag_adl_trin.csv'
-
-    df_in = prepare_data()
+    days =45
+    csv_out = '/home/ryan/DATA/result/ag_adl_trin_'+str(days)+'d.csv'
+    df_in = prepare_data(days=days)
     df_out = pd.DataFrame( columns=['date','code','net_adv_perc','ADL','ADL_perc','TRIN'])
 
     df_out = market_adl_trin(df_in=df_in, df_out=df_out)
     df_out.to_csv(csv_out, encoding='UTF-8', index=False)
     print("AG Market ADL, TRIN saved to "+csv_out)
 
+
     df_out = individual_adl_trin(df_in = df_in, df_out=df_out)
-    df_out = finlib.Finlib().add_stock_name_to_df(df=df_out, ts_pro_format=False)
+    df_out.to_csv(csv_out, encoding='UTF-8', index=False)
     print("Individual stock appended to "+csv_out)
 
 
