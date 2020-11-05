@@ -140,7 +140,7 @@ if __name__ == '__main__':
     df_in = prepare_data(days=days)
     df_out = pd.DataFrame( columns=['date','code','net_adv_perc','ADL','ADL_perc','TRIN'])
 
-    df_out = market_adl_trin(df_in=df_in, df_out=df_out)
+    df_out = market_adl_trin(df_in=df_in, df_out=df_out, days=days)
     df_out.to_csv(csv_out, encoding='UTF-8', index=False)
     print("AG Market ADL, TRIN saved to "+csv_out)
 
