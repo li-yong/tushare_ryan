@@ -10,6 +10,9 @@ import talib
 import logging
 import time
 import os
+import matplotlib.pyplot as plt
+
+logging.getLogger('matplotlib.font_manager').disabled = True
 
 
 def prepare_data(days=30):
@@ -41,10 +44,6 @@ def prepare_data(days=30):
     df = finlib.Finlib().regular_read_csv_to_stdard_df(data_csv=csv)
     return(df)
 
-
-
-
-
 def market_adl_trin(df_in, df_out, days=21):
     ###----------- AG OverAll ------------
     a = df_in['date'].unique()
@@ -58,10 +57,6 @@ def market_adl_trin(df_in, df_out, days=21):
     previous_amt_perc = 0
     previous_net_amt = 0
 
-
-
-
-
     for d in dates:
         _df = df_in[df_in['date']==d]
         _df_adv = _df[_df['close'] > _df['open']]
@@ -72,14 +67,25 @@ def market_adl_trin(df_in, df_out, days=21):
         net_adv_perc = round((_adv_stocks - _dec_stocks)/_df.__len__(),4)
 
         net_vol_perc = (_df_adv['volume'].sum() - _df_dec['volume'].sum())/(_df_adv['volume'].sum() + _df_dec['volume'].sum())
-        net_amt = (_df_adv['amount'].sum() - _df_dec['amount'].sum())
-        amt_perc = (_df_adv['amount'].sum() - _df_dec['amount'].sum())/(_df_adv['amount'].sum() + _df_dec['amount'].sum())
+        net_amt = _df_adv['amount'].sum() - _df_dec['amount'].sum()
+        print("Debug: net_amt "+str(net_amt))
+        amt_sum = _df_adv['amount'].sum() + _df_dec['amount'].sum()
+        if net_amt != 0 and amt_sum != 0:
+            amt_perc = net_amt/amt_sum
+        else:
+            amt_perc = 0
+
+        print("Debug: amt_perc "+str(amt_perc))
+
 
         ADL = net_adv + previous_adv
         ADL_perc = round(net_adv_perc + previous_adv_perc,4)
         vol_perc = round(net_vol_perc + previous_vol_perc,4)
         net_amt = round(net_amt + previous_net_amt,4)
+        print("Debug: net_amt_acc "+str(net_amt))
+
         amt_perc = round(amt_perc + previous_amt_perc,4)
+        print("Debug: amt_perc_acc "+str(amt_perc))
 
         print("date "+d+", code SH000001 (AG_overall)"
               +", net_adv "+str(net_adv)
@@ -120,7 +126,6 @@ def market_adl_trin(df_in, df_out, days=21):
 
     return(df_out)
     print("Dataframe AG Market ADL, TRIN is generated")
-
 
 def individual_adl_trin(df_in, df_out):
     ###----------- Individual ------------
@@ -168,72 +173,92 @@ def individual_adl_trin(df_in, df_out):
         print("date "+_last_date+", code "+c+", ad_cnt_ratio "+str(adv_dec_cnt_ratio)+", ad_vol_ratio "+str(adv_dec_vol_ratio)+", ad_amt_ratio "+str(adv_dec_amt_ratio) +
               ", TRIN "+str(TRIN))
 
-        df_out = df_out.append({'date':_last_date, 'code':c, 'net_adv_perc':net_adv_perc, 'ADL':ADL,'ADL_perc':ADL_perc, 'TRIN':TRIN}, ignore_index=True)
+
+
+        # df_out = df_out.append({'date':d, 'code':'SH000001',
+        #                        # 'net_adv_perc':net_adv_perc,
+        #                         'ADL':ADL,
+        #                         'ADL_perc':ADL_perc,
+        #                         'vol_perc':vol_perc,
+        #                         'amt_perc':amt_perc,
+        #                         'net_amt':net_amt,
+        #                         'TRIN':TRIN}, ignore_index=True)
+
+
+        df_out = df_out.append({'date':_last_date,
+                                'code':c,
+                                #'net_adv_perc':net_adv_perc,
+                                'ADL':ADL,
+                                'ADL_perc':ADL_perc,
+                                'vol_perc': round((_df_adv['volume'].sum() - _df_dec['volume'].sum())/(_df_adv['volume'].sum() + _df_dec['volume'].sum()),4),
+                                'amt_perc': round((_df_adv['amount'].sum() - _df_dec['amount'].sum())/(_df_adv['amount'].sum() + _df_dec['amount'].sum()),4),
+                                'net_amt':_df_adv['amount'].sum() - _df_dec['amount'].sum(),
+                                'TRIN':TRIN}, ignore_index=True)
 
     return(df_out)
 
+def show_result(csv_out):
+    df_out = finlib.Finlib().regular_read_csv_to_stdard_df(data_csv=csv_out)
+    print("loading df from " + csv_out)
+    df_ag = df_out[df_out['code'] == 'SH000001'].reset_index().drop('index', axis=1)
+    df_individual = df_out[df_out['code'] != 'SH000001'].reset_index().drop('index', axis=1)
+
+    print("last 5 days market")
+    finlib.Finlib().pprint(df_ag[-5:])
+
+    print("top 5 ADL_perc stocks")
+    finlib.Finlib().pprint(df_individual.sort_values('ADL_perc', ascending=False, inplace=False)[0:5])
+
+    print("top 5 vol_perc stocks")
+    finlib.Finlib().pprint(df_individual.sort_values('vol_perc', ascending=False, inplace=False)[0:5])
+    print("top 5 amt_perc stocks")
+    finlib.Finlib().pprint(df_individual.sort_values('amt_perc', ascending=False, inplace=False)[0:5])
+
+    df_index = finlib.Finlib().regular_read_csv_to_stdard_df(
+        data_csv='/home/ryan/DATA/DAY_Global/AG_INDEX/000001.SH.csv')
+    df_index = df_index[['date', 'close']]
+
+    df_merged = pd.merge(left=df_ag, right=df_index, how='inner', left_on='date', right_on='date', suffixes=('', '_x'))
+    # df = df_merged[['date','ADL','ADL_perc','TRIN','close']]
+    # df = df.set_index('date')
+    # df.plot(subplots=True)
+    # plt.tight_layout()
+    # plt.show()
+
+    # df = df_merged[['date','ADL_perc','vol_perc','amt_perc','close','net_amt']]
+    df = df_merged[['date', 'ADL_perc', 'vol_perc', 'amt_perc', 'close']]
+    df['date'] = pd.to_datetime(df_merged['date'].values, format='%Y-%m-%d')
+    df = df.set_index('date')
+
+    ax = df.plot(subplots=True, sharex=True, grid=False)
+    # ax[0].xaxis.set_major_locator(mdates.DayLocator(interval=1))
+    # ax[0].xaxis.set_major_formatter(mdates.DateFormatter('%d'))
+    plt.gcf().autofmt_xdate()
+
+    # plt.tight_layout()
+    plt.show()
+
+    print(1)
+
+
 ### MAIN ####
 if __name__ == '__main__':
-    days =100
+    days =600
     csv_out = '/home/ryan/DATA/result/ag_adl_trin_'+str(days)+'d.csv'
 
     if not finlib.Finlib().is_cached(csv_out,1):
         df_in = prepare_data(days=days)
-        df_out = pd.DataFrame( columns=['date','code','net_adv_perc','ADL','ADL_perc','vol_perc', 'amt_perc','TRIN'])
+        df_out = pd.DataFrame( columns=['date','code','net_adv_perc','ADL','ADL_perc','vol_perc', 'amt_perc','net_amt','TRIN'])
 
         df_out = market_adl_trin(df_in=df_in, df_out=df_out, days=days)
         df_out.to_csv(csv_out, encoding='UTF-8', index=False)
         print("AG Market ADL, TRIN saved to "+csv_out)
 
-
-        #df_out = individual_adl_trin(df_in = df_in, df_out=df_out) #comment the line if don't need run on each invididual stocks
+        df_out = individual_adl_trin(df_in = df_in, df_out=df_out) #comment the line if don't need run on each invididual stocks
         df_out = finlib.Finlib().add_stock_name_to_df(df=df_out, ts_pro_format=False)
         df_out.to_csv(csv_out, encoding='UTF-8', index=False)
         print("Individual stock appended to "+csv_out)
-    else:
-        df_out = finlib.Finlib().regular_read_csv_to_stdard_df(data_csv=csv_out)
-        print("loading df from "+csv_out)
-        df_ag = df_out[df_out['code']=='SH000001'].reset_index().drop('index',axis=1)
-        df_individual=df_out[df_out['code']!='SH000001'].reset_index().drop('index',axis=1)
 
-        print("today market")
-        finlib.Finlib().pprint(df_ag[-3:])
-
-        print("top 5 net_adv_perc/ADL")
-        finlib.Finlib().pprint(df_individual.sort_values('net_adv_perc', ascending=False, inplace=False)[0:5])
-
-
-        df_index = finlib.Finlib().regular_read_csv_to_stdard_df(data_csv='/home/ryan/DATA/DAY_Global/AG_INDEX/000001.SH.csv')
-        df_index = df_index[['date','close']]
-
-        import matplotlib.pyplot as plt
-
-        df_merged = pd.merge(left=df_ag, right=df_index, how='inner', left_on='date', right_on='date', suffixes=('', '_x'))
-        # df = df_merged[['date','ADL','ADL_perc','TRIN','close']]
-        # df = df.set_index('date')
-        #df.plot(subplots=True)
-        #plt.tight_layout()
-        #plt.show()
-
-
-        df = df_merged[['date','ADL_perc','vol_perc','amt_perc','close']]
-        df['date'] = pd.to_datetime(df_merged['date'].values, format='%Y-%m-%d')
-        df = df.set_index('date')
-
-        import matplotlib.dates as mdates
-
-        ax = df.plot(subplots=True,sharex=True, grid=False)
-        #ax[0].xaxis.set_major_locator(mdates.DayLocator(interval=1))
-        #ax[0].xaxis.set_major_formatter(mdates.DateFormatter('%d'))
-        plt.gcf().autofmt_xdate()
-
-        #plt.tight_layout()
-        plt.show()
-
-        print(1)
-
-
-
-
+    show_result(csv_out)
 
     exit(0)
