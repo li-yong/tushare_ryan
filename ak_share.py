@@ -141,13 +141,30 @@ def main():
     # 获取 A 股实时行情数据. 单次返回所有 A 股上市公司的实时行情数据
     # A 股数据是从新浪财经获取的数据, 重复运行本函数会被新浪暂时封 IP, 建议增加时间间隔
     # run at 14:55 (run_time). Find the stocks increase fastly since 14:00 or 14:30 to run_time.
-    stock_zh_a_spot_df = ak.stock_zh_a_spot()
-    finlib.Finlib().pprint(stock_zh_a_spot_df)
+    a_spot_csv = b+"/ag_spot.csv"
+    if finlib.Finlib().is_cached(file_path=a_spot_csv, day=1/24/60*50): #cached in 5 minutes
+        stock_zh_a_spot_df = pd.read_csv(a_spot_csv, encoding="utf-8")
+        logging.info("loading ag spot df from " + a_spot_csv)
+    else:
+        stock_zh_a_spot_df = ak.stock_zh_a_spot()
+        finlib.Finlib().pprint(stock_zh_a_spot_df)
+        stock_zh_a_spot_df.to_csv(a_spot_csv, encoding='UTF-8', index=False)
+        logging.info("ag spot saved to "+a_spot_csv)
+
 
     # 获取科创板实时行情数据. 单次返回所有科创板上市公司的实时行情数据
     # 从新浪财经获取科创板股票数据
-    stock_zh_kcb_spot_df = ak.stock_zh_kcb_spot()
-    finlib.Finlib().pprint(stock_zh_kcb_spot_df)
+
+    ag_kcb_csv = b + "/ag_kcb_spot.csv"
+    if finlib.Finlib().is_cached(file_path=ag_kcb_csv, day=1/24/60*50): #cached in 5 minutes
+        stock_zh_kcb_spot_df = pd.read_csv(ag_kcb_csv, encoding="utf-8")
+        logging.info("loading ag kcb df from " + ag_kcb_csv)
+    else:
+        stock_zh_kcb_spot_df = ak.stock_zh_kcb_spot()
+        finlib.Finlib().pprint(stock_zh_kcb_spot_df)
+        stock_zh_a_spot_df.to_csv(ag_kcb_csv, encoding='UTF-8', index=False)
+        logging.info("ag spot saved to "+ag_kcb_csv)
+
 
     #企业社会责任
     fetch_ak(api = 'stock_zh_a_scr_report', note = '企业社会责任', parms='report_year=2019,page=1')
