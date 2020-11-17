@@ -222,7 +222,7 @@ def wei_pan_la_sheng():
         logging.info("The Rapid Change Stock List:")
         finlib.Finlib().pprint(merged_inner_rst)
 
-        merged_inner_rst.to_csv(b+'/wei_pan_la_sheng.csv', encoding='UTF-8', index=False)
+        merged_inner_rst.to_csv(b+'/wei_pan_la_sheng_'+nowS+'.csv', encoding='UTF-8', index=False)
         logging.info("ag wei_pan_la_sheng output list saved"  )
 
 ### kcb
@@ -249,7 +249,7 @@ def wei_pan_la_sheng():
         merged_inner_rst = merged_inner_rst.sort_values(by=['increase_diff'], ascending=[False], inplace=False)
         logging.info("The Rapid Change Stock List:")
         finlib.Finlib().pprint(merged_inner_rst)
-        merged_inner_rst.to_csv(b+'/wei_pan_la_sheng_kcb.csv', encoding='UTF-8', index=False)
+        merged_inner_rst.to_csv(b+'/wei_pan_la_sheng_kcb_'+nowS+'.csv', encoding='UTF-8', index=False)
         logging.info("ag kcb wei_pan_la_sheng output list saved" )
 
 
