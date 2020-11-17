@@ -23,7 +23,6 @@ import signal
 import akshare as ak
 import tabulate
 import finlib
-import finlib
 
 logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m_%d %H:%M:%S', level=logging.DEBUG)
 
@@ -223,6 +222,8 @@ def wei_pan_la_sheng():
         logging.info("The Rapid Change Stock List:")
         finlib.Finlib().pprint(merged_inner_rst)
 
+        merged_inner_rst.to_csv(b+'/wei_pan_la_sheng.csv', encoding='UTF-8', index=False)
+        logging.info("ag wei_pan_la_sheng output list saved"  )
 
 ### kcb
     if finlib.Finlib().is_cached(ag_kcb_csv_link_old, day=1):
@@ -248,6 +249,9 @@ def wei_pan_la_sheng():
         merged_inner_rst = merged_inner_rst.sort_values(by=['increase_diff'], ascending=[False], inplace=False)
         logging.info("The Rapid Change Stock List:")
         finlib.Finlib().pprint(merged_inner_rst)
+        merged_inner_rst.to_csv(b+'/wei_pan_la_sheng_kcb.csv', encoding='UTF-8', index=False)
+        logging.info("ag kcb wei_pan_la_sheng output list saved" )
+
 
 
 
@@ -361,7 +365,7 @@ def main():
     parser.add_option("--fetch_after_market", action="store_true", dest="fetch_after_market", default=False,
                       help="fetch market data after market closure.")
 
-    parser.add_option("--wei_pan_la_sheng", action="store_true", dest="fetch_after_market", default=False,
+    parser.add_option("--wei_pan_la_sheng", action="store_true", dest="wei_pan_la_sheng", default=False,
                       help="get stocks price roaring. Need run twice then get the comparing increase")
 
     (options, args) = parser.parse_args()
