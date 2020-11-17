@@ -356,11 +356,23 @@ def fetch_after_market_close():
 
 
 def main():
+    parser = OptionParser()
+
+    parser.add_option("--fetch_after_market", action="store_true", dest="fetch_after_market", default=False,
+                      help="fetch market data after market closure.")
+
+    parser.add_option("--wei_pan_la_sheng", action="store_true", dest="fetch_after_market", default=False,
+                      help="get stocks price roaring. Need run twice then get the comparing increase")
+
+    (options, args) = parser.parse_args()
+
+
     #find the rapid up stocks in market. Comparing the increase percent with the number got in previous run.
     #set up crontabs, run at 2:00, and 2:45.  Check the output of 2.45 run.
-    wei_pan_la_sheng()
-
-    fetch_after_market_close()
+    if options.wei_pan_la_sheng:
+        wei_pan_la_sheng()
+    if options.fetch_after_market:
+        fetch_after_market_close()
 
     print(1)
 
