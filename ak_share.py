@@ -105,19 +105,20 @@ def get_individual_min():
     # save daily minutes ends
 
 
-def main():
+
+def wei_pan_la_sheng():
     ########################
     #
     #################
     b = "/home/ryan/DATA/pickle/Stock_Fundamental/akshare/source"
-    f = b+"/"+"stock_zh_a_scr_report_企业社会责任.csv"
+    f = b + "/" + "stock_zh_a_scr_report_企业社会责任.csv"
 
     # f = b+"/"+"stock_em_jgdy_detail_机构调研-详细.csv"
     # f = b+"/"+"stock_em_gpzy_pledge_ratio_上市公司质押比例.csv"
     # f = b+"/"+"stock_institute_recommend_机构推荐池-股票综合评级.csv"
     # f = b+"/"+"stock_em_sy_list_个股商誉明细.csv"
     # f = b+"/"+"stock_em_sy_jz_list_个股商誉减值明细.csv"
-    #f = b+"/"+""
+    # f = b+"/"+""
 
     # f = b + "/" + "stock_em_jgdy_tj_机构调研-统计.csv"
     # df = finlib.Finlib().regular_read_akshare_to_stdard_df(data_csv=f, add_market=False)
@@ -125,48 +126,35 @@ def main():
     # df['StartDate'] = df['StartDate'].apply(lambda _d: str(_d).replace('-',''))
     # df['EndDate'] = df['EndDate'].apply(lambda _d: str(_d).replace('-',''))
 
-    todayS_ymd = datetime.datetime.today().strftime('%Y%m%d')
 
-    if finlib.Finlib().is_a_trading_day_ag(dateS=todayS_ymd) and finlib.Finlib().is_market_open_ag():
-        logging.info("AG market is open, please capture after market closing.")
-        #return()
-    else:
-        #maket is closed
-        stock_szse_summary_df = ak.stock_szse_summary(date=todayS_ymd)
-        finlib.Finlib().pprint(stock_szse_summary_df)
-
-        stock_sse_summary_df = ak.stock_sse_summary()
-        finlib.Finlib().pprint(stock_sse_summary_df)
 
     # 获取 A 股实时行情数据. 单次返回所有 A 股上市公司的实时行情数据
     # A 股数据是从新浪财经获取的数据, 重复运行本函数会被新浪暂时封 IP, 建议增加时间间隔
     # run at 14:55 (run_time). Find the stocks increase fastly since 14:00 or 14:30 to run_time.
-    a_spot_csv = b+"/ag_spot.csv"
-    if finlib.Finlib().is_cached(file_path=a_spot_csv, day=1/24/60*50): #cached in 5 minutes
+    a_spot_csv = b + "/ag_spot.csv"
+    if finlib.Finlib().is_cached(file_path=a_spot_csv, day=1 / 24 / 60 * 50):  # cached in 5 minutes
         stock_zh_a_spot_df = pd.read_csv(a_spot_csv, encoding="utf-8")
         logging.info("loading ag spot df from " + a_spot_csv)
     else:
         stock_zh_a_spot_df = ak.stock_zh_a_spot()
         finlib.Finlib().pprint(stock_zh_a_spot_df)
         stock_zh_a_spot_df.to_csv(a_spot_csv, encoding='UTF-8', index=False)
-        logging.info("ag spot saved to "+a_spot_csv)
-
+        logging.info("ag spot saved to " + a_spot_csv)
 
     # 获取科创板实时行情数据. 单次返回所有科创板上市公司的实时行情数据
     # 从新浪财经获取科创板股票数据
 
     ag_kcb_csv = b + "/ag_kcb_spot.csv"
-    if finlib.Finlib().is_cached(file_path=ag_kcb_csv, day=1/24/60*50): #cached in 5 minutes
+    if finlib.Finlib().is_cached(file_path=ag_kcb_csv, day=1 / 24 / 60 * 50):  # cached in 5 minutes
         stock_zh_kcb_spot_df = pd.read_csv(ag_kcb_csv, encoding="utf-8")
         logging.info("loading ag kcb df from " + ag_kcb_csv)
     else:
         stock_zh_kcb_spot_df = ak.stock_zh_kcb_spot()
         finlib.Finlib().pprint(stock_zh_kcb_spot_df)
         stock_zh_a_spot_df.to_csv(ag_kcb_csv, encoding='UTF-8', index=False)
-        logging.info("ag spot saved to "+ag_kcb_csv)
+        logging.info("ag spot saved to " + ag_kcb_csv)
 
-
-#find stocks increased at the end of the market time
+    # find stocks increased at the end of the market time
     # dfmt = stock_zh_a_spot_df[stock_zh_a_spot_df['symbol'] == 'sh600519']
     # finlib.Finlib().pprint(dfmt)
     # +-----+----------+--------+----------+---------+---------------+-----------------+---------+--------+--------------+--------+---------+-------+------------+-------------+------------+--------+--------+------------+------------+-----------------+
@@ -180,119 +168,136 @@ def main():
     # open: 开
     # pricechange: trade - settlement
     # changepercent = pricechange / settlement * 100
-    old_df = pd.read_csv(b+"/ag_spot_14.csv", encoding="utf-8")
-    old_df_small_change = old_df[old_df['changepercent'] < 1] # changes smaller than 1%
-    logging.info(" number of small change df in old " + str(old_df_small_change.__len__()) + ", data at "+old_df_small_change['ticktime'].iloc[0])
+    old_df = pd.read_csv(b + "/ag_spot_14.csv", encoding="utf-8")
+    old_df_small_change = old_df[old_df['changepercent'] < 1]  # changes smaller than 1%
+    logging.info(" number of small change df in old " + str(old_df_small_change.__len__()) + ", data at " +
+                 old_df_small_change['ticktime'].iloc[0])
 
     new_df = stock_zh_a_spot_df
-    new_df_large_change = new_df[new_df['changepercent'] > 7]
-    logging.info(" number of large change df in new "+str(new_df_large_change.__len__()) + ", data at "+new_df_large_change['ticktime'].iloc[0])
+    new_df_large_change = new_df[new_df['changepercent'] > 5]
+    logging.info(" number of large change df in new " + str(new_df_large_change.__len__()) + ", data at " +
+                 new_df_large_change['ticktime'].iloc[0])
 
-    merged_inner = pd.merge(left=old_df_small_change, right=new_df_large_change, how='inner', left_on='symbol', right_on='symbol',
+    merged_inner = pd.merge(left=old_df_small_change, right=new_df_large_change, how='inner', left_on='symbol',
+                            right_on='symbol',
                             suffixes=('_o', '')).drop('name_o', axis=1)
-    merged_inner['increase_diff'] = merged_inner['changepercent'] -  merged_inner['changepercent_o']
+    merged_inner['increase_diff'] = merged_inner['changepercent'] - merged_inner['changepercent_o']
 
-
-    merged_inner_rst = merged_inner[['symbol','code','name','trade','increase_diff','volume','amount', 'per', 'pb', 'mktcap', 'nmc','turnoverratio','ticktime_o','changepercent_o','ticktime','changepercent']]
+    merged_inner_rst = merged_inner[
+        ['symbol', 'code', 'name', 'trade', 'increase_diff', 'volume', 'amount', 'per', 'pb', 'mktcap', 'nmc',
+         'turnoverratio', 'ticktime_o', 'changepercent_o', 'ticktime', 'changepercent']]
     merged_inner_rst = merged_inner_rst.sort_values(by=['increase_diff'], ascending=[False], inplace=False)
     logging.info("The Rapid Change Stock List:")
     finlib.Finlib().pprint(merged_inner_rst)
 
     exit(0)
 
-    #企业社会责任
-    fetch_ak(api = 'stock_zh_a_scr_report', note = '企业社会责任', parms='report_year=2019,page=1')
 
-    #机构调研
-    fetch_ak(api = 'stock_em_jgdy_tj', note = '机构调研-统计', parms='')
-    fetch_ak(api = 'stock_em_jgdy_detail', note = '机构调研-详细', parms='')
-    
-    #股票质押
-    fetch_ak(api = 'stock_em_gpzy_profile', note = '股权质押市场概况', parms='')
-    fetch_ak(api = 'stock_em_gpzy_pledge_ratio', note = '上市公司质押比例', parms='')
-    fetch_ak(api = 'stock_em_gpzy_pledge_ratio_detail', note = '重要股东股权质押明细', parms='')
-    fetch_ak(api = 'stock_em_gpzy_distribute_statistics_company', note = '质押机构分布统计证券公司', parms='')
-    fetch_ak(api = 'stock_em_gpzy_distribute_statistics_bank', note = '质押机构分布统计银行', parms='')
-    fetch_ak(api = 'stock_em_gpzy_industry_data', note = '上市公司质押比例', parms='')
-    
-    #商誉专题
-    fetch_ak(api = 'stock_em_sy_profile', note = 'A股商誉市场概况', parms='')
-    fetch_ak(api = 'stock_em_sy_yq_list', note = '商誉减值预期明细', parms='')
-    fetch_ak(api = 'stock_em_sy_jz_list', note = '个股商誉减值明细', parms='symbol="沪市主板", trade_date="2019-12-31"')
-    fetch_ak(api = 'stock_em_sy_list', note = '个股商誉明细', parms='symbol="沪市主板", trade_date="2019-12-31"')
-    fetch_ak(api = 'stock_em_sy_hy_list', note = '行业商誉明细', parms='trade_date="2019-12-31"')
-    
-    #分析师指数
-    fetch_ak(api = 'stock_em_analyst_rank', note = '分析师指数最新排行', parms='')
-    
-    
-    fetch_ak(api = 'stock_em_comment', note = '千股千评', parms='')
-    
-    #沪深港通持股
-    fetch_ak(api = 'stock_em_hsgt_north_net_flow_in', note = '北向净流入', parms='indicator="北上"')
-    fetch_ak(api = 'stock_em_hsgt_north_cash', note = '北向资金余额', parms='indicator="北上"')
-    fetch_ak(api = 'stock_em_hsgt_north_acc_flow_in', note = '北向累计净流入', parms='indicator="北上"')
-    fetch_ak(api = 'stock_em_hsgt_south_net_flow_in', note = '南向净流入', parms='indicator="南下"')
-    fetch_ak(api = 'stock_em_hsgt_south_cash', note = '南向资金余额', parms='indicator="南下"')
-    fetch_ak(api = 'stock_em_hsgt_south_acc_flow_in', note = '南向累计净流入', parms='indicator="南下"')
-    fetch_ak(api = 'stock_em_hsgt_hold_stock', note = '个股排行', parms='market="北向", indicator="3日排行"')
-    fetch_ak(api = 'stock_em_hsgt_stock_statistics', note = '每日个股统计', parms='market="北向持股"')
-    
-    #资金流向
-    fetch_ak(api = 'stock_individual_fund_flow_rank', note = '个股资金流排名', parms='indicator="3日"')
-    fetch_ak(api = 'stock_market_fund_flow', note = '大盘资金流', parms='')
-    fetch_ak(api = 'stock_sector_fund_flow_rank', note = '板块资金流排名', parms='indicator="5日", sector_type="概念资金流"')
-    
-    
-    
-    fetch_ak(api = 'stock_history_dividend', note = '历史分红', parms='')
-    fetch_ak(api = 'stock_sector_spot', note = '板块行情', parms='indicator="概念"')
-    fetch_ak(api = 'stock_info_a_code_name', note = '股票列表-A股', parms='')
-    fetch_ak(api = 'stock_info_sh_name_code', note = '股票列表-上证-主板A股', parms='indicator="主板A股"')
-    fetch_ak(api = 'stock_info_sh_name_code', note = '股票列表-上证-主板B股', parms='indicator="主板B股"')
-    fetch_ak(api = 'stock_info_sh_name_code', note = '股票列表-上证-科创板', parms='indicator="科创板"')
-    
-    
-    fetch_ak(api = 'stock_info_sz_name_code', note = '股票列表-深证-A股列表', parms='indicator="A股列表"')
-    fetch_ak(api = 'stock_info_sz_name_code', note = '股票列表-深证-B股列表', parms='indicator="B股列表"')
-    fetch_ak(api = 'stock_info_sz_name_code', note = '股票列表-深证-中小企业板', parms='indicator="中小企业板"')
-    fetch_ak(api = 'stock_info_sz_name_code', note = '股票列表-深证-创业板', parms='indicator="创业板"')
-    fetch_ak(api = 'stock_info_sz_name_code', note = '股票列表-深证-上市公司列表', parms='indicator="上市公司列表"')
+def fetch_after_market_close():
+    todayS_ymd = datetime.datetime.today().strftime('%Y%m%d')
 
-    fetch_ak(api = 'stock_institute_hold', note = '机构持股一览表', parms='quarter="20203"')
-    fetch_ak(api = 'stock_institute_recommend', note = '机构推荐池-行业关注度', parms='indicator="行业关注度"')
-    fetch_ak(api = 'stock_institute_recommend', note = '机构推荐池-机构关注度', parms='indicator="机构关注度"')
-    fetch_ak(api = 'stock_institute_recommend', note = '机构推荐池-最新投资评级', parms='indicator="最新投资评级"')
-    fetch_ak(api = 'stock_institute_recommend', note = '机构推荐池-上调评级股票', parms='indicator="上调评级股票"')
-    fetch_ak(api = 'stock_institute_recommend', note = '机构推荐池-下调评级股票', parms='indicator="下调评级股票"')
-    fetch_ak(api = 'stock_institute_recommend', note = '机构推荐池-股票综合评级', parms='indicator="股票综合评级"')
-    fetch_ak(api = 'stock_institute_recommend', note = '机构推荐池-首次评级股票', parms='indicator="首次评级股票"')
-    fetch_ak(api = 'stock_institute_recommend', note = '机构推荐池-目标涨幅排名', parms='indicator="目标涨幅排名"')
-    fetch_ak(api = 'stock_institute_recommend', note = '机构推荐池-投资评级选股', parms='indicator="投资评级选股"')
-    fetch_ak(api = 'stock_institute_recommend', note = '机构推荐池-', parms='indicator=""')
-    fetch_ak(api = 'stock_institute_recommend', note = '机构推荐池-', parms='indicator=""')
-    
-    
-    
-    fetch_ak(api = 'stock_js_price', note = '美港目标价', parms='category="us"')
-    fetch_ak(api = 'stock_js_price', note = '美港目标价', parms='category="hk"')
-    fetch_ak(api = 'stock_em_qsjy', note = '券商业绩月报-202006', parms='trade_date="2020-06-01"')
-    fetch_ak(api = 'stock_em_qsjy', note = '券商业绩月报-202007', parms='trade_date="2020-07-01"')
+    if finlib.Finlib().is_a_trading_day_ag(dateS=todayS_ymd) and finlib.Finlib().is_market_open_ag():
+        logging.info("AG market is open, please capture after market closing.")
+        return ()
 
 
-    fetch_ak(api = 'stock_a_high_low_statistics', note = '创新高和新低的股票数量', parms='market="all"')
-    fetch_ak(api = 'stock_a_below_net_asset_statistics', note = '破净股统计', parms='')
-    
-    
-    fetch_ak(api = 'stock_report_fund_hold', note = '基金持股', parms='symbol="基金持仓", date="20200630"')
-    fetch_ak(api = 'stock_sina_lhb_detail_daily', note = '龙虎榜-每日详情', parms='trade_date="20200730", symbol="涨幅偏离值达7%的证券"')
-    fetch_ak(api = 'stock_sina_lhb_ggtj', note = '龙虎榜-个股上榜统计', parms='recent_day="5"')
-    fetch_ak(api = 'stock_sina_lhb_yytj', note = '龙虎榜-营业上榜统计', parms='recent_day="5"')
-    fetch_ak(api = 'stock_sina_lhb_jgzz', note = '龙虎榜-机构席位追踪', parms='recent_day="5"')
-    fetch_ak(api = 'stock_sina_lhb_jgmx', note = '龙虎榜-机构席位成交明细', parms='')
+    # maket is closed now
 
-    #fetch_ak(api = '', note = '', parms='')
-   
+
+    # stock_szse_summary_df = ak.stock_szse_summary(date=todayS_ymd)
+    # finlib.Finlib().pprint(stock_szse_summary_df)
+    fetch_ak(api='stock_szse_summary', note='深圳证券交易所市场总貌', parms="date='"+todayS_ymd+"'")
+
+    # stock_sse_summary_df = ak.stock_sse_summary()
+    # finlib.Finlib().pprint(stock_sse_summary_df)
+    fetch_ak(api='stock_sse_summary', note='上海证券交易所市场总貌', parms='')
+
+    # 企业社会责任
+    fetch_ak(api='stock_zh_a_scr_report', note='企业社会责任', parms='report_year=2019,page=1')
+
+    # 机构调研
+    fetch_ak(api='stock_em_jgdy_tj', note='机构调研-统计', parms='')
+    fetch_ak(api='stock_em_jgdy_detail', note='机构调研-详细', parms='')
+
+    # 股票质押
+    fetch_ak(api='stock_em_gpzy_profile', note='股权质押市场概况', parms='')
+    fetch_ak(api='stock_em_gpzy_pledge_ratio', note='上市公司质押比例', parms='')
+    fetch_ak(api='stock_em_gpzy_pledge_ratio_detail', note='重要股东股权质押明细', parms='')
+    fetch_ak(api='stock_em_gpzy_distribute_statistics_company', note='质押机构分布统计证券公司', parms='')
+    fetch_ak(api='stock_em_gpzy_distribute_statistics_bank', note='质押机构分布统计银行', parms='')
+    fetch_ak(api='stock_em_gpzy_industry_data', note='上市公司质押比例', parms='')
+
+    # 商誉专题
+    fetch_ak(api='stock_em_sy_profile', note='A股商誉市场概况', parms='')
+    fetch_ak(api='stock_em_sy_yq_list', note='商誉减值预期明细', parms='')
+    fetch_ak(api='stock_em_sy_jz_list', note='个股商誉减值明细', parms='symbol="沪市主板", trade_date="2019-12-31"')
+    fetch_ak(api='stock_em_sy_list', note='个股商誉明细', parms='symbol="沪市主板", trade_date="2019-12-31"')
+    fetch_ak(api='stock_em_sy_hy_list', note='行业商誉明细', parms='trade_date="2019-12-31"')
+
+    # 分析师指数
+    fetch_ak(api='stock_em_analyst_rank', note='分析师指数最新排行', parms='')
+
+    fetch_ak(api='stock_em_comment', note='千股千评', parms='')
+
+    # 沪深港通持股
+    fetch_ak(api='stock_em_hsgt_north_net_flow_in', note='北向净流入', parms='indicator="北上"')
+    fetch_ak(api='stock_em_hsgt_north_cash', note='北向资金余额', parms='indicator="北上"')
+    fetch_ak(api='stock_em_hsgt_north_acc_flow_in', note='北向累计净流入', parms='indicator="北上"')
+    fetch_ak(api='stock_em_hsgt_south_net_flow_in', note='南向净流入', parms='indicator="南下"')
+    fetch_ak(api='stock_em_hsgt_south_cash', note='南向资金余额', parms='indicator="南下"')
+    fetch_ak(api='stock_em_hsgt_south_acc_flow_in', note='南向累计净流入', parms='indicator="南下"')
+    fetch_ak(api='stock_em_hsgt_hold_stock', note='个股排行', parms='market="北向", indicator="3日排行"')
+    fetch_ak(api='stock_em_hsgt_stock_statistics', note='每日个股统计', parms='market="北向持股"')
+
+    # 资金流向
+    fetch_ak(api='stock_individual_fund_flow_rank', note='个股资金流排名', parms='indicator="3日"')
+    fetch_ak(api='stock_market_fund_flow', note='大盘资金流', parms='')
+    fetch_ak(api='stock_sector_fund_flow_rank', note='板块资金流排名', parms='indicator="5日", sector_type="概念资金流"')
+
+    fetch_ak(api='stock_history_dividend', note='历史分红', parms='')
+    fetch_ak(api='stock_sector_spot', note='板块行情', parms='indicator="概念"')
+    fetch_ak(api='stock_info_a_code_name', note='股票列表-A股', parms='')
+    fetch_ak(api='stock_info_sh_name_code', note='股票列表-上证-主板A股', parms='indicator="主板A股"')
+    fetch_ak(api='stock_info_sh_name_code', note='股票列表-上证-主板B股', parms='indicator="主板B股"')
+    fetch_ak(api='stock_info_sh_name_code', note='股票列表-上证-科创板', parms='indicator="科创板"')
+
+    fetch_ak(api='stock_info_sz_name_code', note='股票列表-深证-A股列表', parms='indicator="A股列表"')
+    fetch_ak(api='stock_info_sz_name_code', note='股票列表-深证-B股列表', parms='indicator="B股列表"')
+    fetch_ak(api='stock_info_sz_name_code', note='股票列表-深证-中小企业板', parms='indicator="中小企业板"')
+    fetch_ak(api='stock_info_sz_name_code', note='股票列表-深证-创业板', parms='indicator="创业板"')
+    fetch_ak(api='stock_info_sz_name_code', note='股票列表-深证-上市公司列表', parms='indicator="上市公司列表"')
+
+    fetch_ak(api='stock_institute_hold', note='机构持股一览表', parms='quarter="20203"')
+    fetch_ak(api='stock_institute_recommend', note='机构推荐池-行业关注度', parms='indicator="行业关注度"')
+    fetch_ak(api='stock_institute_recommend', note='机构推荐池-机构关注度', parms='indicator="机构关注度"')
+    fetch_ak(api='stock_institute_recommend', note='机构推荐池-最新投资评级', parms='indicator="最新投资评级"')
+    fetch_ak(api='stock_institute_recommend', note='机构推荐池-上调评级股票', parms='indicator="上调评级股票"')
+    fetch_ak(api='stock_institute_recommend', note='机构推荐池-下调评级股票', parms='indicator="下调评级股票"')
+    fetch_ak(api='stock_institute_recommend', note='机构推荐池-股票综合评级', parms='indicator="股票综合评级"')
+    fetch_ak(api='stock_institute_recommend', note='机构推荐池-首次评级股票', parms='indicator="首次评级股票"')
+    fetch_ak(api='stock_institute_recommend', note='机构推荐池-目标涨幅排名', parms='indicator="目标涨幅排名"')
+    fetch_ak(api='stock_institute_recommend', note='机构推荐池-投资评级选股', parms='indicator="投资评级选股"')
+    fetch_ak(api='stock_institute_recommend', note='机构推荐池-', parms='indicator=""')
+    fetch_ak(api='stock_institute_recommend', note='机构推荐池-', parms='indicator=""')
+
+    fetch_ak(api='stock_js_price', note='美港目标价', parms='category="us"')
+    fetch_ak(api='stock_js_price', note='美港目标价', parms='category="hk"')
+    fetch_ak(api='stock_em_qsjy', note='券商业绩月报-202006', parms='trade_date="2020-06-01"')
+    fetch_ak(api='stock_em_qsjy', note='券商业绩月报-202007', parms='trade_date="2020-07-01"')
+
+    fetch_ak(api='stock_a_high_low_statistics', note='创新高和新低的股票数量', parms='market="all"')
+    fetch_ak(api='stock_a_below_net_asset_statistics', note='破净股统计', parms='')
+
+    fetch_ak(api='stock_report_fund_hold', note='基金持股', parms='symbol="基金持仓", date="20200630"')
+    fetch_ak(api='stock_sina_lhb_detail_daily', note='龙虎榜-每日详情', parms='trade_date="20200730", symbol="涨幅偏离值达7%的证券"')
+    fetch_ak(api='stock_sina_lhb_ggtj', note='龙虎榜-个股上榜统计', parms='recent_day="5"')
+    fetch_ak(api='stock_sina_lhb_yytj', note='龙虎榜-营业上榜统计', parms='recent_day="5"')
+    fetch_ak(api='stock_sina_lhb_jgzz', note='龙虎榜-机构席位追踪', parms='recent_day="5"')
+    fetch_ak(api='stock_sina_lhb_jgmx', note='龙虎榜-机构席位成交明细', parms='')
+
+
+def main():
+    fetch_after_market_close()
 
     print(1)
 
