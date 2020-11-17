@@ -356,6 +356,8 @@ def fetch_after_market_close():
 
 
 def main():
+    #find the rapid up stocks in market. Comparing the increase percent with the number got in previous run.
+    #set up crontabs, run at 2:00, and 2:45.  Check the output of 2.45 run.
     wei_pan_la_sheng()
 
     fetch_after_market_close()
