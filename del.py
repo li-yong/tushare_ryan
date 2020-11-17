@@ -16,29 +16,8 @@ import os
 
 import akshare as ak
 
-#分时数据 @todo: verify if the data canbe realtime, e.g at 14:30 show 14:29 numbers
-stock_zh_a_minute_df = ak.stock_zh_a_minute(symbol='sh600519', period='1')
-finlib.Finlib().pprint(stock_zh_a_minute_df)
-
-#历史分笔数据 腾讯财经. 单次返回具体某个 A 上市公司的近 2 年历史分笔行情数据. 每个交易日 16:00 提供当日数据,
-stock_zh_a_tick_tx_df = ak.stock_zh_a_tick_tx(code="sh600519", trade_date="20201116")
-finlib.Finlib().pprint(stock_zh_a_tick_tx_df)
-
-#历史分笔数据 网易财经 单次返回具体某个 A 上市公司的近 5 个交易日的历史分笔行情数据
-stock_zh_a_tick_163_df = ak.stock_zh_a_tick_163(code="sh600848", trade_date="20201116")
-finlib.Finlib().pprint(stock_zh_a_tick_163_df)
-
-#A股-CDR, 历史行情数据. 单次返回指定 CDR 的日频率数据, 分钟历史行情数据可以通过 stock_zh_a_minute 获取
-stock_zh_a_cdr_daily_df = ak.stock_zh_a_cdr_daily(symbol='sh600519')
-finlib.Finlib().pprint(stock_zh_a_cdr_daily_df)
 
 
-stock_szse_summary_df = ak.stock_szse_summary(date="20200619")
-finlib.Finlib().pprint(stock_szse_summary_df)
-
-
-stock_sse_summary_df = ak.stock_sse_summary()
-finlib.Finlib().pprint(stock_sse_summary_df)
 
 ##############
 

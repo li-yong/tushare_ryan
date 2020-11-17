@@ -4356,8 +4356,22 @@ class Finlib:
 
         return({'pocket_pivot_this_vol_gt_N_records_of_down_vol':pocket_pivot_this_vol_gt_N_records_of_down_vol})
 
+    #return True if AG market is open
+    def is_market_open_ag(self):
+        hour = datetime.now().hour
+        minute = datetime.now().minute
+
+        rtn = False
+        if (hour > 9) and (hour < 15): #10 ~ 14.59
+            rtn = True
+        elif hour==9 and minute>=30: #9.30 ~ 9.59
+            rtn = True
+
+        return(rtn)
+
     #input: df [open,high, low, close]
     #output: {hit:[T|F], high:value, low:value, }
     def w_shape_exam(self, df):
         pass
+
 

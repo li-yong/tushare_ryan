@@ -64,6 +64,47 @@ def fetch_ak(api, note, parms):
 
 
 
+def get_individual_min():
+    df = finlib.Finlib().get_A_stock_instrment()
+    df = finlib.Finlib().add_market_to_code(df)
+    df = finlib.Finlib().remove_garbage(df=df, code_field_name='code', code_format='C2D6', b_m_score=-1)
+
+    finlib.Finlib().pprint(df[['name', 'code']])
+
+    # print(tabulate.tabulate(pd.DataFrame(df['name'].value_counts()), headers='keys', tablefmt='psql'))
+    # print(tabulate.tabulate(pd.DataFrame(df['code'].value_counts()), headers='keys', tablefmt='psql'))
+
+    todayS_ymd = datetime.datetime.today().strftime('%Y%m%d')
+
+
+    # save daily minutes start
+    for i in range(df.__len__()):
+        code = df.iloc[i]['code']
+        name = df.iloc[i]['name']
+
+        # 分时数据 单次返回指定股票或指数的指定频率的所有历史分时行情数据
+        # @todo: verify if the data canbe realtime, e.g at 14:30 show 14:29 numbers
+        # run after market closing.
+        stock_zh_a_minute_df = ak.stock_zh_a_minute(symbol='sh600519', period='1')
+        finlib.Finlib().pprint(stock_zh_a_minute_df)
+
+        # 历史分笔数据 腾讯财经. 单次返回具体某个 A 上市公司的近 2 年历史分笔行情数据. 每个交易日 16:00 提供当日数据,
+        stock_zh_a_tick_tx_df = ak.stock_zh_a_tick_tx(code="sh600519", trade_date="20201116")
+        finlib.Finlib().pprint(stock_zh_a_tick_tx_df)
+
+        # 历史分笔数据 网易财经 单次返回具体某个 A 上市公司的近 5 个交易日的历史分笔行情数据
+        stock_zh_a_tick_163_df = ak.stock_zh_a_tick_163(code="sh600848", trade_date="20201116")
+        finlib.Finlib().pprint(stock_zh_a_tick_163_df)
+
+        # A股-CDR, 历史行情数据. 单次返回指定 CDR 的日频率数据, 分钟历史行情数据可以通过 stock_zh_a_minute 获取
+        stock_zh_a_cdr_daily_df = ak.stock_zh_a_cdr_daily(symbol='sh600519')
+        finlib.Finlib().pprint(stock_zh_a_cdr_daily_df)
+
+        print(1)
+
+    # save daily minutes ends
+
+
 def main():
     ########################
     #
@@ -78,19 +119,35 @@ def main():
     # f = b+"/"+"stock_em_sy_jz_list_个股商誉减值明细.csv"
     #f = b+"/"+""
 
-    f = b + "/" + "stock_em_jgdy_tj_机构调研-统计.csv"
-    df = finlib.Finlib().regular_read_akshare_to_stdard_df(data_csv=f, add_market=False)
-    df['NoticeDate'] = df['NoticeDate'].apply(lambda _d: str(_d).replace('-',''))
-    df['StartDate'] = df['StartDate'].apply(lambda _d: str(_d).replace('-',''))
-    df['EndDate'] = df['EndDate'].apply(lambda _d: str(_d).replace('-',''))
+    # f = b + "/" + "stock_em_jgdy_tj_机构调研-统计.csv"
+    # df = finlib.Finlib().regular_read_akshare_to_stdard_df(data_csv=f, add_market=False)
+    # df['NoticeDate'] = df['NoticeDate'].apply(lambda _d: str(_d).replace('-',''))
+    # df['StartDate'] = df['StartDate'].apply(lambda _d: str(_d).replace('-',''))
+    # df['EndDate'] = df['EndDate'].apply(lambda _d: str(_d).replace('-',''))
 
-    df = finlib.Finlib().get_A_stock_instrment()
-    df = finlib.Finlib().add_market_to_code(df)
-    df = finlib.Finlib().remove_garbage(df=df,code_field_name='code', code_format='C2D6',b_m_score=-1)
+    todayS_ymd = datetime.datetime.today().strftime('%Y%m%d')
 
-    print(tabulate.tabulate(df[['name','code']], headers='keys', tablefmt='psql'))
-    #print(tabulate.tabulate(pd.DataFrame(df['name'].value_counts()), headers='keys', tablefmt='psql'))
-    #print(tabulate.tabulate(pd.DataFrame(df['code'].value_counts()), headers='keys', tablefmt='psql'))
+    if finlib.Finlib().is_a_trading_day_ag(dateS=todayS_ymd) and finlib.Finlib().is_market_open_ag():
+        logging.info("AG market is open, please capture after market closing.")
+        #return()
+    else:
+        #maket is closed
+        stock_szse_summary_df = ak.stock_szse_summary(date=todayS_ymd)
+        finlib.Finlib().pprint(stock_szse_summary_df)
+
+        stock_sse_summary_df = ak.stock_sse_summary()
+        finlib.Finlib().pprint(stock_sse_summary_df)
+
+    # 获取 A 股实时行情数据. 单次返回所有 A 股上市公司的实时行情数据
+    # A 股数据是从新浪财经获取的数据, 重复运行本函数会被新浪暂时封 IP, 建议增加时间间隔
+    # run at 14:55 (run_time). Find the stocks increase fastly since 14:00 or 14:30 to run_time.
+    stock_zh_a_spot_df = ak.stock_zh_a_spot()
+    finlib.Finlib().pprint(stock_zh_a_spot_df)
+
+    # 获取科创板实时行情数据. 单次返回所有科创板上市公司的实时行情数据
+    # 从新浪财经获取科创板股票数据
+    stock_zh_kcb_spot_df = ak.stock_zh_kcb_spot()
+    finlib.Finlib().pprint(stock_zh_kcb_spot_df)
 
     #企业社会责任
     fetch_ak(api = 'stock_zh_a_scr_report', note = '企业社会责任', parms='report_year=2019,page=1')
