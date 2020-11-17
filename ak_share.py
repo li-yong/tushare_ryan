@@ -166,6 +166,40 @@ def main():
         logging.info("ag spot saved to "+ag_kcb_csv)
 
 
+#find stocks increased at the end of the market time
+    # dfmt = stock_zh_a_spot_df[stock_zh_a_spot_df['symbol'] == 'sh600519']
+    # finlib.Finlib().pprint(dfmt)
+    # +-----+----------+--------+----------+---------+---------------+-----------------+---------+--------+--------------+--------+---------+-------+------------+-------------+------------+--------+--------+------------+------------+-----------------+
+    # | | symbol | code | name | trade | pricechange | changepercent | buy | sell | settlement | open | high | low | volume | amount | ticktime | per | pb | mktcap | nmc | turnoverratio |
+    # | -----+----------+--------+----------+---------+---------------+-----------------+---------+--------+--------------+--------+---------+-------+------------+-------------+------------+--------+--------+------------+------------+----------------- |
+    # | 415 | sh600519 | 600519 | 贵州茅台 | 1729.9 | -0.15 | -0.009 | 1728.01 | 1729.9 | 1730.05 | 1740 | 1742.35 | 1722 | 1.4981e+06 | 2.59765e+09 | 11: 30:00 | 52.741 | 14.638 | 2.1731e+08 | 2.1731e+08 | 0.11926 |
+    # +-----+----------+--------+----------+---------+---------------+-----------------+---------+--------+--------------+--------+---------+-------+------------+-------------+------------+--------+--------+------------+------------+-----------------+
+    #
+    # settlement: 昨收
+    # trade: 现价
+    # open: 开
+    # pricechange: trade - settlement
+    # changepercent = pricechange / settlement * 100
+    old_df = pd.read_csv(b+"/ag_spot_14.csv", encoding="utf-8")
+    old_df_small_change = old_df[old_df['changepercent'] < 1] # changes smaller than 1%
+    logging.info(" number of small change df in old " + str(old_df_small_change.__len__()) + ", data at "+old_df_small_change['ticktime'].iloc[0])
+
+    new_df = stock_zh_a_spot_df
+    new_df_large_change = new_df[new_df['changepercent'] > 7]
+    logging.info(" number of large change df in new "+str(new_df_large_change.__len__()) + ", data at "+new_df_large_change['ticktime'].iloc[0])
+
+    merged_inner = pd.merge(left=old_df_small_change, right=new_df_large_change, how='inner', left_on='symbol', right_on='symbol',
+                            suffixes=('_o', '')).drop('name_o', axis=1)
+    merged_inner['increase_diff'] = merged_inner['changepercent'] -  merged_inner['changepercent_o']
+
+
+    merged_inner_rst = merged_inner[['symbol','code','name','trade','increase_diff','volume','amount', 'per', 'pb', 'mktcap', 'nmc','turnoverratio','ticktime_o','changepercent_o','ticktime','changepercent']]
+    merged_inner_rst = merged_inner_rst.sort_values(by=['increase_diff'], ascending=[False], inplace=False)
+    logging.info("The Rapid Change Stock List:")
+    finlib.Finlib().pprint(merged_inner_rst)
+
+    exit(0)
+
     #企业社会责任
     fetch_ak(api = 'stock_zh_a_scr_report', note = '企业社会责任', parms='report_year=2019,page=1')
 
