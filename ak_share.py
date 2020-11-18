@@ -139,8 +139,8 @@ def wei_pan_la_sheng():
         stock_zh_a_spot_df = pd.read_csv(a_spot_csv_link, encoding="utf-8")
         logging.info("loading ag spot df from " + a_spot_csv_link)
     else:
-        stock_zh_a_spot_df = ak.stock_zh_a_spot()
-        finlib.Finlib().pprint(stock_zh_a_spot_df.head(10))
+        stock_zh_a_spot_df = ak.stock_zh_a_spot().drop_duplicates()
+        finlib.Finlib().pprint(stock_zh_a_spot_df.head(3))
         stock_zh_a_spot_df.to_csv(a_spot_csv, encoding='UTF-8', index=False)
         logging.info("ag spot saved to " + a_spot_csv)
 
@@ -167,8 +167,8 @@ def wei_pan_la_sheng():
         logging.info("loading ag kcb df from " + ag_kcb_csv_link)
 
     else:
-        stock_zh_kcb_spot_df = ak.stock_zh_kcb_spot()
-        finlib.Finlib().pprint(stock_zh_kcb_spot_df.head(10))
+        stock_zh_kcb_spot_df = ak.stock_zh_kcb_spot().drop_duplicates()
+        finlib.Finlib().pprint(stock_zh_kcb_spot_df.head(3))
         stock_zh_kcb_spot_df.to_csv(ag_kcb_csv, encoding='UTF-8', index=False)
         logging.info("ag spot saved to " + ag_kcb_csv)
 
@@ -206,7 +206,7 @@ def wei_pan_la_sheng():
 
         # new_df = stock_zh_a_spot_df
         new_df = pd.read_csv(a_spot_csv_link, encoding="utf-8")
-        new_df_large_change = new_df[new_df['changepercent'] > 5]
+        new_df_large_change = new_df[new_df['changepercent'] > -30]
         logging.info(" number of large change df in new " + str(new_df_large_change.__len__()) + ", data at " +
                      new_df_large_change['ticktime'].iloc[0])
 
@@ -219,8 +219,8 @@ def wei_pan_la_sheng():
             ['symbol', 'code', 'name', 'trade', 'increase_diff', 'volume', 'amount', 'per', 'pb', 'mktcap', 'nmc',
              'turnoverratio', 'ticktime_o', 'changepercent_o', 'ticktime', 'changepercent']]
         merged_inner_rst = merged_inner_rst.sort_values(by=['increase_diff'], ascending=[False], inplace=False)
-        logging.info("The Rapid Change Stock List:")
-        finlib.Finlib().pprint(merged_inner_rst)
+        logging.info("The top10 Rapid Change Stock List:")
+        finlib.Finlib().pprint(merged_inner_rst.head(10))
 
         merged_inner_rst.to_csv(b+'/wei_pan_la_sheng_'+nowS+'.csv', encoding='UTF-8', index=False)
         logging.info("ag wei_pan_la_sheng output list saved"  )
@@ -232,9 +232,8 @@ def wei_pan_la_sheng():
         logging.info(" number of small change df in old " + str(old_df_small_change.__len__()) + ", data at " +
                      old_df_small_change['ticktime'].iloc[0])
 
-        # new_df = stock_zh_a_spot_df
         new_df = pd.read_csv(ag_kcb_csv_link, encoding="utf-8")
-        new_df_large_change = new_df[new_df['changepercent'] > 5]
+        new_df_large_change = new_df[new_df['changepercent'] > -30]
         logging.info(" number of large change df in new " + str(new_df_large_change.__len__()) + ", data at " +
                      new_df_large_change['ticktime'].iloc[0])
 
@@ -247,8 +246,8 @@ def wei_pan_la_sheng():
             ['symbol', 'code', 'name', 'trade', 'increase_diff', 'volume', 'amount', 'per', 'pb', 'mktcap', 'nmc',
              'turnoverratio', 'ticktime_o', 'changepercent_o', 'ticktime', 'changepercent']]
         merged_inner_rst = merged_inner_rst.sort_values(by=['increase_diff'], ascending=[False], inplace=False)
-        logging.info("The Rapid Change Stock List:")
-        finlib.Finlib().pprint(merged_inner_rst)
+        logging.info("KCB top 10 Rapid Change Stock List:")
+        finlib.Finlib().pprint(merged_inner_rst.head(10))
         merged_inner_rst.to_csv(b+'/wei_pan_la_sheng_kcb_'+nowS+'.csv', encoding='UTF-8', index=False)
         logging.info("ag kcb wei_pan_la_sheng output list saved" )
 
@@ -362,10 +361,10 @@ def fetch_after_market_close():
 def main():
     parser = OptionParser()
 
-    parser.add_option("--fetch_after_market", action="store_true", dest="fetch_after_market", default=False,
+    parser.add_option("-f","--fetch_after_market", action="store_true", dest="fetch_after_market", default=False,
                       help="fetch market data after market closure.")
 
-    parser.add_option("--wei_pan_la_sheng", action="store_true", dest="wei_pan_la_sheng", default=False,
+    parser.add_option("-i","--wei_pan_la_sheng", action="store_true", dest="wei_pan_la_sheng", default=False,
                       help="get stocks price roaring. Need run twice then get the comparing increase")
 
     (options, args) = parser.parse_args()
