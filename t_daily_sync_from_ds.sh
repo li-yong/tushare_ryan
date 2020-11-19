@@ -37,7 +37,7 @@ ssh haha_data_source "cd ~/tushare_ryan;  git pull"
 #rsync -az /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/latest/*.csv ${source_host}:/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/latest
 #rsync -az /home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/individual_per_stock/  ${source_host}:/home/ryan/DATA/pickle/Stock_Fundamental/fundamentals_2/source/individual_per_stock/
 
-rsync -az /home/ryan/DATA/pickle/Stock_Fundamental/akshare/  ${source_host}:/home/ryan/DATA/pickle/Stock_Fundamental/ak_share/
+rsync -az /home/ryan/DATA/pickle/Stock_Fundamental/akshare/  ${source_host}:/home/ryan/DATA/pickle/Stock_Fundamental/akshare/
 
 
 
