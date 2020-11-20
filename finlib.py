@@ -3354,7 +3354,8 @@ class Finlib:
 
         df_daily = self.regular_column_names(df_daily)
 
-        df_daily['date'] = pd.to_datetime(df_daily['date'], format="%Y-%m-%d")
+        #df_daily['date'] = pd.to_datetime(df_daily['date'], format="%Y-%m-%d")#ryan commented 20201120
+        df_daily['date'] = pd.to_datetime(df_daily['date'], format="%Y%m%d") #ryan added 20201120
 
         df_daily = df_daily.reset_index().set_index('date')
 
@@ -4369,6 +4370,12 @@ class Finlib:
             rtn = True
 
         return(rtn)
+
+#https://www.mytecbits.com/internet/python/week-number-of-month
+    def week_number_of_month(self,date_value):
+        return (date_value.isocalendar()[1] - date_value.replace(day=1).isocalendar()[1] )
+        #return (date_value.isocalendar()[1] - date_value.replace(day=1).isocalendar()[1] + 1)
+
 
     #input: df [open,high, low, close]
     #output: {hit:[T|F], high:value, low:value, }

@@ -298,5 +298,9 @@ if [ $full_or_daily == "FULL" ]; then
   echo "HK/US daily update completed."
 fi
 
+######################################
+#
+######################################
+python ak_share.py  --fetch_after_market
 
 echo "done, script completed"

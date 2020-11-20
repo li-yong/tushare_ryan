@@ -26,7 +26,7 @@ import stockstats
 import tabulate
 import os
 import logging
-
+import calendar
 from optparse import OptionParser
 
 logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m_%d %H:%M:%S', level=logging.DEBUG)
@@ -208,8 +208,45 @@ def calculate(indicator, period):
 
 def analyze():
     file = "/home/ryan/DATA/DAY_Global/AG/SH600519.csv"
-    df = pd.read_csv(file)
-    df_period = finlib.Finlib().daily_to_monthly_bar(df_daily=df)['df_monthly']
+    df_daily = finlib.Finlib().regular_read_csv_to_stdard_df(data_csv=file)
+    df_weekly= finlib.Finlib().daily_to_monthly_bar(df_daily=df_daily)['df_weekly']
+    df_monthly = finlib.Finlib().daily_to_monthly_bar(df_daily=df_daily)['df_monthly']
+
+
+
+    #df_daily['date_dt']= df_daily['date'].apply(lambda _d: datetime.datetime.strptime(str(_d), '%Y%m%d'))
+    #df_daily['date_weekday_int']= df_daily['date_dt'].apply(lambda _d: _d.weekday()) #0: Monday, 6:Sunday
+    df_daily['date_weekday_str']= df_daily['date'].apply(lambda _d: calendar.day_name[_d.weekday()])  #By name
+    df_daily['increase'] = round((df_daily['close'] - df_daily['open'])/df_daily['open'],2)
+    desc_increase_day_of_week= df_daily.groupby(by='date_weekday_str').describe()['increase'].sort_values(
+        by=['mean'], ascending=False, inplace=False)
+    logging.info("\n\nincrease_day_of_week")
+    logging.info(finlib.Finlib().pprint(desc_increase_day_of_week))
+
+    df_weekly['date_week_of_year']= df_weekly['date'].apply(lambda _d: _d.isocalendar()[1])
+    df_weekly['date_week_of_month']= df_weekly['date'].apply(lambda _d: finlib.Finlib().week_number_of_month(_d))
+    df_weekly['increase'] = round((df_weekly['close'] - df_weekly['open'])/df_weekly['open'],2)
+    desc_increase_week_of_year = df_weekly.groupby(by='date_week_of_year').describe()['increase'].sort_values(
+        by=['mean'], ascending=False, inplace=False)
+    logging.info("\n\nincrease_week_of_year")
+    logging.info(finlib.Finlib().pprint(desc_increase_week_of_year))
+
+    desc_increase_week_of_month = df_weekly.groupby(by='date_week_of_month').describe()['increase'].sort_values(
+        by=['mean'], ascending=False, inplace=False)
+    logging.info("\n\nincrease_week_of_month")
+    logging.info(finlib.Finlib().pprint(desc_increase_week_of_month))
+
+    df_monthly['date_month']= df_monthly['date'].apply(lambda _d: _d.month_name())
+    df_monthly['increase']=  round((df_monthly['close'] - df_monthly['open'])/df_monthly['open'],2)
+
+    desc_month_of_year = df_monthly.groupby(by='date_month').describe()['increase'].sort_values(by=['mean'], ascending=False, inplace=False)
+    logging.info("\n\nincrease_month_of_year")
+    logging.info(finlib.Finlib().pprint(desc_month_of_year))
+
+
+
+    exit(0)
+
 
     pass
 
@@ -235,7 +272,7 @@ def main():
     if indicator == None:
         print("missing indicator [MACD|KDJ]")
 
-    analyze(indicator=indicator)  #ryan debug
+    analyze()  #ryan debug
 
     if analyze_f:
         analyze(indicator=indicator)
