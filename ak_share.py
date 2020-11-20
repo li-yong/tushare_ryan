@@ -377,10 +377,6 @@ def main():
     if options.fetch_after_market:
         fetch_after_market_close()
 
-    print(1)
-
-
-
     logging.info('script completed')
     os._exit(0)
 

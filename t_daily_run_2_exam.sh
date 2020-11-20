@@ -175,7 +175,16 @@ if [ $full_or_daily == "DAILY" ]; then
     #python t_daily_fundamentals_2.py --merge_local --fast_fetch
 fi
 
+#########################  Get ADL
+# input:~/DATA/DAY_Global/AG, ~/DATA/DAY_Global/AG_INDEX
+# output:
+#/home/ryan/DATA/result/adl/ag_index_adl.csv
+#/home/ryan/DATA/result/adl/adl_perc_top_5_stocks.csv
+#/home/ryan/DATA/result/adl/vol_perc_top_5_stocks.csv
+#/home/ryan/DATA/result/adl/amt_perc_top_5_stocks.csv
 
+#########################
+python t_daily_adl_trin.py -n 14
 
 
 #########################  merge_individual

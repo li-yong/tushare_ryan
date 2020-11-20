@@ -4103,7 +4103,8 @@ class Finlib:
         return (rtn_df)
 
     def pprint(self, df):
-        print(tabulate.tabulate(df, headers='keys', tablefmt='psql'))
+        # print(tabulate.tabulate(df, headers='keys', tablefmt='psql'))
+        logging.info(tabulate.tabulate(df, headers='keys', tablefmt='psql'))
 
     def get_stock_configuration(self, selected, stock_global):
         rtn = {
