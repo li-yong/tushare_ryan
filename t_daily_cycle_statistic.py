@@ -206,10 +206,17 @@ def calculate(indicator, period):
         macd(period=period)
 
 
-def analyze_period_increase(start_period='20160101'):
-    file = "/home/ryan/DATA/DAY_Global/AG/SH600519.csv"
-    file = "/home/ryan/DATA/DAY_Global/AG_INDEX/000001.SH.csv"
-    file = "/home/ryan/DATA/DAY_Global/stooq/US_INDEX/SP500.csv"
+def analyze_period_increase(target_stock,start_period='20160101'):
+    if target_stock == 'SP500':
+        file = "/home/ryan/DATA/DAY_Global/stooq/US_INDEX/SP500.csv"
+    elif target_stock == 'AGINDEX':
+        file = "/home/ryan/DATA/DAY_Global/AG_INDEX/000001.SH.csv"
+    elif target_stock == 'SH600519':
+        file = "/home/ryan/DATA/DAY_Global/AG/SH600519.csv"
+    else:
+        logging.error("Unsupported target stock code "+str(target_stock))
+        exit(0)
+
     df_daily = finlib.Finlib().regular_read_csv_to_stdard_df(data_csv=file)
     df_daily = df_daily[df_daily['date']>=start_period]
 
@@ -277,11 +284,12 @@ def main():
 
     if target_stock == None:
         print("missing target_stock [SP500|AGIDEX|AGID]")
+        exit(0)
 
     if analyze_f:
-        analyze_period_increase(start_period=start_period)
+        analyze_period_increase(target_stock=target_stock,start_period=start_period)
     elif not start_period == None:
-        calculate(indicator, start_period)
+        calculate(start_period=start_period)
 
 
 ### MAIN ####
