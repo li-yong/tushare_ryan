@@ -206,11 +206,12 @@ def calculate(indicator, period):
         macd(period=period)
 
 
-def analyze():
+def analyze_period_increase(start_period='20160101'):
     file = "/home/ryan/DATA/DAY_Global/AG/SH600519.csv"
     file = "/home/ryan/DATA/DAY_Global/AG_INDEX/000001.SH.csv"
+    file = "/home/ryan/DATA/DAY_Global/stooq/US_INDEX/SP500.csv"
     df_daily = finlib.Finlib().regular_read_csv_to_stdard_df(data_csv=file)
-    df_daily = df_daily[df_daily['date']>='20100101']
+    df_daily = df_daily[df_daily['date']>=start_period]
 
     code  = df_daily.iloc[0]['code']
     _t = finlib.Finlib().daily_to_monthly_bar(df_daily=df_daily)
@@ -222,30 +223,30 @@ def analyze():
     #df_daily['date_dt']= df_daily['date'].apply(lambda _d: datetime.datetime.strptime(str(_d), '%Y%m%d'))
     #df_daily['date_weekday_int']= df_daily['date_dt'].apply(lambda _d: _d.weekday()) #0: Monday, 6:Sunday
     df_daily['date_weekday_str']= df_daily['date'].apply(lambda _d: calendar.day_name[_d.weekday()])  #By name
-    df_daily['increase'] = round((df_daily['close'] - df_daily['open'])/df_daily['open'],2)
+    df_daily['increase'] = round((df_daily['close'] - df_daily['open'])*100/df_daily['open'],1)
     desc_increase_day_of_week= df_daily.groupby(by='date_weekday_str').describe()['increase'].sort_values(
         by=['mean'], ascending=False, inplace=False)
-    logging.info("\n\nincrease_day_of_week, code "+str(code))
+    logging.info("\n\nincrease_day_of_week, code "+str(code)+" since "+start_period)
     logging.info(finlib.Finlib().pprint(desc_increase_day_of_week))
 
-    df_weekly['date_week_of_year']= df_weekly['date'].apply(lambda _d: _d.isocalendar()[1])
+    df_weekly['date_week_of_year']= df_weekly['date'].apply(lambda _d: _d.isocalendar()[1]+1)
     df_weekly['date_week_of_month']= df_weekly['date'].apply(lambda _d: finlib.Finlib().week_number_of_month(_d))
-    df_weekly['increase'] = round((df_weekly['close'] - df_weekly['open'])/df_weekly['open'],2)
+    df_weekly['increase'] = round((df_weekly['close'] - df_weekly['open'])*100/df_weekly['open'],1)
     desc_increase_week_of_year = df_weekly.groupby(by='date_week_of_year').describe()['increase'].sort_values(
         by=['mean'], ascending=False, inplace=False)
-    logging.info("\n\nincrease_week_of_year, code "+str(code))
+    logging.info("\n\nincrease_week_of_year, code "+str(code)+" since "+start_period)
     logging.info(finlib.Finlib().pprint(desc_increase_week_of_year))
 
     desc_increase_week_of_month = df_weekly.groupby(by='date_week_of_month').describe()['increase'].sort_values(
         by=['mean'], ascending=False, inplace=False)
-    logging.info("\n\nincrease_week_of_month, code "+str(code))
+    logging.info("\n\nincrease_week_of_month, code "+str(code)+" since "+start_period)
     logging.info(finlib.Finlib().pprint(desc_increase_week_of_month))
 
     df_monthly['date_month']= df_monthly['date'].apply(lambda _d: _d.month_name())
-    df_monthly['increase']=  round((df_monthly['close'] - df_monthly['open'])/df_monthly['open'],2)
+    df_monthly['increase']=  round((df_monthly['close'] - df_monthly['open'])*100/df_monthly['open'],1)
 
     desc_month_of_year = df_monthly.groupby(by='date_month').describe()['increase'].sort_values(by=['mean'], ascending=False, inplace=False)
-    logging.info("\n\nincrease_month_of_year, code "+str(code))
+    logging.info("\n\nincrease_month_of_year, code "+str(code)+" since "+start_period)
     logging.info(finlib.Finlib().pprint(desc_month_of_year))
 
 
@@ -262,27 +263,25 @@ def main():
 
     parser = OptionParser()
 
-    parser.add_option("--indicator", type="str", dest="indicator_f", default=None, help="indicator, one of [KDJ|MACD]")
+    parser.add_option("--target_stock", type="str", dest="target_stock_f", default=None, help="indicator, one of [SP500|AGIDEX|AGID]")
 
-    parser.add_option("--period", type="str", dest="period_f", default=None, help="period, one of [M|W|D]")
+    parser.add_option("--start_period", type="str", dest="start_period_f", default=None, help="since when, in format yyyymmdd")
 
     parser.add_option("-a", "--analyze", action="store_true", dest="analyze_f", default=False, help="analyze based on [MACD|KDJ] M|W|D result.")
 
     (options, args) = parser.parse_args()
 
-    indicator = options.indicator_f
-    period = options.period_f
+    target_stock = options.target_stock_f
+    start_period = options.start_period_f
     analyze_f = options.analyze_f
 
-    if indicator == None:
-        print("missing indicator [MACD|KDJ]")
-
-    analyze()  #ryan debug
+    if target_stock == None:
+        print("missing target_stock [SP500|AGIDEX|AGID]")
 
     if analyze_f:
-        analyze(indicator=indicator)
-    elif not period == None:
-        calculate(indicator, period)
+        analyze_period_increase(start_period=start_period)
+    elif not start_period == None:
+        calculate(indicator, start_period)
 
 
 ### MAIN ####

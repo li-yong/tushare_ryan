@@ -3359,6 +3359,17 @@ class Finlib:
 
         # df_daily = df_daily.reset_index().set_index('date')
 
+        code = df_daily['code'].iloc[0]
+
+        logic_sp500_index = {
+            'open': 'first',
+            'high': 'max',
+            'low': 'min',
+            'close': 'last',
+            'volume': 'sum',
+        }
+
+
         #### /home/ryan/DATA/DAY_Global/AG_INDEX/000001.SH.csv
         # code,date,close,open,high,low,pre_close,change,pct_chg,volume,amount
 
@@ -3386,7 +3397,9 @@ class Finlib:
             'tnv': 'mean',
         }
 
-        if ('pct_chg' in df_daily.columns):
+        if code == 'SP500':
+            logic=logic_sp500_index
+        elif ('pct_chg' in df_daily.columns):
             logic = logic_ag_index
             logging.info("found pct_chg in columns, suppose this is AG_INDEX. ")
         else:
@@ -4404,8 +4417,17 @@ class Finlib:
 
 #https://www.mytecbits.com/internet/python/week-number-of-month
     def week_number_of_month(self,date_value):
-        return (date_value.isocalendar()[1] - date_value.replace(day=1).isocalendar()[1] )
-        #return (date_value.isocalendar()[1] - date_value.replace(day=1).isocalendar()[1] + 1)
+        #return (date_value.isocalendar()[1] - date_value.replace(day=1).isocalendar()[1]  )
+
+        today_week_of_year = date_value.isocalendar()[1]
+        month_1st_week_of_year = date_value.replace(day=1).isocalendar()[1]
+
+        if today_week_of_year <= 5 and month_1st_week_of_year >= 52:
+            rtn = today_week_of_year
+        else:
+            rtn = today_week_of_year - month_1st_week_of_year +1
+
+        return(rtn)
 
 
     #input: df [open,high, low, close]
