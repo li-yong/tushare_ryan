@@ -214,8 +214,9 @@ def analyze_period_increase(target_stock,start_period='20160101'):
     elif target_stock == 'SH600519':
         file = "/home/ryan/DATA/DAY_Global/AG/SH600519.csv"
     else:
-        logging.error("Unsupported target stock code "+str(target_stock))
-        exit(0)
+        file = "/home/ryan/DATA/DAY_Global/AG/"+target_stock+".csv"
+        # logging.error("Unsupported target stock code "+str(target_stock))
+        # exit(0)
 
     df_daily = finlib.Finlib().regular_read_csv_to_stdard_df(data_csv=file)
     df_daily = df_daily[df_daily['date']>=start_period]
@@ -270,7 +271,7 @@ def main():
 
     parser = OptionParser()
 
-    parser.add_option("--target_stock", type="str", dest="target_stock_f", default=None, help="indicator, one of [SP500|AGIDEX|AGID]")
+    parser.add_option("--target_stock", type="str", dest="target_stock_f", default=None, help="indicator, one of [SP500|AGINDEX|AGCODE]")
 
     parser.add_option("--start_period", type="str", dest="start_period_f", default=None, help="since when, in format yyyymmdd")
 
@@ -283,7 +284,7 @@ def main():
     analyze_f = options.analyze_f
 
     if target_stock == None:
-        print("missing target_stock [SP500|AGIDEX|AGID]")
+        logging.info("missing target_stock [SP500|AGIDEX|AGID]")
         exit(0)
 
     if analyze_f:
