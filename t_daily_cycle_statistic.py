@@ -210,6 +210,9 @@ def analyze():
     file = "/home/ryan/DATA/DAY_Global/AG/SH600519.csv"
     file = "/home/ryan/DATA/DAY_Global/AG_INDEX/000001.SH.csv"
     df_daily = finlib.Finlib().regular_read_csv_to_stdard_df(data_csv=file)
+    df_daily = df_daily[df_daily['date']>='20100101']
+
+    code  = df_daily.iloc[0]['code']
     _t = finlib.Finlib().daily_to_monthly_bar(df_daily=df_daily)
     df_weekly= _t['df_weekly']
     df_monthly = _t['df_monthly']
@@ -222,7 +225,7 @@ def analyze():
     df_daily['increase'] = round((df_daily['close'] - df_daily['open'])/df_daily['open'],2)
     desc_increase_day_of_week= df_daily.groupby(by='date_weekday_str').describe()['increase'].sort_values(
         by=['mean'], ascending=False, inplace=False)
-    logging.info("\n\nincrease_day_of_week")
+    logging.info("\n\nincrease_day_of_week, code "+str(code))
     logging.info(finlib.Finlib().pprint(desc_increase_day_of_week))
 
     df_weekly['date_week_of_year']= df_weekly['date'].apply(lambda _d: _d.isocalendar()[1])
@@ -230,19 +233,19 @@ def analyze():
     df_weekly['increase'] = round((df_weekly['close'] - df_weekly['open'])/df_weekly['open'],2)
     desc_increase_week_of_year = df_weekly.groupby(by='date_week_of_year').describe()['increase'].sort_values(
         by=['mean'], ascending=False, inplace=False)
-    logging.info("\n\nincrease_week_of_year")
+    logging.info("\n\nincrease_week_of_year, code "+str(code))
     logging.info(finlib.Finlib().pprint(desc_increase_week_of_year))
 
     desc_increase_week_of_month = df_weekly.groupby(by='date_week_of_month').describe()['increase'].sort_values(
         by=['mean'], ascending=False, inplace=False)
-    logging.info("\n\nincrease_week_of_month")
+    logging.info("\n\nincrease_week_of_month, code "+str(code))
     logging.info(finlib.Finlib().pprint(desc_increase_week_of_month))
 
     df_monthly['date_month']= df_monthly['date'].apply(lambda _d: _d.month_name())
     df_monthly['increase']=  round((df_monthly['close'] - df_monthly['open'])/df_monthly['open'],2)
 
     desc_month_of_year = df_monthly.groupby(by='date_month').describe()['increase'].sort_values(by=['mean'], ascending=False, inplace=False)
-    logging.info("\n\nincrease_month_of_year")
+    logging.info("\n\nincrease_month_of_year, code "+str(code))
     logging.info(finlib.Finlib().pprint(desc_month_of_year))
 
 

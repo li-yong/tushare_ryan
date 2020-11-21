@@ -3359,9 +3359,6 @@ class Finlib:
 
         # df_daily = df_daily.reset_index().set_index('date')
 
-
-
-
         #### /home/ryan/DATA/DAY_Global/AG_INDEX/000001.SH.csv
         # code,date,close,open,high,low,pre_close,change,pct_chg,volume,amount
 
@@ -3398,25 +3395,19 @@ class Finlib:
 
 
 #https://stackoverflow.com/questions/34597926/converting-daily-stock-data-to-weekly-based-via-pandas-in-python
-        # df_weekly = df.resample('W', loffset=pd.offsets.timedelta(days=-6)).apply(logic)
-        # day_of_this_month = monthrange(datetime.datetime.today().year, datetime.datetime.today().month)[1]
-        # left_days_in_current_month = datetime.datetime.today().day - day_of_this_month
-        # df_monthly = df.resample('M', loffset=pd.offsets.timedelta(days=left_days_in_current_month)).apply(logic)
-        print("\n\n df_daily 1")
-        print(df_daily.iloc[-1])
-
         #-2 to Friday 2020-11-20.  ignore to next Sunday 2020-11-22.  -6 to Monday 2020-11-16.
         df_weekly = df_daily.resample('W', on='date',loffset=pd.offsets.timedelta(days=-2)).apply(logic).reset_index()
-        print("\n\n df_daily 2")
-        print(df_daily.iloc[-1])
-
-        print("\n\n df_weekly")
-        print(df_weekly.iloc[-1])
+        # print("\n\n df_daily 2")
+        # print(df_daily.iloc[-1])
+        #
+        # print("\n\n df_weekly")
+        # print(df_weekly.iloc[-1])
 
         #ignore to last day of the month. 2020-11-30
         df_monthly = df_daily.resample('M', on='date').apply(logic).reset_index()
-        print("\n\n df_monthly")
-        print(df_monthly.iloc[-1])
+
+        # print("\n\n df_monthly")
+        # print(df_monthly.iloc[-1])
 
         rtn = {
             'df_weekly': df_weekly,
