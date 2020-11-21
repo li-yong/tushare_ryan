@@ -208,9 +208,11 @@ def calculate(indicator, period):
 
 def analyze():
     file = "/home/ryan/DATA/DAY_Global/AG/SH600519.csv"
+    file = "/home/ryan/DATA/DAY_Global/AG_INDEX/000001.SH.csv"
     df_daily = finlib.Finlib().regular_read_csv_to_stdard_df(data_csv=file)
-    df_weekly= finlib.Finlib().daily_to_monthly_bar(df_daily=df_daily)['df_weekly']
-    df_monthly = finlib.Finlib().daily_to_monthly_bar(df_daily=df_daily)['df_monthly']
+    _t = finlib.Finlib().daily_to_monthly_bar(df_daily=df_daily)
+    df_weekly= _t['df_weekly']
+    df_monthly = _t['df_monthly']
 
 
 
