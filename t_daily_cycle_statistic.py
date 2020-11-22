@@ -36,6 +36,8 @@ logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m_%d %H:%M:%S', 
 def analyze_period_increase(target_stock,start_period='20160101'):
     if target_stock == 'SP500':
         file = "/home/ryan/DATA/DAY_Global/stooq/US_INDEX/SP500.csv"
+    elif target_stock == 'NASDAQ100':
+        file = "/home/ryan/DATA/DAY_Global/stooq/US_INDEX/NASDAQ100.csv"
     elif target_stock == 'AGINDEX':
         file = "/home/ryan/DATA/DAY_Global/AG_INDEX/000001.SH.csv"
     elif target_stock == 'SH600519':
@@ -62,7 +64,7 @@ def analyze_period_increase(target_stock,start_period='20160101'):
     desc_increase_day_of_week= df_daily.groupby(by='date_weekday_str').describe()['increase'].sort_values(
         by=['mean'], ascending=False, inplace=False)
     logging.info("\n\nincrease_day_of_week, code "+str(code)+" since "+start_period)
-    logging.info(finlib.Finlib().pprint(desc_increase_day_of_week))
+    finlib.Finlib().pprint(desc_increase_day_of_week)
 
     df_weekly['date_week_of_year']= df_weekly['date'].apply(lambda _d: _d.isocalendar()[1]+1)
     df_weekly['date_week_of_month']= df_weekly['date'].apply(lambda _d: finlib.Finlib().week_number_of_month(_d))
@@ -70,19 +72,19 @@ def analyze_period_increase(target_stock,start_period='20160101'):
     desc_increase_week_of_year = df_weekly.groupby(by='date_week_of_year').describe()['increase'].sort_values(
         by=['mean'], ascending=False, inplace=False)
     logging.info("\n\nincrease_week_of_year, code "+str(code)+" since "+start_period)
-    logging.info(finlib.Finlib().pprint(desc_increase_week_of_year))
+    finlib.Finlib().pprint(desc_increase_week_of_year)
 
     desc_increase_week_of_month = df_weekly.groupby(by='date_week_of_month').describe()['increase'].sort_values(
         by=['mean'], ascending=False, inplace=False)
     logging.info("\n\nincrease_week_of_month, code "+str(code)+" since "+start_period)
-    logging.info(finlib.Finlib().pprint(desc_increase_week_of_month))
+    finlib.Finlib().pprint(desc_increase_week_of_month)
 
     df_monthly['date_month']= df_monthly['date'].apply(lambda _d: _d.month_name())
     df_monthly['increase']=  round((df_monthly['close'] - df_monthly['open'])*100/df_monthly['open'],1)
 
     desc_month_of_year = df_monthly.groupby(by='date_month').describe()['increase'].sort_values(by=['mean'], ascending=False, inplace=False)
     logging.info("\n\nincrease_month_of_year, code "+str(code)+" since "+start_period)
-    logging.info(finlib.Finlib().pprint(desc_month_of_year))
+    finlib.Finlib().pprint(desc_month_of_year)
 
 
 

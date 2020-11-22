@@ -3397,7 +3397,7 @@ class Finlib:
             'tnv': 'mean',
         }
 
-        if code == 'SP500':
+        if code == 'SP500' or code =='NASDAQ100':
             logic=logic_sp500_index
         elif ('pct_chg' in df_daily.columns):
             logic = logic_ag_index
@@ -4148,8 +4148,9 @@ class Finlib:
         return (rtn_df)
 
     def pprint(self, df):
-        # print(tabulate.tabulate(df, headers='keys', tablefmt='psql'))
-        logging.info(tabulate.tabulate(df, headers='keys', tablefmt='psql'))
+        str = tabulate.tabulate(df, headers='keys', tablefmt='psql')
+        logging.info(str)
+        return(str)
 
     def get_stock_configuration(self, selected, stock_global):
         rtn = {

@@ -45,6 +45,8 @@ def stooq_download(code, mkt, days=1, force_fetch=False):
         url = url_head + "^dji" + url_tail
     elif code == "sp500" and mkt == "us_index":
         url = url_head + "^spx" + url_tail
+    elif code == "nasdaq100" and mkt == "us_index":
+        url = url_head + "^ndx" + url_tail
     else:
         url = url_head + code + "." + mkt + url_tail
     req = requests.get(url)

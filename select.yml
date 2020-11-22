@@ -120,4 +120,5 @@ CN_INDEX:
 US_INDEX:
     - SP500: sp500
     - DOW: dow
+    - NASDAQ100: nasdaq100
 
