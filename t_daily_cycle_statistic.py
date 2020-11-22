@@ -100,24 +100,21 @@ def main():
 
     parser = OptionParser()
 
-    parser.add_option("--target_stock", type="str", dest="target_stock_f", default=None, help="indicator, one of [SP500|AGINDEX|AGCODE]")
+    parser.add_option("-t","--target_stock", type="str", dest="target_stock_f", default=None, help="indicator, one of [NASDAQ100|SP500|AGINDEX|AGCODE]")
 
-    parser.add_option("--start_period", type="str", dest="start_period_f", default=None, help="since when, in format yyyymmdd")
-
-    parser.add_option("-a", "--analyze", action="store_true", dest="analyze_f", default=False, help="analyze based on [MACD|KDJ] M|W|D result.")
+    parser.add_option("-p", "--start_period", type="str", dest="start_period_f", default=None, help="since when, in format yyyymmdd")
 
     (options, args) = parser.parse_args()
 
     target_stock = options.target_stock_f
     start_period = options.start_period_f
-    analyze_f = options.analyze_f
 
     if target_stock == None:
-        logging.info("missing target_stock [SP500|AGIDEX|AGID]")
+        logging.info("missing target_stock [NASDAQ100|SP500|AGIDEX|AGID]")
         exit(0)
 
-    if analyze_f:
-        analyze_period_increase(target_stock=target_stock,start_period=start_period)
+
+    analyze_period_increase(target_stock=target_stock,start_period=start_period)
 
 
 ### MAIN ####
