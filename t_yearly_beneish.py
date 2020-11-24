@@ -213,10 +213,11 @@ def beneish_calc(ts_code,name, ann_date, dt, dt_1):
     # logging.info(str(ts_code)+ " "+name+" "+str(ann_date)   +" M_5v:"+str(round(M_5v,2)))
     logging.info(str(ts_code)+ " "+name+" "+str(ann_date)   +" M_8v:"+str(round(M_8v,2)))
 
-    if M_8v > 3 :
+    threshold = -1.78
+    if M_8v > threshold :
          logging.info("WARNNING: M_8v great than 3"+ str(ts_code) + " "+str(ann_date) + " "+str(round(M_8v,2)))
 
-    if M_5v > 3 :
+    if M_5v > threshold :
          logging.info("WARNNING: M_5v great than 3"+ str(ts_code) + " "+str(ann_date) + " "+str(round(M_5v,2)))
 
     return(dict_rtn)
@@ -298,5 +299,6 @@ def main():
 
 
 ### MAIN ####
+#An M-Score of less than -2.22 suggests that the company will not be a manipulator. An M-Score of greater than -2.22 signals that the company is likely to be a manipulator.
 if __name__ == '__main__':
     main()

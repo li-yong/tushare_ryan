@@ -441,7 +441,7 @@ def load_fund_result(mini_score=80):
     return (df_fund_2)
 
 
-def fetch(fast_fetch=False):
+def fetch_pro_fund(fast_fetch=False):
     ts.set_token(myToken)
     pro = ts.pro_api()
 
@@ -3933,7 +3933,7 @@ def main():
     parser.add_option("--fetch_pro_basic", action="store_true", dest="fetch_pro_basic_f", default=False, help="")
 
     parser.add_option("--fetch_stk_holdertrade", action="store_true", dest="fetch_stk_holdertrade_f", default=False, help="")
-    parser.add_option("--fetch_pro_fund", action="store_true", dest="fetch_f", default=False, help="fetch pro income,balance,cashflow,mainbz,dividend,indicator,audit,forecast,express,disclosure ")
+    parser.add_option("--fetch_pro_fund", action="store_true", dest="fetch_pro_fund_f", default=False, help="fetch pro income,balance,cashflow,mainbz,dividend,indicator,audit,forecast,express,disclosure ")
     parser.add_option("--fetch_basic_quarterly", action="store_true", dest="fetch_basic_quarterly_f", default=False, help="")
     parser.add_option("--fetch_basic_daily", action="store_true", dest="fetch_basic_daily_f", default=False, help="")
     parser.add_option("--fetch_info_daily", action="store_true", dest="fetch_info_daily_f", default=False, help="")
@@ -4036,7 +4036,7 @@ def main():
 
     set_global(debug=debug_f, big_memory=big_memory_f, force_run=force_run_f)
 
-    if options.fetch_all_f or options.fetch_f:
+    if options.fetch_all_f or options.fetch_pro_fund_f:
         set_global_pro_fetch_field()
 
     if options.fetch_pro_basic_f:
@@ -4045,8 +4045,8 @@ def main():
     if options.fetch_stk_holdertrade_f:
         _fetch_stk_holdertrade(fast_fetch=fast_fetch_f)
 
-    if options.fetch_f:
-        fetch(fast_fetch=fast_fetch_f)
+    if options.fetch_pro_fund_f:
+        fetch_pro_fund(fast_fetch=fast_fetch_f)
 
     if options.fetch_basic_quarterly_f:
         fetch_basic_quarterly()
@@ -4097,7 +4097,7 @@ def main():
         ##############
         _fetch_pro_basic()
         #_fetch_stk_holdertrade(fast_fetch=fast_fetch_f) #don't have 2000 api credits
-        fetch(fast_fetch=fast_fetch_f)
+        fetch_pro_fund(fast_fetch=fast_fetch_f)
         fetch_basic_quarterly()
 
     elif merge_individual_f:
