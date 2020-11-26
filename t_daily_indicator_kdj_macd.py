@@ -205,7 +205,7 @@ def price_counter():
         finlib_indicator.Finlib_indicator().price_counter(df)
 
 
-def kdj(period):
+def kdj(period, debug=False):
     output_csv = "/home/ryan/DATA/result/kdj_selection_" + period + ".csv"  #head: code, name, date, action(b/s), reason, strength.
     # Term: Middle(because based on Monthly data,
     # Type: Cheap
@@ -513,7 +513,7 @@ def _macd(csv_f, period):
     return (rtn)
 
 
-def macd(period):
+def macd(period, debug=False):
     output_csv = "/home/ryan/DATA/result/macd_selection_" + period + ".csv"  #head: code, name, date, action(b/s), reason, strength.
     # Term: Middle(because based on Monthly data,
     # Type: Cheap
@@ -524,7 +524,8 @@ def macd(period):
     stock_list = finlib.Finlib().add_market_to_code(stock_list, dot_f=False, tspro_format=False)
 
     #stock_list = finlib.Finlib().remove_garbage(stock_list, code_field_name='code', code_format='C2D6')
-    stock_list = stock_list.head(30) #debug
+    if debug:
+        stock_list = stock_list.head(30) #debug
 
     cnt = stock_list.__len__()
     i = 0
@@ -549,23 +550,23 @@ def macd(period):
         logging.info(__file__+" "+"MACD selection saved to " + output_csv + " . len " + str(df_rtn.__len__()))
 
 
-def calculate(indicator, period):
+def calculate(indicator, period, debug):
     if indicator == 'KDJ':
-        kdj(period=period)
+        kdj(period=period, debug=debug)
 
     if indicator == 'MACD':
-        macd(period=period)
+        macd(period=period, debug=debug)
 
     if indicator == 'SMA':
-        sma()
+        sma( debug=debug)
     if indicator == 'PriceCounter':
-        price_counter()
+        price_counter( debug=debug)
 
 
 
 
 
-def analyze(indicator):
+def analyze(indicator, debug=False):
     dir = "/home/ryan/DATA/result"
     if indicator == 'MACD':
         input_csv_m = dir + "/macd_selection_M.csv"
@@ -619,17 +620,19 @@ def main():
 
     parser = OptionParser()
 
-    parser.add_option("--indicator", type="str", dest="indicator_f", default=None, help="indicator, one of [KDJ|MACD|SMA|PriceCounter]")
+    parser.add_option("-i","--indicator", type="str", dest="indicator_f", default=None, help="indicator, one of [KDJ|MACD|SMA|PriceCounter]")
 
-    parser.add_option("--period", type="str", dest="period_f", default=None, help="period, one of [M|W|D]")
+    parser.add_option("-p","--period", type="str", dest="period_f", default=None, help="period, one of [M|W|D]")
 
     parser.add_option("-a", "--analyze", action="store_true", dest="analyze_f", default=False, help="analyze based on [MACD|KDJ] M|W|D result.")
+    parser.add_option("-d", "--debug", action="store_true", dest="debug_f", default=False, help="debug")
 
     (options, args) = parser.parse_args()
 
     indicator = options.indicator_f
     period = options.period_f
     analyze_f = options.analyze_f
+    debug = options.debug_f
 
 
 
@@ -647,9 +650,9 @@ def main():
         print("missing indicator [MACD|KDJ|SMA|PriceCounter]")
 
     if analyze_f:
-        analyze(indicator=indicator)
+        analyze(indicator=indicator,  debug=debug)
     elif not period == None:
-        calculate(indicator, period)
+        calculate(indicator, period,debug)
 
 
 ### MAIN ####
