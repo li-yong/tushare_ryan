@@ -239,20 +239,34 @@ def kdj(period):
 
 
 def _macd(csv_f, period):
-
     rtn = {
         "reason": [''],
         "strength": [''],
         "action": [''],
         "code": [''],
         "date": [''],
-        "k1": [''],
-        "d1": [''],
-        "j1": [''],
-        "k2": [''],
-        "d2": [''],
-        "j2": [''],
+        "close": [''],
+        "dif1": [''],
+        "dea1": [''],
+        "macd1": [''],
+        "dif2": [''],
+        "dea2": [''],
+        "macd2": [''],
+        "sma60_1": [''],
+        "ema60_1": [''],
+
+        "distance_to_5ma_perc": 0,
+        "distance_to_12ma_perc": 0,
+        "distance_to_21ma_perc": 0,
+        "distance_to_55ma_perc": 0,
+        "distance_to_60ma_perc": 0,
     }
+
+    distance_to_5ma_perc = 0
+    distance_to_12ma_perc = 0
+    distance_to_21ma_perc = 0
+    distance_to_55ma_perc = 0
+    distance_to_60ma_perc = 0
 
     if not os.path.exists(csv_f):
         logging.info('file not exist. ' + csv_f)
@@ -280,6 +294,7 @@ def _macd(csv_f, period):
 
     df = df[-1000:]  #last 4 years.
     df = finlib_indicator.Finlib_indicator().add_ma_ema(df, short=12, middle=26, long=60)
+    df = finlib_indicator.Finlib_indicator().add_ma_ema(df, short=5, middle=21, long=55)
 
     if period == "M":
         df_period = finlib.Finlib().daily_to_monthly_bar(df_daily=df)['df_monthly']
@@ -347,6 +362,55 @@ def _macd(csv_f, period):
     sma60_2 = d2.sma_long_60
     ema60_2 = d2.ema_long_60
 
+#distance to MA
+    if c1 > 0:
+        distance_to_5ma_perc = round((c1 - d1.close_5_sma) * 100 /c1, 1)
+        distance_to_12ma_perc = round((c1 - d1.close_12_sma) * 100 /c1, 1)
+        distance_to_21ma_perc = round((c1 - d1.close_21_sma) * 100 /c1, 1)
+        distance_to_55ma_perc = round((c1 - d1.close_55_sma) * 100 /c1, 1)
+        distance_to_60ma_perc = round((c1 - d1.close_60_sma) * 100 /c1, 1)
+
+        distance_to_5ma_perc_2 = round((c2 - d2.close_5_sma) * 100 /c2, 1)
+        distance_to_12ma_perc_2 = round((c2 - d2.close_12_sma) * 100 /c2, 1)
+        distance_to_21ma_perc_2 = round((c2 - d2.close_21_sma) * 100 /c2, 1)
+        distance_to_55ma_perc_2 = round((c2 - d2.close_55_sma) * 100 /c2, 1)
+        distance_to_60ma_perc_2 = round((c2 - d2.close_60_sma) * 100 /c2, 1)
+
+        if distance_to_5ma_perc_2 < 0 and distance_to_5ma_perc > 0:
+            this_reason = str(this_code) + " " + str(this_date) + ' cross over 5ma'
+            this_strength = round(distance_to_5ma_perc - distance_to_5ma_perc_2,1)
+            this_action = 'BUY_EARLY'
+            logging.info(this_reason)
+        elif distance_to_5ma_perc_2 > 0 and distance_to_5ma_perc < 0:
+            this_reason = str(this_code) + " " + str(this_date) + ' cross down 5ma'
+            this_strength = round((distance_to_5ma_perc - distance_to_5ma_perc_2)*-1)
+            this_action = 'SELL_EARLY'
+            logging.info(this_reason)
+
+
+        if distance_to_21ma_perc_2 < 0 and distance_to_21ma_perc > 0:
+            this_reason = str(this_code) + " " + str(this_date) + ' cross over 21ma'
+            this_strength = round(distance_to_21ma_perc - distance_to_21ma_perc_2,1)
+            this_action = 'BUY_EARLY'
+            logging.info(this_reason)
+        elif  distance_to_21ma_perc_2 > 0 and distance_to_21ma_perc < 0:
+            this_reason = str(this_code) + " " + str(this_date) + ' cross down 21ma'
+            this_strength = round((distance_to_21ma_perc - distance_to_21ma_perc_2)*-1)
+            this_action = 'SELL_EARLY'
+            logging.info(this_reason)
+
+
+        if distance_to_60ma_perc_2 < 0 and distance_to_60ma_perc > 0:
+            this_reason = str(this_code) + " " + str(this_date) + ' cross over 60ma'
+            this_strength = round(distance_to_60ma_perc - distance_to_60ma_perc_2,1)
+            this_action = 'BUY_EARLY'
+            logging.info(this_reason)
+        elif  distance_to_60ma_perc_2 > 0 and distance_to_60ma_perc < 0:
+            this_reason = str(this_code) + " " + str(this_date) + ' cross down 60ma'
+            this_strength = round((distance_to_60ma_perc - distance_to_60ma_perc_2)*-1,1)
+            this_action = 'SELL_EARLY'
+            logging.info(this_reason)
+
 
 #####################
 #  Conditions:  SELL EASY, BUY HARD
@@ -356,20 +420,20 @@ def _macd(csv_f, period):
         this_reason = str(this_code)+" "+str(this_date) + ', SELL_MUST, c is above sma60 but dif <0, price expected to be drop back to under sma60, close '+str(c1)+" ,sma60 "+str(sma60_1)
         this_strength = 1
         this_action = 'SELL_MUST'
-        logging.info(this_reason + csv_f)
+        logging.info(this_reason)
 
 
     if c2 < sma60_2 and  c1 > sma60_1 and dif2 < 0 and dif1 > 0 :
         this_reason = str(this_code)+" "+str(this_date) + ',BUY_MUST, c cross over sma60 and dif cross over, price expected to continue rise. close '+str(c1)+" ,sma60 "+str(sma60_1)
         this_strength = 2
         this_action = 'BUY_MUST'
-        logging.info(this_reason + csv_f)
+        logging.info(this_reason)
 
     if c2 > sma60_2 and  c1 < sma60_1 and dif2 > 0 and dif1 < 0 :
         this_reason = str(this_code)+" "+str(this_date) + ',SELL_MUST, c cross down sma60 and dif cross down, price expected to continue drop. close '+str(c1)+" ,sma60 "+str(sma60_1)
         this_strength = 2
         this_action = 'SELL_MUST'
-        logging.info(this_reason + csv_f)
+        logging.info(this_reason)
 
 
 
@@ -380,14 +444,14 @@ def _macd(csv_f, period):
         this_reason = "dif up over sig. "
         this_strength = 1
         this_action = 'BUY_CHK'
-        print(this_reason + csv_f)
+        logging.info(this_reason)
 
 
     if dif2 > dea2 and dif1 < dea1:
         this_reason = "dif down cross sig. "
         this_strength = 1
         this_action = 'SELL_CHK'
-        print(this_reason + csv_f)
+        logging.info(this_reason)
 
 #####################
 #####################
@@ -396,12 +460,12 @@ def _macd(csv_f, period):
             this_reason = "price high, macd down near 0. "
             this_strength = 1
             this_action = 'SELL_EARLY'
-            print(this_reason + csv_f)
+            logging.info(this_reason + csv_f)
         elif dif2 > 0 and dea2 > 0 and macd1 < 0 and macd2 > 0:
             this_reason = "price high, macd down over 0. "
             this_strength = 1
             this_action = 'SELL_MUST'
-            print(this_reason + csv_f)
+            logging.info(this_reason)
 
 #####################
 #####################
@@ -411,12 +475,12 @@ def _macd(csv_f, period):
             this_reason = "price low, macd up near 0. "
             this_strength = 1
             this_action = 'BUY_EARLY'
-            print(this_reason + csv_f)
+            logging.info(this_reason)
         elif dif2 < -50 and dea2 < -50 and macd1 > 0 and macd2 < 0:
             this_reason = "price low, macd up over 0. "
             this_strength = 1
             this_action = 'BUY_MUST'
-            print(this_reason + csv_f)
+            logging.info(this_reason)
 
     rtn = {
         "reason": [this_reason],
@@ -424,12 +488,21 @@ def _macd(csv_f, period):
         "action": [this_action],
         "code": [this_code],
         "date": [this_date],
+        "close": [c1],
         "dif1": [round(dif1, 1)],
         "dea1": [round(dea1, 1)],
         "macd1": [round(macd1, 1)],
         "dif2": [round(dif2, 1)],
         "dea2": [round(dea2, 1)],
         "macd2": [round(macd2, 1)],
+        "sma60_1": [round(sma60_1, 1)],
+        "ema60_1": [round(ema60_1, 1)],
+
+        "distance_to_5ma_perc": [round(distance_to_5ma_perc, 1)],
+        "distance_to_12ma_perc": [round(distance_to_12ma_perc, 1)],
+        "distance_to_21ma_perc": [round(distance_to_21ma_perc, 1)],
+        "distance_to_55ma_perc": [round(distance_to_55ma_perc, 1)],
+        "distance_to_60ma_perc": [round(distance_to_60ma_perc, 1)],
     }
 
     return (rtn)
@@ -461,7 +534,7 @@ def macd(period):
             df_rtn = df_rtn.append(df)
 
     if df_rtn.empty:
-        print("MACD no qualified stock found.")
+        logging.info("MACD no qualified stock found.")
     else:
         df_rtn = pd.merge(df_rtn, stock_list, how='inner', on='code')
         df_rtn = df_rtn[['code', 'name', 'date', 'action', 'reason', 'strength']]
