@@ -260,7 +260,10 @@ def _macd(csv_f, period):
 
     #csv_f = '/home/ryan/DATA/DAY_Global/AG/SH600519.csv' #ryan debug
 
+
     df = pd.read_csv(csv_f, converters={'code': str}, header=None, skiprows=1, names=['code', 'date', 'open', 'high', 'low', 'close', 'volume', 'amount', 'tnv'])
+
+    #df = finlib.Finlib().regular_read_csv_to_stdard_df(data_csv="/home/ryan/DATA/DAY_Global/AG_INDEX/000001.SH.csv") ##ryan debug for ag index
 
     if df.__len__() < 100:
         logging.info('file less than 100 records. ' + csv_f)
@@ -276,6 +279,7 @@ def _macd(csv_f, period):
     # print(tabulate.tabulate(df_monthly_s[-20:], headers='keys', tablefmt='psql'))
 
     df = df[-1000:]  #last 4 years.
+    df = finlib_indicator.Finlib_indicator().add_ma_ema(df, short=12, middle=26, long=60)
 
     if period == "M":
         df_period = finlib.Finlib().daily_to_monthly_bar(df_daily=df)['df_monthly']
@@ -286,20 +290,31 @@ def _macd(csv_f, period):
         df_period = df
 
     df_period = df_period[-100:]
+
     #print(tabulate.tabulate(df_period[-10:], headers='keys', tablefmt='psql'))
     '''
     MACD: (12-day EMA - 26-day EMA)
     Signal Line: 9-day EMA of MACD
     MACD Histogram: 2*(MACD - Signal Line)
+    
+    df = finlib_indicator.Finlib_indicator().add_ma_ema(df[['close']], short=12, middle=26, long=60)
+    df['ema_12_minus_26'] = df['ema_short_12'] - df['ema_middle_26']  # named DIF in tradeview/eastmoney/MooMoo
+    df['signal'] = df['ema_12_minus_26'].ewm(span=9, min_periods=0, adjust=False, ignore_na=False).mean() # named DEA in tradeview/eastmoney/MooMoo
+    df['Histogram'] = 2 * (df['ema_12_minus_26'] - df['signal'])  # named MACD in tradeview/eastmoney/MooMoo
     '''
-    stock = stockstats.StockDataFrame.retype(df_period)
-    df_macd = stock[['macd', 'macds', 'macdh']]  #macds: # MACD signal line, macdh: # MACD histogram
-    df_macd.rename(columns={
-        "macd": "DIF_main",
-        "macds": "DEA_signal",
-        "macdh": "MACD_histogram",
+    df_stock = stockstats.StockDataFrame.retype(df_period).reset_index()
+    #df_macd = stock[['macd', 'macds', 'macdh','close','sma_long_60','ema_long_60','date','code']]  #macds: # MACD signal line, macdh: # MACD histogram
+    df_stock[['macd', 'macds', 'macdh', 'date']]  #macds: # MACD signal line, macdh: # MACD histogram
+    df_stock.rename(columns={
+        "macd": "DIF_main",    # DIF_Main called DIF in tradeview/eastmoney/Moomoo
+        "macds": "DEA_signal", # DEA_signal called DEA in tradeview/eastmoney/Moomoo
+        "macdh": "MACD_histogram", # MACD_histogram called 'MACD' in tradeview/eastmoney/MooMoo
     }, inplace=True)
-    df_macd = df_macd.round({'DIF_main': 1, 'DEA_signal': 1, 'MACD_histogram': 1})
+    df_stock = df_stock.round({'DIF_main': 1, 'DEA_signal': 1, 'MACD_histogram': 1})
+    # df_macd = df_macd.reset_index()
+    df_macd = df_stock
+
+    # df_macd = pd.merge(df_macd, df_stock, on='date', how='inner', suffixes=('', '_x')).drop('name_x', axis=1)
 
     #print(tabulate.tabulate(df_macd[-2:], headers='keys', tablefmt='psql'))
 
@@ -309,20 +324,64 @@ def _macd(csv_f, period):
     d2 = df_macd.iloc[-2]
     d1 = df_macd.iloc[-1]
 
-    this_date = d1.name.strftime("%Y-%m-%d")  #'2019-03-31'
-    dif1 = d1.DIF_main
-    dea1 = d1.DEA_signal
-    macd1 = d1.MACD_histogram
+    this_date = d1.date.strftime("%Y-%m-%d")  #'2019-03-31'
+    dif1 = d1.DIF_main  # DIF.  close_ema_12 - close_ema_26. Difference btwn fast/slow price ema.
+                        # zero value means price not change in a period (26 days)
+                        # Bigger positive value means faster up movement.
+                        # Bigger nagative value means faster down movement.
+
+    dea1 = d1.DEA_signal  #DEA  ema_9_of_DIF. sum(dif1..dif9)/9
+                          # 0 means sum(dif1..diff9) == 0. Last 9 days diff sum are zero --> restored to the 9 days before.
+                          # positive means last 9 days diff are positive, --> up movement.
+                          # nagative means last 9 days diff are nagative, --> down movement.
+
+    macd1 = d1.MACD_histogram  #MACD. 2 * (df['ema_12_minus_26'] - df['signal'])
+    c1 = d1.close
+    sma60_1 = d1.sma_long_60
+    ema60_1 = d1.ema_long_60
 
     dif2 = d2.DIF_main
     dea2 = d2.DEA_signal
     macd2 = d2.MACD_histogram
+    c2 = d2.close
+    sma60_2 = d2.sma_long_60
+    ema60_2 = d2.ema_long_60
 
+
+#####################
+#  Conditions:  SELL EASY, BUY HARD
+#####################
+    #if c2 < sma60_2 and  c1 > sma60_1 and dif1 < 0 : #use this criteria, cross over ensure the curve are up trend.
+    if c1 > sma60_1 and dif1 < 0 : #Don't use this criterial
+        this_reason = str(this_code)+" "+str(this_date) + ', SELL_MUST, c cross over sma60 but dif <0, price expected to be drop back to under sma60, close '+str(c1)+" ,sma60 "+str(sma60_1)
+        this_strength = 1
+        this_action = 'SELL_MUST'
+        logging.info(this_reason + csv_f)
+
+
+    if c2 < sma60_2 and  c1 > sma60_1 and dif2 < 0 and dif1 > 0 :
+        this_reason = str(this_code)+" "+str(this_date) + ',BUY_MUST, c cross over sma60 and dif cross over, price expected to continue rise. close '+str(c1)+" ,sma60 "+str(sma60_1)
+        this_strength = 2
+        this_action = 'BUY_MUST'
+        logging.info(this_reason + csv_f)
+
+    if c2 > sma60_2 and  c1 < sma60_1 and dif2 > 0 and dif1 < 0 :
+        this_reason = str(this_code)+" "+str(this_date) + ',SELL_MUST, c cross down sma60 and dif cross down, price expected to continue drop. close '+str(c1)+" ,sma60 "+str(sma60_1)
+        this_strength = 2
+        this_action = 'SELL_MUST'
+        logging.info(this_reason + csv_f)
+
+
+
+#####################
+#####################
+# dif cross above dea
     if dif2 < dea2 and dif1 > dea1:
         this_reason = "dif up over sig. "
         this_strength = 1
         this_action = 'BUY_CHK'
         print(this_reason + csv_f)
+
 
     if dif2 > dea2 and dif1 < dea1:
         this_reason = "dif down cross sig. "
@@ -330,6 +389,8 @@ def _macd(csv_f, period):
         this_action = 'SELL_CHK'
         print(this_reason + csv_f)
 
+#####################
+#####################
     if dif1 > 50 and dea1 > 50:
         if (macd1 < macd2) and macd1 > 0 and macd1 < 10:
             this_reason = "price high, macd down near 0. "
@@ -341,6 +402,9 @@ def _macd(csv_f, period):
             this_strength = 1
             this_action = 'SELL_MUST'
             print(this_reason + csv_f)
+
+#####################
+#####################
 
     if dif1 < -50 and dea1 < -50:
         if macd2 < 0 and (macd1 > macd2) and macd1 < 0 and macd1 > -10:

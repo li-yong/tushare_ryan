@@ -280,7 +280,7 @@ def draw_a_stock(df, code, name, show_fig_f=False, save_fig_f=False, min_sample=
 
     if save_fig_f:
         if rtn_dict['hit']:
-            fn = dir+"/" + code + "_" + name + "_" + the_day + "_hitted.png"
+            fn = dir+"/" + code + "_" + name + "_" + the_day + "_double_bottom_hitted.png"
         else:
             fn = dir+"/" + code + "_" + name + "_" + the_day + ".png"
 
