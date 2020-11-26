@@ -258,17 +258,17 @@ def _macd(csv_f, period):
         "ema60_1": [''],
 
         "distance_to_5ma_perc": 0,
-        "distance_to_12ma_perc": 0,
-        "distance_to_21ma_perc": 0,
-        "distance_to_55ma_perc": 0,
-        "distance_to_60ma_perc": 0,
+        "distance_to_sma12_perc": 0,
+        "distance_to_sma21_perc": 0,
+        "distance_to_sma55_perc": 0,
+        "distance_to_sma60_perc": 0,
     }
 
-    distance_to_5ma_perc = 0
-    distance_to_12ma_perc = 0
-    distance_to_21ma_perc = 0
-    distance_to_55ma_perc = 0
-    distance_to_60ma_perc = 0
+    distance_to_sma5_perc = 0
+    distance_to_sma12_perc = 0
+    distance_to_sma21_perc = 0
+    distance_to_sma55_perc = 0
+    distance_to_sma60_perc = 0
 
     if not os.path.exists(csv_f):
         logging.info('file not exist. ' + csv_f)
