@@ -212,7 +212,7 @@ def kdj(period):
 
     stock_list = finlib.Finlib().get_A_stock_instrment()
     stock_list = finlib.Finlib().add_market_to_code(stock_list, dot_f=False, tspro_format=False)
-    stock_list = finlib.Finlib().remove_garbage(stock_list, code_field_name='code', code_format='C2D6')
+    #stock_list = finlib.Finlib().remove_garbage(stock_list, code_field_name='code', code_format='C2D6')
 
     #stock_list = stock_list.head(100) #ryan debug
 
@@ -286,7 +286,7 @@ def _macd(csv_f, period):
     this_code = df.iloc[0]['code']  #'SH603999'
     this_date = ''  #monthly period, end date of the month.
     this_reason = ''
-    this_strength = ''
+    this_strength = 0
     this_action = ''
 
     # print(tabulate.tabulate(df[-20:], headers='keys', tablefmt='psql'))  #debug
@@ -317,20 +317,17 @@ def _macd(csv_f, period):
     df['signal'] = df['ema_12_minus_26'].ewm(span=9, min_periods=0, adjust=False, ignore_na=False).mean() # named DEA in tradeview/eastmoney/MooMoo
     df['Histogram'] = 2 * (df['ema_12_minus_26'] - df['signal'])  # named MACD in tradeview/eastmoney/MooMoo
     '''
-    df_stock = stockstats.StockDataFrame.retype(df_period).reset_index()
+    df_macd = stockstats.StockDataFrame.retype(df_period).reset_index()
     #df_macd = stock[['macd', 'macds', 'macdh','close','sma_long_60','ema_long_60','date','code']]  #macds: # MACD signal line, macdh: # MACD histogram
-    df_stock[['macd', 'macds', 'macdh', 'date']]  #macds: # MACD signal line, macdh: # MACD histogram
-    df_stock.rename(columns={
+    df_macd[['macd', 'macds', 'macdh', 'date']]  #macds: # MACD signal line, macdh: # MACD histogram
+    df_macd.rename(columns={
         "macd": "DIF_main",    # DIF_Main called DIF in tradeview/eastmoney/Moomoo
         "macds": "DEA_signal", # DEA_signal called DEA in tradeview/eastmoney/Moomoo
         "macdh": "MACD_histogram", # MACD_histogram called 'MACD' in tradeview/eastmoney/MooMoo
     }, inplace=True)
-    df_stock = df_stock.round({'DIF_main': 1, 'DEA_signal': 1, 'MACD_histogram': 1})
-    # df_macd = df_macd.reset_index()
-    df_macd = df_stock
-
-    # df_macd = pd.merge(df_macd, df_stock, on='date', how='inner', suffixes=('', '_x')).drop('name_x', axis=1)
-
+    df_macd = df_macd.round({'DIF_main': 1, 'DEA_signal': 1, 'MACD_histogram': 1})
+  
+ 
     #print(tabulate.tabulate(df_macd[-2:], headers='keys', tablefmt='psql'))
 
     if df_macd.__len__() < 2:  #at least two records.
@@ -362,8 +359,13 @@ def _macd(csv_f, period):
     sma60_2 = d2.sma_long_60
     ema60_2 = d2.ema_long_60
 
+    if c1 < sma60_1:
+        this_reason += 'under sma60; '
+        this_action += 'SELL; '
+        logging.info(this_reason)
+
 #distance to MA
-    if c1 > 0:
+    if c1 > 0 and c2 > 0:
         distance_to_5ma_perc = round((c1 - d1.close_5_sma) * 100 /c1, 1)
         distance_to_12ma_perc = round((c1 - d1.close_12_sma) * 100 /c1, 1)
         distance_to_21ma_perc = round((c1 - d1.close_21_sma) * 100 /c1, 1)
@@ -377,38 +379,38 @@ def _macd(csv_f, period):
         distance_to_60ma_perc_2 = round((c2 - d2.close_60_sma) * 100 /c2, 1)
 
         if distance_to_5ma_perc_2 < 0 and distance_to_5ma_perc > 0:
-            this_reason = str(this_code) + " " + str(this_date) + ' cross over 5ma'
-            this_strength = round(distance_to_5ma_perc - distance_to_5ma_perc_2,1)
-            this_action = 'BUY_EARLY'
+            this_reason += str(this_code) + " " + str(this_date) + ' cross over 5ma; '
+            this_strength += round(distance_to_5ma_perc - distance_to_5ma_perc_2,1)
+            this_action += 'BUY_EARLY; '
             logging.info(this_reason)
         elif distance_to_5ma_perc_2 > 0 and distance_to_5ma_perc < 0:
-            this_reason = str(this_code) + " " + str(this_date) + ' cross down 5ma'
-            this_strength = round((distance_to_5ma_perc - distance_to_5ma_perc_2)*-1)
-            this_action = 'SELL_EARLY'
+            this_reason += str(this_code) + " " + str(this_date) + ' cross down 5ma; '
+            this_strength += round((distance_to_5ma_perc - distance_to_5ma_perc_2)*-1)
+            this_action += 'SELL_EARLY; '
             logging.info(this_reason)
 
 
         if distance_to_21ma_perc_2 < 0 and distance_to_21ma_perc > 0:
-            this_reason = str(this_code) + " " + str(this_date) + ' cross over 21ma'
-            this_strength = round(distance_to_21ma_perc - distance_to_21ma_perc_2,1)
-            this_action = 'BUY_EARLY'
+            this_reason += str(this_code) + " " + str(this_date) + ' cross over 21ma; '
+            this_strength += round(distance_to_21ma_perc - distance_to_21ma_perc_2,1)
+            this_action += 'BUY_EARLY; '
             logging.info(this_reason)
         elif  distance_to_21ma_perc_2 > 0 and distance_to_21ma_perc < 0:
-            this_reason = str(this_code) + " " + str(this_date) + ' cross down 21ma'
-            this_strength = round((distance_to_21ma_perc - distance_to_21ma_perc_2)*-1)
-            this_action = 'SELL_EARLY'
+            this_reason += str(this_code) + " " + str(this_date) + ' cross down 21ma; '
+            this_strength += round((distance_to_21ma_perc - distance_to_21ma_perc_2)*-1)
+            this_action += 'SELL_EARLY; '
             logging.info(this_reason)
 
 
         if distance_to_60ma_perc_2 < 0 and distance_to_60ma_perc > 0:
-            this_reason = str(this_code) + " " + str(this_date) + ' cross over 60ma'
-            this_strength = round(distance_to_60ma_perc - distance_to_60ma_perc_2,1)
-            this_action = 'BUY_EARLY'
+            this_reason += str(this_code) + " " + str(this_date) + ' cross over 60ma; ' 
+            this_strength += round(distance_to_60ma_perc - distance_to_60ma_perc_2,1)
+            this_action += 'BUY_EARLY; '
             logging.info(this_reason)
         elif  distance_to_60ma_perc_2 > 0 and distance_to_60ma_perc < 0:
-            this_reason = str(this_code) + " " + str(this_date) + ' cross down 60ma'
-            this_strength = round((distance_to_60ma_perc - distance_to_60ma_perc_2)*-1,1)
-            this_action = 'SELL_EARLY'
+            this_reason += str(this_code) + " " + str(this_date) + ' cross down 60ma; '
+            this_strength += round((distance_to_60ma_perc - distance_to_60ma_perc_2)*-1,1)
+            this_action += 'SELL_EARLY; '
             logging.info(this_reason)
 
 
@@ -417,22 +419,22 @@ def _macd(csv_f, period):
 #####################
     #if c2 < sma60_2 and  c1 > sma60_1 and dif1 < 0 : #use this criteria, cross over ensure the curve are up trend.
     if c1 > sma60_1 and dif1 < 0 : #Don't use this criterial
-        this_reason = str(this_code)+" "+str(this_date) + ', SELL_MUST, c is above sma60 but dif <0, price expected to be drop back to under sma60, close '+str(c1)+" ,sma60 "+str(sma60_1)
-        this_strength = 1
-        this_action = 'SELL_MUST'
+        this_reason += str(this_code)+" "+str(this_date) + ', SELL_MUST, c is above sma60 but dif <0, price expected to be drop back to under sma60, close '+str(c1)+" ,sma60 "+str(sma60_1)+"; "
+        this_strength += 1
+        this_action += 'SELL_MUST; '
         logging.info(this_reason)
 
 
     if c2 < sma60_2 and  c1 > sma60_1 and dif2 < 0 and dif1 > 0 :
-        this_reason = str(this_code)+" "+str(this_date) + ',BUY_MUST, c cross over sma60 and dif cross over, price expected to continue rise. close '+str(c1)+" ,sma60 "+str(sma60_1)
-        this_strength = 2
-        this_action = 'BUY_MUST'
+        this_reason += str(this_code)+" "+str(this_date) + ',BUY_MUST, c cross over sma60 and dif cross over, price expected to continue rise. close '+str(c1)+" ,sma60 "+str(sma60_1)+"; "
+        this_strength += 2
+        this_action += 'BUY_MUST; '
         logging.info(this_reason)
 
     if c2 > sma60_2 and  c1 < sma60_1 and dif2 > 0 and dif1 < 0 :
-        this_reason = str(this_code)+" "+str(this_date) + ',SELL_MUST, c cross down sma60 and dif cross down, price expected to continue drop. close '+str(c1)+" ,sma60 "+str(sma60_1)
-        this_strength = 2
-        this_action = 'SELL_MUST'
+        this_reason += str(this_code)+" "+str(this_date) + ',SELL_MUST, c cross down sma60 and dif cross down, price expected to continue drop. close '+str(c1)+" ,sma60 "+str(sma60_1)+"; "
+        this_strength += 2
+        this_action += 'SELL_MUST; '
         logging.info(this_reason)
 
 
@@ -441,30 +443,30 @@ def _macd(csv_f, period):
 #####################
 # dif cross above dea
     if dif2 < dea2 and dif1 > dea1:
-        this_reason = "dif up over sig. "
-        this_strength = 1
-        this_action = 'BUY_CHK'
+        this_reason += "dif up over sig; "
+        this_strength += 1
+        this_action += 'BUY_CHK; '
         logging.info(this_reason)
 
 
     if dif2 > dea2 and dif1 < dea1:
-        this_reason = "dif down cross sig. "
-        this_strength = 1
-        this_action = 'SELL_CHK'
+        this_reason += "dif down cross sig; "
+        this_strength += 1
+        this_action += 'SELL_CHK; '
         logging.info(this_reason)
 
 #####################
 #####################
     if dif1 > 50 and dea1 > 50:
         if (macd1 < macd2) and macd1 > 0 and macd1 < 10:
-            this_reason = "price high, macd down near 0. "
-            this_strength = 1
-            this_action = 'SELL_EARLY'
+            this_reason += "price high, macd down near 0; "
+            this_strength += 1
+            this_action += 'SELL_EARLY; '
             logging.info(this_reason + csv_f)
         elif dif2 > 0 and dea2 > 0 and macd1 < 0 and macd2 > 0:
-            this_reason = "price high, macd down over 0. "
-            this_strength = 1
-            this_action = 'SELL_MUST'
+            this_reason += "price high, macd down over 0; "
+            this_strength += 1
+            this_action += 'SELL_MUST; '
             logging.info(this_reason)
 
 #####################
@@ -472,14 +474,14 @@ def _macd(csv_f, period):
 
     if dif1 < -50 and dea1 < -50:
         if macd2 < 0 and (macd1 > macd2) and macd1 < 0 and macd1 > -10:
-            this_reason = "price low, macd up near 0. "
-            this_strength = 1
-            this_action = 'BUY_EARLY'
+            this_reason += "price low, macd up near 0; "
+            this_strength += 1
+            this_action += 'BUY_EARLY; '
             logging.info(this_reason)
         elif dif2 < -50 and dea2 < -50 and macd1 > 0 and macd2 < 0:
-            this_reason = "price low, macd up over 0. "
-            this_strength = 1
-            this_action = 'BUY_MUST'
+            this_reason += "price low, macd up over 0; "
+            this_strength += 1
+            this_action += 'BUY_MUST; '
             logging.info(this_reason)
 
     rtn = {
@@ -517,8 +519,9 @@ def macd(period):
 
     stock_list = finlib.Finlib().get_A_stock_instrment()
     stock_list = finlib.Finlib().add_market_to_code(stock_list, dot_f=False, tspro_format=False)
-    stock_list = finlib.Finlib().remove_garbage(stock_list, code_field_name='code', code_format='C2D6')
-    #stock_list = stock_list.head(10) #debug
+
+    #stock_list = finlib.Finlib().remove_garbage(stock_list, code_field_name='code', code_format='C2D6')
+    stock_list = stock_list.head(10) #debug
 
     cnt = stock_list.__len__()
     i = 0
@@ -537,7 +540,7 @@ def macd(period):
         logging.info("MACD no qualified stock found.")
     else:
         df_rtn = pd.merge(df_rtn, stock_list, how='inner', on='code')
-        df_rtn = df_rtn[['code', 'name', 'date', 'action', 'reason', 'strength']]
+        df_rtn = finlib.Finlib().adjust_column(df_rtn, [ 'date','code', 'name', 'close', 'action', 'reason', 'strength'])
         df_rtn.to_csv(output_csv, encoding='UTF-8', index=False)
 
         logging.info(__file__+" "+"MACD selection saved to " + output_csv + " . len " + str(df_rtn.__len__()))
