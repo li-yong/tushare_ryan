@@ -60,6 +60,7 @@ def _kdj(csv_f, period):
 
     #csv_f = '/home/ryan/DATA/DAY_Global/AG/SH600519.csv' #ryan debug
 
+
     df = pd.read_csv(csv_f, converters={'code': str}, header=None, skiprows=1, names=['code', 'date', 'open', 'high', 'low', 'close', 'volume', 'amount', 'tnv'])
 
     if df.__len__() < 100:
@@ -274,10 +275,10 @@ def _macd(csv_f, period):
         return (rtn)
 
     #csv_f = '/home/ryan/DATA/DAY_Global/AG/SH600519.csv' #ryan debug
+    #csv_f = '/home/ryan/DATA/DAY_Global/AG/SZ000008.csv'
 
 
-    df = pd.read_csv(csv_f, converters={'code': str}, header=None, skiprows=1, names=['code', 'date', 'open', 'high', 'low', 'close', 'volume', 'amount', 'tnv'])
-
+    df = finlib.Finlib().regular_read_csv_to_stdard_df(data_csv=csv_f)
     #df = finlib.Finlib().regular_read_csv_to_stdard_df(data_csv="/home/ryan/DATA/DAY_Global/AG_INDEX/000001.SH.csv") ##ryan debug for ag index
 
     if df.__len__() < 100:
@@ -294,8 +295,6 @@ def _macd(csv_f, period):
     # print(tabulate.tabulate(df_monthly_s[-20:], headers='keys', tablefmt='psql'))
 
     df = df[-1000:]  #last 4 years.
-    df = finlib_indicator.Finlib_indicator().add_ma_ema(df, short=12, middle=26, long=60)
-    df = finlib_indicator.Finlib_indicator().add_ma_ema(df, short=5, middle=21, long=55)
 
     if period == "M":
         df_period = finlib.Finlib().daily_to_monthly_bar(df_daily=df)['df_monthly']
@@ -304,6 +303,9 @@ def _macd(csv_f, period):
     elif period == "D":
         df['date'] = pd.to_datetime(df['date'], format="%Y-%m-%d")
         df_period = df
+
+    df_period = finlib_indicator.Finlib_indicator().add_ma_ema(df_period, short=5, middle=21, long=55)
+    df_period = finlib_indicator.Finlib_indicator().add_ma_ema(df_period, short=12, middle=26, long=60)
 
     df_period = df_period[-100:]
 
@@ -326,7 +328,7 @@ def _macd(csv_f, period):
         "macds": "DEA_signal", # DEA_signal called DEA in tradeview/eastmoney/Moomoo
         "macdh": "MACD_histogram", # MACD_histogram called 'MACD' in tradeview/eastmoney/MooMoo
     }, inplace=True)
-    df_macd = df_macd.round({'DIF_main': 1, 'DEA_signal': 1, 'MACD_histogram': 1})
+    df_macd = df_macd.round({'DIF_main': 2, 'DEA_signal': 2, 'MACD_histogram': 2})
   
  
     #print(tabulate.tabulate(df_macd[-2:], headers='keys', tablefmt='psql'))
@@ -380,36 +382,36 @@ def _macd(csv_f, period):
         distance_to_sma60_perc_2 = round((c2 - d2.close_60_sma) * 100 /c2, 1)
 
         if distance_to_sma5_perc_2 < 0 and distance_to_sma5_perc > 0:
-            this_reason += str(this_code) + " " + str(this_date) + constant.CROSS_OVER_SMA5+'; '
+            this_reason += constant.CROSS_OVER_SMA5+'; '
             this_strength += round(distance_to_sma5_perc - distance_to_sma5_perc_2,1)
             this_action += constant.BUY_EARLY + "; "
             logging.info(this_reason)
         elif distance_to_sma5_perc_2 > 0 and distance_to_sma5_perc < 0:
-            this_reason += str(this_code) + " " + str(this_date) + constant.CROSS_DOWN_SMA5+'; '
+            this_reason +=  constant.CROSS_DOWN_SMA5+'; '
             this_strength += round((distance_to_sma5_perc - distance_to_sma5_perc_2)*-1)
             this_action += constant.SELL_EARLY + "; "
             logging.info(this_reason)
 
 
         if distance_to_sma21_perc_2 < 0 and distance_to_sma21_perc > 0:
-            this_reason += str(this_code) + " " + str(this_date) + constant.CROSS_OVER_SMA21+'; '
+            this_reason +=  constant.CROSS_OVER_SMA21+'; '
             this_strength += round(distance_to_sma21_perc - distance_to_sma21_perc_2,1)
             this_action += constant.BUY_EARLY + "; "
             logging.info(this_reason)
         elif  distance_to_sma21_perc_2 > 0 and distance_to_sma21_perc < 0:
-            this_reason += str(this_code) + " " + str(this_date) + constant.CROSS_DOWN_SMA21+'; '
+            this_reason += constant.CROSS_DOWN_SMA21+'; '
             this_strength += round((distance_to_sma21_perc - distance_to_sma21_perc_2)*-1)
             this_action += constant.SELL_EARLY + "; "
             logging.info(this_reason)
 
 
         if distance_to_sma60_perc_2 < 0 and distance_to_sma60_perc > 0:
-            this_reason += str(this_code) + " " + str(this_date) + constant.CROSS_OVER_SMA60+'; '
+            this_reason +=  constant.CROSS_OVER_SMA60+'; '
             this_strength += round(distance_to_sma60_perc - distance_to_sma60_perc_2,1)
             this_action += constant.BUY_EARLY + "; "
             logging.info(this_reason)
         elif  distance_to_sma60_perc_2 > 0 and distance_to_sma60_perc < 0:
-            this_reason += str(this_code) + " " + str(this_date) + constant.CROSS_DOWN_SMA60+'; '
+            this_reason += constant.CROSS_DOWN_SMA60+'; '
             this_strength += round((distance_to_sma60_perc - distance_to_sma60_perc_2)*-1,1)
             this_action += constant.SELL_EARLY + "; "
             logging.info(this_reason)
@@ -420,14 +422,14 @@ def _macd(csv_f, period):
 #####################
     #if c2 < sma60_2 and  c1 > sma60_1 and dif1 < 0 : #use this criteria, cross over ensure the curve are up trend.
     if c1 > sma60_1 and dif1 < 0 : #Don't use this criterial
-        this_reason += str(this_code)+" "+str(this_date) + ', SELL_MUST,'+ constant.ABOVE_SMA60 + "but "+constant.DIF_LT_0+', price expected to be drop back to under sma60, close '+str(c1)+" ,sma60 "+str(sma60_1)+"; "
+        this_reason +=  'SELL_MUST,'+ constant.ABOVE_SMA60 + "but "+constant.DIF_LT_0+', price expected to be drop back to under sma60, close '+str(c1)+" ,sma60 "+str(sma60_1)+"; "
         this_strength += 1
         this_action +=  constant.SELL_MUST + "; "
         logging.info(this_reason)
 
 
     if c2 < sma60_2 and  c1 > sma60_1 and dif2 < 0 and dif1 > 0 :
-        this_reason += str(this_code)+" "+str(this_date) + ',BUY_MUST, '+ constant.CROSS_OVER_SMA60+' and '+ constant.DIF_CROSS_OVER_0 +', price expected to continue rise. close '+str(c1)+" ,sma60 "+str(sma60_1)+"; "
+        this_reason +='BUY_MUST, '+ constant.CROSS_OVER_SMA60+' and '+ constant.DIF_CROSS_OVER_0 +', price expected to continue rise. close '+str(c1)+" ,sma60 "+str(sma60_1)+"; "
         this_strength += 2
         this_action += constant.BUY_MUST + "; "
         logging.info(this_reason)
@@ -522,7 +524,7 @@ def macd(period):
     stock_list = finlib.Finlib().add_market_to_code(stock_list, dot_f=False, tspro_format=False)
 
     #stock_list = finlib.Finlib().remove_garbage(stock_list, code_field_name='code', code_format='C2D6')
-    stock_list = stock_list.head(10) #debug
+    stock_list = stock_list.head(30) #debug
 
     cnt = stock_list.__len__()
     i = 0
@@ -629,7 +631,16 @@ def main():
     period = options.period_f
     analyze_f = options.analyze_f
 
-    d = finlib_indicator.Finlib_indicator().get_under_sma60()
+
+
+
+
+
+  #  d = finlib_indicator.Finlib_indicator().get_under_sma60(period='W')
+
+
+
+
 
 
     if indicator == None:
