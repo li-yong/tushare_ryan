@@ -628,6 +628,22 @@ def main():
     period = options.period_f
     analyze_f = options.analyze_f
 
+
+
+
+    file = "/home/ryan/DATA/result/macd_selection_D.csv"
+    df = pd.read_csv(file, encoding="utf-8")
+    df_under_sma60 = df[df['reason'].str.contains('under sma60')]
+    print(1)
+
+
+
+
+
+
+
+
+
     if indicator == None:
         print("missing indicator [MACD|KDJ|SMA|PriceCounter]")
 
