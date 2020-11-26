@@ -353,7 +353,7 @@ def _macd(csv_f, period):
 #####################
     #if c2 < sma60_2 and  c1 > sma60_1 and dif1 < 0 : #use this criteria, cross over ensure the curve are up trend.
     if c1 > sma60_1 and dif1 < 0 : #Don't use this criterial
-        this_reason = str(this_code)+" "+str(this_date) + ', SELL_MUST, c cross over sma60 but dif <0, price expected to be drop back to under sma60, close '+str(c1)+" ,sma60 "+str(sma60_1)
+        this_reason = str(this_code)+" "+str(this_date) + ', SELL_MUST, c is above sma60 but dif <0, price expected to be drop back to under sma60, close '+str(c1)+" ,sma60 "+str(sma60_1)
         this_strength = 1
         this_action = 'SELL_MUST'
         logging.info(this_reason + csv_f)
