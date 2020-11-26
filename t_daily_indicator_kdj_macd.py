@@ -29,6 +29,7 @@ import logging
 import finlib_indicator
 
 from optparse import OptionParser
+import constant
 
 logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m_%d %H:%M:%S', level=logging.DEBUG)
 
@@ -360,57 +361,57 @@ def _macd(csv_f, period):
     ema60_2 = d2.ema_long_60
 
     if c1 < sma60_1:
-        this_reason += 'under sma60; '
-        this_action += 'SELL; '
+        this_reason += constant.UNDER_SMA60 + "; "
+        this_action += constant.SELL_CHECK + "; "
         logging.info(this_reason)
 
 #distance to MA
     if c1 > 0 and c2 > 0:
-        distance_to_5ma_perc = round((c1 - d1.close_5_sma) * 100 /c1, 1)
-        distance_to_12ma_perc = round((c1 - d1.close_12_sma) * 100 /c1, 1)
-        distance_to_21ma_perc = round((c1 - d1.close_21_sma) * 100 /c1, 1)
-        distance_to_55ma_perc = round((c1 - d1.close_55_sma) * 100 /c1, 1)
-        distance_to_60ma_perc = round((c1 - d1.close_60_sma) * 100 /c1, 1)
+        distance_to_sma5_perc = round((c1 - d1.close_5_sma) * 100 /c1, 1)
+        distance_to_sma12_perc = round((c1 - d1.close_12_sma) * 100 /c1, 1)
+        distance_to_sma21_perc = round((c1 - d1.close_21_sma) * 100 /c1, 1)
+        distance_to_sma55_perc = round((c1 - d1.close_55_sma) * 100 /c1, 1)
+        distance_to_sma60_perc = round((c1 - d1.close_60_sma) * 100 /c1, 1)
 
-        distance_to_5ma_perc_2 = round((c2 - d2.close_5_sma) * 100 /c2, 1)
-        distance_to_12ma_perc_2 = round((c2 - d2.close_12_sma) * 100 /c2, 1)
-        distance_to_21ma_perc_2 = round((c2 - d2.close_21_sma) * 100 /c2, 1)
-        distance_to_55ma_perc_2 = round((c2 - d2.close_55_sma) * 100 /c2, 1)
-        distance_to_60ma_perc_2 = round((c2 - d2.close_60_sma) * 100 /c2, 1)
+        distance_to_sma5_perc_2 = round((c2 - d2.close_5_sma) * 100 /c2, 1)
+        distance_to_sma12_perc_2 = round((c2 - d2.close_12_sma) * 100 /c2, 1)
+        distance_to_sma21_perc_2 = round((c2 - d2.close_21_sma) * 100 /c2, 1)
+        distance_to_sma55_perc_2 = round((c2 - d2.close_55_sma) * 100 /c2, 1)
+        distance_to_sma60_perc_2 = round((c2 - d2.close_60_sma) * 100 /c2, 1)
 
-        if distance_to_5ma_perc_2 < 0 and distance_to_5ma_perc > 0:
-            this_reason += str(this_code) + " " + str(this_date) + ' cross over 5ma; '
-            this_strength += round(distance_to_5ma_perc - distance_to_5ma_perc_2,1)
-            this_action += 'BUY_EARLY; '
+        if distance_to_sma5_perc_2 < 0 and distance_to_sma5_perc > 0:
+            this_reason += str(this_code) + " " + str(this_date) + constant.CROSS_OVER_SMA5+'; '
+            this_strength += round(distance_to_sma5_perc - distance_to_sma5_perc_2,1)
+            this_action += constant.BUY_EARLY + "; "
             logging.info(this_reason)
-        elif distance_to_5ma_perc_2 > 0 and distance_to_5ma_perc < 0:
-            this_reason += str(this_code) + " " + str(this_date) + ' cross down 5ma; '
-            this_strength += round((distance_to_5ma_perc - distance_to_5ma_perc_2)*-1)
-            this_action += 'SELL_EARLY; '
-            logging.info(this_reason)
-
-
-        if distance_to_21ma_perc_2 < 0 and distance_to_21ma_perc > 0:
-            this_reason += str(this_code) + " " + str(this_date) + ' cross over 21ma; '
-            this_strength += round(distance_to_21ma_perc - distance_to_21ma_perc_2,1)
-            this_action += 'BUY_EARLY; '
-            logging.info(this_reason)
-        elif  distance_to_21ma_perc_2 > 0 and distance_to_21ma_perc < 0:
-            this_reason += str(this_code) + " " + str(this_date) + ' cross down 21ma; '
-            this_strength += round((distance_to_21ma_perc - distance_to_21ma_perc_2)*-1)
-            this_action += 'SELL_EARLY; '
+        elif distance_to_sma5_perc_2 > 0 and distance_to_sma5_perc < 0:
+            this_reason += str(this_code) + " " + str(this_date) + constant.CROSS_DOWN_SMA5+'; '
+            this_strength += round((distance_to_sma5_perc - distance_to_sma5_perc_2)*-1)
+            this_action += constant.SELL_EARLY + "; "
             logging.info(this_reason)
 
 
-        if distance_to_60ma_perc_2 < 0 and distance_to_60ma_perc > 0:
-            this_reason += str(this_code) + " " + str(this_date) + ' cross over 60ma; ' 
-            this_strength += round(distance_to_60ma_perc - distance_to_60ma_perc_2,1)
-            this_action += 'BUY_EARLY; '
+        if distance_to_sma21_perc_2 < 0 and distance_to_sma21_perc > 0:
+            this_reason += str(this_code) + " " + str(this_date) + constant.CROSS_OVER_SMA21+'; '
+            this_strength += round(distance_to_sma21_perc - distance_to_sma21_perc_2,1)
+            this_action += constant.BUY_EARLY + "; "
             logging.info(this_reason)
-        elif  distance_to_60ma_perc_2 > 0 and distance_to_60ma_perc < 0:
-            this_reason += str(this_code) + " " + str(this_date) + ' cross down 60ma; '
-            this_strength += round((distance_to_60ma_perc - distance_to_60ma_perc_2)*-1,1)
-            this_action += 'SELL_EARLY; '
+        elif  distance_to_sma21_perc_2 > 0 and distance_to_sma21_perc < 0:
+            this_reason += str(this_code) + " " + str(this_date) + constant.CROSS_DOWN_SMA21+'; '
+            this_strength += round((distance_to_sma21_perc - distance_to_sma21_perc_2)*-1)
+            this_action += constant.SELL_EARLY + "; "
+            logging.info(this_reason)
+
+
+        if distance_to_sma60_perc_2 < 0 and distance_to_sma60_perc > 0:
+            this_reason += str(this_code) + " " + str(this_date) + constant.CROSS_OVER_SMA60+'; '
+            this_strength += round(distance_to_sma60_perc - distance_to_sma60_perc_2,1)
+            this_action += constant.BUY_EARLY + "; "
+            logging.info(this_reason)
+        elif  distance_to_sma60_perc_2 > 0 and distance_to_sma60_perc < 0:
+            this_reason += str(this_code) + " " + str(this_date) + constant.CROSS_DOWN_SMA60+'; '
+            this_strength += round((distance_to_sma60_perc - distance_to_sma60_perc_2)*-1,1)
+            this_action += constant.SELL_EARLY + "; "
             logging.info(this_reason)
 
 
@@ -419,22 +420,22 @@ def _macd(csv_f, period):
 #####################
     #if c2 < sma60_2 and  c1 > sma60_1 and dif1 < 0 : #use this criteria, cross over ensure the curve are up trend.
     if c1 > sma60_1 and dif1 < 0 : #Don't use this criterial
-        this_reason += str(this_code)+" "+str(this_date) + ', SELL_MUST, c is above sma60 but dif <0, price expected to be drop back to under sma60, close '+str(c1)+" ,sma60 "+str(sma60_1)+"; "
+        this_reason += str(this_code)+" "+str(this_date) + ', SELL_MUST,'+ constant.ABOVE_SMA60 + "but "+constant.DIF_LT_0+', price expected to be drop back to under sma60, close '+str(c1)+" ,sma60 "+str(sma60_1)+"; "
         this_strength += 1
-        this_action += 'SELL_MUST; '
+        this_action +=  constant.SELL_MUST + "; "
         logging.info(this_reason)
 
 
     if c2 < sma60_2 and  c1 > sma60_1 and dif2 < 0 and dif1 > 0 :
-        this_reason += str(this_code)+" "+str(this_date) + ',BUY_MUST, c cross over sma60 and dif cross over, price expected to continue rise. close '+str(c1)+" ,sma60 "+str(sma60_1)+"; "
+        this_reason += str(this_code)+" "+str(this_date) + ',BUY_MUST, '+ constant.CROSS_OVER_SMA60+' and '+ constant.DIF_CROSS_OVER_0 +', price expected to continue rise. close '+str(c1)+" ,sma60 "+str(sma60_1)+"; "
         this_strength += 2
-        this_action += 'BUY_MUST; '
+        this_action += constant.BUY_MUST + "; "
         logging.info(this_reason)
 
     if c2 > sma60_2 and  c1 < sma60_1 and dif2 > 0 and dif1 < 0 :
-        this_reason += str(this_code)+" "+str(this_date) + ',SELL_MUST, c cross down sma60 and dif cross down, price expected to continue drop. close '+str(c1)+" ,sma60 "+str(sma60_1)+"; "
+        this_reason += str(this_code)+" "+str(this_date) + ',SELL_MUST, '+constant.CROSS_DOWN_SMA60+' and  '+constant.DIF_CROSS_DOWN_0+  ', price expected to continue drop. close '+str(c1)+" ,sma60 "+str(sma60_1)+"; "
         this_strength += 2
-        this_action += 'SELL_MUST; '
+        this_action += constant.SELL_MUST + "; "
         logging.info(this_reason)
 
 
@@ -443,30 +444,30 @@ def _macd(csv_f, period):
 #####################
 # dif cross above dea
     if dif2 < dea2 and dif1 > dea1:
-        this_reason += "dif up over sig; "
+        this_reason +=  constant.DIF_CROSS_OVER_SIG + "; "
         this_strength += 1
-        this_action += 'BUY_CHK; '
+        this_action += constant.BUY_CHECK+'; '
         logging.info(this_reason)
 
 
     if dif2 > dea2 and dif1 < dea1:
-        this_reason += "dif down cross sig; "
+        this_reason += constant.DIF_CROSS_DOWN_SIG + "; "
         this_strength += 1
-        this_action += 'SELL_CHK; '
+        this_action += constant.SELL_CHECK+'; '
         logging.info(this_reason)
 
 #####################
 #####################
     if dif1 > 50 and dea1 > 50:
         if (macd1 < macd2) and macd1 > 0 and macd1 < 10:
-            this_reason += "price high, macd down near 0; "
+            this_reason += constant.PRICE_HIGH + ", " +constant.MACD_DECLINE_NEAR_0 +"; "
             this_strength += 1
-            this_action += 'SELL_EARLY; '
+            this_action += constant.SELL_EARLY+'; '
             logging.info(this_reason + csv_f)
         elif dif2 > 0 and dea2 > 0 and macd1 < 0 and macd2 > 0:
-            this_reason += "price high, macd down over 0; "
+            this_reason +=  constant.PRICE_HIGH + ", " +constant.MACD_CROSS_DOWN_0 +"; "
             this_strength += 1
-            this_action += 'SELL_MUST; '
+            this_action += constant.SELL_MUST+'; '
             logging.info(this_reason)
 
 #####################
@@ -474,14 +475,14 @@ def _macd(csv_f, period):
 
     if dif1 < -50 and dea1 < -50:
         if macd2 < 0 and (macd1 > macd2) and macd1 < 0 and macd1 > -10:
-            this_reason += "price low, macd up near 0; "
+            this_reason += constant.PRICE_LOW + ", " +constant.MACD_CLIMB_NEAR_0 +"; "
             this_strength += 1
-            this_action += 'BUY_EARLY; '
+            this_action += constant.BUY_EARLY+'; '
             logging.info(this_reason)
         elif dif2 < -50 and dea2 < -50 and macd1 > 0 and macd2 < 0:
-            this_reason += "price low, macd up over 0; "
+            this_reason += constant.PRICE_LOW + ", " +constant.MACD_CROSS_OVER_0 +"; "
             this_strength += 1
-            this_action += 'BUY_MUST; '
+            this_action += constant.BUY_MUST+'; '
             logging.info(this_reason)
 
     rtn = {
@@ -500,11 +501,11 @@ def _macd(csv_f, period):
         "sma60_1": [round(sma60_1, 1)],
         "ema60_1": [round(ema60_1, 1)],
 
-        "distance_to_5ma_perc": [round(distance_to_5ma_perc, 1)],
-        "distance_to_12ma_perc": [round(distance_to_12ma_perc, 1)],
-        "distance_to_21ma_perc": [round(distance_to_21ma_perc, 1)],
-        "distance_to_55ma_perc": [round(distance_to_55ma_perc, 1)],
-        "distance_to_60ma_perc": [round(distance_to_60ma_perc, 1)],
+        "distance_to_sma5_perc": [round(distance_to_sma5_perc, 1)],
+        "distance_to_sma12_perc": [round(distance_to_sma12_perc, 1)],
+        "distance_to_sma21_perc": [round(distance_to_sma21_perc, 1)],
+        "distance_to_sma55_perc": [round(distance_to_sma55_perc, 1)],
+        "distance_to_sma60_perc": [round(distance_to_sma60_perc, 1)],
     }
 
     return (rtn)
@@ -628,20 +629,7 @@ def main():
     period = options.period_f
     analyze_f = options.analyze_f
 
-
-
-
-    file = "/home/ryan/DATA/result/macd_selection_D.csv"
-    df = pd.read_csv(file, encoding="utf-8")
-    df_under_sma60 = df[df['reason'].str.contains('under sma60')]
-    print(1)
-
-
-
-
-
-
-
+    d = finlib_indicator.Finlib_indicator().get_under_sma60()
 
 
     if indicator == None:
