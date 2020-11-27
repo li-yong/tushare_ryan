@@ -573,6 +573,18 @@ def analyze(indicator, debug=False):
         input_csv_w = dir + "/macd_selection_W.csv"
         input_csv_d = dir + "/macd_selection_D.csv"
 
+        csv_o = dir + "/under_sma60_M.csv"
+        finlib_indicator.Finlib_indicator().get_under_sma60(period='M').to_csv(csv_o, encoding='UTF-8', index=False)
+        logging.info("Saved "+csv_o)
+
+        csv_o = dir + "/under_sma60_W.csv"
+        finlib_indicator.Finlib_indicator().get_under_sma60(period='W').to_csv(csv_o, encoding='UTF-8', index=False)
+        logging.info("Saved " + csv_o)
+
+        csv_o = dir + "/under_sma60_D.csv"
+        finlib_indicator.Finlib_indicator().get_under_sma60(period='D').to_csv(csv_o, encoding='UTF-8', index=False)
+        logging.info("Saved " + csv_o)
+
     if indicator == 'KDJ':
         input_csv_m = dir + "/kdj_selection_M.csv"
         input_csv_w = dir + "/kdj_selection_W.csv"
@@ -634,12 +646,6 @@ def main():
     analyze_f = options.analyze_f
     debug = options.debug_f
 
-
-
-
-
-
-  #  d = finlib_indicator.Finlib_indicator().get_under_sma60(period='W')
 
 
 
