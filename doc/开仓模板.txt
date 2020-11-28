@@ -1,0 +1,150 @@
+开仓模板
+
+代码, 初始日期, 更新日期
+======================
+
+基本面/扫雷
+======================
+- PE, PB, ROA
+- 公司消息(产量新高, 新产品, 新订单)
+- 未来近期是否有财报发布
+- 未来近期是否有股票解禁
+- 高管变动
+- 高管卖出股票
+- 天眼查风险
+- 股票改名
+- 新闻: 评级降低
+- 新闻: 加入/剔除指数编制
+- 新闻: 政策
+- 新闻: 行业
+
+
+大时间周期趋势 TREND BACKGROUND
+======================
+- Month/weekly 趋势向上. higer low, higer high
+- Month/weekly 趋势向下. lower low, lower high
+- 波动率ATR 收窄, 增加
+- 成交Vol 收窄, 增加
+
+大时间周期阶段 Stage (股票只做long)
+======================
+- Decline (S): 积极逃,清仓
+- Accumulate (B) 多观望. [逢低(超卖, 跌破支撑)开仓/加仓]  [wait breakout resistance. 开仓/加仓]
+- Advancing (B) 积极开仓. [wait pull back 上升趋势, 当前下降,exp will 大幅上升, 逢低(超卖) 开仓/加仓]
+- Distribution (S) 观望逃, [wait reversal 下降趋势, 当前上升, exp will 大幅下降, 逢高(超买) 减仓/清仓]
+
+
+
+数据,指标  DATA & Indicator
+=================
+- Close:
+- Close是否已经高于过去5个月:
+- Close < MA200: 下降趋势, 当前上升, exp will 大幅下降, 逢高(超买>80) 减仓/清仓
+- Close > MA200: 上升趋势, 当前下降,exp will 大幅上升, 逢低(超卖<20) 开仓/加仓
+- 
+- MA5 
+- MA11
+- MA55
+- MA200 
+- MA200 方向: 向上, 趋于水平, 向下
+- MA200 趋势: 
+- 
+- 
+- MA是否多头排列:
+- MA是否发散:
+- 价格波动ATR趋势:
+- 
+- 价格上升vol放量(看涨): [Yes or No]
+- 价格下降vol缩量(看涨): [Yes or No]
+- 
+- RSI: 超买 超卖
+- 
+- KDJ: J>0((价格期待站到MA5以上)  J<0(价格期待回到MA5以下)
+- 
+- MACD: MACD MUST_BUY [Yes or No]
+
+图形模式 PRICE PATTERN
+======================
+- 上升旗形,  ma cross, 
+- 趋势线
+- 通道
+- 双底
+- 头肩
+
+支撑压力 SUPPORT RESISTANCE
+======================
+- 压力. 高点趋势线上沿,  
+- 支撑. 支撑趋势线下沿, 3360-3373开仓点
+
+- 压力.频繁出现的价格
+- 支撑.频繁出现的价格
+
+- 上方压力位 3409, 如果突破压力位, 加仓.
+
+
+开仓依据 TRIGGER:
+======================
+- 十字星, 锤子, 二次测试
+- 指标 MACD Cross
+- 指标 MACD BUY MUST
+
+
+策略 STRATEGE
+======================
+- capture swing
+- ride trend
+
+
+开仓点 ENTRY POINT (Limit order)
+======================
+- 等待价格回调到 MA5 位置
+
+交易金额
+======================
+- 5% of account (max 20 trades)
+
+
+账户 ACCOUNT
+======================
+ - Account: 
+ - Risk: 1% * Act
+
+
+止损退出 EXIT IF WRONG /EST RISK
+======================
+- 损失 1% of accout. RISK is :
+- 损失 -8p.  RISK is :
+- 跌破趋势线 3363. RISK :
+- 跌破55ma  
+- ma5 cross down ma55   
+
+
+
+盈利退出 EXIT IF RIGHT
+======================
+- 盈利快要归零 
+- 从最高点回撤8p
+- 指标 (MACD SELL MUST)
+
+
+EST RISK (开仓点 - 止损退出)
+======================
+
+EST Profit (盈利退出 - 开仓点)
+======================
+
+
+
+交易结束总结
+===========
+开仓日期
+清仓日期
+Risk: 1% act
+Profit: 
+Risk Reward (performance):  risk/profit 
+
+
+BACKGROUND
+===========
+
+
