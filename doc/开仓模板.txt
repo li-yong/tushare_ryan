@@ -16,6 +16,8 @@
 
 指数市场 大时间周期阶段 Stage (股票只做long)
 ====================================
+Accumulate Tail(will go up) OR Advancing Head(will burst) Distribution Tail (will go down)
+
 - Decline (S): 积极逃,清仓
 - Accumulate (B) 多观望. [逢低(超卖, 跌破支撑)开仓/加仓]  [wait breakout resistance. 开仓/加仓]
 - Advancing (B) 积极开仓. [wait pull back 上升趋势, 当前下降,exp will 大幅上升, 逢低(超卖) 开仓/加仓]
